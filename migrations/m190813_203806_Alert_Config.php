@@ -20,7 +20,7 @@ class m190813_203806_Alert_Config extends Migration
 
         $this->createTable('{{%Alert_Config}}', [
             'id'                    => $this->primaryKey(),
-            'alertId'               => $this->integer(11)->notNull(),
+            'alertId'               => $this->integer(11)->notNull()->unique(),
             'product_description'   => $this->string(40)->notNull(),
             'competitors'           => $this->string(40)->notNull(),
             'countries'             => $this->string(40)->notNull(),
@@ -45,6 +45,22 @@ class m190813_203806_Alert_Config extends Migration
             'createdBy'             => '1',
             'updatedBy'             => '1',
         ]);
+         // creates index for column `alertId`
+        $this->createIndex(
+            'idx-alert_alertId_Alerts',
+            'Alert_Config',
+            'alertId'
+        );
+
+        $this->addForeignKey(
+            'alert_alertId_Alerts',
+            'Alerts',
+            'id',
+            'Alert_Config',
+            'alertId',
+            'CASCADE',
+            'CASCADE'
+        );
     }
 
     /**
