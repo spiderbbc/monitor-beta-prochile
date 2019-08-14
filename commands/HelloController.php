@@ -9,7 +9,7 @@ namespace app\commands;
 
 use yii\console\Controller;
 use yii\console\ExitCode;
-
+use app\models\Dictionaries;
 /**
  * This command echoes the first argument that you have entered.
  *
@@ -26,7 +26,7 @@ class HelloController extends Controller
      * @return int Exit code
      */
     public function actionIndex($message = 'hello world')
-    {
+    {   
         echo $message . "\n";
 
         return ExitCode::OK;
