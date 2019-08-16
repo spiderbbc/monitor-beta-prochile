@@ -45,6 +45,24 @@ class m190813_203806_Alert_Config extends Migration
             'createdBy'             => '1',
             'updatedBy'             => '1',
         ]);
+
+         // creates index for column `alertId`
+        $this->createIndex(
+            'idx-Alert_Config-alertId',
+            'Alert_Config',
+            'alertId'
+        );
+
+        // add foreign key for table `dictionaries`
+        $this->addForeignKey(
+            'fk-Alert_Config-alertId',
+            'Alert_Config',
+            'alertId',
+            'Alerts',
+            'id',
+            'CASCADE',
+            'CASCADE'
+        );
     }
 
     /**
