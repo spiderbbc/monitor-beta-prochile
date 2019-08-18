@@ -18,7 +18,7 @@ class m190813_211505_Products_Series extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Products_Series}}', [
+        $this->createTable('{{%products_series}}', [
             'id'                => $this->primaryKey(),
             'name'              => $this->string(),
             'abbreviation_name' => $this->string(),
@@ -30,7 +30,7 @@ class m190813_211505_Products_Series extends Migration
 
         ], $tableOptions);
 
-        $this->insert('{{%Products_Series}}', [
+        $this->insert('{{%products_series}}', [
             'name'                  => 'Mobile Connect',
             'abbreviation_name'     => 'MC',
             'status'                => 1,
@@ -40,7 +40,7 @@ class m190813_211505_Products_Series extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Products_Series}}', [
+        $this->insert('{{%products_series}}', [
             'name'                  => 'Home Entretaiment',
             'abbreviation_name'     => 'HE',
             'status'                => 1,
@@ -56,6 +56,6 @@ class m190813_211505_Products_Series extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%Products_Series}}');
+        $this->dropTable('{{%products_series}}');
     }
 }

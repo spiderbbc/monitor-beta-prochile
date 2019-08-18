@@ -18,7 +18,7 @@ class m190813_195504_Keywords extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Keywords}}', [
+        $this->createTable('{{%keywords}}', [
             'id'                    => $this->primaryKey(),
             'alertId'               => $this->integer(),
             'dictionaryId'          => $this->integer(),
@@ -30,7 +30,7 @@ class m190813_195504_Keywords extends Migration
 
         ], $tableOptions);
 
-        $this->insert('{{%Keywords}}', [
+        $this->insert('{{%keywords}}', [
             'alertId'               => 1,
             'dictionaryId'          => 1,
             'name'                  => 'Good',
@@ -40,7 +40,7 @@ class m190813_195504_Keywords extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Keywords}}', [
+        $this->insert('{{%keywords}}', [
             'alertId'               => 1,
             'dictionaryId'          => 2,
             'name'                  => 'Bad',
@@ -50,7 +50,7 @@ class m190813_195504_Keywords extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Keywords}}', [
+        $this->insert('{{%keywords}}', [
             'alertId'               => 1,
             'dictionaryId'          => 3,
             'name'                  => 'not bad and not so good',
@@ -63,16 +63,16 @@ class m190813_195504_Keywords extends Migration
          // creates index for column `alertId`
         $this->createIndex(
             'idx-dictionary-alertId',
-            'Keywords',
+            'keywords',
             'alertId'
         );
 
         // add foreign key for table `dictionaries`
         $this->addForeignKey(
             'fk-dictionary-alertId',
-            'Keywords',
+            'keywords',
             'alertId',
-            'Alerts',
+            'alerts',
             'id',
             'CASCADE',
             'CASCADE'
@@ -81,16 +81,16 @@ class m190813_195504_Keywords extends Migration
         // creates index for column `dictionaryId`
         $this->createIndex(
             'idx-dictionary-dictionaries',
-            'Keywords',
+            'keywords',
             'dictionaryId'
         );
 
         // add foreign key for table `dictionaries`
         $this->addForeignKey(
             'fk-dictionary-dictionaries',
-            'Keywords',
+            'keywords',
             'dictionaryId',
-            'Dictionaries',
+            'dictionaries',
             'id',
             'CASCADE',
             'CASCADE'
@@ -102,7 +102,7 @@ class m190813_195504_Keywords extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%Keywords}}');
+        $this->dropTable('{{%keywords}}');
     }
 
 }

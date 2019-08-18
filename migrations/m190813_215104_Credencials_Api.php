@@ -3,7 +3,7 @@
 use yii\db\Migration;
 
 /**
- * Class m190813_215104_Credencials_Api
+ * Class m190813_215104_credencials_api
  */
 class m190813_215104_Credencials_Api extends Migration
 {
@@ -17,7 +17,7 @@ class m190813_215104_Credencials_Api extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Credencials_Api}}',[
+        $this->createTable('{{%credencials_api}}',[
             'id'              => $this->primaryKey(),
             'userId'          => $this->integer()->notNull(),
             'resourceId'      => $this->integer()->notNull(),
@@ -34,7 +34,7 @@ class m190813_215104_Credencials_Api extends Migration
 
         ],$tableOptions);
 
-        $this->insert('{{%Credencials_Api}}', [
+        $this->insert('{{%credencials_api}}', [
             'userId'                => 1,
             'resourceId'            => 1,
             'name'                  => 'admin-twitter',
@@ -50,7 +50,7 @@ class m190813_215104_Credencials_Api extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Credencials_Api}}', [
+        $this->insert('{{%credencials_api}}', [
             'userId'                => 1,
             'resourceId'            => 2,
             'name'                  => 'admin-livechat',
@@ -66,7 +66,7 @@ class m190813_215104_Credencials_Api extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Credencials_Api}}', [
+        $this->insert('{{%credencials_api}}', [
             'userId'                => 1,
             'resourceId'            => 3,
             'name'                  => 'admin-livechatConversations',
@@ -85,15 +85,15 @@ class m190813_215104_Credencials_Api extends Migration
          // creates index for column `userId`
         $this->createIndex(
             'idx-credencial_api_userId',
-            'Credencials_Api',
+            'credencials_api',
             'userId'
         );
 
         $this->addForeignKey(
             'credencial_api_userId',
-            'Credencials_Api',
+            'credencials_api',
             'userId',
-            'Users',
+            'users',
             'id',
             'CASCADE',
             'CASCADE'
@@ -103,15 +103,15 @@ class m190813_215104_Credencials_Api extends Migration
          // creates index for column `resourceId`
         $this->createIndex(
             'idx-credencial_api_resourceId',
-            'Credencials_Api',
+            'credencials_api',
             'resourceId'
         );
 
         $this->addForeignKey(
             'credencial_api_resourceId',
-            'Credencials_Api',
+            'credencials_api',
             'resourceId',
-            'Resources',
+            'resources',
             'id',
             'CASCADE',
             'CASCADE'
@@ -123,7 +123,7 @@ class m190813_215104_Credencials_Api extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%AlertConfig_Sources}}');
+        $this->dropTable('{{%credencials_api}}');
     }
 
 }

@@ -18,7 +18,7 @@ class m190813_203806_Alert_Config extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Alert_Config}}', [
+        $this->createTable('{{%alert_config}}', [
             'id'                    => $this->primaryKey(),
             'alertId'               => $this->integer(11)->notNull(),
             'product_description'   => $this->string(40)->notNull(),
@@ -33,7 +33,7 @@ class m190813_203806_Alert_Config extends Migration
 
         ], $tableOptions);
 
-        $this->insert('{{%Alert_Config}}', [
+        $this->insert('{{%alert_config}}', [
             'alertId'               => 1,
             'product_description'   => 'tecnology,Home entretaiment',
             'competitors'           => 'Sansung,Iphone,Hyundai',
@@ -48,17 +48,17 @@ class m190813_203806_Alert_Config extends Migration
 
          // creates index for column `alertId`
         $this->createIndex(
-            'idx-Alert_Config-alertId',
-            'Alert_Config',
+            'idx-alert_config-alertId',
+            'alert_config',
             'alertId'
         );
 
         // add foreign key for table `dictionaries`
         $this->addForeignKey(
-            'fk-Alert_Config-alertId',
-            'Alert_Config',
+            'fk-alert_config-alertId',
+            'alert_config',
             'alertId',
-            'Alerts',
+            'alerts',
             'id',
             'CASCADE',
             'CASCADE'
@@ -70,6 +70,6 @@ class m190813_203806_Alert_Config extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%Alert_Config}}');
+        $this->dropTable('{{%alert_Config}}');
     }
 }

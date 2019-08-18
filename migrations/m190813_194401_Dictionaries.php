@@ -18,7 +18,7 @@ class m190813_194401_Dictionaries extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Dictionaries}}', [
+        $this->createTable('{{%dictionaries}}', [
             'id'                    => $this->primaryKey(),
             'name'                  => $this->string(45)->notNull(),
             'color'                 => $this->string(45)->notNull(),
@@ -29,7 +29,7 @@ class m190813_194401_Dictionaries extends Migration
 
         ], $tableOptions);
 
-        $this->insert('{{%Dictionaries}}', [
+        $this->insert('{{%dictionaries}}', [
             'name'                  => 'Positives Words',
             'color'                 => '#55e6c9',
             'createdAt'             => '1488153462',
@@ -38,7 +38,7 @@ class m190813_194401_Dictionaries extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Dictionaries}}', [
+        $this->insert('{{%dictionaries}}', [
             'name'                  => 'Negatives Words',
             'color'                 => '#f7978f',
             'createdAt'             => '1488153462',
@@ -47,7 +47,7 @@ class m190813_194401_Dictionaries extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Dictionaries}}', [
+        $this->insert('{{%dictionaries}}', [
             'name'                  => 'Neutral Words',
             'color'                 => '#f27979',
             'createdAt'             => '1488153462',
@@ -63,7 +63,7 @@ class m190813_194401_Dictionaries extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%Dictionaries}}');
+        $this->dropTable('{{%dictionaries}}');
     }
 
 }

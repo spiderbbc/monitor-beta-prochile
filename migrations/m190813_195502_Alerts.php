@@ -18,7 +18,7 @@ class m190813_195502_Alerts extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Alerts}}',[
+        $this->createTable('{{%alerts}}',[
             'id'              => $this->primaryKey(),
             'userId'          => $this->integer()->notNull(),
             'uudi'            => $this->string()->notNull(),
@@ -32,7 +32,7 @@ class m190813_195502_Alerts extends Migration
 
         ],$tableOptions);
 
-        $this->insert('{{%Alerts}}', [
+        $this->insert('{{%alerts}}', [
             'userId'          => 1,
             'name'            => 'X Boom Lg',
             'uudi'            => 'Boom_1559312912',
@@ -46,16 +46,16 @@ class m190813_195502_Alerts extends Migration
 
          // creates index for column `userId`
         $this->createIndex(
-            'idx-useralert_userId_Alerts',
-            'Alerts',
+            'idx-useralert_userId_alerts',
+            'alerts',
             'userId'
         );
 
         $this->addForeignKey(
-            'useralert_userId_Alerts',
-            'Alerts',
+            'useralert_userId_alerts',
+            'alerts',
             'userId',
-            'Users',
+            'users',
             'id',
             'CASCADE',
             'CASCADE'
@@ -68,6 +68,6 @@ class m190813_195502_Alerts extends Migration
      */
     public function down()
     {
-        $this->dropTable('{{%Alerts}}');
+        $this->dropTable('{{%alerts}}');
     }
 }

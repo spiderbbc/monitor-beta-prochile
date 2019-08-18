@@ -17,7 +17,7 @@ class m190813_205341_AlertConfig_Sources extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%AlertConfig_Sources}}',[
+        $this->createTable('{{%alertConfig_sources}}',[
             'id'              => $this->primaryKey(),
             'alertconfigId'   => $this->integer()->notNull(),
             'alertResourceId' => $this->integer()->notNull(),
@@ -32,16 +32,16 @@ class m190813_205341_AlertConfig_Sources extends Migration
         // creates index for column `dictionaryId`
         $this->createIndex(
             'idx-alert_config_sources-alert_config',
-            'AlertConfig_Sources',
+            'alertConfig_sources',
             'alertconfigId'
         );
 
         // add foreign key for table `dictionaries`
         $this->addForeignKey(
             'fk-alert_config_sources-alert_config',
-            'AlertConfig_Sources',
+            'alertConfig_sources',
             'alertconfigId',
-            'Alert_Config',
+            'alert_config',
             'id',
             'CASCADE',
             'CASCADE'
@@ -52,16 +52,16 @@ class m190813_205341_AlertConfig_Sources extends Migration
         // creates index for column `dictionaryId`
         $this->createIndex(
             'idx-alert_config_sources-alert_sources',
-            'AlertConfig_Sources',
+            'alertConfig_sources',
             'alertResourceId'
         );
 
         // add foreign key for table `dictionaries`
         $this->addForeignKey(
             'fk-alert_config_sources-alert_sources',
-            'AlertConfig_Sources',
+            'alertConfig_sources',
             'alertResourceId',
-            'Resources',
+            'resources',
             'id',
             'CASCADE',
             'CASCADE'
@@ -73,7 +73,7 @@ class m190813_205341_AlertConfig_Sources extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%AlertConfig_Sources}}');
+        $this->dropTable('{{%alertConfig_sources}}');
     }
 
 }
