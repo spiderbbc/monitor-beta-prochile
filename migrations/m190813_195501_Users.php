@@ -18,7 +18,7 @@ class m190813_195501_Users extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Users}}', [
+        $this->createTable('{{%users}}', [
             'id' => $this->primaryKey(),
             'username' => $this->string()->notNull()->unique(),
             'auth_key' => $this->string(32)->notNull(),
@@ -30,7 +30,7 @@ class m190813_195501_Users extends Migration
             'updated_at' => $this->integer()->notNull(),
         ], $tableOptions);
 
-        $this->insert('{{%Users}}', [
+        $this->insert('{{%users}}', [
             'username'      => 'admin',
             'auth_key'      => 'tPwo4kDpN7JAz8Rrm9EwNAQ7q8F1p7FN',
             // deathnote
@@ -47,7 +47,7 @@ class m190813_195501_Users extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%Users}}');
+        $this->dropTable('{{%users}}');
     }
 
     /*

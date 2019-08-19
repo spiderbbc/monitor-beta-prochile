@@ -18,7 +18,7 @@ class m190813_202212_Resources extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Resources}}', [
+        $this->createTable('{{%resources}}', [
             'id'                    => $this->primaryKey(),
             'name'                  => $this->string(40)->notNull(),
             'createdAt'             => $this->integer(),
@@ -28,7 +28,7 @@ class m190813_202212_Resources extends Migration
 
         ], $tableOptions);
 
-        $this->insert('{{%Resources}}', [
+        $this->insert('{{%resources}}', [
             'name'                  => 'Twitter',
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -36,7 +36,7 @@ class m190813_202212_Resources extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Resources}}', [
+        $this->insert('{{%resources}}', [
             'name'                  => 'Live Chat',
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -44,7 +44,7 @@ class m190813_202212_Resources extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Resources}}', [
+        $this->insert('{{%resources}}', [
             'name'                  => 'Live Chat Conversations',
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -52,7 +52,7 @@ class m190813_202212_Resources extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Resources}}', [
+        $this->insert('{{%resources}}', [
             'name'                  => 'Web page',
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -67,7 +67,7 @@ class m190813_202212_Resources extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%Resources}}');
+        $this->dropTable('{{%resources}}');
     }
 
 }

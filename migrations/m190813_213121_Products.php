@@ -18,7 +18,7 @@ class m190813_213121_Products extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Products}}', [
+        $this->createTable('{{%products}}', [
             'id'                => $this->primaryKey(),
             'categoryId' => $this->integer(11)->notNull(),
             'name'              => $this->string(),
@@ -30,7 +30,7 @@ class m190813_213121_Products extends Migration
 
         ], $tableOptions);
 
-        $this->insert('{{%Products}}', [
+        $this->insert('{{%products}}', [
             'categoryId'            => 1,
             'name'                  => 'Smartphone FullVision 6,1" QHD',
             'status'                => 1,
@@ -40,7 +40,7 @@ class m190813_213121_Products extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Products}}', [
+        $this->insert('{{%products}}', [
             'categoryId'            => 2,
             'name'                  => 'SMART TV LED 32" HD 720p',
             'status'                => 1,
@@ -54,7 +54,7 @@ class m190813_213121_Products extends Migration
         // creates index for column `categoryId`
         $this->createIndex(
             'idx-products-category_categoryId',
-            'Products',
+            'products',
             'categoryId'
         );
 
@@ -62,9 +62,9 @@ class m190813_213121_Products extends Migration
         // add foreign key for table `categoryId`
         $this->addForeignKey(
             'fk-products-category_categoryId',
-            'Products',
+            'products',
             'categoryId',
-            'Product_Categories',
+            'product_categories',
             'id',
             'CASCADE',
             'CASCADE'
@@ -76,7 +76,7 @@ class m190813_213121_Products extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%Products}}');
+        $this->dropTable('{{%products}}');
     }
 
 }

@@ -18,7 +18,7 @@ class m190813_213136_Products_Models extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Products_Models}}', [
+        $this->createTable('{{%products_models}}', [
             'id'                => $this->primaryKey(),
             'productId'         => $this->integer(11)->notNull(),
             'name'              => $this->string(),
@@ -30,7 +30,7 @@ class m190813_213136_Products_Models extends Migration
 
         ], $tableOptions);
 
-        $this->insert('{{%Products_Models}}', [
+        $this->insert('{{%products_models}}', [
             'productId'            => 1,
             'name'                  => 'LG G7 ThinQ (G710 / New Aurora Black',
             'status'                => 1,
@@ -40,7 +40,7 @@ class m190813_213136_Products_Models extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Products_Models}}', [
+        $this->insert('{{%products_models}}', [
             'productId'             => 2,
             'name'                  => 'LG 32LK540BPSA',
             'status'                => 1,
@@ -53,18 +53,18 @@ class m190813_213136_Products_Models extends Migration
 
         // creates index for column `productId`
         $this->createIndex(
-            'idx-Products_Models-category_productId',
-            'Products_Models',
+            'idx-products_models-category_productId',
+            'products_models',
             'productId'
         );
 
         // relation
         // add foreign key for table `productId`
         $this->addForeignKey(
-            'fk-Products_Models-category_productId',
-            'Products_Models',
+            'fk-products_models-category_productId',
+            'products_models',
             'productId',
-            'Products',
+            'products',
             'id',
             'CASCADE',
             'CASCADE'
@@ -76,7 +76,7 @@ class m190813_213136_Products_Models extends Migration
      */
     public function safeDown()
     {
-       $this->dropTable('{{%Products_Models}}');
+       $this->dropTable('{{%products_models}}');
     }
 
 }

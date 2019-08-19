@@ -18,7 +18,7 @@ class m190813_211708_Products_Family extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%Products_Family}}', [
+        $this->createTable('{{%products_family}}', [
             'id'                => $this->primaryKey(),
             'seriesId'          => $this->integer(11)->notNull(),
             'name'              => $this->string(),
@@ -30,7 +30,7 @@ class m190813_211708_Products_Family extends Migration
 
         ], $tableOptions);
 
-        $this->insert('{{%Products_Family}}', [
+        $this->insert('{{%products_family}}', [
             'seriesId'              => 1,
             'name'                  => 'Smartphones',
             'status'                => 1,
@@ -40,7 +40,7 @@ class m190813_211708_Products_Family extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%Products_Family}}', [
+        $this->insert('{{%products_family}}', [
             'seriesId'              => 2,
             'name'                  => 'Televisores',
             'status'                => 1,
@@ -53,7 +53,7 @@ class m190813_211708_Products_Family extends Migration
          // creates index for column `seriesId`
         $this->createIndex(
             'idx-products_family-seriesId',
-            'Products_Family',
+            'products_family',
             'seriesId'
         );
 
@@ -61,9 +61,9 @@ class m190813_211708_Products_Family extends Migration
         // add foreign key for table `seriesId`
         $this->addForeignKey(
             'fk-products_family-seriesId',
-            'Products_Family',
+            'products_family',
             'seriesId',
-            'Products_Series',
+            'products_series',
             'id',
             'CASCADE',
             'CASCADE'
@@ -75,6 +75,6 @@ class m190813_211708_Products_Family extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%Products_Family}}');
+        $this->dropTable('{{%products_Family}}');
     }
 }
