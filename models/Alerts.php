@@ -77,7 +77,7 @@ class Alerts extends \yii\db\ActiveRecord
         $expression = new \yii\db\Expression('NOW()');
         $now = (new \yii\db\Query)->select($expression)->scalar();
         $timestamp = time($now);
-        $alertConfig = AlertConfig::find()->where(['>=','end_date',$timestamp])->with(['alert' => function($query){
+        $alertConfig = AlertConfig::find()->where(['<=','start_date',$timestamp])->with(['alert' => function($query){
             $query->andWhere([
                 'and',
                 ['=','status',self::STATUS_ACTIVE],
