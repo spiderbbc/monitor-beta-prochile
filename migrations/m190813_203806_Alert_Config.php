@@ -45,21 +45,6 @@ class m190813_203806_Alert_Config extends Migration
             'createdBy'             => '1',
             'updatedBy'             => '1',
         ]);
-<<<<<<< HEAD
-         // creates index for column `alertId`
-        $this->createIndex(
-            'idx-alert_alertId_Alerts',
-            'Alert_Config',
-            'alertId'
-        );
-
-        $this->addForeignKey(
-            'alert_alertId_Alerts',
-            'Alerts',
-            'id',
-            'Alert_Config',
-            'alertId',
-=======
 
          // creates index for column `alertId`
         $this->createIndex(
@@ -75,7 +60,6 @@ class m190813_203806_Alert_Config extends Migration
             'alertId',
             'alerts',
             'id',
->>>>>>> migrations
             'CASCADE',
             'CASCADE'
         );
