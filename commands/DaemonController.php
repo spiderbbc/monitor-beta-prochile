@@ -32,25 +32,8 @@ class DaemonController extends Controller
     public function actionAlert(){
         $alert = new Alerts();
         $alertsConfig = $alert->getBringAllAlertsToRun();
-
-
-        for($a = 0; $a < sizeOf($alertsConfig); $a++){
-            if(!is_null($alertsConfig[$a]['resources'])){
-                echo $alertsConfig[$a]['alert']['name'] . "\n";
-                for($r = 0; $r < sizeOf($alertsConfig[$a]['resources']); $r++){
-                    $resource = $alertsConfig[$a]['resources'][$r];
-                    
-                    switch($resource){
-                        case "Twitter":
-                            return $this->twitterApi($alertsConfig[$a]);
-                            break;
-                        case "Live Chat Conversations": 
-                            return $this->livechatConversations($alertsConfig[$a]);
-                            break;   
-                    }
-                }
-            }
-        }
+        var_dump($alertsConfig);
+        
 
     }
 

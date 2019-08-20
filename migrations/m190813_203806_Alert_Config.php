@@ -19,31 +19,33 @@ class m190813_203806_Alert_Config extends Migration
         }
 
         $this->createTable('{{%alert_config}}', [
-            'id'                    => $this->primaryKey(),
-            'alertId'               => $this->integer(11)->notNull()->unique(),
-            'product_description'   => $this->string(40)->notNull(),
-            'competitors'           => $this->string(40)->notNull(),
-            'countries'             => $this->string(40)->notNull(),
-            'start_date'            => $this->integer(),
-            'end_date'              => $this->integer(),
-            'createdAt'             => $this->integer(),
-            'updatedAt'             => $this->integer(),
-            'createdBy'             => $this->integer(),
-            'updatedBy'             => $this->integer(),
+            'id'                  => $this->primaryKey(),
+            'alertId'             => $this->integer(11)->notNull()->unique(),
+            'uudi'                => $this->string()->notNull(),
+            'product_description' => $this->string(40)->notNull(),
+            'competitors'         => $this->string(40)->notNull(),
+            'countries'           => $this->string(40)->notNull(),
+            'start_date'          => $this->integer(),
+            'end_date'            => $this->integer(),
+            'createdAt'           => $this->integer(),
+            'updatedAt'           => $this->integer(),
+            'createdBy'           => $this->integer(),
+            'updatedBy'           => $this->integer(),
 
         ], $tableOptions);
 
         $this->insert('{{%alert_config}}', [
-            'alertId'               => 1,
-            'product_description'   => 'tecnology,Home entretaiment',
-            'competitors'           => 'Sansung,Iphone,Hyundai',
-            'countries'             => 'Chile',
-            'start_date'            => '1488153462',
-            'end_date'              => '1488153462',
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
+            'alertId'             => 1,
+            'uudi'                => 'Boom_1559312912',
+            'product_description' => 'tecnology,Home entretaiment',
+            'competitors'         => 'Sansung,Iphone,Hyundai',
+            'countries'           => 'Chile',
+            'start_date'          => '1488153462',
+            'end_date'            => '1488153462',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
         ]);
 
          // creates index for column `alertId`

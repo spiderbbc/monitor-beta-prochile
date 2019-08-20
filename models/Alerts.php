@@ -77,25 +77,32 @@ class Alerts extends \yii\db\ActiveRecord
         $expression = new \yii\db\Expression('NOW()');
         $now = (new \yii\db\Query)->select($expression)->scalar();
         $timestamp = time($now);
-        $alertConfig = AlertConfig::find()->where(['<=','start_date',$timestamp])->with(['alert' => function($query){
+        
+        $alerts = $this->find()->where([
+            'status' => self::STATUS_ACTIVE,
+        ])->with(['config' => function($query) use($timestamp) {
             $query->andWhere([
                 'and',
-                ['=','status',self::STATUS_ACTIVE],
-                ['=','condicion',self::CONDITION_ACTIVE],
-            ]);
-        }])->asArray()->all();
+                    ['<=', 'start_date', $timestamp],
+                ]);
+            $query->with(['configSources.alertResource']);
+            
 
-        $alert = [];
-        for($a = 0; $a < sizeOf($alertConfig); $a++){
-            if(!is_null($alertConfig[$a]['alert'])){
-                $id = $alertConfig[$a]['id'];
-                $alert_config_sources = AlertconfigSources::find()->where(['alertconfigId' => $id])->with(['alertResource'])->asArray()->all();
-                $resources = ArrayHelper::getColumn($alert_config_sources,'alertResource.name');
-                $alertConfig[$a]['resources'] = $resources;
+        },
+        'alertsMentions' => function($query) {
+            $query->andWhere(['condition' => 'ACTIVE']);
+        },
+        ])->asArray()->all();
+
+
+        $alertsConfig = [];
+        for($a = 0; $a < sizeOf($alerts); $a++){
+            if((!empty($alerts[$a]['config'])) && (!empty($alerts[$a]['alertsMentions']))){
+                array_push($alertsConfig, $alerts[$a]);
             }
         }
         
-       return $alertConfig;
+       return $alertsConfig;
     }
 
 
@@ -122,4 +129,13 @@ class Alerts extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Keywords::className(), ['alertId' => 'id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAlertsMentions()
+    {
+        return $this->hasMany(AlertsMencions::className(), ['alertId' => 'id']);
+    }
+
 }

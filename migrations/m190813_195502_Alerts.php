@@ -21,7 +21,6 @@ class m190813_195502_Alerts extends Migration
         $this->createTable('{{%alerts}}',[
             'id'              => $this->primaryKey(),
             'userId'          => $this->integer()->notNull(),
-            'uudi'            => $this->string()->notNull(),
             'name'            => $this->string(),
             'status'          => $this->smallInteger(1)->defaultValue(1),
             'createdAt'       => $this->integer(),
@@ -34,7 +33,6 @@ class m190813_195502_Alerts extends Migration
         $this->insert('{{%alerts}}', [
             'userId'          => 1,
             'name'            => 'X Boom Lg',
-            'uudi'            => 'Boom_1559312912',
             'status'          => 1,
             'createdAt'       => 1559312912,
             'updatedAt'       => 1559312912,
