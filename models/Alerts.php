@@ -71,13 +71,17 @@ class Alerts extends \yii\db\ActiveRecord
         ];
     }
 
-
+    /**
+     * [getBringAllAlertsToRun get all the alerts with resources, mentions,products only use to console actions]
+     * @return [array] [if not alerts with condition return a empty array]
+     */
     public function getBringAllAlertsToRun(){
 
+        // get time
         $expression = new \yii\db\Expression('NOW()');
         $now = (new \yii\db\Query)->select($expression)->scalar();
         $timestamp = time($now);
-        
+        // get all alert with relation config with the condicion start_date less or equals to $timestamp
         $alerts = $this->find()->where([
             'status' => self::STATUS_ACTIVE,
         ])->with(['config' => function($query) use($timestamp) {
@@ -94,11 +98,23 @@ class Alerts extends \yii\db\ActiveRecord
         },
         ])->asArray()->all();
 
-
         $alertsConfig = [];
+        // loop searching alert with mentions relation and config relation
         for($a = 0; $a < sizeOf($alerts); $a++){
-            if((!empty($alerts[$a]['config'])) && (!empty($alerts[$a]['alertsMentions']))){
+            if((!empty($alerts[$a]['config']))){
                 array_push($alertsConfig, $alerts[$a]);
+            }
+        }
+        //get family/products/models
+        for($c = 0; $c < sizeOf($alertsConfig); $c++){
+            $products_models_alerts = ProductsModelsAlerts::findAll(['alertId' => $alertsConfig[$c]['id']]);
+            if(!empty($products_models_alerts)){
+                $alertsConfig[$c]['products'] = [];
+                foreach($products_models_alerts as $product){
+                    array_push($alertsConfig[$c]['products'], $product->productModel->product->name);
+                    array_push($alertsConfig[$c]['products'], $product->productModel->product->category->name);
+                    array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
+                }
             }
         }
         

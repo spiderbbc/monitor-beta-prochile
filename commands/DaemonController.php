@@ -2,11 +2,12 @@
 
 namespace app\commands;
 
-use yii\console\Controller;
 use yii\console\ExitCode;
+use yii\console\Controller;
+use Yii\helpers\ArrayHelper;
 
 use app\models\Alerts;
-use Yii\helpers\ArrayHelper;
+use app\models\api\BaseApi;
 
 /**
  * This command echoes the first argument that you have entered.
@@ -32,9 +33,12 @@ class DaemonController extends Controller
     public function actionAlert(){
         $alert = new Alerts();
         $alertsConfig = $alert->getBringAllAlertsToRun();
-        var_dump($alertsConfig);
+        if(!empty($alertsConfig)){
+           $baseApi = new BaseApi();
+           $api = $baseApi->callResourcesApi($alertsConfig);
+        }
         
-
+        return ExitCode::OK;
     }
 
 
