@@ -28,6 +28,15 @@ class m190813_205341_AlertConfig_Sources extends Migration
 
         ],$tableOptions);
 
+        $this->insert('{{%alertConfig_sources}}', [
+            'alertconfigId'   => 1,
+            'alertResourceId' => 1,
+            'createdAt'       => 1559312912,
+            'updatedAt'       => 1559312912,
+            'createdBy'       => 1,
+            'updatedBy'       => 1,
+        ]);
+
 
         // creates index for column `dictionaryId`
         $this->createIndex(

@@ -10,7 +10,6 @@ use Yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property int $userId
- * @property string $uudi
  * @property string $name
  * @property int $status
  * @property int $condicion
@@ -28,9 +27,6 @@ class Alerts extends \yii\db\ActiveRecord
     const STATUS_ACTIVE    = 1;
     const STATUS_INACTIVE  = 0;
     
-    const CONDITION_WAIT   = 2;
-    const CONDITION_ACTIVE = 1;
-    const CONDITION_FINISH = 0;
     /**
      * {@inheritdoc}
      */
@@ -45,9 +41,9 @@ class Alerts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userId', 'uudi'], 'required'],
-            [['userId', 'status', 'condicion', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
-            [['uudi', 'name'], 'string', 'max' => 255],
+            [['userId'], 'required'],
+            [['userId', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+            [['name'], 'string', 'max' => 255],
             [['userId'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['userId' => 'id']],
         ];
     }
@@ -60,10 +56,8 @@ class Alerts extends \yii\db\ActiveRecord
         return [
             'id'        => Yii::t('app', 'ID'),
             'userId'    => Yii::t('app', 'User ID'),
-            'uudi'      => Yii::t('app', 'Uudi'),
             'name'      => Yii::t('app', 'Name'),
             'status'    => Yii::t('app', 'Status'),
-            'condicion' => Yii::t('app', 'Condicion'),
             'createdAt' => Yii::t('app', 'Created At'),
             'updatedAt' => Yii::t('app', 'Updated At'),
             'createdBy' => Yii::t('app', 'Created By'),
@@ -72,7 +66,7 @@ class Alerts extends \yii\db\ActiveRecord
     }
 
     /**
-     * [getBringAllAlertsToRun get all the alerts with resources, mentions,products only use to console actions]
+     * [getBringAllAlertsToRun get all the alerts with resources,products only use to console actions]
      * @return [array] [if not alerts with condition return a empty array]
      */
     public function getBringAllAlertsToRun(){
@@ -90,30 +84,33 @@ class Alerts extends \yii\db\ActiveRecord
                     ['<=', 'start_date', $timestamp],
                 ]);
             $query->with(['configSources.alertResource']);
-            
-
-        },
-        'alertsMentions' => function($query) {
-            $query->andWhere(['condition' => 'ACTIVE']);
-        },
+        }
         ])->asArray()->all();
 
         $alertsConfig = [];
-        // loop searching alert with mentions relation and config relation
-        for($a = 0; $a < sizeOf($alerts); $a++){
-            if((!empty($alerts[$a]['config']))){
-                array_push($alertsConfig, $alerts[$a]);
-            }
-        }
-        //get family/products/models
-        for($c = 0; $c < sizeOf($alertsConfig); $c++){
-            $products_models_alerts = ProductsModelsAlerts::findAll(['alertId' => $alertsConfig[$c]['id']]);
-            if(!empty($products_models_alerts)){
-                $alertsConfig[$c]['products'] = [];
-                foreach($products_models_alerts as $product){
-                    array_push($alertsConfig[$c]['products'], $product->productModel->product->name);
-                    array_push($alertsConfig[$c]['products'], $product->productModel->product->category->name);
-                    array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
+        // there is alert in the model
+        if(!empty($alerts)){
+            // loop searching alert with mentions relation and config relation
+            for($a = 0; $a < sizeOf($alerts); $a++){
+                if((!empty($alerts[$a]['config']))){
+                    // reduce configSources.alertResource
+                    for($s = 0; $s < sizeOf($alerts[$a]['config']['configSources']); $s ++){
+                        $alertResource = ArrayHelper::getValue($alerts[$a]['config']['configSources'][$s], 'alertResource.name');
+                        $alerts[$a]['config']['configSources'][$s] = $alertResource;
+                    } // end for $alerts[$a]['config']['configSources']
+                    array_push($alertsConfig, $alerts[$a]);
+                } // end if not empty
+            } // end loop alerts config
+            //get family/products/models
+            for($c = 0; $c < sizeOf($alertsConfig); $c++){
+                $products_models_alerts = ProductsModelsAlerts::findAll(['alertId' => $alertsConfig[$c]['id']]);
+                if(!empty($products_models_alerts)){
+                    $alertsConfig[$c]['products'] = [];
+                    foreach($products_models_alerts as $product){
+                        array_push($alertsConfig[$c]['products'], $product->productModel->product->name);
+                        array_push($alertsConfig[$c]['products'], $product->productModel->product->category->name);
+                        array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
+                    }
                 }
             }
         }

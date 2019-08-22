@@ -18,30 +18,34 @@ class m190813_203507_Alerts_Mencions extends Migration
         }
 
         $this->createTable('{{%alerts_mencions}}',[
-            'id'          => $this->primaryKey(),
-            'alertId'     => $this->integer()->notNull(),
-            'resourcesId' => $this->integer()->notNull(),
-            'condition'   => $this->string()->notNull()->defaultValue('ACTIVE'),
-            'type'        => $this->string(),
-            'product_obj' => $this->json(),
-            'createdAt'   => $this->integer(),
-            'updatedAt'   => $this->integer(),
-            'createdBy'   => $this->integer(),
-            'updatedBy'   => $this->integer(),
+            'id'            => $this->primaryKey(),
+            'alertId'       => $this->integer()->notNull(),
+            'resourcesId'   => $this->integer()->notNull(),
+            'condition'     => $this->string()->notNull()->defaultValue('ACTIVE'),
+            'type'          => $this->string(),
+            'term_searched' => $this->string(),
+            'date_searched' => $this->integer(),
+            'max_id'        => $this->bigInteger(64)->defaultValue(0),
+            'createdAt'     => $this->integer(),
+            'updatedAt'     => $this->integer(),
+            'createdBy'     => $this->integer(),
+            'updatedBy'     => $this->integer(),
 
         ],$tableOptions);
 
-        $this->insert('{{%alerts_mencions}}', [
-            'alertId'     => 1,
-            'resourcesId' => 1,
+        /*$this->insert('{{%alerts_mencions}}', [
+            'alertId'       => 1,
+            'resourcesId'   => 1,
             //'condition'   => 'ACTIVE',
-            'type'        => 'tweet',
-            'product_obj' => "{'id': 1, 'table_name': 'categories','name': 'OLED'}",
-            'createdAt'   => 1559312912,
-            'updatedAt'   => 1559312912,
-            'createdBy'   => 1,
-            'updatedBy'   => 1,
-        ]);
+            'type'          => 'tweet',
+            'term_searched' => "FullVision",
+            'date_searched' => 0,
+           // 'max_id'        => 1163482843902705665,
+            'createdAt'     => 1559312912,
+            'updatedAt'     => 1559312912,
+            'createdBy'     => 1,
+            'updatedBy'     => 1,
+        ]);*/
 
         // creates index for column `alertId`
         $this->createIndex(

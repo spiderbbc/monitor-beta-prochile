@@ -20,7 +20,7 @@ use yii\helpers\ArrayHelper;
 class BaseApi extends Model {
 
 	public $alerts;
-	public $limit;
+	public $limit = 0;
 	public $data;
 
 	public $className = [
@@ -31,21 +31,32 @@ class BaseApi extends Model {
 	];
 
 	public function callResourcesApi($alerts = []){
-		for($a = 0; $a < sizeOf($alerts); $a++){
-			for($c = 0; $c < sizeOf($alerts[$a]['config']['configSources']); $c++){
-				$name = $alerts[$a]['config']['configSources'][$c]['alertResource']['name'];
-				
-				if(ArrayHelper::keyExists($name,$this->className, false)){
-					$className = $this->className[$name];
-					$modelApi = $this->{$className}($alerts[$a]);
+		
+		//count product for get limit
+		$this->limit = $this->countAllTerms($alerts);
+
+		if($this->limit){
+			for($a = 0; $a < sizeOf($alerts); $a++){
+				for($c = 0; $c < sizeOf($alerts[$a]['config']['configSources']); $c++){
+					$name = $alerts[$a]['config']['configSources'][$c];
+					
+					if(ArrayHelper::keyExists($name,$this->className, false)){
+						$className = $this->className[$name];
+						$modelApi = $this->{$className}($alerts[$a]);
+					}
 				}
 			}
 		}
 	}
 
-	public function twitterApi($alerts = []){
-		$model = new \app\models\api\TwitterApi;
-		echo "twitterApi". "\n";
+	public function twitterApi($alert = []){
+		$tweets = new \app\models\api\TwitterApi($this->limit);
+		$alert_prepared = $tweets->prepare($alert);
+		if($alert_prepared){
+			$data = $tweets->call($alert_prepared);
+		}
+
+		//echo "twitterApi". "\n";
 	}
 
 	public function liveChat($alerts = []){
@@ -58,6 +69,16 @@ class BaseApi extends Model {
 
 	public function webpage($alerts = []){
 		echo "webpage". "\n";
+	}
+
+	public function countAllTerms($alerts = []){
+		$count = 0;
+		for($a = 0; $a < sizeOf($alerts); $a++){
+			if(ArrayHelper::keyExists('products', $alerts[$a], false)){
+				$count += count($alerts[$a]['products']);
+			}
+		}
+		return $count;
 	}
 
 

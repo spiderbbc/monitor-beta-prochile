@@ -123,6 +123,7 @@ class SiteController extends Controller
      */
     public function actionAbout()
     {
+        $hash = Yii::$app->security->generatePasswordHash("");
         return $this->render('about');
     }
 }

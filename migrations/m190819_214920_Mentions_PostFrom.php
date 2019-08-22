@@ -29,7 +29,7 @@ class m190819_214920_Mentions_PostFrom extends Migration
 
         ],$tableOptions);
 
-        $this->insert('{{%mentions_postFrom}}', [
+        /*$this->insert('{{%mentions_postFrom}}', [
             'alert_mentionId' => 1,
             'user_object'     => "{'id': 1, 'name': 'Eduardo','username': '@spiderbbc'}",
             'post_from'       => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae ad, recusandae consectetur repellat.',
@@ -37,7 +37,7 @@ class m190819_214920_Mentions_PostFrom extends Migration
             'updatedAt'       => 1559312912,
             'createdBy'       => 1,
             'updatedBy'       => 1,
-        ]);
+        ]);*/
 
         // creates index for column `alert_mentionId`
         $this->createIndex(

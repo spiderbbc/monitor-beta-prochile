@@ -33,21 +33,12 @@ class DaemonController extends Controller
     public function actionAlert(){
         $alert = new Alerts();
         $alertsConfig = $alert->getBringAllAlertsToRun();
+        
         if(!empty($alertsConfig)){
            $baseApi = new BaseApi();
            $api = $baseApi->callResourcesApi($alertsConfig);
         }
         
-        return ExitCode::OK;
-    }
-
-
-    public function twitterApi($alert){
-       return ExitCode::OK;
-    }
-
-
-    public function livechatConversations($alert){
         return ExitCode::OK;
     }
 }

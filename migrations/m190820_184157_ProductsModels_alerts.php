@@ -27,6 +27,24 @@ class m190820_184157_ProductsModels_alerts extends Migration
             'updatedBy'       => $this->integer(),
         ]);
 
+        $this->insert('{{%products_models_alerts}}', [
+            'alertId'         => 1,
+            'product_modelId' => 1,
+            'createdAt'       => '1488153462',
+            'updatedAt'       => '1488153462',
+            'createdBy'       => '1',
+            'updatedBy'       => '1',
+        ]);
+
+        $this->insert('{{%products_models_alerts}}', [
+            'alertId'         => 1,
+            'product_modelId' => 2,
+            'createdAt'       => '1488153462',
+            'updatedAt'       => '1488153462',
+            'createdBy'       => '1',
+            'updatedBy'       => '1',
+        ]);
+
 
         // creates index for column `idAlert`
         $this->createIndex(

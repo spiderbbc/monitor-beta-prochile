@@ -32,7 +32,7 @@ class m190813_213121_Products extends Migration
 
         $this->insert('{{%products}}', [
             'categoryId'            => 1,
-            'name'                  => 'Smartphone FullVision 6,1" QHD',
+            'name'                  => 'Smartphone FullVision 6,1 QHD',
             'status'                => 1,
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -42,7 +42,7 @@ class m190813_213121_Products extends Migration
 
         $this->insert('{{%products}}', [
             'categoryId'            => 2,
-            'name'                  => 'SMART TV LED 32" HD 720p',
+            'name'                  => 'SMART TV LED 32 HD 720p',
             'status'                => 1,
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',

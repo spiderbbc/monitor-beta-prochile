@@ -24,6 +24,10 @@ use Yii;
  */
 class AlertsMencions extends \yii\db\ActiveRecord
 {
+
+    const CONDITION_WAIT   = "WAIT";
+    const CONDITION_ACTIVE = "ACTIVE";
+    const CONDITION_FINISH = "FINISH";
     /**
      * {@inheritdoc}
      */
