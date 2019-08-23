@@ -35,8 +35,8 @@ class TwitterApi extends Model {
 		'lang' => 'es',
 		'result_type' => 'recent',
 		'count' => 100,
-	//	'q' => '',
-	//	'until' => '',
+	//	'q'      => '',
+	//	'until'  => '',
 	//	'max_id' => '',
 
 	];
@@ -49,13 +49,11 @@ class TwitterApi extends Model {
 			$this->alertId    = $alert['id'];
 			$this->start_date = $alert['config']['start_date'];
 			$this->end_date   = $alert['config']['end_date'];
-			/*$products_searched = $this->_getProductSearched($alert['products']);
-			if($products_searched){
-				//$alert['products'] = $products_searched;
-				$products_params = $this->_setParamsbyProduct($products_searched);
-			}*/
-			$params = [];
-			for($p = 0; $p < sizeOf($alert['products']); $p++){
+			// prepare the products
+			$products = $alert['products'];
+			$products_params = $this->setProductsParams($products);
+			
+			/*for($p = 0; $p < sizeOf($alert['products']); $p++){
 				$this->params['q'] = $alert['products'][$p];
 
 				$query  = $this->_getProductSearched($alert['products'][$p]);
@@ -70,9 +68,8 @@ class TwitterApi extends Model {
 				}
 				
 				$params[] = $this->params;
-			}
+			}*/
 
-			var_dump($params);
 		}
 		return false;
 	}	
@@ -80,8 +77,6 @@ class TwitterApi extends Model {
 	public function call($alert = []){
 		
 		$products = $alert['products'];
-
-		//var_dump($products);
 		
 	}
 
@@ -90,20 +85,62 @@ class TwitterApi extends Model {
 		return null;
 	}
 
+
+	public function setProductsParams($products = []){
+		$products_to_searched = [];
+		for($p = 0; $p < sizeOf($products);$p++){
+			$query = (new \yii\db\Query())
+		    ->select(['date_searched', 'max_id','condition'])
+		    ->from('alerts_mencions')
+		    ->where([
+				'alertId'       => $this->alertId,
+				'resourcesId'   => $this->resourcesId,
+				'type'          => 'tweet',
+				'term_searched' => $products[$p],
+		    ])
+		    ->one();
+		    if($query){
+		    	// insert params to the products with condicion active
+		    	if($query['condition'] == AlertsMencions::CONDITION_ACTIVE){ 
+		    		$this->params['q'] = $products[$p];
+		    		$date_searched = $this->_setDate($query['date_searched']);
+					$this->params['until'] = $date_searched;
+					$this->params['max_id'] = $query['max_id'];
+		    		array_push($products_to_searched,$this->params);
+
+		    	} 
+		    }else{
+		    	$this->params['q'] = $products[$p];
+		    	$this->params['max_id'] = '';
+				$date_searched = $this->_setDate($this->start_date);
+				$this->params['until'] = $date_searched;
+		    	array_push($products_to_searched,$this->params);
+		    }
+
+		}
+		return $products_to_searched;
+		
+	}
+
+
 	private function _getProductSearched($product){
 		
 		$products_to_searched = [];
 		$query = (new \yii\db\Query())
-		    ->select(['date_searched', 'max_id'])
+		    ->select(['date_searched', 'max_id','condicion'])
 		    ->from('alerts_mencions')
 		    ->where([
 		    	'alertId' => $this->alertId,
 				'resourcesId' => $this->resourcesId,
-				'condition' => AlertsMencions::CONDITION_ACTIVE,
+				//'condition' => AlertsMencions::CONDITION_ACTIVE,
 				'type' => 'tweet',
 				'term_searched' => $product,
 		    ])
 		    ->one();
+		    if($query){
+		    	if($query['condicion'] == AlertsMencions::CONDITION_FINISH){ return false;} 
+		    }
+
 		return $query;
 	
 	}

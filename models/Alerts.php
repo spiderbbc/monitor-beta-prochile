@@ -82,6 +82,7 @@ class Alerts extends \yii\db\ActiveRecord
             $query->andWhere([
                 'and',
                     ['<=', 'start_date', $timestamp],
+                    ['<=', 'end_date', $timestamp],
                 ]);
             $query->with(['configSources.alertResource']);
         }
