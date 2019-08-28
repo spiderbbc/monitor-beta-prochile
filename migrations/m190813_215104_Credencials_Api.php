@@ -1,5 +1,4 @@
 <?php
-
 use yii\db\Migration;
 
 /**
@@ -17,16 +16,19 @@ class m190813_215104_Credencials_Api extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
+        $data = Yii::$app->params;
+        $secretKey = Yii::$app->params['key'];
+
         $this->createTable('{{%credencials_api}}',[
             'id'              => $this->primaryKey(),
             'userId'          => $this->integer()->notNull(),
             'resourceId'      => $this->integer()->notNull(),
-            'name_app'            => $this->string(45),
-            'api_key'         => $this->string(60),
-            'api_secret_key'  => $this->string(60),
-            'access_secret_token' => $this->string(60),
-            'bearer_token'    => $this->string(60),
-            'apiLogin'        => $this->string(60),
+            'name_app'        => $this->string(45),
+            'api_key'         => $this->string(134),
+            'api_secret_key'  => $this->string(206),
+            'access_secret_token' => $this->string(206),
+            'bearer_token'    => $this->string(305),
+            'apiLogin'        => $this->string(206),
             'createdAt'       => $this->integer(),
             'updatedAt'       => $this->integer(),
             'createdBy'       => $this->integer(),
@@ -38,11 +40,10 @@ class m190813_215104_Credencials_Api extends Migration
             'userId'              => 1,
             'resourceId'          => 1,
             'name_app'            => 'monitor-alfa',
-            'api_key'             => '$2y$13$fGJtSSVFKKUlM69f8RqYDOUsCOvz8KcP26dSfdmwdjTJUmbXCdcKi',
-            'api_secret_key'      => '$2y$13$eg5dtqee0N5r/YLEf3VKOehgMPRGVEMxcXw/3InmB9/arCY.w2QDe',
-            'access_secret_token' => '$2y$13$/xkRzfgFqxTl2fjmdc8gj.0AVOVH84PFm7uOxHotlUo.uNoZQkXvW',
-            'bearer_token'        => '$2y$13$FKKo81BwjKqOY4kXA8I0DegzmbkZnU0J8zfcw82NonIvlUAsWV4rC',
-            'api_secret_key'      => '$2y$13$TVqEY/ZUD/rDf9hIer9S1uIeQof41uBFROOqJlQvThMYpgpWLrdi6',
+            'api_key'             => utf8_encode(Yii::$app->getSecurity()->encryptByPassword($data['twitter']['api_key'], $secretKey)),
+            'api_secret_key'      => utf8_encode(Yii::$app->getSecurity()->encryptByPassword($data['twitter']['api_secret_key'], $secretKey)),
+            'access_secret_token' => utf8_encode(Yii::$app->getSecurity()->encryptByPassword($data['twitter']['access_secret_token'], $secretKey)),
+            'bearer_token'        => '',
             'apiLogin'            => 'encrycpt here',
             'createdAt'           => '1488153462',
             'updatedAt'           => '1488153462',
@@ -51,37 +52,35 @@ class m190813_215104_Credencials_Api extends Migration
         ]);
 
         $this->insert('{{%credencials_api}}', [
-            'userId'                => 1,
-            'resourceId'            => 2,
-            'name_app'                  => 'admin-twitter',
-            'api_key'               => 'encrycpt here',
-            'api_secret_key'        => 'encrycpt here',
-            'access_secret_token'   => 'encrycpt here',
-            'bearer_token'          => 'encrycpt here',
-            'api_secret_key'        => 'encrycpt here',
-            'apiLogin'              => 'encrycpt here',
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
+            'userId'              => 1,
+            'resourceId'          => 2,
+            'name_app'            => 'admin-twitter',
+            'api_key'             => 'encrycpt here',
+            'api_secret_key'      => 'encrycpt here',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
         ]);
 
         
 
         $this->insert('{{%credencials_api}}', [
-            'userId'                => 1,
-            'resourceId'            => 3,
-            'name_app'                  => 'admin-livechatConversations',
-            'api_key'               => 'encrycpt here',
-            'api_secret_key'        => 'encrycpt here',
-            'access_secret_token'   => 'encrycpt here',
-            'bearer_token'          => 'encrycpt here',
-            'api_secret_key'        => 'encrycpt here',
-            'apiLogin'              => 'encrycpt here',
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
+            'userId'              => 1,
+            'resourceId'          => 3,
+            'name_app'            => 'admin-livechatConversations',
+            'api_key'             => 'encrycpt here',
+            'api_secret_key'      => 'encrycpt here',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
         ]);
 
          // creates index for column `userId`

@@ -20,7 +20,7 @@ use yii\helpers\ArrayHelper;
 class BaseApi extends Model {
 
 	public $alerts;
-	public $limit = 0;
+	public $products_count = 0;
 	public $data;
 
 	public $className = [
@@ -32,15 +32,16 @@ class BaseApi extends Model {
 
 	public function callResourcesApi($alerts = []){
 		
-		//count product for get limit
-		$this->limit = $this->countAllTerms($alerts);
+		//count product alert for get products_count
+		$this->products_count = $this->countAllTerms($alerts);
 
-		if($this->limit){
+		if($this->products_count){
 			for($a = 0; $a < sizeOf($alerts); $a++){
 				for($c = 0; $c < sizeOf($alerts[$a]['config']['configSources']); $c++){
 					$name = $alerts[$a]['config']['configSources'][$c];
 					
 					if(ArrayHelper::keyExists($name,$this->className, false)){
+						
 						$className = $this->className[$name];
 						$modelApi = $this->{$className}($alerts[$a]);
 					}
@@ -50,10 +51,10 @@ class BaseApi extends Model {
 	}
 
 	public function twitterApi($alert = []){
-		$tweets = new \app\models\api\TwitterApi($this->limit);
-		$alert_prepared = $tweets->prepare($alert);
-		if($alert_prepared){
-			$data = $tweets->call($alert_prepared);
+		$tweets = new \app\models\api\TwitterApi($this->products_count);
+		$products_params = $tweets->prepare($alert);
+		if($products_params){
+			$data = $tweets->call($products_params);
 		}
 
 		//echo "twitterApi". "\n";
