@@ -4,8 +4,10 @@ namespace app\models\api;
 use Yii;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Console;
 
 
+use \Filebase\Database;
 
 /**
  *
@@ -34,6 +36,7 @@ class BaseApi extends Model {
 		
 		//count product alert for get products_count
 		$this->products_count = $this->countAllTerms($alerts);
+		Console::stdout("count products {$this->products_count}.. \n", Console::BOLD);
 
 		if($this->products_count){
 			for($a = 0; $a < sizeOf($alerts); $a++){
@@ -51,10 +54,29 @@ class BaseApi extends Model {
 	}
 
 	public function twitterApi($alert = []){
+		Console::stdout("calling twitter api class\n", Console::BOLD);
 		$tweets = new \app\models\api\TwitterApi($this->products_count);
 		$products_params = $tweets->prepare($alert);
+
 		if($products_params){
 			$data = $tweets->call($products_params);
+			//$uuid = $alert['config']['uuid'];
+			// path to folder flat archives
+			$s = DIRECTORY_SEPARATOR;
+			$uuid = "Boom_1559312912";
+			$database = new \Filebase\Database([
+			    'dir' => \Yii::getAlias('@data')."{$s}{$uuid}{$s}twitter"
+			]);
+
+			$file = $database->get("{$uuid}");
+
+			foreach ($data as $key => $value) {
+	            $file->$key = $value;
+	        }
+	        $file->save();
+			//var_dump($data);
+
+
 		}
 
 		//echo "twitterApi". "\n";

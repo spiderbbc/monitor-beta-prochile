@@ -27,8 +27,21 @@ class DateHelper
 		$date_obj = new Date($date_formateer);
 		$date_change = $date_obj->add($number);
 		$date = (array) $date_change;
-		
 		return explode(" ",$date['date'])[0];
+    }
+
+    /**
+     * [sub plus a date depending in number]
+     * @param  [string] $date   [date]
+     * @return [string] $number [ej +1 day]
+     */
+    public static function sub($date, $number)
+    {
+        $date_formateer = Yii::$app->formatter->asDatetime($date,'yyyy-MM-dd');
+        $date_obj = new Date($date_formateer);
+        $date_change = $date_obj->sub($number);
+        $date = (array) $date_change;
+        return explode(" ",$date['date'])[0];
     }
 
     /**
@@ -36,7 +49,7 @@ class DateHelper
      * @param  [string] $date_1   [date ej unix date]
      * @return [string] $date_21  [date ej "Sat Aug 24 14:29:51 +0000 2019"]
      */
-    public function diffInDays($date_1,$date_2){
+    public static function diffInDays($date_1,$date_2){
     	
     	$date_format_1 = Yii::$app->formatter->asDatetime($date_1,'yyyy-MM-dd');
 		$date_format_2 = Yii::$app->formatter->asDatetime($date_2,'yyyy-MM-dd');

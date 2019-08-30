@@ -3,7 +3,8 @@
 namespace app\models;
 
 use Yii;
-
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 /**
  * This is the model class for table "alerts_mencions".
  *
@@ -36,6 +37,20 @@ class AlertsMencions extends \yii\db\ActiveRecord
         return 'alerts_mencions';
     }
 
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['createdAt','updatedAt'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updatedAt'],
+                ],
+                'value' => function() { return date('U');  },
+            ],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -43,8 +58,8 @@ class AlertsMencions extends \yii\db\ActiveRecord
     {
         return [
             [['alertId', 'resourcesId'], 'required'],
-            [['alertId', 'resourcesId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
-            [['product_obj'], 'safe'],
+            [['alertId', 'resourcesId','since_id','max_id', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+          //  [['product_obj'], 'safe'],
             [['condition', 'type'], 'string', 'max' => 255],
             [['alertId'], 'exist', 'skipOnError' => true, 'targetClass' => Alerts::className(), 'targetAttribute' => ['alertId' => 'id']],
             [['resourcesId'], 'exist', 'skipOnError' => true, 'targetClass' => Resources::className(), 'targetAttribute' => ['resourcesId' => 'id']],

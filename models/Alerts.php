@@ -82,7 +82,7 @@ class Alerts extends \yii\db\ActiveRecord
             $query->andWhere([
                 'and',
                     ['<=', 'start_date', $timestamp],
-                    ['<=', 'end_date', $timestamp],
+                   // ['>=', 'end_date', $timestamp],
                 ]);
             $query->with(['configSources.alertResource']);
         }
@@ -110,7 +110,7 @@ class Alerts extends \yii\db\ActiveRecord
                     foreach($products_models_alerts as $product){
                         array_push($alertsConfig[$c]['products'], $product->productModel->product->name);
                         array_push($alertsConfig[$c]['products'], $product->productModel->product->category->name);
-                        array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
+                       // array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
                     }
                 }
             }

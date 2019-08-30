@@ -25,6 +25,7 @@ class m190813_203507_Alerts_Mencions extends Migration
             'type'          => $this->string(),
             'term_searched' => $this->string(),
             'date_searched' => $this->integer(),
+            'since_id'      => $this->bigInteger(64)->defaultValue(0),
             'max_id'        => $this->bigInteger(64)->defaultValue(0),
             'createdAt'     => $this->integer(),
             'updatedAt'     => $this->integer(),

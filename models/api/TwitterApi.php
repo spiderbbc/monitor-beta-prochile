@@ -4,6 +4,7 @@ namespace app\models\api;
 use Yii;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Console;
 
 use app\helpers\DateHelper;
 
@@ -70,9 +71,20 @@ class TwitterApi extends Model {
 	 */
 	public function setProductsParams($products = []){
 		$products_to_searched = [];
+		// forming the array params
+		$params = [
+			'lang' => 'es',
+			'result_type' => 'recent',
+			'count' => 100,
+		//	'q'      => '',
+		//	'until'  => '',
+		//	'max_id' => '',
+
+		];
+		
 		for($p = 0; $p < sizeOf($products);$p++){
 			$query = (new \yii\db\Query())
-		    ->select(['date_searched', 'max_id','condition'])
+		    ->select(['since_id','max_id','date_searched','condition'])
 		    ->from('alerts_mencions')
 		    ->where([
 				'alertId'       => $this->alertId,
@@ -88,19 +100,45 @@ class TwitterApi extends Model {
 		    if($query){
 		    	// insert params to the products with condicion active
 		    	if($query['condition'] == AlertsMencions::CONDITION_ACTIVE){ 
-		    		$this->params['q'] = $product_encode;
+		    		// pass to variable
+		    		list('since_id' => $since_id, 'max_id' => $max_id,'date_searched' => $date_searched) = $query;
+		    		
+					$params['q']      = $product_encode;
+					$params['until']  = DateHelper::add($date_searched,'1 day');
+					$params['max_id'] = $max_id;
+
+		    		if(($since_id == 0) && ($max_id == 0)){
+		    			$date_searched = DateHelper::add($query['date_searched'],'1 day');
+						$this->params['until'] = $date_searched;
+		    		}
+
+		    		/*if(($since_id) && ($max_id == 0)){
+						$this->params['since_id'] = $since_id;
+		    		}*/
+
+		    		/*if(($since_id) && ($max_id)){
+		    			$this->params['since_id'] = $since_id;
+		    			$this->params['max_id'] = '';
+		    			$this->params['until'] = '';
+						//$this->params['max_id'] = $max_id;
+		    		}
+*/
+		    		array_push($products_to_searched,$params);
+
+		    		/*$this->params['q'] = $product_encode;
 		    		$date_searched = DateHelper::add($query['date_searched'],'1 day');
 					$this->params['until'] = $date_searched;
 					$this->params['max_id'] = $query['max_id'];
-		    		array_push($products_to_searched,$this->params);
+		    		array_push($products_to_searched,$this->params);*/
 
 		    	} 
 		    }else{
-		    	$this->params['q'] = $product_encode;
-		    	$this->params['max_id'] = '';
 				$date_searched = DateHelper::add($this->start_date,'1 day');
-				$this->params['until'] = $date_searched;
-		    	array_push($products_to_searched,$this->params);
+		    	$params['max_id'] = '';
+		    	//$params['since_id'] = '';
+				$params['until'] = $date_searched;
+		    	$params['q'] = $product_encode;
+		    	array_push($products_to_searched,$params);
 		    }
 
 		}
@@ -114,11 +152,13 @@ class TwitterApi extends Model {
 	 */
 	public function call($products_params = []){
 
+
 		for($p = 0; $p < sizeOf($products_params); $p ++){
 			$product_decode = urldecode($products_params[$p]['q']);
+			Console::stdout("loop in call method {$product_decode}.. \n", Console::BOLD);
 			$this->data[$product_decode] = $this->_getTweets($products_params[$p]);
 		}
-		var_dump($this->data);
+		return $this->data;
 	}
 
 	/**
@@ -131,49 +171,107 @@ class TwitterApi extends Model {
 		$data    =[];
 		$index   = 0;
 		$limit   = 0;
-		$sinceId = 0;
-		$lastId  = 0;
+		$sinceId = null;
+		$max_id  = null;
+
+		$properties = [
+	      'term_searched' => $params['q'],
+	      'type' => 'tweet',
+	    ];
       
         do {
+        	// get data twitter api
         	$data[$index] = $this->search_tweets($params);
-
-        	echo "httpstatus: ".$data[$index]['httpstatus']. "\n";
-        	echo " is ".(empty($data[$index]['statuses'])) ? "empty". "\n": "no empty". "\n";
-        	echo " the query ". $data[$index]['search_metadata']['query']. "\n";
-        	echo "====================". "\n";        	
+        	/*var_dump($params);*/
+      	
         	// is ok 200
-        	if($data[$index]['httpstatus'] == 200 && !empty($data[$index]['statuses'])){
+        	if(($data[$index]['httpstatus'] == 200) && (!empty($data[$index]['statuses']))){
+        		// check limits
         		if(!$this->limit){
         			// set limit
         			$remaining = $data[$index]['rate']['remaining'];
         			$this->limit = $this->_setLimits($remaining);
         		}
-        		//save the sinceId
-        		$sinceId = $data[$index]['statuses'][0]['id'];
-        		// get lastid
-        		if(ArrayHelper::keyExists('next_results', $data[$index]['search_metadata'], true)){
-        			parse_str($data[$index]['search_metadata']['next_results'], $output);
-                    $params['max_id'] = $output['?max_id'];
-                    $lastId = $output['?max_id'];
-        		}
+        		
 
         		// check date validation
-        		/*for($d = 0; $d < sizeOf($data[$index]); $d++) {
-        			echo DateHelper::diffInDays($this);
-        		}*/
+        		$date_searched = DateHelper::sub($params['until'],'1 day');
+        		// looping to see if we go over the search date
+        		$lantern = false;
+        		for($s = 0; $s < sizeOf($data[$index]['statuses']); $s++) {
+        			$firts_date = $data[$index]['statuses'][$s]['created_at'];
+        			$diff = DateHelper::diffInDays($date_searched, $firts_date);
+        			if($diff){
+	    				$now = Yii::$app->formatter->asDate('now', 'yyyy-MM-dd'); 
+	    				$is_today_search = DateHelper::diffInDays($firts_date,$now);
+	    				if($is_today_search){
+	    					$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
+	    					$this->_saveAlertsMencions($properties);
+	    				}else{
+	    					$properties['date_searched'] = Yii::$app->formatter->asTimestamp($params['until']);
+	    					$this->_saveAlertsMencions($properties);
+	    				}
+	    				$lantern = true;
+	    				unset($data[$index]['statuses'][$s]);
+	    				// We have to get out of here
+	    				break;
+	    			}
+        		}
+    			
+    			// get out lantern
+    			if($lantern){break;}
+    			
+    			
+    			
         		
+        		// get next_results
+        		if(ArrayHelper::keyExists('next_results', $data[$index]['search_metadata'], true)){
+        			// clean next result
+        			parse_str($data[$index]['search_metadata']['next_results'], $output);
+					
+					$params['max_id'] = $output['?max_id']  - 1;
+					$lastId           = $output['?max_id'];
+
+					// we are over the limit
+	        		if($this->limit == 50){
+	        			$properties['max_id'] = $lastId;
+	        			$date_searched = DateHelper::sub($params['until'],'1 day');
+	        			$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
+	              		$this->_saveAlertsMencions($properties);
+	        		}
+	        		//only for testing
+	        		if($this->limit == 50){break;}
+
+        		}else{
+        			// if not result Looking for the next date
+	        		$date_searched = DateHelper::add($params['until'],'1 day');
+	        		$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
+	              	$this->_saveAlertsMencions($properties);
+	        		break;
+
+        		}
+
+        		// add index
+        		$index++;
+        		// sub limit
         		$this->limit --;
+        		echo "====================". "\n";
+        		echo $params['q']  . "\n";
         		echo $this->limit  . "\n";
         		echo "====================". "\n";
-        		echo "sinceId: ".$sinceId  . "\n";
-        		echo "lastId: ".$lastId  . "\n";
+
+
         	}else{
+        		// if not result Looking for the next date
+        		$date_searched = DateHelper::add($params['until'],'1 day');
+        		$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
+              	$this->_saveAlertsMencions($properties);
         		break;
         	}
 
         }while($this->limit);
 
-        return $sinceId;
+        return $data;
 
 	}
 	
@@ -187,6 +285,35 @@ class TwitterApi extends Model {
 		$this->codebird->setReturnFormat(CODEBIRD_RETURNFORMAT_ARRAY);
 		$reply = $this->codebird->search_tweets($params, true);
 		return $reply;
+	}
+
+	/**
+	 * [_saveAlertsMencions save in alerts_mencions model]
+	 * @param  array  $properties [description]
+	 * @return [type]             [description]
+	 */
+	private function _saveAlertsMencions($properties = []){
+		
+		$model = AlertsMencions::find()->where([
+			'alertId'       => $this->alertId,
+			'resourcesId'   => $this->resourcesId,
+			'type'          => 'tweet',
+			'term_searched' => $properties['term_searched']
+		])
+		->one();
+
+		if(is_null($model)){
+			$model = new AlertsMencions();
+			$model->alertId = $this->alertId;
+			$model->resourcesId = $this->resourcesId;
+		}
+		foreach($properties as $property => $values){
+    		$model->$property = $values;
+    	}
+    	if(!$model->save()){
+    		var_dump($model->errors);
+    	}
+
 	}
 
 	/**
