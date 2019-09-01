@@ -4,6 +4,8 @@ namespace app\models;
 
 use Yii;
 use Yii\helpers\ArrayHelper;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "alerts".
@@ -35,6 +37,20 @@ class Alerts extends \yii\db\ActiveRecord
         return 'alerts';
     }
 
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['createdAt','updatedAt'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updatedAt'],
+                ],
+                'value' => function() { return date('U');  },
+            ],
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -42,6 +58,7 @@ class Alerts extends \yii\db\ActiveRecord
     {
         return [
             [['userId'], 'required'],
+            [['status'], 'default','value' => 1],
             [['userId', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['userId'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['userId' => 'id']],

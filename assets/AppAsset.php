@@ -21,11 +21,11 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+        '//fonts.googleapis.com/icon?family=Material+Icons'
     ];
     public $js = [
     ];
     public $depends = [
-        'macgyer\yii2materializecss\assets\MaterializeAsset',
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
     ];

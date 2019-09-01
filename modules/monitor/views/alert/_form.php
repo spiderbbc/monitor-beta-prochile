@@ -2,35 +2,43 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use macgyer\yii2materializecss\widgets\form\DatePicker;
-
+use yii\bootstrap\Modal;
 /* @var $this yii\web\View */
-/* @var $model app\models\Alerts */
-/* @var $form yii\widgets\ActiveForm */
+/* @var $model app\models\form\AlertForm */
+/* @var $form ActiveForm */
 ?>
-
-<div class="alerts-form">
-
+<div class="modules-monitor-views-alert">
     <?php $form = ActiveForm::begin(); ?>
-    <?= $form->field($model, 'userId')->textInput() ?>
-
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'status')->textInput() ?>
-
-    <?= $form->field($model, 'createdAt')->textInput() ?>
-
-    <?= $form->field($model, 'updatedAt')->textInput() ?>
-
-    <?= $form->field($model, 'createdBy')->textInput() ?>
-
-    <?= $form->field($model, 'updatedBy')->textInput() ?>
-    
-
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-    </div>
-
+     <?= $model->errorSummary($form); ?>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $form->field($model->alerts, 'name') ?>        
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $form->field($model->alertConfig, 'start_date')->widget(\yii\jui\DatePicker::className(), [
+                        'inline' => false,
+                        'language' => 'es',
+                        'dateFormat' => 'yyyy-MM-dd',
+                        'options'=>['class'=>'form-control']
+                    ]) ?>
+                </div>
+                <div class="col-md-6">
+                    <?= $form->field($model->alertConfig, 'end_date')->widget(\yii\jui\DatePicker::className(), [
+                        'inline' => false,
+                        'language' => 'es',
+                        'dateFormat' => 'yyyy-MM-dd',
+                        'options'=>['class'=>'form-control']
+                    ]) ?>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
+            </div>
+        </div>
     <?php ActiveForm::end(); ?>
 
-</div>
+</div><!-- modules-monitor-views-alert -->

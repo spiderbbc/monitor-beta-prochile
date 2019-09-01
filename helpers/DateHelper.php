@@ -57,4 +57,8 @@ class DateHelper
     	
     	return round($diff);
     }
+
+    public static function asTimestamp($date){
+        return (int) \Yii::$app->formatter->asTimestamp($date);
+    }
 }

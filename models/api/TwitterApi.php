@@ -374,7 +374,6 @@ class TwitterApi extends Model {
 		    ->where(['resourceId' => $this->resourcesId])
 		    ->all();
 		if($credencials_api){
-			$key = Yii::$app->params['key'];
 			$bearer_token = ArrayHelper::getColumn($credencials_api,'bearer_token')[0];
 			if($bearer_token == ''){
 				$api_key = ArrayHelper::getColumn($credencials_api,'api_key')[0];    
@@ -397,12 +396,6 @@ class TwitterApi extends Model {
 	 * @return [type]                 [description]
 	 */
 	private function _getBearerToken($api_key,$api_secret_key){
-		$bearer_token = false;
-
-		$key = Yii::$app->params['key'];
-
-		$api_key = Yii::$app->getSecurity()->decryptByPassword(utf8_decode($api_key), $key);
-		$api_secret_key = Yii::$app->getSecurity()->decryptByPassword(utf8_decode($api_secret_key), $key);
 		
 		Codebird::setConsumerKey($api_key, $api_secret_key); // static, see README
 		$this->codebird = Codebird::getInstance();
@@ -418,7 +411,6 @@ class TwitterApi extends Model {
 	 */
 	private function _setBearerToken($bearer_token){
 		
-		$secretKey = Yii::$app->params['key'];
 		// INSERT (table name, column values)
 		Yii::$app->db->createCommand()->update('credencials_api', [
 		    'bearer_token' => $bearer_token,

@@ -16,8 +16,6 @@ class m190813_215104_Credencials_Api extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $data = Yii::$app->params;
-        $secretKey = Yii::$app->params['key'];
 
         $this->createTable('{{%credencials_api}}',[
             'id'              => $this->primaryKey(),
@@ -40,9 +38,9 @@ class m190813_215104_Credencials_Api extends Migration
             'userId'              => 1,
             'resourceId'          => 1,
             'name_app'            => 'monitor-alfa',
-            'api_key'             => utf8_encode(Yii::$app->getSecurity()->encryptByPassword($data['twitter']['api_key'], $secretKey)),
-            'api_secret_key'      => utf8_encode(Yii::$app->getSecurity()->encryptByPassword($data['twitter']['api_secret_key'], $secretKey)),
-            'access_secret_token' => utf8_encode(Yii::$app->getSecurity()->encryptByPassword($data['twitter']['access_secret_token'], $secretKey)),
+            'api_key'             => 'oxmyn1WmBKihhfdcQGCTXlgQh',
+            'api_secret_key'      => 'msPakDIfXECOe6NrgGrAVwkHdCtbDHzeaHMgVqO4R0ioDyPWlh',
+            'access_secret_token' => 'TTdlPqtbByToHaReoou7LBSOAYPa4uS7WQKqn3xx',
             'bearer_token'        => '',
             'apiLogin'            => 'encrycpt here',
             'createdAt'           => '1488153462',

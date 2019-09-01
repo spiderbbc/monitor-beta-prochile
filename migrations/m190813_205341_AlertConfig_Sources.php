@@ -17,7 +17,7 @@ class m190813_205341_AlertConfig_Sources extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('{{%alertConfig_sources}}',[
+        $this->createTable('{{%alertconfig_sources}}',[
             'id'              => $this->primaryKey(),
             'alertconfigId'   => $this->integer()->notNull(),
             'alertResourceId' => $this->integer()->notNull(),
@@ -28,7 +28,7 @@ class m190813_205341_AlertConfig_Sources extends Migration
 
         ],$tableOptions);
 
-        $this->insert('{{%alertConfig_sources}}', [
+        $this->insert('{{%alertconfig_sources}}', [
             'alertconfigId'   => 1,
             'alertResourceId' => 1,
             'createdAt'       => 1559312912,
@@ -41,14 +41,14 @@ class m190813_205341_AlertConfig_Sources extends Migration
         // creates index for column `dictionaryId`
         $this->createIndex(
             'idx-alert_config_sources-alert_config',
-            'alertConfig_sources',
+            'alertconfig_sources',
             'alertconfigId'
         );
 
         // add foreign key for table `dictionaries`
         $this->addForeignKey(
             'fk-alert_config_sources-alert_config',
-            'alertConfig_sources',
+            'alertconfig_sources',
             'alertconfigId',
             'alert_config',
             'id',
@@ -61,14 +61,14 @@ class m190813_205341_AlertConfig_Sources extends Migration
         // creates index for column `dictionaryId`
         $this->createIndex(
             'idx-alert_config_sources-alert_sources',
-            'alertConfig_sources',
+            'alertconfig_sources',
             'alertResourceId'
         );
 
         // add foreign key for table `dictionaries`
         $this->addForeignKey(
             'fk-alert_config_sources-alert_sources',
-            'alertConfig_sources',
+            'alertconfig_sources',
             'alertResourceId',
             'resources',
             'id',
@@ -82,7 +82,7 @@ class m190813_205341_AlertConfig_Sources extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%alertConfig_sources}}');
+        $this->dropTable('{{%alertconfig_sources}}');
     }
 
 }

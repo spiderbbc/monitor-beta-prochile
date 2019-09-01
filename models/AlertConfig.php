@@ -37,9 +37,13 @@ class AlertConfig extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['alertId', 'product_description', 'competitors', 'countries'], 'required'],
-            [['alertId', 'start_date', 'end_date', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+            [['product_description', 'competitors', 'countries','uudi'], 'required'],
+            [['alertId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['product_description', 'competitors', 'countries'], 'string', 'max' => 40],
+            [['alertId'], 'exist', 
+              'skipOnError' => true, 
+              'targetClass' => Alerts::className(), 
+              'targetAttribute' => ['alertId' => 'id']]
         ];
     }
 
