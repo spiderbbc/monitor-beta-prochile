@@ -7,6 +7,8 @@ use yii\base\Model;
 use app\models\Alerts;
 use app\models\AlertConfig;
 
+use app\helpers\DateHelper;
+
 class AlertForm extends Model
 {
     private $_alert;
@@ -142,8 +144,10 @@ class AlertForm extends Model
             $this->alertConfig->countries = 'chile';
             $this->alertConfig->competitors = 'chile';
             $this->alertConfig->product_description = 'chile';
-            $this->alertConfig->start_date = \app\helpers\DateHelper::asTimestamp($alertConfig['start_date']);
-            $this->alertConfig->end_date = \app\helpers\DateHelper::asTimestamp($alertConfig['end_date']);
+
+            $this->alertConfig->start_date = DateHelper::asTimestamp($alertConfig['start_date']);
+            $this->alertConfig->end_date =   DateHelper::asTimestamp($alertConfig['end_date']);
+           
             $this->alertConfig->setAttributes($alertConfig);
         } elseif ($alertsConfig instanceof AlertConfig) {
             $this->_alertConfig = $alertsConfig;
@@ -155,9 +159,11 @@ class AlertForm extends Model
         $errorLists = [];
         foreach ($this->getAllModels() as $id => $model) {
             $errorList = $form->errorSummary($model, [
-                'header' => '<p>Please fix the following errors for <b>' . $id . '</b></p>',
+                'header' => '<div class="alert alert-warning" role="alert">
+                              Please fix the following errors for ' . $id .'
+                            </div>',
             ]);
-            $errorList = str_replace('<li></li>', '', $errorList); // remove the empty error
+            $errorList = str_replace('<div></div>', '', $errorList); // remove the empty error
             $errorLists[] = $errorList;
         }
         return implode('', $errorLists);

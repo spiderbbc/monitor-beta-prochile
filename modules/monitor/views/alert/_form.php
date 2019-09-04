@@ -9,7 +9,6 @@ use yii\bootstrap\Modal;
 ?>
 <div class="modules-monitor-views-alert">
     <?php $form = ActiveForm::begin(); ?>
-     <?= $model->errorSummary($form); ?>
         <div class="container">
             <div class="row">
                 <div class="col-md-6">

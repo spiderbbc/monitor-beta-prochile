@@ -15,6 +15,8 @@ use app\models\AlertsMencions;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use Codebird\Codebird;
 
+
+
 /**
  *
  * @author Eduardo Morales <eduardo@montana-studio.com>
@@ -38,7 +40,7 @@ class TwitterApi extends Model {
 	
 	private $params = [
 		'lang' => 'es',
-		'result_type' => 'recent',
+		'result_type' => 'mixed',
 		'count' => 1,
 	//	'q'      => '',
 	//	'until'  => '',
@@ -95,49 +97,53 @@ class TwitterApi extends Model {
 		    ->one();
 
 		    // Make sure to urlencode any parameter values that contain query-reserved characters
-		    $product_encode = urlencode($products[$p]);
+		    $product = urlencode($products[$p]);
 		    
 		    if($query){
 		    	// insert params to the products with condicion active
 		    	if($query['condition'] == AlertsMencions::CONDITION_ACTIVE){ 
 		    		// pass to variable
-		    		list('since_id' => $since_id, 'max_id' => $max_id,'date_searched' => $date_searched) = $query;
+		    		list('since_id' => $since_id,'max_id' => $max_id,'date_searched' => $date_searched) = $query;
 		    		
-					$params['q']      = $product_encode;
-					$params['until']  = DateHelper::add($date_searched,'1 day');
-					$params['max_id'] = $max_id;
+		    		$since_date = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
+					$until_date = DateHelper::add($date_searched,'1 day');
+		    		$query_search = "{$product} since:{$since_date} until:{$until_date}";
 
-		    		if(($since_id == 0) && ($max_id == 0)){
-		    			$date_searched = DateHelper::add($query['date_searched'],'1 day');
-						$this->params['until'] = $date_searched;
-		    		}
+					$is_date_searched_higher_to_end_date = DateHelper::diffForHumans($date_searched,$this->end_date);
+					$is_higher_to_end_date = explode(" ",$is_date_searched_higher_to_end_date);
 
-		    		/*if(($since_id) && ($max_id == 0)){
-						$this->params['since_id'] = $since_id;
-		    		}*/
+					if($is_higher_to_end_date[2] == "before"){
+						
+						
+						$params['q']       = $query_search;
+						$params['max_id']  = $max_id;
 
-		    		/*if(($since_id) && ($max_id)){
-		    			$this->params['since_id'] = $since_id;
-		    			$this->params['max_id'] = '';
-		    			$this->params['until'] = '';
-						//$this->params['max_id'] = $max_id;
-		    		}
-*/
-		    		array_push($products_to_searched,$params);
+						$params['since']   = $since_date;
+						$params['until']   = $until_date;
+						
+					}
 
-		    		/*$this->params['q'] = $product_encode;
-		    		$date_searched = DateHelper::add($query['date_searched'],'1 day');
-					$this->params['until'] = $date_searched;
-					$this->params['max_id'] = $query['max_id'];
-		    		array_push($products_to_searched,$this->params);*/
+					if($since_id){
+						$params['q']        = $query_search;
+						$params['since_id'] = $since_id;
+						$params['since']    = $since_date;
+						$params['until']    = $until_date;
+					}
+					
 
+					$params['product'] = $products[$p];
+					array_push($products_to_searched,$params);
 		    	} 
 		    }else{
-				$date_searched = DateHelper::add($this->start_date,'1 day');
-		    	$params['max_id'] = '';
-		    	//$params['since_id'] = '';
-				$params['until'] = $date_searched;
-		    	$params['q'] = $product_encode;
+				$since_date = Yii::$app->formatter->asDatetime($this->start_date,'yyyy-MM-dd');
+				$until_date = DateHelper::add($this->start_date,'1 day');
+		    	$query_search = "{$product} since:{$since_date} until:{$until_date}";
+		    	
+		    	$params['q'] = $query_search;
+		    	$params['since'] = $since_date;
+		    	$params['until'] = $until_date;
+		    	
+		    	$params['product'] = $products[$p];
 		    	array_push($products_to_searched,$params);
 		    }
 
@@ -154,10 +160,11 @@ class TwitterApi extends Model {
 
 
 		for($p = 0; $p < sizeOf($products_params); $p ++){
-			$product_decode = urldecode($products_params[$p]['q']);
-			Console::stdout("loop in call method {$product_decode}.. \n", Console::BOLD);
-			$this->data[$product_decode] = $this->_getTweets($products_params[$p]);
+			$product = $products_params[$p]['product'];
+			Console::stdout("loop in call method {$product}.. \n", Console::BOLD);
+			$this->data[$product] = $this->_getTweets($products_params[$p]);
 		}
+		$data = $this->_orderTweets($this->data);
 		return $this->data;
 	}
 
@@ -168,109 +175,106 @@ class TwitterApi extends Model {
 	 */
 	private function _getTweets($params){
 		
-		$data    =[];
-		$index   = 0;
-		$limit   = 0;
-		$sinceId = null;
-		$max_id  = null;
+		$data   =[];
+		$index  = 0;
+		$limit  = 0;
+		$sinceId  = null;
+		$since_date  = null;
+		$until_date = null;
+		$max_id = null;
 
-		$properties = [
-	      'term_searched' => $params['q'],
+		
+      
+      	$product = ArrayHelper::remove($params, 'product');
+      	$since_date = ArrayHelper::remove($params, 'since');
+      	$until_date =  ArrayHelper::remove($params, 'until');
+
+
+      	$properties = [
+	      'term_searched' => $product,
 	      'type' => 'tweet',
 	    ];
-      
+	    
+      	var_dump($params);
+
         do {
         	// get data twitter api
         	$data[$index] = $this->search_tweets($params);
-        	/*var_dump($params);*/
-      	
+        	
         	// is ok 200
-        	if(($data[$index]['httpstatus'] == 200) && (!empty($data[$index]['statuses']))){
-        		// check limits
-        		if(!$this->limit){
-        			// set limit
-        			$remaining = $data[$index]['rate']['remaining'];
-        			$this->limit = $this->_setLimits($remaining);
-        		}
-        		
-
-        		// check date validation
-        		$date_searched = DateHelper::sub($params['until'],'1 day');
-        		// looping to see if we go over the search date
-        		$lantern = false;
-        		for($s = 0; $s < sizeOf($data[$index]['statuses']); $s++) {
-        			$firts_date = $data[$index]['statuses'][$s]['created_at'];
-        			$diff = DateHelper::diffInDays($date_searched, $firts_date);
-        			if($diff){
-	    				$now = Yii::$app->formatter->asDate('now', 'yyyy-MM-dd'); 
-	    				$is_today_search = DateHelper::diffInDays($firts_date,$now);
-	    				if($is_today_search){
-	    					$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
-	    					$this->_saveAlertsMencions($properties);
-	    				}else{
-	    					$properties['date_searched'] = Yii::$app->formatter->asTimestamp($params['until']);
-	    					$this->_saveAlertsMencions($properties);
-	    				}
-	    				$lantern = true;
-	    				unset($data[$index]['statuses'][$s]);
-	    				// We have to get out of here
-	    				break;
-	    			}
-        		}
-    			
-    			// get out lantern
-    			if($lantern){break;}
-    			
-    			
-    			
-        		
-        		// get next_results
-        		if(ArrayHelper::keyExists('next_results', $data[$index]['search_metadata'], true)){
-        			// clean next result
-        			parse_str($data[$index]['search_metadata']['next_results'], $output);
-					
-					$params['max_id'] = $output['?max_id']  - 1;
-					$lastId           = $output['?max_id'];
-
-					// we are over the limit
-	        		if($this->limit == 50){
-	        			$properties['max_id'] = $lastId;
-	        			$date_searched = DateHelper::sub($params['until'],'1 day');
-	        			$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
-	              		$this->_saveAlertsMencions($properties);
+        	if($data[$index]['httpstatus'] == 200){
+        		// if statuses not empty
+        		if(!empty($data[$index]['statuses'])){
+        			// check limits
+	        		if(!$this->limit){
+	        			// set limit
+	        			$remaining = $data[$index]['rate']['remaining'];
+	        			$this->limit = $this->_setLimits($remaining);
 	        		}
-	        		//only for testing
-	        		if($this->limit == 50){break;}
+	        		
+	        		//save the sinceId one time for product
+            
+		            if(is_null($sinceId)){
+		              $sinceId = $data[$index]['statuses'][0]['id'] + 1;
+		              Console::stdout("save one time {$sinceId}.. \n", Console::BOLD);
+		            }
+
+	        		// get next_results
+	        		if(ArrayHelper::keyExists('next_results', $data[$index]['search_metadata'], true)){
+	        			// clean next result
+	        			parse_str($data[$index]['search_metadata']['next_results'], $output);
+						
+						$params['max_id'] = $output['?max_id']  - 1;
+						$lastId           = $output['?max_id'];
+
+						// we are over the limit
+		        		if($this->limit == 1){
+		        			$properties['max_id'] = $lastId;
+		        			$date_searched = $since_date;
+		        			$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
+		              		$this->_saveAlertsMencions($properties);
+		        		}
+		        		//only for testing
+		        		if($this->limit == 1){break;}
+
+	        		}
+
+	        		// add index
+	        		$index++;
+	        		// sub limit
+	        		$this->limit --;
+	        		echo "====================". "\n";
+	        		echo $params['q']  . "\n";
+	        		echo $this->limit  . "\n";
+	        		echo "====================". "\n";
+
 
         		}else{
-        			// if not result Looking for the next date
-	        		$date_searched = DateHelper::add($params['until'],'1 day');
-	        		$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
+        			Console::stdout("there is empty statuses  \n", Console::BOLD);
+
+        			$properties['max_id'] = '';
+        			if(DateHelper::isToday($since_date)){
+        				$properties['since_id'] = $sinceId;
+        				$date_searched = $since_date;
+        			}else{
+        				$date_searched = DateHelper::add($since_date,'1 day');
+        			}
+        			$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
 	              	$this->_saveAlertsMencions($properties);
 	        		break;
-
         		}
-
-        		// add index
-        		$index++;
-        		// sub limit
-        		$this->limit --;
-        		echo "====================". "\n";
-        		echo $params['q']  . "\n";
-        		echo $this->limit  . "\n";
-        		echo "====================". "\n";
-
-
         	}else{
-        		// if not result Looking for the next date
-        		$date_searched = DateHelper::add($params['until'],'1 day');
-        		$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
-              	$this->_saveAlertsMencions($properties);
+        		// problem with api :/
+        		echo "====================". "\n";
+        		echo "Api problem : ".$data[$index]['httpstatus']. "\n";
+        		echo "====================". "\n";
+        		// lets go
         		break;
+        		
         	}
 
         }while($this->limit);
-
+        Console::stdout("return	 data.. \n", Console::BOLD);	
         return $data;
 
 	}
@@ -281,10 +285,10 @@ class TwitterApi extends Model {
 	 * @return [type]         [data]
 	 */
 	public function search_tweets($params = []){
-		
+		sleep(1);
 		$this->codebird->setReturnFormat(CODEBIRD_RETURNFORMAT_ARRAY);
-		$reply = $this->codebird->search_tweets($params, true);
-		return $reply;
+		ini_set('memory_limit', '800M');  // 
+		return $this->codebird->search_tweets($params, true);
 	}
 
 	/**
@@ -350,6 +354,50 @@ class TwitterApi extends Model {
 		$remaining = $remaining / $this->products_count;
 		
 		return round($remaining);
+	}
+	/**
+	 * [_orderTweets description]
+	 * @param  [type] $data [description]
+	 * @return [type]       [description]
+	 */
+	private function _orderTweets($data){
+		$tweets = [];
+		$source = 'TWITTER';
+	
+		foreach ($data as $product => $object){
+			$index = 0;
+			for ($o = 0; $o < sizeof($object) ; $o++){
+				if(!empty($object[$o]['statuses'])){
+					for ($s =0; $s < sizeof($object[$o]['statuses']) ; $s++){
+						$tweets[$product][$index]['source'] = $source;
+						
+						
+						if(isset($object[$o]['statuses'][$s]['entities']['urls'][0])){
+							$tweets[$product][$index]['url'] = $object[$o]['statuses'][$s]['entities']['urls'][0]['url'];
+						}else{
+							$tweets[$product][$index]['url'] = '-';
+						}
+
+						if(array_key_exists('place', $object[$o])){
+							if(!is_null($object[$o]['place'])){
+								$tweets[$product][$index]['location'] = $object[$o]['place']['country'];
+							}
+						}else{
+							$tweets[$product][$index]['location'] = "-";
+						}
+						
+						$tweets[$product][$index]['created_at'] = $object[$o]['statuses'][$s]['created_at'];
+						$tweets[$product][$index]['author_name'] = $object[$o]['statuses'][$s]['user']['name'];
+						$tweets[$product][$index]['author_username'] = $object[$o]['statuses'][$s]['user']['screen_name'];
+						$tweets[$product][$index]['followers_count'] = $object[$o]['statuses'][$s]['user']['followers_count'];
+						$tweets[$product][$index]['post_from'] = $object[$o]['statuses'][$s]['text'];
+						$index++;
+					} // for each statuses
+				} // if not empty statuses
+			}// for each object twitter
+		} // for each product
+
+		return $tweets;
 	}
 	/**
 	 * [_setResourceId return the id from resource]

@@ -61,6 +61,7 @@ class Alerts extends \yii\db\ActiveRecord
             [['status'], 'default','value' => 1],
             [['userId', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['name'], 'string', 'max' => 255],
+            [['name'], 'required'],
             [['userId'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['userId' => 'id']],
         ];
     }

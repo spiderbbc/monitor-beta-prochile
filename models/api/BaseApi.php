@@ -7,7 +7,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 
 
-use \Filebase\Database;
+use app\models\file\JsonFile;
 
 /**
  *
@@ -60,26 +60,16 @@ class BaseApi extends Model {
 
 		if($products_params){
 			$data = $tweets->call($products_params);
-			//$uuid = $alert['config']['uuid'];
 			// path to folder flat archives
-			$s = DIRECTORY_SEPARATOR;
-			$uuid = "Boom_1559312912";
-			$database = new \Filebase\Database([
-			    'dir' => \Yii::getAlias('@data')."{$s}{$uuid}{$s}twitter"
-			]);
-
-			$file = $database->get("{$uuid}");
-
-			foreach ($data as $key => $value) {
-	            $file->$key = $value;
-	        }
-	        $file->save();
-			//var_dump($data);
-
+			$folderpath = [
+				'resource' => 'twitter',
+				'documentId' => $alert['id'],
+			];
+			$this->saveJsonFile($folderpath,$data);
 
 		}
 
-		//echo "twitterApi". "\n";
+		echo "twitterApi". "\n";
 	}
 
 	public function liveChat($alerts = []){
@@ -105,6 +95,15 @@ class BaseApi extends Model {
 	}
 
 
+
+	public function saveJsonFile($folderpath = [],$data){
+
+		// call jsonfile
+		$jsonfile = new JsonFile($folderpath);
+		$jsonfile->load($data);
+		$jsonfile->save();
+
+	}
 	
 }
 

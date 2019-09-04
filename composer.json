@@ -24,7 +24,8 @@
         "abraham/twitteroauth": "^1.0",
         "jenssegers/date": "^3.5",
         "kartik-v/yii2-widget-select2": "dev-master",
-        "yiisoft/yii2-jui": "^2.0"
+        "yiisoft/yii2-jui": "^2.0",
+        "ramosisw/yii2-material-dashboard": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

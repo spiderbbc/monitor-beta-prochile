@@ -1,8 +1,8 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
-
+//use yii\grid\GridView;
+use macgyer\yii2materializecss\widgets\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\search\AlertSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -30,12 +30,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'userId',
             'name',
             'status',
-            'createdAt',
+            'config.start_date:datetime',
+            'config.end_date:datetime',
             //'updatedAt',
             //'createdBy',
             //'updatedBy',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            //['class' => 'yii\grid\ActionColumn'],
+           ['class' => 'ramosisw\CImaterial\grid\ActionColumn'],
         ],
     ]); ?>
 
