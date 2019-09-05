@@ -8,17 +8,30 @@ class JsonFile {
 
 	public $filebase;
 	public $documentId;
+	
+	private $_path;
 	private $_data;
 
+	/**
+	 * [isDocumentExist is document_file by id]
+	 * @return boolean [description]
+	 */
 	public function isDocumentExist(){
 		if (!$this->filebase->has($this->documentId)){ return false;}
 		return true;
 	}
-
+	/**
+	 * [thereIsDataInDocument true is a document_file content data]
+	 * @return [type] [description]
+	 */
 	public function thereIsDataInDocument(){
 		return (!empty($this->filebase->get($this->documentId)->field('data'))) ? true : false;
 	}
-
+	/**
+	 * [getSinceIdByProducts deprec]
+	 * @param  array  $products [description]
+	 * @return [type]           [description]
+	 */
 	public function getSinceIdByProducts($products = []){
 		
 		$products_sinceId = [];
@@ -35,11 +48,18 @@ class JsonFile {
 		}
 		return $products_sinceId;
 	}
-
+	/**
+	 * [load set data in to _data]
+	 * @param  [type] $data [description]
+	 * @return [type]       [description]
+	 */
 	public function load($data){
 		$this->_data[] =  $data;
 	}
-
+	/**
+	 * [save set save]
+	 * @return [type] [description]
+	 */
 	public function save(){
 		if(!empty($this->_data)){
 			$file = $this->filebase->get($this->documentId);

@@ -130,7 +130,7 @@ class TwitterApi extends Model {
 						$params['until']    = $until_date;
 					}
 					
-
+					$params['q']       = $query_search;
 					$params['product'] = $products[$p];
 					array_push($products_to_searched,$params);
 		    	} 
@@ -213,7 +213,6 @@ class TwitterApi extends Model {
 	        		}
 	        		
 	        		//save the sinceId one time for product
-            
 		            if(is_null($sinceId)){
 		              $sinceId = $data[$index]['statuses'][0]['id'] + 1;
 		              Console::stdout("save one time {$sinceId}.. \n", Console::BOLD);

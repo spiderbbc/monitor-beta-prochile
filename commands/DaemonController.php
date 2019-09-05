@@ -10,6 +10,8 @@ use yii\helpers\Console;
 use app\models\Alerts;
 use app\models\api\BaseApi;
 
+use yii\helpers\FileHelper;
+
 /**
  * This command echoes the first argument that you have entered.
  *
@@ -44,4 +46,18 @@ class DaemonController extends Controller
         
         return ExitCode::OK;
     }
+
+    public function actionDataSearch(){
+        $alert = new Alerts();
+        $alertsConfig = $alert->getBringAllAlertsToRun();
+        // look in the folder
+        if(!empty($alertsConfig)){
+            $folder = FileHelper::filterPath(\Yii::getAlias('@data'),['filter' => function($path){
+                echo $path;
+            }]);
+            var_dump($folder);
+        }
+        $this->stdout("runnig actionDataSearch funtction.. \n", Console::BOLD);
+    }
+
 }

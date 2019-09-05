@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "alert_config".
@@ -31,6 +33,19 @@ class AlertConfig extends \yii\db\ActiveRecord
         return 'alert_config';
     }
 
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['createdAt','updatedAt'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updatedAt'],
+                ],
+              //  'value' => function() { return date('U');  },
+            ],
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -38,7 +53,7 @@ class AlertConfig extends \yii\db\ActiveRecord
     {
         return [
             [['product_description', 'competitors', 'countries','uudi'], 'required'],
-            [['alertId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+            //[['alertId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy','start_date','end_date'], 'integer'],
             [['product_description', 'competitors', 'countries'], 'string', 'max' => 40],
             [['alertId'], 'exist', 
               'skipOnError' => true, 
