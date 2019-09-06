@@ -24,7 +24,7 @@ class m190813_203806_Alert_Config extends Migration
             'uudi'                => $this->string()->notNull(),
             'product_description' => $this->string(40)->notNull(),
             'competitors'         => $this->string(40)->notNull(),
-            'countries'           => $this->string(40)->notNull(),
+            'country'             => $this->json(),
             'url_drive'           => $this->string(40),
             'start_date'          => $this->integer(),
             'end_date'            => $this->integer(),
@@ -35,13 +35,13 @@ class m190813_203806_Alert_Config extends Migration
 
         ], $tableOptions);
 
+
         $this->insert('{{%alert_config}}', [
             'alertId'             => 1,
             'uudi'                => 'Boom_1559312912',
             'product_description' => 'tecnology,Home entretaiment',
             'competitors'         => 'Sansung,Iphone,Hyundai',
-            'countries'           => 'Chile',
-            'countries'           => '',
+            'country'             => null,
             'start_date'          => '1566761829',
             'end_date'            => '1566761829',
             'createdAt'           => '1565888154',

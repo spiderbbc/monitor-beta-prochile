@@ -34,6 +34,7 @@ class TwitterApi extends Model {
 	private $resourcesId;
 	private $start_date;
 	private $end_date;
+	private $country;
 	
 	private $limit = 0;
 	private $products_count;
@@ -60,6 +61,9 @@ class TwitterApi extends Model {
 			$this->alertId        = $alert['id'];
 			$this->start_date     = $alert['config']['start_date'];
 			$this->end_date       = $alert['config']['end_date'];
+
+			$this->country       = (!is_null($alert['config']['country'])) ? $this->_setCountry($alert['config']['country']): null ;
+			
 			// prepare the products
 			$products = $alert['products'];
 			$products_params = $this->setProductsParams($products);
@@ -98,6 +102,7 @@ class TwitterApi extends Model {
 
 		    // Make sure to urlencode any parameter values that contain query-reserved characters
 		    $product = urlencode($products[$p]);
+		    $country = (!is_null($this->country)) ? $this->country : '';
 		    
 		    if($query){
 		    	// insert params to the products with condicion active
@@ -105,33 +110,35 @@ class TwitterApi extends Model {
 		    		// pass to variable
 		    		list('since_id' => $since_id,'max_id' => $max_id,'date_searched' => $date_searched) = $query;
 		    		
-		    		$since_date = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
-					$until_date = DateHelper::add($date_searched,'1 day');
-		    		$query_search = "{$product} since:{$since_date} until:{$until_date}";
-
-					$is_date_searched_higher_to_end_date = DateHelper::diffForHumans($date_searched,$this->end_date);
-					$is_higher_to_end_date = explode(" ",$is_date_searched_higher_to_end_date);
-
-					if($is_higher_to_end_date[2] == "before"){
-						
-						
-						$params['q']       = $query_search;
-						$params['max_id']  = $max_id;
-
-						$params['since']   = $since_date;
-						$params['until']   = $until_date;
-						
-					}
-
-					if($since_id){
-						$params['q']        = $query_search;
-						$params['since_id'] = $since_id;
-						$params['since']    = $since_date;
-						$params['until']    = $until_date;
-					}
+					$date_searched_flag   = strtotime(DateHelper::add($this->end_date,'1 day'));
 					
+
+		    		if($date_searched >= $date_searched_flag){
+		    			break;
+		    		}
+
+					/*$since_date   = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
+					$until_date   = DateHelper::add($date_searched,'1 day');
+					$query_search = "{$product} since:{$since_date} until:{$until_date}";*/
+		    		
+		    		$since_date   = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
+					$until_date   = DateHelper::add($date_searched,'1 day');
+					$query_search = "{$product} since:{$since_date} until:{$until_date}";
+
+		    		if($since_id && ($max_id == '')){
+						$params['since_id'] = $since_id;
+					}
+
+					if($max_id){
+						$params['max_id']  = $max_id;
+						$params['since_id'] = '';
+					}
+
 					$params['q']       = $query_search;
+					$params['since']   = $since_date;
 					$params['product'] = $products[$p];
+					$params['geocode'] = $country;
+		    		
 					array_push($products_to_searched,$params);
 		    	} 
 		    }else{
@@ -141,7 +148,9 @@ class TwitterApi extends Model {
 		    	
 		    	$params['q'] = $query_search;
 		    	$params['since'] = $since_date;
-		    	$params['until'] = $until_date;
+		    	/*$params['since'] = $since_date;
+		    	$params['until'] = $until_date;*/
+		    	$params['geocode'] = $country;
 		    	
 		    	$params['product'] = $products[$p];
 		    	array_push($products_to_searched,$params);
@@ -165,7 +174,7 @@ class TwitterApi extends Model {
 			$this->data[$product] = $this->_getTweets($products_params[$p]);
 		}
 		$data = $this->_orderTweets($this->data);
-		return $this->data;
+		return $data;
 	}
 
 	/**
@@ -206,6 +215,7 @@ class TwitterApi extends Model {
         		// if statuses not empty
         		if(!empty($data[$index]['statuses'])){
         			// check limits
+        			echo $this->limit;
 	        		if(!$this->limit){
 	        			// set limit
 	        			$remaining = $data[$index]['rate']['remaining'];
@@ -397,6 +407,14 @@ class TwitterApi extends Model {
 		} // for each product
 
 		return $tweets;
+	}
+
+	private function _setCountry($country){
+		
+		$country = json_decode($country,true);
+		$key     = key($country);
+		$geo     = implode(",",$country[$key]);
+		return $geo;
 	}
 	/**
 	 * [_setResourceId return the id from resource]

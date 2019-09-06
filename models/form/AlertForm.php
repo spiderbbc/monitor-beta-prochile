@@ -141,7 +141,7 @@ class AlertForm extends Model
     {
         if (is_array($alertConfig)) {
             $this->alertConfig->uudi = uniqid();
-            $this->alertConfig->countries = 'chile';
+            $this->alertConfig->country = null;
             $this->alertConfig->competitors = 'chile';
             $this->alertConfig->product_description = 'chile';
 

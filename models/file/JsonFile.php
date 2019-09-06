@@ -8,6 +8,7 @@ class JsonFile {
 
 	public $filebase;
 	public $documentId;
+	public $fileName;
 	
 	private $_path;
 	private $_data;
@@ -62,7 +63,7 @@ class JsonFile {
 	 */
 	public function save(){
 		if(!empty($this->_data)){
-			$file = $this->filebase->get($this->documentId);
+			$file = $this->filebase->get($this->fileName);
 			foreach ($this->_data as $key => $value) {
 	            $file->$key = $value;
 	        }
@@ -75,9 +76,10 @@ class JsonFile {
 	{
 		
 		// path to folder flat archives
-		$s = DIRECTORY_SEPARATOR;
-		$folder = $folderpath['resource'];
+		$s                = DIRECTORY_SEPARATOR;
 		$this->documentId = $folderpath['documentId'];
+		$this->fileName   = $folderpath['fileName'];
+		$folder           = $folderpath['resource'];
 		
 
 		$this->filebase = new Database([

@@ -34,41 +34,49 @@ class BaseApi extends Model {
 
 	public function callResourcesApi($alerts = []){
 		
-		//count product alert for get products_count
-		$this->products_count = $this->countAllTerms($alerts);
-		Console::stdout("count products {$this->products_count}.. \n", Console::BOLD);
+		Console::stdout("Running: ".__METHOD__."\n", Console::BOLD);
+		if(!empty($alerts)){
+			
+			$resources = [];
 
-		if($this->products_count){
 			for($a = 0; $a < sizeOf($alerts); $a++){
 				for($c = 0; $c < sizeOf($alerts[$a]['config']['configSources']); $c++){
 					$name = $alerts[$a]['config']['configSources'][$c];
 					
 					if(ArrayHelper::keyExists($name,$this->className, false)){
-						
 						$className = $this->className[$name];
-						$modelApi = $this->{$className}($alerts[$a]);
+						$resources[$className][] = $alerts[$a]; 
 					}
 				}
 			}
-		}
+
+			foreach($resources as $method => $alerts){
+				$this->{$method}($alerts);
+			}
+		} // if alert
+
+		
 	}
 
-	public function twitterApi($alert = []){
+	public function twitterApi($alerts = []){
+		
 		Console::stdout("calling twitter api class\n", Console::BOLD);
-		$tweets = new \app\models\api\TwitterApi($this->products_count);
-		$products_params = $tweets->prepare($alert);
+		$products_count = $this->countAllTerms($alerts);
+		$tweets = new \app\models\api\TwitterApi($products_count);
 
-		if($products_params){
-			$data = $tweets->call($products_params);
-			// path to folder flat archives
-			$folderpath = [
-				'resource' => 'twitter',
-				'documentId' => $alert['id'],
-			];
-			$this->saveJsonFile($folderpath,$data);
-
+		foreach ($alerts as $alert) {
+			$products_params = $tweets->prepare($alert);
+				if($products_params){
+					$data = $tweets->call($products_params);
+					// path to folder flat archives
+					$folderpath = [
+						'resource' => 'twitter',
+						'documentId' => $alert['id'],
+						'fileName' => time(),
+					];
+					$this->saveJsonFile($folderpath,$data);
+			}
 		}
-
 		echo "twitterApi". "\n";
 	}
 

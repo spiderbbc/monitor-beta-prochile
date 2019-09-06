@@ -13,7 +13,7 @@ use yii\db\ActiveRecord;
  * @property int $alertId
  * @property string $product_description
  * @property string $competitors
- * @property string $countries
+ * @property string $country
  * @property int $start_date
  * @property int $end_date
  * @property int $createdAt
@@ -52,9 +52,9 @@ class AlertConfig extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['product_description', 'competitors', 'countries','uudi'], 'required'],
+            [['product_description', 'competitors','uudi'], 'required'],
             //[['alertId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy','start_date','end_date'], 'integer'],
-            [['product_description', 'competitors', 'countries'], 'string', 'max' => 40],
+            [['product_description', 'competitors'], 'string', 'max' => 40],
             [['alertId'], 'exist', 
               'skipOnError' => true, 
               'targetClass' => Alerts::className(), 
@@ -72,7 +72,7 @@ class AlertConfig extends \yii\db\ActiveRecord
             'alertId' => Yii::t('app', 'Alert ID'),
             'product_description' => Yii::t('app', 'Product Description'),
             'competitors' => Yii::t('app', 'Competitors'),
-            'countries' => Yii::t('app', 'Countries'),
+            'country' => Yii::t('app', 'country'),
             'start_date' => Yii::t('app', 'Start Date'),
             'end_date' => Yii::t('app', 'End Date'),
             'createdAt' => Yii::t('app', 'Created At'),

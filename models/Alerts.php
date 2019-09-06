@@ -133,7 +133,6 @@ class Alerts extends \yii\db\ActiveRecord
                 }
             }
         }
-        
        return $alertsConfig;
     }
 
