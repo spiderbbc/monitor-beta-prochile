@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use app\models\Alerts;
 use app\models\AlertConfig;
+use app\models\AlertconfigSources;
 
 use app\helpers\DateHelper;
 
@@ -13,43 +14,17 @@ class AlertForm extends Model
 {
     private $_alert;
     private $_alertConfig;
+    private $_alertconfigSources;
+    
     public $start_date;
     public $end_date;
 
-    /*public $id;
-    public $name;
-    public $start_date;
-    public $end_date;
-    public $document_file;
-    public $resource;
-    public $dictionary;
-    public $keyword;
-    public $product;
-    public $web_url;
-    public $product_description;
-    public $competitors;
-    public $countries;*/
-
-
-    /*public function rules()
-    {
-        return [
-            [['name','start_date', 'end_date'], 'required'],
-            //['document_file', 'file'],
-            [['resource', 'dictionary','product'], 'integer'],
-            [['keyword','web_url'], 'string'],
-            ['product_description', 'default','value' => 'tecnology'],
-            ['resource', 'default','value' => 1],
-            ['competitors', 'default','value' => 'Sony,Huawei'],
-            ['countries', 'default','value' => 'Chile'],
-        ];    
-    }*/
 
     public function rules()
     {
         return [
            [['Alerts'], 'required'],
-           [['AlertConfig'], 'safe'],
+           [['AlertConfig','AlertconfigSources'], 'safe'],
         ];
     }
 
@@ -59,14 +34,14 @@ class AlertForm extends Model
     public function attributeLabels()
     {
         return [
-            'start_date'        => Yii::t('app', 'Fecha de Inicio'),
-            'end_date' => Yii::t('app','Fecha Final'),
+            'start_date'    => Yii::t('app', 'Fecha de Inicio'),
+            'end_date'      => Yii::t('app','Fecha Final'),
             'document_file' => Yii::t('app','Documentos'),
-            'resource'    => Yii::t('app', 'Plataformas Sociales'),
-            'dictionary' => Yii::t('app','Diccionarios de Palabras'),
-            'keyword' => Yii::t('app', 'Palabras Libres'),
-            'product' => Yii::t('app', 'Categorias - Productos - Modelos'),
-            'web_url' => Yii::t('app', 'direcciones web (Urls)'),
+            'resource'      => Yii::t('app', 'Plataformas Sociales'),
+            'dictionary'    => Yii::t('app','Diccionarios de Palabras'),
+            'keyword'       => Yii::t('app', 'Palabras Libres'),
+            'product'       => Yii::t('app', 'Categorias - Productos - Modelos'),
+            'web_url'       => Yii::t('app', 'direcciones web (Urls)'),
         ];
     }
 
@@ -95,14 +70,12 @@ class AlertForm extends Model
         }
         $transaction = Yii::$app->db->beginTransaction();
         if (!$this->alerts->save()) {
-           
             $transaction->rollBack();
             return false;
         }
         $this->alertConfig->alertId = $this->alerts->id;
         
         if (!$this->alertConfig->save(false)) {
-            
             $transaction->rollBack();
             return false;
         }
@@ -154,6 +127,18 @@ class AlertForm extends Model
         }
     }
 
+    public function getAlertConfigSources(){
+        return $this->_alertconfigSources;
+    }
+
+    public function setAlertConfigSources($alertConfigSources){
+        if ($alertConfigSources instanceof AlertconfigSources) {
+            $this->_alertconfigSources = $alertConfigSources;
+        } else if (is_array($alertConfigSources)) {
+            $this->_alertconfigSources->setAttributes($alertConfigSources);
+        }
+    }
+
     public function errorSummary($form)
     {
         $errorLists = [];
@@ -175,6 +160,7 @@ class AlertForm extends Model
         return [
             'Alerts' => $this->alerts,
             'AlertConfig' => $this->alertConfig,
+            'AlertconfigSources' => $this->alertconfigSources,
         ];
     }
 

@@ -62,43 +62,11 @@ class AlertController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    /*public function actionCreate()
-    {
-        $model = new \app\models\form\AlertForm();
-        $alert = new \app\models\Alerts();
-        $alertsConfig = new \app\models\AlertConfig();
-
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            // set alert firts
-            $alert->userId = 1; // for now
-            $alert->name = $model->name;
-            $isValid = $alert->validate();
-            // set alertsConfig
-            $alertsConfig->alertId = ($alert->save(false)) ? $alert->id : '';
-            $alertsConfig->product_description = $model->product_description;
-            $alertsConfig->competitors = $model->competitors;
-            $alertsConfig->countries = $model->countries;
-            $alertsConfig->start_date = \app\helpers\DateHelper::asTimestamp($model->start_date); 
-            $alertsConfig->end_date = \app\helpers\DateHelper::asTimestamp($model->end_date); 
-            $alertsConfig->uudi = uniqid();
-            //valid both
-            $isValid = $isValid && $alertsConfig->validate();
-            if($isValid){
-                $alertsConfig->save(false); 
-            }else{ var_dump($alertsConfig->errors); die();}
-            
-            return $this->redirect(['view', 'id' => $alert->id]);
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }*/
-    
     public function actionCreate()
     {
         $model = new \app\models\form\AlertForm();
         $model->alerts = new \app\models\Alerts();
+        $model->alertconfigSources = new \app\models\AlertconfigSources();
         $model->alerts->userId = 1;
         
         $model->setAttributes(Yii::$app->request->post());
