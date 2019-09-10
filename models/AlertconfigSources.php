@@ -57,6 +57,12 @@ class AlertconfigSources extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getSocial(){
+        $socials = Resources::find()->all();
+        $socialIds = \yii\helpers\ArrayHelper::map($socials,'id','name');
+        return $socialIds;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

@@ -36,8 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             //'createdBy',
             //'updatedBy',
 
-            //['class' => 'yii\grid\ActionColumn'],
-           ['class' => 'ramosisw\CImaterial\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

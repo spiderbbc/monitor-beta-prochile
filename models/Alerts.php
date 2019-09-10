@@ -25,10 +25,13 @@ use yii\db\ActiveRecord;
  */
 class Alerts extends \yii\db\ActiveRecord
 {
+    public $files;
+    public $free_words;
+    public $dictionaryIds;
+    public $productsIds;
 
     const STATUS_ACTIVE    = 1;
     const STATUS_INACTIVE  = 0;
-    
     /**
      * {@inheritdoc}
      */
@@ -136,6 +139,15 @@ class Alerts extends \yii\db\ActiveRecord
        return $alertsConfig;
     }
 
+    /**
+     * [getDictionaries get dictionaries]
+     * @return [array] []
+     */
+    public function getDictionaries(){
+        $dictionaries = Dictionaries::find()->all();
+        $dictionariesIds = \yii\helpers\ArrayHelper::map($dictionaries,'id','name');
+        return $dictionariesIds;
+    }
 
     /**
      * @return \yii\db\ActiveQuery

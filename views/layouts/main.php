@@ -3,18 +3,12 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
-//use app\widgets\Alert;
-use ramosisw\CImaterial\widgets\Alert; 
+use app\widgets\Alert;
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
-
-//AppAsset::register($this);
-if (class_exists('ramosisw\CImaterial\web\MaterialAsset')) {
-    ramosisw\CImaterial\web\MaterialAsset::register($this);
-}
 
 ?>
 <?php $this->beginPage() ?>

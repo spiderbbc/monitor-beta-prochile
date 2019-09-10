@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "products".
@@ -57,6 +58,56 @@ class Products extends \yii\db\ActiveRecord
             'createdBy' => Yii::t('app', 'Created By'),
             'updatedBy' => Yii::t('app', 'Updated By'),
         ];
+    }
+
+    /**
+     * [getProducts get all products by categories]
+     * @return [array] []
+     */
+    public static function getProducts()
+    {
+        $seriesHeader = Yii::t('app', 'Series de productos');
+        $familyHeader = Yii::t('app', 'Familia de productos');
+        $categoriesHeader = Yii::t('app', 'Categoria de producto');
+        $productsHeader = Yii::t('app', 'Productos');
+        $modelsHeader = Yii::t('app', 'Modelos de producto');
+        
+
+        $series[$seriesHeader] = ArrayHelper::map(ProductsSeries::find()
+                                                ->where(['status' => 1])
+                                                ->all(),
+                                            'id','name');
+        
+        $family[$familyHeader] = ArrayHelper::map(ProductsFamily::find()->andFilterCompare('seriesId','null','<>')
+                                                ->where(['status' => 1])
+                                                ->all(),
+                                            'id','name');
+        
+        $categories[$categoriesHeader] = ArrayHelper::map(ProductCategories::find()
+                                                ->andFilterCompare('familyId','null','<>')
+                                                ->where(['status' => 1])
+                                                ->all(),
+                                            'id','name');
+        
+        $products[$productsHeader] = ArrayHelper::map(Products::find()
+                                                ->andFilterCompare('categoryId','null','<>')
+                                                ->where(['status' => 1])
+                                                ->all(),
+                                            'id','name');
+       
+
+        $products_models[$modelsHeader] = ArrayHelper::map(ProductsModels::find()
+                                                ->andFilterCompare('productId','null','<>')
+                                                ->where(['status' => 1])
+                                                ->all(),
+                                            'id','name');
+
+        $data = ArrayHelper::merge($series,$family);
+        $data = ArrayHelper::merge($categories,$data);
+        $data = ArrayHelper::merge($products,$data);
+        $data = ArrayHelper::merge($products_models,$data);
+        return $data;
+
     }
 
     /**

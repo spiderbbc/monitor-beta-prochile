@@ -3,6 +3,14 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\bootstrap\Modal;
+
+use app\models\Products;
+
+use kartik\select2\Select2;
+use kartik\date\DatePicker;
+use kartik\file\FileInput;
+use mludvik\tagsinput\TagsInputWidget
+
 /* @var $this yii\web\View */
 /* @var $model app\models\form\AlertForm */
 /* @var $form ActiveForm */
@@ -10,35 +18,156 @@ use yii\bootstrap\Modal;
 ?>
 <div class="modules-monitor-views-alert">
     <?php $form = ActiveForm::begin(); ?>
-    <?= $form->errorSummary($model); ?>
-        <div class="container">
+    
+        <div class="row">
             <div class="row">
-                <div class="col-md-6">
-                    <?= $form->field($model->alerts, 'name') ?>        
-                </div>
-                <div class="col-md-6">
-                    <?= $form->field($model->alertConfigSources, 'alertResourceId')->textInput(['maxlength' => 255, 'class' => 'form-control chips chips-autocomplete']) ?> 
+                <div class="col-md-12">
+                    <?= $form->field($alert, 'name') ?>  
                 </div>
             </div>
+            <!-- dates -->
             <div class="row">
                 <div class="col-md-6">
-                    <?= $form->field($model->alertConfig, 'start_date')->widget(\yii\jui\DatePicker::className(), [
-                        'inline' => false,
-                        'language' => 'es',
-                        'dateFormat' => 'yyyy-MM-dd',
-                        'options'=>['class'=>'form-control']
-                    ]) ?>
+                    <?= $form->field($config, 'start_date')->widget(DatePicker::classname(), [
+                            'options' => ['placeholder' => 'Enter start date ...'],
+                            'pluginOptions' => [
+                                'orientation' => 'down left',
+                                'format' => 'dd/mm/yyyy',
+                                'autoclose' => true,
+                            ]
+                        ]); 
+                    ?>
                 </div>
                 <div class="col-md-6">
-                    <?= $form->field($model->alertConfig, 'end_date')->widget(\yii\jui\DatePicker::className(), [
-                        'inline' => false,
-                        'language' => 'es',
-                        'dateFormat' => 'yyyy-MM-dd',
-                        'options'=>['class'=>'form-control']
-                    ]) ?>
+                    <?= $form->field($config, 'end_date')->widget(DatePicker::classname(), [
+                            'options' => ['placeholder' => 'Enter end date ...'],
+                            'pluginOptions' => [
+                                'orientation' => 'down left',
+                                'format' => 'dd/mm/yyyy',
+                                'autoclose' => true,
+                            ]
+                        ]); 
+                    ?>
                 </div>
             </div>
-            
+            <!-- dictionaries and social -->
+            <div class="row">
+                <div class="col-md-4">
+                    <?= $form->field($sources, 'alertResourceId')->widget(Select2::classname(), [
+                            'data' => $sources->social,
+                            'options' => [
+                                'id' => 'social_resourcesId',
+                                'placeholder' => 'Select a resources...',
+                                'multiple' => true,
+                                'theme' => 'krajee',
+                                'debug' => true,
+                              //  'value' => (!$alerts->isNewRecord) ? $resources : [],
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                            ],
+                            'pluginEvents' => [
+                               "select2:select" => "function(e) { 
+                                    return null;
+                               }",
+                            ]
+                        ]);
+                    ?>
+                </div>
+                <div class="col-md-4">
+                    <?= $form->field($alert, 'dictionaryIds')->widget(Select2::classname(), [
+                            'data' => $alert->dictionaries,
+                            'options' => [
+                                'id' => 'social_dictionaryId',
+                                'placeholder' => 'Select a dictionaries...',
+                                'multiple' => true,
+                                'theme' => 'krajee',
+                                'debug' => true,
+                              //  'value' => (!$alerts->isNewRecord) ? $resources : [],
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                            ],
+                            'pluginEvents' => [
+                               "select2:select" => "function(e) { 
+                                    return null;
+                               }",
+                            ]
+                        ]);
+                    ?>
+                </div>
+                <div class="col-md-4">
+                    <?= $form->field($alert, 'productsIds')->widget(Select2::classname(), [
+                            'data' => Products::getProducts(),
+                            'options' => [
+                                'id' => 'productsIds',
+                                'placeholder' => 'Select a products...',
+                                'multiple' => true,
+                                'theme' => 'krajee',
+                                'debug' => true,
+                              //  'value' => (!$alerts->isNewRecord) ? $resources : [],
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                            ],
+                            'pluginEvents' => [
+                               "select2:select" => "function(e) { 
+                                    return null;
+                               }",
+                            ]
+                        ]);
+                    ?>
+                </div>
+            </div>
+            <!-- config properties-->
+            <div class="row">
+                <div class="col-md-4">
+                    <?= $form->field($alert, 'free_words')->widget(Select2::classname(), [
+                    //'data' => $data,
+                    'options' => ['placeholder' => 'write a tags free words ...', 'multiple' => true],
+                        'pluginOptions' => [
+                            'tags' => true,
+                            'tokenSeparators' => [',', ' '],
+                            'maximumInputLength' => 10
+                        ],
+                    ])->label('Tag free words'); 
+                    ?>   
+                </div>
+                <div class="col-md-4">
+                    <?= $form->field($config, 'product_description')->widget(Select2::classname(), [
+                    //'data' => $data,
+                    'options' => ['placeholder' => 'write a tags product description ...', 'multiple' => true],
+                        'pluginOptions' => [
+                            'tags' => true,
+                            'tokenSeparators' => [',', ' '],
+                            'maximumInputLength' => 10
+                        ],
+                    ])->label('Tag product description'); 
+                    ?>   
+                </div>
+                <div class="col-md-4">
+                    <?= $form->field($config, 'competitors')->widget(Select2::classname(), [
+                    //'data' => $data,
+                    'options' => ['placeholder' => 'write a tags competitors ...', 'multiple' => true],
+                        'pluginOptions' => [
+                            'tags' => true,
+                            'tokenSeparators' => [',', ' '],
+                            'maximumInputLength' => 10
+                        ],
+                    ])->label('Tag competitors'); 
+                    ?> 
+                </div>
+            </div>
+            <!-- files -->
+            <div class="row">
+                <div class="col-md-12">
+                    <?= $form->field($alert, 'files')->widget(FileInput::classname(), [
+                        'options' => ['accept' => 'text/csv'],
+                    ]); 
+                    ?>
+                </div>
+            </div>
+                     
             <div class="form-group">
                 <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-primary']) ?>
             </div>
@@ -46,27 +175,3 @@ use yii\bootstrap\Modal;
     <?php ActiveForm::end(); ?>
 
 </div><!-- modules-monitor-views-alert -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-            
-<?php 
-use yii\web\View;
-
-$this->registerJs('
-
-$(".chips").chips();    
-
-$(".chips-autocomplete").chips({
-    autocompleteOptions: {
-      data: {
-        "Apple": null,
-        "Microsoft": null,
-        "Google": null
-      },
-      limit: Infinity,
-      minLength: 1
-    }
-  });
-
-',View::POS_READY);
-
-?>
