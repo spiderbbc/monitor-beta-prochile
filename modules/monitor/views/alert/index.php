@@ -26,12 +26,23 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'userId',
             'name',
             'status',
-            'config.start_date:datetime',
-            'config.end_date:datetime',
+            [
+                'label' => Yii::t('app', 'Fecha de Inicio'),
+                'attribute' => 'start_date',
+                'value' => function($model) { 
+                    return Yii::$app->formatter->asDatetime($model->config->start_date,'yyyy-MM-dd');  
+                },
+            ],
+            [
+                'label' => Yii::t('app', 'Fecha Final'),
+                'attribute' => 'end_date',
+                'value' => function($model) { 
+                    return Yii::$app->formatter->asDatetime($model->config->end_date,'yyyy-MM-dd');  
+                },
+            ],
             //'updatedAt',
             //'createdBy',
             //'updatedBy',

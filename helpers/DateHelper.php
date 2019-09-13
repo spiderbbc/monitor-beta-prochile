@@ -78,6 +78,10 @@ class DateHelper
         $date = new \DateTime($date, new \DateTimeZone('America/Santiago'));;
         return $date->getTimestamp();
     }
+
+    public static function asDatetime($date){
+        return date('d/m/Y',$date);
+    }
     /**
      * [isToday take a date and well his function name isToday rigth]
      * @param  [type]  $date [description]

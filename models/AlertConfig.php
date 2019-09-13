@@ -14,6 +14,7 @@ use yii\db\ActiveRecord;
  * @property string $product_description
  * @property string $competitors
  * @property string $country
+ * @property string $url_drive
  * @property int $start_date
  * @property int $end_date
  * @property int $createdAt
@@ -51,15 +52,31 @@ class AlertConfig extends \yii\db\ActiveRecord
      */
     public function rules()
     {
+        $uudi = uniqid();
         return [
-            [['product_description', 'competitors','uudi'], 'required'],
-            //[['alertId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy','start_date','end_date'], 'integer'],
-            [['product_description', 'competitors'], 'string', 'max' => 40],
+            [['start_date','end_date'], 'required'],
+            [['start_date','end_date'], 'date','format' => 'php:U'],
             [['alertId'], 'exist', 
               'skipOnError' => true, 
               'targetClass' => Alerts::className(), 
               'targetAttribute' => ['alertId' => 'id']]
         ];
+    }
+
+    public function beforeValidate()
+    {
+        if (!parent::beforeValidate()) {
+            return false;
+        }
+        
+        // ...custom code here...
+        $this->uudi = uniqid();
+        $this->country = 'Chile';
+        $this->start_date = strtotime(str_replace('/','-',$this->start_date));
+        $this->end_date   = strtotime(str_replace('/','-',$this->end_date));
+        /*$this->competitors         = ($this->competitors) ? implode(",",$this->competitors) : '';
+        $this->product_description = ($this->product_description) ? implode(",",$this->product_description) : '';*/
+        return true;
     }
 
     /**
@@ -72,6 +89,7 @@ class AlertConfig extends \yii\db\ActiveRecord
             'alertId' => Yii::t('app', 'Alert ID'),
             'product_description' => Yii::t('app', 'Product Description'),
             'competitors' => Yii::t('app', 'Competitors'),
+            'country' => Yii::t('app', 'url Drive'),
             'country' => Yii::t('app', 'country'),
             'start_date' => Yii::t('app', 'Start Date'),
             'end_date' => Yii::t('app', 'End Date'),
@@ -80,6 +98,21 @@ class AlertConfig extends \yii\db\ActiveRecord
             'createdBy' => Yii::t('app', 'Created By'),
             'updatedBy' => Yii::t('app', 'Updated By'),
         ];
+    }
+
+    public function saveAlertconfigSources($socialIds){
+      if($socialIds){
+        \app\models\AlertconfigSources::deleteAll('alertconfigId = '.$this->id);
+        foreach($socialIds as $socialId){
+            $model = new \app\models\AlertconfigSources();
+            $model->alertconfigId = $this->id;
+            $model->alertResourceId = $socialId;
+            if(!$model->save()){
+              return true;
+            }
+        }
+      }
+      return true;
     }
 
     /**

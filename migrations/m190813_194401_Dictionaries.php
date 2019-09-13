@@ -56,6 +56,15 @@ class m190813_194401_Dictionaries extends Migration
             'updatedBy'             => '1',
         ]);
 
+        $this->insert('{{%dictionaries}}', [
+            'name'                  => 'Free Words',
+            'color'                 => '#f27980',
+            'createdAt'             => '1488153462',
+            'updatedAt'             => '1488153462',
+            'createdBy'             => '1',
+            'updatedBy'             => '1',
+        ]);
+
     }
 
     /**

@@ -29,7 +29,8 @@
         "kartik-v/yii2-widget-fileinput": "dev-master",
         "ramosisw/yii2-material-dashboard": "dev-master",
         "kartik-v/yii2-widget-datepicker": "dev-master",
-        "mludvik/yii2-tags-input": "~1.0"
+        "mludvik/yii2-tags-input": "~1.0",
+        "google/apiclient": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

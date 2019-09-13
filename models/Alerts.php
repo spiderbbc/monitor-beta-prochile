@@ -26,9 +26,10 @@ use yii\db\ActiveRecord;
 class Alerts extends \yii\db\ActiveRecord
 {
     public $files;
-    public $free_words;
-    public $dictionaryIds;
+    public $free_words = [];
+    public $dictionaryIds = [];
     public $productsIds;
+    public $alertResourceId  = [];
 
     const STATUS_ACTIVE    = 1;
     const STATUS_INACTIVE  = 0;
@@ -60,11 +61,10 @@ class Alerts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userId'], 'required'],
+            [['userId','name','alertResourceId'], 'required'],
             [['status'], 'default','value' => 1],
             [['userId', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['name'], 'string', 'max' => 255],
-            [['name'], 'required'],
             [['userId'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['userId' => 'id']],
         ];
     }
@@ -140,13 +140,19 @@ class Alerts extends \yii\db\ActiveRecord
     }
 
     /**
-     * [getDictionaries get dictionaries]
+     * [getDictionaries get dictionaries for form]
      * @return [array] []
      */
     public function getDictionaries(){
         $dictionaries = Dictionaries::find()->all();
         $dictionariesIds = \yii\helpers\ArrayHelper::map($dictionaries,'id','name');
         return $dictionariesIds;
+    }
+
+    public function getSocial(){
+        $socials = Resources::find()->all();
+        $socialIds = \yii\helpers\ArrayHelper::map($socials,'id','name');
+        return $socialIds;
     }
 
     /**

@@ -34,3 +34,5 @@ tests/_support/_generated
 # app only folder
 data/
 config/
+web/assets/*
+credentials/*

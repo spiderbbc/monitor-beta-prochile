@@ -55,6 +55,32 @@ class Dictionaries extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getOrSaveDictionary($dictionaryIds){
+        if($dictionaryIds){
+            $dictionaries = [];
+            foreach ($dictionaryIds as $name) {
+              $isDictionary = \app\models\Dictionaries::find()->where( [ 'name' => $name ] )->exists(); 
+              if(!$isDictionary){
+                $color = substr(md5(time()), 0, 6);
+                $dictionary = new \app\models\Dictionaries();
+                $dictionary->name = $name;
+                $dictionary->color = '#' . $color;
+                if(!$dictionary->save()){
+                  $error = true;
+                }
+              }
+              else{
+                $dictionary =\app\models\Dictionaries::find()->where(['name' => $name])->one();
+              }
+               
+              $dictionaries[$dictionary->id] = $dictionary->name;  
+            } 
+            return $dictionaries;
+        }
+        return false;
+
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

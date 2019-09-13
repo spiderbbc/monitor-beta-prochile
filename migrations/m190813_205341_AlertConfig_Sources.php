@@ -38,14 +38,14 @@ class m190813_205341_AlertConfig_Sources extends Migration
         ]);
 
 
-        // creates index for column `dictionaryId`
+        // creates index for column `alertconfigId`
         $this->createIndex(
             'idx-alert_config_sources-alert_config',
             'alertconfig_sources',
             'alertconfigId'
         );
 
-        // add foreign key for table `dictionaries`
+        // add foreign key for table `alert_config`
         $this->addForeignKey(
             'fk-alert_config_sources-alert_config',
             'alertconfig_sources',
@@ -58,14 +58,14 @@ class m190813_205341_AlertConfig_Sources extends Migration
 
 
 
-        // creates index for column `dictionaryId`
+        // creates index for column `alertResourceId`
         $this->createIndex(
             'idx-alert_config_sources-alert_sources',
             'alertconfig_sources',
             'alertResourceId'
         );
 
-        // add foreign key for table `dictionaries`
+        // add foreign key for table `resources`
         $this->addForeignKey(
             'fk-alert_config_sources-alert_sources',
             'alertconfig_sources',

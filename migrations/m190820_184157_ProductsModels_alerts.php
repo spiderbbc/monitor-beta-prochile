@@ -30,8 +30,8 @@ class m190820_184157_ProductsModels_alerts extends Migration
         $this->insert('{{%products_models_alerts}}', [
             'alertId'         => 1,
             'product_modelId' => 1,
-            'createdAt'       => '1488153462',
-            'updatedAt'       => '1488153462',
+            'createdAt'       => 1559312912,
+            'updatedAt'       => 1559312912,
             'createdBy'       => '1',
             'updatedBy'       => '1',
         ]);
@@ -39,8 +39,8 @@ class m190820_184157_ProductsModels_alerts extends Migration
         $this->insert('{{%products_models_alerts}}', [
             'alertId'         => 1,
             'product_modelId' => 2,
-            'createdAt'       => '1488153462',
-            'updatedAt'       => '1488153462',
+            'createdAt'       => 1559312912,
+            'updatedAt'       => 1559312912,
             'createdBy'       => '1',
             'updatedBy'       => '1',
         ]);
@@ -73,7 +73,7 @@ class m190820_184157_ProductsModels_alerts extends Migration
 
         // add foreign key for table `{{%products_models}}`
         $this->addForeignKey(
-            'fk-idx-products_models_model-products_models',
+            'fk-products_models_model-products_models',
             'products_models_alerts',
             'product_modelId',
             'products_models',
@@ -102,13 +102,13 @@ class m190820_184157_ProductsModels_alerts extends Migration
 
         // drops foreign key for table `{{%products_models}}`
         $this->dropForeignKey(
-            '{{%fk-idx-products_models_model-products_models}}',
+            '{{%fk-products_models_model-products_models}}',
             '{{%products_models_alerts}}'
         );
 
         // drops index for column `product_modelId`
         $this->dropIndex(
-            '{{%idx-products_models_model-products_models}}',
+            '{{%fk-products_models_model-products_models}}',
             '{{%products_models_alerts}}'
         );
 

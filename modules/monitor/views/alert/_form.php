@@ -3,8 +3,10 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\bootstrap\Modal;
+use yii\helpers\ArrayHelper;
 
 use app\models\Products;
+use app\models\Resources;
 
 use kartik\select2\Select2;
 use kartik\date\DatePicker;
@@ -18,7 +20,6 @@ use mludvik\tagsinput\TagsInputWidget
 ?>
 <div class="modules-monitor-views-alert">
     <?php $form = ActiveForm::begin(); ?>
-    
         <div class="row">
             <div class="row">
                 <div class="col-md-12">
@@ -53,15 +54,16 @@ use mludvik\tagsinput\TagsInputWidget
             <!-- dictionaries and social -->
             <div class="row">
                 <div class="col-md-4">
-                    <?= $form->field($sources, 'alertResourceId')->widget(Select2::classname(), [
-                            'data' => $sources->social,
+                    <?= $form->field($alert, 'alertResourceId')->widget(Select2::classname(), [
+                            'data' => $alert->social,
                             'options' => [
                                 'id' => 'social_resourcesId',
                                 'placeholder' => 'Select a resources...',
                                 'multiple' => true,
                                 'theme' => 'krajee',
                                 'debug' => true,
-                              //  'value' => (!$alerts->isNewRecord) ? $resources : [],
+                              //  'value' => $resources,
+                               
                             ],
                             'pluginOptions' => [
                                 'allowClear' => true,
@@ -76,7 +78,7 @@ use mludvik\tagsinput\TagsInputWidget
                 </div>
                 <div class="col-md-4">
                     <?= $form->field($alert, 'dictionaryIds')->widget(Select2::classname(), [
-                            'data' => $alert->dictionaries,
+                            'data' => $drive->dictionaries,
                             'options' => [
                                 'id' => 'social_dictionaryId',
                                 'placeholder' => 'Select a dictionaries...',
@@ -86,6 +88,7 @@ use mludvik\tagsinput\TagsInputWidget
                               //  'value' => (!$alerts->isNewRecord) ? $resources : [],
                             ],
                             'pluginOptions' => [
+                                'depends'=>['drive-title'],
                                 'allowClear' => true,
                             ],
                             'pluginEvents' => [
@@ -105,10 +108,11 @@ use mludvik\tagsinput\TagsInputWidget
                                 'multiple' => true,
                                 'theme' => 'krajee',
                                 'debug' => true,
-                              //  'value' => (!$alerts->isNewRecord) ? $resources : [],
+                                //'value' => [1 => 'LG G7 ThinQ (G710 / New Aurora Black'],
                             ],
                             'pluginOptions' => [
                                 'allowClear' => true,
+                                'tags' => true,
                             ],
                             'pluginEvents' => [
                                "select2:select" => "function(e) { 
@@ -128,7 +132,7 @@ use mludvik\tagsinput\TagsInputWidget
                         'pluginOptions' => [
                             'tags' => true,
                             'tokenSeparators' => [',', ' '],
-                            'maximumInputLength' => 10
+                           // 'maximumInputLength' => 10
                         ],
                     ])->label('Tag free words'); 
                     ?>   
@@ -136,11 +140,14 @@ use mludvik\tagsinput\TagsInputWidget
                 <div class="col-md-4">
                     <?= $form->field($config, 'product_description')->widget(Select2::classname(), [
                     //'data' => $data,
-                    'options' => ['placeholder' => 'write a tags product description ...', 'multiple' => true],
+                    'options' => ['placeholder' => 'write a tags product description ...', 
+                                   'multiple' => true,
+                                  // 'value' => [$config->product_description]
+                               ],
                         'pluginOptions' => [
                             'tags' => true,
                             'tokenSeparators' => [',', ' '],
-                            'maximumInputLength' => 10
+                            //'maximumInputLength' => 10
                         ],
                     ])->label('Tag product description'); 
                     ?>   
@@ -152,7 +159,7 @@ use mludvik\tagsinput\TagsInputWidget
                         'pluginOptions' => [
                             'tags' => true,
                             'tokenSeparators' => [',', ' '],
-                            'maximumInputLength' => 10
+                          //  'maximumInputLength' => 10
                         ],
                     ])->label('Tag competitors'); 
                     ?> 

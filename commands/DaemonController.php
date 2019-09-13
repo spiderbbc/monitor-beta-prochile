@@ -9,6 +9,7 @@ use yii\helpers\Console;
 
 use app\models\Alerts;
 use app\models\api\BaseApi;
+use app\models\api\DriveApi;
 
 use yii\helpers\FileHelper;
 
@@ -58,6 +59,18 @@ class DaemonController extends Controller
             var_dump($folder);
         }
         $this->stdout("runnig actionDataSearch funtction.. \n", Console::BOLD);
+    }
+
+    public function actionSyncProducts(){
+        $drive = new DriveApi();
+        $data = $drive->getContentDocument();
+    }
+    /**
+     * [only development function]
+     * @return [type] [description]
+     */
+    public function actionTruncateProducts(){
+        \Yii::$app->db->createCommand()->delete('products_series','status = :status', [':status' => 1])->execute();
     }
 
 }
