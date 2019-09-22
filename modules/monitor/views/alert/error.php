@@ -14,7 +14,10 @@ $this->title = $name;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <div class="alert alert-danger">
-        <?= nl2br(Html::encode($message)) ?>
+        <?php foreach($message as $title => $msg): ?>
+            <?= nl2br(Html::encode($title)) ?>
+            <?= nl2br(Html::encode($msg)) ?>
+        <?php endforeach: ?>
     </div>
 
     <p>

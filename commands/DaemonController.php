@@ -63,7 +63,8 @@ class DaemonController extends Controller
 
     public function actionSyncProducts(){
         $drive = new DriveApi();
-        $data = $drive->getContentDocument();
+        $drive->getContentDocument();
+        return ExitCode::OK;
     }
     /**
      * [only development function]

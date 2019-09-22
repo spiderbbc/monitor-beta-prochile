@@ -6,6 +6,8 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
+use app\helpers\DateHelper;
+
 /**
  * This is the model class for table "alert_config".
  *
@@ -26,6 +28,7 @@ use yii\db\ActiveRecord;
  */
 class AlertConfig extends \yii\db\ActiveRecord
 {
+    public $country = 'Chile';
     /**
      * {@inheritdoc}
      */
@@ -52,10 +55,15 @@ class AlertConfig extends \yii\db\ActiveRecord
      */
     public function rules()
     {
-        $uudi = uniqid();
         return [
             [['start_date','end_date'], 'required'],
+            // normalize "start_date" and "end_date" using the function "normalizeDate"
+            [['start_date','end_date'], 'filter', 'filter' => [$this, 'normalizeDate']],
+            // normalize "phone" using the function "normalizeTags"
+            [['product_description','competitors'], 'filter', 'filter' => [$this, 'normalizeTags']],
+            
             [['start_date','end_date'], 'date','format' => 'php:U'],
+            
             [['alertId'], 'exist', 
               'skipOnError' => true, 
               'targetClass' => Alerts::className(), 
@@ -68,15 +76,17 @@ class AlertConfig extends \yii\db\ActiveRecord
         if (!parent::beforeValidate()) {
             return false;
         }
-        
-        // ...custom code here...
-        $this->uudi = uniqid();
-        $this->country = 'Chile';
-        $this->start_date = strtotime(str_replace('/','-',$this->start_date));
-        $this->end_date   = strtotime(str_replace('/','-',$this->end_date));
-        /*$this->competitors         = ($this->competitors) ? implode(",",$this->competitors) : '';
-        $this->product_description = ($this->product_description) ? implode(",",$this->product_description) : '';*/
         return true;
+    }
+
+    public function normalizeDate($value){
+
+        return strtotime(str_replace('/','-',$value));
+
+    }
+
+    public function normalizeTags($value){
+        return ($value) ? implode(",",$value) : '';
     }
 
     /**
@@ -131,5 +141,19 @@ class AlertConfig extends \yii\db\ActiveRecord
     public function getConfigSources()
     {
         return $this->hasMany(AlertconfigSources::className(), ['alertconfigId' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getConfigSourcesByAlertResource()
+    {
+        $sources = $this->configSources;
+        // set resources id select2
+        $selectIds = [];
+        foreach ($sources as $source) {
+          $selectIds[] =  $source->alertResource->id;
+        }   
+        return $selectIds;                  
     }
 }

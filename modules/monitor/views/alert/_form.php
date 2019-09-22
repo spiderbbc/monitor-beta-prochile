@@ -62,7 +62,8 @@ use mludvik\tagsinput\TagsInputWidget
                                 'multiple' => true,
                                 'theme' => 'krajee',
                                 'debug' => true,
-                              //  'value' => $resources,
+                                'value' => (isset($alert->config->configSourcesByAlertResource)) 
+                                            ? $alert->config->configSourcesByAlertResource : [],
                                
                             ],
                             'pluginOptions' => [
@@ -85,7 +86,7 @@ use mludvik\tagsinput\TagsInputWidget
                                 'multiple' => true,
                                 'theme' => 'krajee',
                                 'debug' => true,
-                              //  'value' => (!$alerts->isNewRecord) ? $resources : [],
+                                'value' => (isset($alert->keywordsIds)) ? $alert->keywordsIds : [],
                             ],
                             'pluginOptions' => [
                                 'depends'=>['drive-title'],
@@ -127,8 +128,12 @@ use mludvik\tagsinput\TagsInputWidget
             <div class="row">
                 <div class="col-md-4">
                     <?= $form->field($alert, 'free_words')->widget(Select2::classname(), [
-                    //'data' => $data,
-                    'options' => ['placeholder' => 'write a tags free words ...', 'multiple' => true],
+                   // 'data' => $alert->freeKeywords,
+                    'options' => [
+                            'placeholder' => 'write a tags free words ...', 
+                            'multiple' => true,
+                          //  'value' => (isset($alert->freeKeywords)) ? $alert->freeKeywords : [],
+                        ],
                         'pluginOptions' => [
                             'tags' => true,
                             'tokenSeparators' => [',', ' '],

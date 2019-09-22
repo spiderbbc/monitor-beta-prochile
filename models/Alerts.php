@@ -33,6 +33,8 @@ class Alerts extends \yii\db\ActiveRecord
 
     const STATUS_ACTIVE    = 1;
     const STATUS_INACTIVE  = 0;
+    
+    
     /**
      * {@inheritdoc}
      */
@@ -61,7 +63,7 @@ class Alerts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userId','name','alertResourceId'], 'required'],
+            [['userId','name','alertResourceId','productsIds'], 'required'],
             [['status'], 'default','value' => 1],
             [['userId', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['name'], 'string', 'max' => 255],
@@ -144,16 +146,72 @@ class Alerts extends \yii\db\ActiveRecord
      * @return [array] []
      */
     public function getDictionaries(){
-        $dictionaries = Dictionaries::find()->all();
+        $dictionaries = Dictionaries::getDb()->cache(function ($db) {
+            return Dictionaries::find()->all();
+        });
         $dictionariesIds = \yii\helpers\ArrayHelper::map($dictionaries,'id','name');
         return $dictionariesIds;
     }
 
+    
     public function getSocial(){
-        $socials = Resources::find()->all();
+        $socials = Resources::getDb()->cache(function ($db) {
+            return Resources::find()->all();
+        });
         $socialIds = \yii\helpers\ArrayHelper::map($socials,'id','name');
         return $socialIds;
     }
+
+    /**
+     * return free_words dictionaries words [form]
+     * @return array
+     */
+    public function getFreeKeywords()
+    {
+        $keywords =  $this->hasMany(Keywords::className(), ['alertId' => 'id'])
+            ->where(['dictionaryId' => Dictionaries::FREE_WORDS_ID])
+             ->select('name')
+             ->orderBy('id')
+             ->all();
+        $words = [];     
+        if($keywords){
+          foreach ($keywords as $keyword){
+            $words[] = $keyword->name;
+          }
+        }
+        return $words;     
+    }
+    /**
+     * return  dictionaries name [form]
+     * @return array
+     */
+    public function getKeywordsIds(){
+        $keywords = $this->keywords;
+        $dictionaryIds = [];
+        foreach ($keywords as $keyword){
+          if(!in_array($keyword->dictionary->name,$dictionaryIds)){
+            $dictionaryIds[$keyword->dictionary->name] = $keyword->dictionary->name;
+          }
+        }
+        return $dictionaryIds;
+    }
+    /**
+     * return  products/models name [form]
+     * @return array
+     */
+    public function getProducts(){
+
+        $productsIds = \app\models\ProductsModelsAlerts::getDb()->cache(function ($db) {
+            return ProductsModelsAlerts::find()->where(['alertId' => $this->id])->all();
+        });
+
+        $product_models = [];
+        foreach ($productsIds as $productsId) {
+            $product_models[$productsId->productModel->id] = $productsId->productModel->name;
+        }
+        return $product_models;
+    }
+
 
     /**
      * @return \yii\db\ActiveQuery

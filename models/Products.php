@@ -199,6 +199,16 @@ class Products extends \yii\db\ActiveRecord
         return $models_products;
     }
 
+    public static function saveProductsModelAlerts($products_models = [],$alertId){
+        $productsIds = self::getModelsIdByName($products_models);
+        foreach ($productsIds as $id => $name) {
+            $model = new \app\models\ProductsModelsAlerts();
+            $model->alertId = $alertId;
+            $model->product_modelId = $id;
+            $model->save();
+        }
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

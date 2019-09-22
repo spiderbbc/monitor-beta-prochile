@@ -78,79 +78,53 @@ class AlertController extends Controller
         
 
         if (Yii::$app->request->post() && $alert->load(Yii::$app->request->post()) && $config->load(Yii::$app->request->post())) {
-            $error = false;
 
-            $alert->userId = 1;
-            if(!$alert->save()){ 
+          $error = false;
+          $alert->userId = 1;
+
+          if(!$alert->save()){ 
+            $error = true;
+          }
+          // config model
+          $config->alertId = $alert->id;
+          if($config->save()){
+            //sources model
+            $is_save_socialIds = $config->saveAlertconfigSources($alert->alertResourceId);
+            if(!$is_save_socialIds){
               $error = true;
             }
-            // config model
-            $config->alertId = $alert->id;
-            if($config->save()){
-                //sources model
-                $is_save_socialIds = $config->saveAlertconfigSources($alert->alertResourceId);
-                if(!$is_save_socialIds){
-                  $error = true;
-                }
-            }else{ $error = true;}
-            // keywords/ dictionaryIds model
-            $dictionaryIds = Yii::$app->request->post('Alerts')['dictionaryIds'];
-            if($dictionaryIds){
-              $model = new \app\models\Dictionaries();
-              $dictionaries = $model->getOrSaveDictionary($dictionaryIds);
-              if($dictionaries){
-                foreach ($dictionaries as $dictionaryId => $dictionaryName){
-                  $keywords_drive = $drive->getContentDictionaryByTitle([$dictionaryName]);
-                  foreach ($keywords_drive[$dictionaryName] as $word) {
-                    $models[] = [$alert->id,$dictionaryId,$word];
-                }
-                    
-              }
-              Yii::$app->db->createCommand()->batchInsert('keywords', ['alertId','dictionaryId', 'name'],$models)
-                          ->execute();
-              }
-            }
-            // if free words is
-            $free_words = Yii::$app->request->post('Alerts')['free_words'];
-            $model = []; 
-            if ($free_words){
-              foreach ($free_words as $word){
-                $models[] = [$alert->id,4,$word];
-              }
-              // save free words 
-              Yii::$app->db->createCommand()->batchInsert('keywords', ['alertId','dictionaryId', 'name'],$models)
-              ->execute();
-            }
-            // set product/models
-            $products_models = Yii::$app->request->post('Alerts')['productsIds'];
-            $model = new \app\models\Products();
-            $productsIds = $model::getModelsIdByName($products_models);
-            
-            foreach ($productsIds as $id => $name) {
-                $model = new \app\models\ProductsModelsAlerts();
-                $model->alertId = $alert->id;
-                $model->product_modelId = $id;
-                if(!$model->save()){
-                  $error = true;
-                }
-            }
-            // error to page view
-            if($error){
-              $alert->delete();
-              return $this->render('error',[
-                  'name' => 'alert',
-                  'message' => 'Alers not created.'
-              ]);
-            }
+          }else{ $error = true;}
+          // keywords/ dictionaryIds model
+          $dictionaryIds = Yii::$app->request->post('Alerts')['dictionaryIds'];
+          if($dictionaryIds){
+            \app\models\Dictionaries::saveDictionaryDrive($dictionaryIds,$alert->id);
+          }
+          // if free words is
+          $free_words = Yii::$app->request->post('Alerts')['free_words'];
+          if ($free_words){
+            \app\models\Dictionaries::saveFreeWords($free_words,$alert->id);
+          }
+          // set product/models
+          $products_models = Yii::$app->request->post('Alerts')['productsIds'];
+          if($products_models){
+            \app\models\Products::saveProductsModelAlerts($products_models,$alert->id);
+          }
+          // error to page view
+          if($error){
+            $alert->delete();
+            return $this->render('error',[
+              'name' => 'alert',
+              'message' => 'Alers not created.'
+            ]);
+          }
            
-            Yii::$app->getSession()->setFlash('success', 'Alers has been created.');
-            return $this->redirect(['view', 'id' => $alert->id]);
+          Yii::$app->getSession()->setFlash('success', 'Alers has been created.');
+          return $this->redirect(['view', 'id' => $alert->id]);
         } 
 
         return $this->render('create', [
             'alert'   => $alert,
             'config'  => $config,
-            'sources' => $sources,
             'drive'   => $drive,
         ]);
     }
@@ -166,120 +140,74 @@ class AlertController extends Controller
     {
        
         $alert = $this->findModel($id);
-        $config = \app\models\AlertConfig::findOne(['alertId' => $alert->id]);
+        $config = $alert->config;
         $drive   = new \app\models\api\DriveApi();
         //set date
         $config->start_date = DateHelper::asDatetime($config->start_date);
         $config->end_date = DateHelper::asDatetime($config->end_date);
-
-        $sources = \app\models\AlertconfigSources::find()->where(['alertconfigId' => $config->id])->all();
-        // set resources id select2
-        foreach ($sources as $source) {
-          $alert->alertResourceId[] = $source->alertResource->id;
-        }
-        // set dictionaryIds
-        $keywords = \app\models\Keywords::find()->where(['alertId' => $alert->id])->select('dictionaryId')->all();
-        
-        foreach ($keywords as $keyword){
-          if(!in_array($keyword->dictionary->name,$alert->dictionaryIds)){
-            $alert->dictionaryIds[$keyword->dictionary->name] = $keyword->dictionary->name;
-          }
-        }
         //free words
-        $keywords = \app\models\Keywords::find()->where(['alertId' => $alert->id,'dictionaryId' => 4])->select('name')->all();
-        $free_words = [];
-        if($keywords){
-          foreach ($keywords as $keyword){
-            $alert->free_words[] = $keyword->name;
-          }
-        }
-
+        $alert->free_words = $alert->freeKeywords;
         // set productIds
-        $productsIds = \app\models\ProductsModelsAlerts::find()->where(['alertId' => $alert->id])->all();
-        $product_models = [];
-        foreach ($productsIds as $productsId) {
-            $product_models[$productsId->productModel->id] = $productsId->productModel->name;
-        }
-        $alert->productsIds  = $product_models;
+        $alert->productsIds  = $alert->products;
         // set tag 
         $config->product_description = explode(",",$config->product_description);
         $config->competitors = explode(",",$config->competitors);
         
-
-
         
         if (Yii::$app->request->post() && $alert->load(Yii::$app->request->post()) && $config->load(Yii::$app->request->post())) {
           $error = false;
+          $messages;
+          
           $alert->userId = 1;
+          
           if(!$alert->save()){ 
+            $messages = $alert->errors;
             $error = true;
           }
           // config model
           $config->alertId = $alert->id;
-          $config->product_description = (Yii::$app->request->post('AlertConfig')['product_description'])
-                                          ? implode(",",Yii::$app->request->post('AlertConfig')['product_description']) : '';
-          $config->competitors = (Yii::$app->request->post('AlertConfig')['competitors'])
-                                          ? implode(",",Yii::$app->request->post('AlertConfig')['competitors']) : '';                                
 
-          if($config->save()){
+          if(!$config->save() && $config->saveAlertconfigSources($alert->alertResourceId)){
               //sources model
-              $is_save_socialIds = $config->saveAlertconfigSources($alert->alertResourceId);
-              if(!$is_save_socialIds){
-                $error = true;
-              }
-          }else{ $error = true;}
+              $error = true;
+              $messages = $config->errors;
+          }
+          
           // keywords/ dictionaryIds model
-          \app\models\Keywords::deleteAll('alertId = '.$alert->id);
           $dictionaryIds = Yii::$app->request->post('Alerts')['dictionaryIds'];
           if($dictionaryIds){
-            $model = new \app\models\Dictionaries();
-            $dictionaries = $model->getOrSaveDictionary($dictionaryIds);
-            if($dictionaries){
-              foreach ($dictionaries as $dictionaryId => $dictionaryName){
-                $keywords_drive = $drive->getContentDictionaryByTitle([$dictionaryName]);
-                foreach ($keywords_drive[$dictionaryName] as $word) {
-                  $models[] = [$alert->id,$dictionaryId,$word];
-              }
-                  
-            }
-            Yii::$app->db->createCommand()->batchInsert('keywords', ['alertId','dictionaryId', 'name'],$models)
-                        ->execute();
-            }
+            \app\models\Dictionaries::saveDictionaryDrive($dictionaryIds,$alert->id);
           }
-          // if free words is
+
+           // if free words is
           $free_words = Yii::$app->request->post('Alerts')['free_words'];
-          $model = []; 
           if ($free_words){
-            foreach ($free_words as $word){
-              $models[] = [$alert->id,4,$word];
-            }
-            // save free words 
-            Yii::$app->db->createCommand()->batchInsert('keywords', ['alertId','dictionaryId', 'name'],$models)
-            ->execute();
+            \app\models\Keywords::deleteAll([
+                        'alertId' => $alert->id,
+                        'dictionaryId' => \app\models\Dictionaries::FREE_WORDS_ID
+            ]);
+            \app\models\Dictionaries::saveFreeWords($free_words,$alert->id);
           }
-          
 
           // set product/models
-          \app\models\ProductsModelsAlerts::deleteAll('alertId = '.$alert->id);
           $products_models = Yii::$app->request->post('Alerts')['productsIds'];
-          $model = new \app\models\Products();
-          $productsIds = $model::getModelsIdByName($products_models);
-          
-          foreach ($productsIds as $id => $name) {
-              $model = new \app\models\ProductsModelsAlerts();
-              $model->alertId = $alert->id;
-              $model->product_modelId = $id;
-              if(!$model->save()){
-                $error = true;
-              }
+          if($products_models){
+            \app\models\ProductsModelsAlerts::deleteAll([
+                'alertId' => $alert->id,
+            ]);
+            \app\models\Products::saveProductsModelAlerts($products_models,$alert->id);
           }
 
           // error to page view
           if($error){
             $alert->delete();
+            $msg = [];
+            foreach ($messages as $title => $message){
+              $msg[$title] = $message;
+            }
             return $this->render('error',[
                 'name' => 'alert',
-                'message' => 'Alers not created.'
+                'message' => $msg,
             ]);
           }
           return $this->redirect(['view', 'id' => $alert->id]);
@@ -287,9 +215,8 @@ class AlertController extends Controller
 
         return $this->render('update', [
             'alert' => $alert,
-            'config' => $config,
-            'sources' => $sources,
             'drive' => $drive,
+            'config' => $config,
         ]);
     }
 

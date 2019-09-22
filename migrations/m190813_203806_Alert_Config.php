@@ -21,7 +21,7 @@ class m190813_203806_Alert_Config extends Migration
         $this->createTable('{{%alert_config}}', [
             'id'                  => $this->primaryKey(),
             'alertId'             => $this->integer(11)->notNull()->unique(),
-            'uudi'                => $this->string()->notNull(),
+            'uuid'                => $this->string(),
             'product_description' => $this->string(40)->notNull(),
             'competitors'         => $this->string(40)->notNull(),
             'country'             => $this->json(),
@@ -38,7 +38,7 @@ class m190813_203806_Alert_Config extends Migration
 
         $this->insert('{{%alert_config}}', [
             'alertId'             => 1,
-            'uudi'                => 'Boom_1559312912',
+            'uuid'                => 'Boom_1559312912',
             'product_description' => 'tecnology,Home entretaiment',
             'competitors'         => 'Sansung,Iphone,Hyundai',
             'country'             => null,
