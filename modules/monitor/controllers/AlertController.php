@@ -4,9 +4,10 @@ namespace app\modules\monitor\controllers;
 
 use Yii;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
 
 
 use app\helpers\DateHelper;
@@ -26,10 +27,23 @@ class AlertController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index','create'],
+                'rules' => [
+                    [
+                       // 'actions' => ['create'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'logout' => ['POST'],
+                    'index' => ['GET', 'POST'],
+                    
                 ],
             ],
         ];
@@ -80,7 +94,7 @@ class AlertController extends Controller
         if (Yii::$app->request->post() && $alert->load(Yii::$app->request->post()) && $config->load(Yii::$app->request->post())) {
 
           $error = false;
-          $alert->userId = 1;
+          $alert->userId = Yii::$app->user->getId();
 
           if(!$alert->save()){ 
             $error = true;

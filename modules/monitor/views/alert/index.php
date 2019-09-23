@@ -26,9 +26,21 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'userId',
-            'name',
-            'status',
+            [
+                'label' => Yii::t('app','Usuario'),
+                'attribute' => 'userId',
+                'value' => function($model){
+                    return $model->user->username;
+                }
+            ],
+            [
+                'label' => Yii::t('app','Nombre de la Alerta'),
+                'attribute' => 'name',
+            ],
+            [
+                'label' => Yii::t('app','Estado'),
+                'attribute' => 'status'
+            ],
             [
                 'label' => Yii::t('app', 'Fecha de Inicio'),
                 'attribute' => 'start_date',
