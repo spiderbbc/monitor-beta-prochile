@@ -117,8 +117,6 @@ class Products extends \yii\db\ActiveRecord
     public static function getModelsIdByName($products=[])
     {   
         $models_products = [];
-        /*var_dump($products);
-        die();*/
         for ($i=0; $i <sizeof($products) ; $i++) { 
             
             $products_series = ProductsSeries::findOne(['name' => $products[$i]]);
@@ -201,10 +199,11 @@ class Products extends \yii\db\ActiveRecord
 
     public static function saveProductsModelAlerts($products_models = [],$alertId){
         $productsIds = self::getModelsIdByName($products_models);
-        foreach ($productsIds as $id => $name) {
+        
+        foreach ($productsIds as $productId => $name) {
             $model = new \app\models\ProductsModelsAlerts();
             $model->alertId = $alertId;
-            $model->product_modelId = $id;
+            $model->product_modelId = $productId;
             $model->save();
         }
     }

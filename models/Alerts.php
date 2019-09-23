@@ -148,7 +148,7 @@ class Alerts extends \yii\db\ActiveRecord
     public function getDictionaries(){
         $dictionaries = Dictionaries::getDb()->cache(function ($db) {
             return Dictionaries::find()->all();
-        });
+        },60);
         $dictionariesIds = \yii\helpers\ArrayHelper::map($dictionaries,'id','name');
         return $dictionariesIds;
     }
@@ -157,7 +157,7 @@ class Alerts extends \yii\db\ActiveRecord
     public function getSocial(){
         $socials = Resources::getDb()->cache(function ($db) {
             return Resources::find()->all();
-        });
+        },60);
         $socialIds = \yii\helpers\ArrayHelper::map($socials,'id','name');
         return $socialIds;
     }
@@ -201,9 +201,7 @@ class Alerts extends \yii\db\ActiveRecord
      */
     public function getProducts(){
 
-        $productsIds = \app\models\ProductsModelsAlerts::getDb()->cache(function ($db) {
-            return ProductsModelsAlerts::find()->where(['alertId' => $this->id])->all();
-        });
+        $productsIds = ProductsModelsAlerts::find()->where(['alertId' => $this->id])->all();
 
         $product_models = [];
         foreach ($productsIds as $productsId) {
