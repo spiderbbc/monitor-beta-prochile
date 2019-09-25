@@ -1,14 +1,88 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\widgets\Pjax;
+use yii\web\JsExpression;
+use yii\web\View;
+
+use app\models\Resources;
 //use yii\grid\GridView;
 use macgyer\yii2materializecss\widgets\grid\GridView;
+use kartik\select2\Select2;
+use kartik\date\DatePicker;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\search\AlertSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Alerts';
 $this->params['breadcrumbs'][] = $this->title;
+
+$format = <<< JS
+function format(data) {   
+  var response="";
+  if(data.id== 0 )
+    response += '<i class="fa fa-clock-o mr5"></i>' + data.text;
+  else if(data.id == 1)
+    response += '<i class="fa fa-check mr5"></i>' + data.text;
+  else
+    response += '<i class="fa fa-times mr5"></i>' + data.text;
+  
+  return response;
+}
+JS;
+
+$url = Url::to('change-pay-status');
+$msgTitle = Yii::t('app', 'Atención');
+$msgText = Yii::t('app', 'Será cambiado el estado de la alerta y no recabara mas informacion');
+$msgButton = Yii::t('app', 'Entendido!');
+$js = <<< JS
+//Cambio de status de la publicación
+$(".payStatus").change(function(){
+  var id = $(this).attr("id");
+  var value = $(this).val();  
+  swal({
+    title: "$msgTitle",
+    text: "$msgText",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  })
+  .then((willDelete) => {
+    if (willDelete) {
+      $.ajax({
+        url: "$url",
+        data: {"id":id, "value":value},
+        type: "GET",
+        dataType: "json",
+      }).done(function(data) {
+        if(data.situation != "success"){
+          swal({              
+            title: data.title,
+            text: data.text,
+            type: 'error',
+            confirmButtonText: 'Entendido!',
+              });         
+            }else{
+              swal({
+                title: data.title,
+                text: data.text,
+                type: 'success',
+                confirmButtonText: 'Entendido!',
+              });
+            }
+          });
+    } else {
+     //$("#"+ id).select2("val", value);
+    }
+  });
+});    
+JS;
+$this->registerJs($format, View::POS_HEAD);
+$this->registerJs($js, View::POS_END);
+$escape = new JsExpression("function(m) { return m; }");
+
+
 ?>
 <div class="alerts-index">
 
@@ -19,49 +93,140 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
+    <?php Pjax::begin(['id' => 'alerts', 'timeout' => false, 'enablePushState' => false]) ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'yii\grid\SerialColumn',
+             'contentOptions' => [
+                  //  'style' => 'vertical-align: middle;'
+                ]
+            ],
 
             [
                 'label' => Yii::t('app','Usuario'),
                 'attribute' => 'userId',
+                'format' => 'raw',
                 'value' => function($model){
-                    return $model->user->username;
+                    return Html::a($model->user->username,['update', 'id' => $model->id]);
                 }
             ],
             [
                 'label' => Yii::t('app','Nombre de la Alerta'),
                 'attribute' => 'name',
-            ],
-            [
-                'label' => Yii::t('app','Estado'),
-                'attribute' => 'status'
+                'format' => 'raw',
+                'value' => function($model) {
+                  return Html::a($model->name,['update', 'id' => $model->id]);
+                }
             ],
             [
                 'label' => Yii::t('app', 'Fecha de Inicio'),
                 'attribute' => 'start_date',
+                'format' => 'raw',
                 'value' => function($model) { 
-                    return Yii::$app->formatter->asDatetime($model->config->start_date,'yyyy-MM-dd');  
+                    return Html::a(Yii::$app->formatter->asDatetime($model->config->start_date,'yyyy/MM/dd'), ['update', 'id' => $model->id]);
                 },
+                'filter' => DatePicker::widget([
+                    'name' => 'AlertSearch[start_date]',
+                    'type' => DatePicker::TYPE_COMPONENT_APPEND,
+                    'value' => $searchModel['start_date'],
+                   // 'layout' => $layout2,
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy/mm/dd',
+                    ]
+                ]),
             ],
             [
                 'label' => Yii::t('app', 'Fecha Final'),
                 'attribute' => 'end_date',
+                'format' => 'raw',
                 'value' => function($model) { 
-                    return Yii::$app->formatter->asDatetime($model->config->end_date,'yyyy-MM-dd');  
+                    return Html::a(Yii::$app->formatter->asDatetime($model->config->end_date,'yyyy/MM/dd'), ['update', 'id' => $model->id]);
                 },
+                'filter' => DatePicker::widget([
+                    'name' => 'AlertSearch[end_date]',
+                    'type' => DatePicker::TYPE_COMPONENT_APPEND,
+                    'value' => $searchModel['end_date'],
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy/mm/dd',
+                    ]
+                ]),
             ],
-            //'updatedAt',
-            //'createdBy',
-            //'updatedBy',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => Yii::t('app','Recurso Social'),
+                'format'    => 'raw',
+                'attribute' => 'alertResourceId',
+                'filter' => Select2::widget([
+                     'data' => \yii\helpers\ArrayHelper::map(Resources::find()->all(),'name','name'),
+                     'name' => 'AlertSearch[alertResourceId]',
+                     'value' => $searchModel['alertResourceId'],
+                    // 'value' => isset($searchModel['alertResourceId']) ? $searchModel['alertResourceId'] : [],
+                     'attribute' => 'alertResourceId',
+                     'options' => ['placeholder' => 'Select resources...','multiple' => false],
+                     'theme' => 'krajee',
+                     'hideSearch' => true,
+                     'pluginOptions' => [
+                           'allowClear' => true,
+                      ],
+                ]),
+                'value' => function($model) {
+                    $html = '';
+                    foreach ($model->config->configSources as $alert) {
+                        $html .= " <span class='label label-info'>{$alert->alertResource->name}</span>";
+                    }
+                    return $html;
+                }
+            ],
+            [
+                'label' => Yii::t('app','Estado'),
+                'format'    => 'raw',
+                'attribute' => 'status',
+                'filter' => Select2::widget([
+                     'name' => 'AlertSearch[status]',
+                     'value' => $searchModel['status'],
+                     'attribute' => 'status',
+                     'data' => [1 => 'Active', 0 => 'Inactive'],
+                     'options' => ['placeholder' => 'Select status...'],
+                     'theme' => 'krajee',
+                     'hideSearch' => true,
+                     'pluginOptions' => [
+                           'allowClear' => true,
+                      ],
+                ]),
+                'value' => function($model) use ($escape){
+                   // return ($model->status) ? 'Active' : 'Inactive';
+                   return Select2::widget([
+                      'name' => 'AlertSearch[status]',
+                      'value' => $model->status,
+                      'data' => [1 => 'Active', 0 => 'Inactive'],
+                      'hideSearch' => true,
+                      'id' => $model->id,
+                      'options' => [
+                        'class' => 'payStatus',
+                        'propertyId' => $model->id,
+                      ],
+                      'pluginOptions' => [
+                        'allowClear' => false,
+                        'templateResult' => new JsExpression('format'),
+                        'escapeMarkup' => $escape,
+                      ],
+                    ]);
+                },
+               'contentOptions' => ['style' => 'width: 10%;min-width: 20px'],     
+            ],
+            
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'contentOptions' => ['style' => 'width: 10%;min-width: 20px'], 
+            ],
         ],
     ]); ?>
-
-
+    <?php Pjax::end() ?>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </div>
+<?php
+
+?>

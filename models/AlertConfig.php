@@ -118,7 +118,7 @@ class AlertConfig extends \yii\db\ActiveRecord
             $model->alertconfigId = $this->id;
             $model->alertResourceId = $socialId;
             if(!$model->save()){
-              return true;
+              return false;
             }
         }
       }
@@ -141,6 +141,12 @@ class AlertConfig extends \yii\db\ActiveRecord
     public function getConfigSources()
     {
         return $this->hasMany(AlertconfigSources::className(), ['alertconfigId' => 'id']);
+    }
+
+    public function getSources()
+    {
+        return $this->hasMany(Resources::className(), ['id' => 'alertResourceId'])
+            ->viaTable('alertconfig_sources', ['alertconfigId' => 'id']);
     }
 
     /**

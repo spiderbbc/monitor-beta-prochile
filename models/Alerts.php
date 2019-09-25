@@ -63,7 +63,7 @@ class Alerts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userId','name','alertResourceId','productsIds'], 'required'],
+            [['userId','name','alertResourceId','productsIds'], 'required', 'on' => 'saveOrUpdate'],
             [['status'], 'default','value' => 1],
             [['userId', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['name'], 'string', 'max' => 255],

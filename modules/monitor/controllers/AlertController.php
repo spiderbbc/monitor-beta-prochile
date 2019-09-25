@@ -49,6 +49,39 @@ class AlertController extends Controller
         ];
     }
 
+     /**
+     * @param $id
+     * @param $value
+     *
+     * @return string
+     * @throws \yii\web\NotFoundHttpException
+     */
+    public function actionChangePayStatus($id, $value)
+    {
+      $out = [];
+      $model = $this->findModel($id);
+      $model->status = $value;
+
+      Yii::$app->response->format = 'json';
+      if($model->save() && Yii::$app->request->isAjax)
+      {
+        $out['situation'] = "success";
+        $out['title'] = Yii::t('app', 'Mensaje enviado');
+        $out['text'] = Yii::t('app', 'El mensaje fue enviado exitosamente.');
+        
+      }else{
+        $out['situation'] = "error";
+        $out['title'] = Yii::t('app', '¡Error!');
+        $out['text'] = Yii::t('app',
+            'Ha ocurrido un error al enviarse el correo. Por favor inténtelo más tarde.');
+        var_dump($model->errors);
+        die();
+      }
+
+      return $out;
+
+    }
+
     /**
      * Lists all Alerts models.
      * @return mixed
@@ -88,6 +121,8 @@ class AlertController extends Controller
         $config  = new \app\models\AlertConfig();
         $sources = new \app\models\AlertconfigSources();
         $drive   = new \app\models\api\DriveApi();
+
+        $alert->scenario = 'saveOrUpdate';
 
         
 
@@ -156,6 +191,9 @@ class AlertController extends Controller
         $alert = $this->findModel($id);
         $config = $alert->config;
         $drive   = new \app\models\api\DriveApi();
+        // set scenario
+        $alert->scenario = 'saveOrUpdate';
+
         //set date
         $config->start_date = DateHelper::asDatetime($config->start_date);
         $config->end_date = DateHelper::asDatetime($config->end_date);
@@ -180,8 +218,9 @@ class AlertController extends Controller
           }
           // config model
           $config->alertId = $alert->id;
+          $config->save();
 
-          if(!$config->save() && $config->saveAlertconfigSources($alert->alertResourceId)){
+          if(!$config->saveAlertconfigSources($alert->alertResourceId)){
               //sources model
               $error = true;
               $messages = $config->errors;
