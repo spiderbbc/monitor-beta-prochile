@@ -11,7 +11,6 @@ $this->title = 'My Yii Application';
 
         <p class="lead">You have successfully created your Yii-powered application.</p>
         
-        <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Get started with Yii</a>
     </div>
 
     <div class="body-content">

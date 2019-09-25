@@ -66,16 +66,14 @@ class AlertController extends Controller
       if($model->save() && Yii::$app->request->isAjax)
       {
         $out['situation'] = "success";
-        $out['title'] = Yii::t('app', 'Mensaje enviado');
-        $out['text'] = Yii::t('app', 'El mensaje fue enviado exitosamente.');
+        $out['title'] = Yii::t('app', $model->name);
+        $out['text'] = Yii::t('app', 'El Status fue cambiado exitosamente.');
         
       }else{
         $out['situation'] = "error";
         $out['title'] = Yii::t('app', '¡Error!');
         $out['text'] = Yii::t('app',
-            'Ha ocurrido un error al enviarse el correo. Por favor inténtelo más tarde.');
-        var_dump($model->errors);
-        die();
+            'Ha ocurrido un error al cambiar el estatus. Por favor inténtelo más tarde.');
       }
 
       return $out;
