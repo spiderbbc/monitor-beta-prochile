@@ -29,9 +29,43 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'userId',
-            'name',
-            'status',
+            [
+                'label' => Yii::t('app','Usuario'),
+                'attribute' => 'userId',
+                'format' => 'raw',
+                'value' => function($model){
+                    return $model->user->username;
+                }
+            ],
+            [
+                'label' => Yii::t('app','Nombre de la Alerta'),
+                'attribute' => 'name',
+                'format' => 'raw',
+                'value' => function($model) {
+                  return $model->name;
+                }
+            ],
+            [
+                'label' => Yii::t('app','Estado'),
+                'format'    => 'raw',
+                'attribute' => 'status',
+                'value' => function($model) {
+                    return ($model->status) ? 'Active' : 'Inactive';
+                }
+            ],
+            [
+                'label' => Yii::t('app','Recursos Sociales'),
+                'format'    => 'raw',
+                'attribute' => 'alertResourceId',
+                'value' => function($model) {
+                    $html = '';
+                    foreach ($model->config->configSources as $alert) {
+                        $html .= " <span class='label label-info'>{$alert->alertResource->name}</span>";
+                    }
+                    return $html;
+                },
+
+            ],
             'config.start_date:datetime',
             'config.end_date:datetime',
         ],
