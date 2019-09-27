@@ -33,8 +33,11 @@ class DaemonController extends Controller
 
         return ExitCode::OK;
     }
-
-    public function actionAlert(){
+    /**
+     * [actionAlertsRun runs all alerts]
+     * @return [type] [description]
+     */
+    public function actionAlertsRun(){
         $alert = new Alerts();
         $alertsConfig = $alert->getBringAllAlertsToRun();
         $this->stdout("runnig getBringAllAlertsToRun funtction.. \n", Console::BOLD);
@@ -47,7 +50,10 @@ class DaemonController extends Controller
         
         return ExitCode::OK;
     }
-
+    /**
+     * [actionDataSearch get json in transformed the data to db [Not finish]]
+     * @return [type] [description]
+     */
     public function actionDataSearch(){
         $alert = new Alerts();
         $alertsConfig = $alert->getBringAllAlertsToRun();
@@ -60,7 +66,10 @@ class DaemonController extends Controller
         }
         $this->stdout("runnig actionDataSearch funtction.. \n", Console::BOLD);
     }
-
+    /**
+     * [actionSyncProducts sync products to drive documents]
+     * @return [type] [description]
+     */
     public function actionSyncProducts(){
         $drive = new DriveApi();
         $drive->getContentDocument();

@@ -68,6 +68,7 @@ class BaseApi extends Model {
 			$products_params = $tweets->prepare($alert);
 				if($products_params){
 					$data = $tweets->call($products_params);
+					
 					// path to folder flat archives
 					$folderpath = [
 						'resource' => 'twitter',
@@ -76,6 +77,7 @@ class BaseApi extends Model {
 					];
 					$this->saveJsonFile($folderpath,$data);
 			}
+			
 		}
 		echo "twitterApi". "\n";
 	}
@@ -106,10 +108,12 @@ class BaseApi extends Model {
 
 	public function saveJsonFile($folderpath = [],$data){
 
-		// call jsonfile
-		$jsonfile = new JsonFile($folderpath);
-		$jsonfile->load($data);
-		$jsonfile->save();
+		if(!empty($data)){
+			// call jsonfile
+			$jsonfile = new JsonFile($folderpath);
+			$jsonfile->load($data);
+			$jsonfile->save();
+		}
 
 	}
 	
