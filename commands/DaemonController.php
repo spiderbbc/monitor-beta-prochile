@@ -11,7 +11,8 @@ use app\models\Alerts;
 use app\models\api\BaseApi;
 use app\models\api\DriveApi;
 
-use yii\helpers\FileHelper;
+use app\models\file\JsonFile;
+
 
 /**
  * This command echoes the first argument that you have entered.
@@ -40,6 +41,7 @@ class DaemonController extends Controller
     public function actionAlertsRun(){
         $alert = new Alerts();
         $alertsConfig = $alert->getBringAllAlertsToRun();
+        
         $this->stdout("runnig getBringAllAlertsToRun funtction.. \n", Console::BOLD);
         
         if(!empty($alertsConfig)){
@@ -59,10 +61,8 @@ class DaemonController extends Controller
         $alertsConfig = $alert->getBringAllAlertsToRun();
         // look in the folder
         if(!empty($alertsConfig)){
-            $folder = FileHelper::filterPath(\Yii::getAlias('@data'),['filter' => function($path){
-                echo $path;
-            }]);
-            var_dump($folder);
+            $baseApi = new BaseApi();
+            $api = $baseApi->readDataResource($alertsConfig);
         }
         $this->stdout("runnig actionDataSearch funtction.. \n", Console::BOLD);
     }

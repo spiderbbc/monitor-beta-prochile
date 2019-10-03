@@ -131,8 +131,18 @@ class Alerts extends \yii\db\ActiveRecord
                 if(!empty($products_models_alerts)){
                     $alertsConfig[$c]['products'] = [];
                     foreach($products_models_alerts as $product){
-                        array_push($alertsConfig[$c]['products'], $product->productModel->product->name);
-                        array_push($alertsConfig[$c]['products'], $product->productModel->product->category->name);
+                        // models
+                        if(!in_array($product->productModel->name,$alertsConfig[$c]['products'])){
+                            array_push($alertsConfig[$c]['products'], $product->productModel->name);
+                        }
+                        // products
+                        if(!in_array($product->productModel->product->name,$alertsConfig[$c]['products'])){
+                            array_push($alertsConfig[$c]['products'], $product->productModel->product->name);
+                        }
+                        // category
+                        if(!in_array($product->productModel->product->category->name,$alertsConfig[$c]['products'])){
+                            array_push($alertsConfig[$c]['products'], $product->productModel->product->category->name);
+                        }
                        // array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
                     }
                 }

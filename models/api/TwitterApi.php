@@ -37,18 +37,10 @@ class TwitterApi extends Model {
 	private $country;
 	
 	private $limit = 0;
-	private $minimum = 100;
+	private $minimum = 98;
+	
 	private $products_count;
 	
-	private $params = [
-		'lang' => 'es',
-		'result_type' => 'mixed',
-		'count' => 1,
-	//	'q'      => '',
-	//	'until'  => '',
-	//	'max_id' => '',
-
-	];
 	private $codebird;
 	private $data = [];
 
@@ -77,15 +69,13 @@ class TwitterApi extends Model {
 	 * @param array $products [params for call api twitter]
 	 */
 	public function setProductsParams($products = []){
+		
 		$products_to_searched = [];
 		// forming the array params
 		$params = [
-		//	'lang' => 'es',
-		//	'result_type' => 'recent',
+			'lang' => 'es',
+			'result_type' => 'mixed',
 			'count' => 100,
-		//	'q'      => '',
-		//	'until'  => '',
-		//	'max_id' => '',
 		];
 		
 		for($p = 0; $p < sizeOf($products);$p++){
@@ -166,7 +156,6 @@ class TwitterApi extends Model {
 	 * @return [type]                  [data]
 	 */
 	public function call($products_params = []){
-
 
 		for($p = 0; $p < sizeOf($products_params); $p ++){
 			$product = $products_params[$p]['product'];
@@ -378,14 +367,16 @@ class TwitterApi extends Model {
 			for ($o = 0; $o < sizeof($object) ; $o++){
 				if(!empty($object[$o]['statuses'])){
 					for ($s =0; $s < sizeof($object[$o]['statuses']) ; $s++){
+						// source
 						$tweets[$product][$index]['source'] = $source;
+						// id tweets
+						$tweets[$product][$index]['id'] = $object[$o]['statuses'][$s]['id'];
+						// get user info
+						$tweets[$product][$index]['user'] = $this->_getUserData($object[$o]['statuses'][$s]);
+						// get entities url
+						$tweets[$product][$index]['url'] = $this->_getEntities($object[$o]['statuses'][$s]);
 						
 						
-						if(isset($object[$o]['statuses'][$s]['entities']['urls'][0])){
-							$tweets[$product][$index]['url'] = $object[$o]['statuses'][$s]['entities']['urls'][0]['url'];
-						}else{
-							$tweets[$product][$index]['url'] = '-';
-						}
 
 						if(array_key_exists('place', $object[$o])){
 							if(!is_null($object[$o]['place'])){
@@ -394,12 +385,10 @@ class TwitterApi extends Model {
 						}else{
 							$tweets[$product][$index]['location'] = "-";
 						}
-						
+
 						$tweets[$product][$index]['created_at'] = $object[$o]['statuses'][$s]['created_at'];
-						$tweets[$product][$index]['author_name'] = $object[$o]['statuses'][$s]['user']['name'];
-						$tweets[$product][$index]['author_username'] = $object[$o]['statuses'][$s]['user']['screen_name'];
-						$tweets[$product][$index]['followers_count'] = $object[$o]['statuses'][$s]['user']['followers_count'];
 						$tweets[$product][$index]['post_from'] = $object[$o]['statuses'][$s]['text'];
+						
 						$index++;
 					} // for each statuses
 				} // if not empty statuses
@@ -408,6 +397,39 @@ class TwitterApi extends Model {
 
 		return $tweets;
 	}
+	/**
+	 * [_getUserData get data user from the json]
+	 * @param  [type] $tweet [tweet obejct]
+	 * @return [type]        [array]
+	 */
+	private function _getUserData($tweet){
+		$data_user = [];
+		if(!empty($tweet['user'])){
+			$data_user['user_id']         = $tweet['user']['id']; 
+			$data_user['author_name']     = $tweet['user']['name']; 
+			$data_user['author_username'] = $tweet['user']['screen_name'];
+			$data_user['location']        = $tweet['user']['location'];
+			$data_user['description']     = $tweet['user']['description'];
+			$data_user['url']             = $tweet['user']['url'];
+			$data_user['followers_count'] = $tweet['user']['followers_count'];
+			$data_user['friends_count']   = $tweet['user']['friends_count'];
+		}
+		return $data_user;
+	}
+
+	/**
+	 * [_getEntities get data from entities url]
+	 * @param  [type] $tweet [tweet obejct]
+	 * @return [type]        [array]
+	 */
+	private function _getEntities($tweet){
+		$data_statuses = '-';
+		if(isset($tweet['entities']['urls'][0])){
+			$data_statuses = $tweet['entities']['urls'][0]['url'];
+		}
+		return $data_statuses;
+	}
+
 
 	private function _setCountry($country){
 		

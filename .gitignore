@@ -32,7 +32,9 @@ tests/_support/_generated
 #vagrant folder
 /.vagrant
 # app only folder
-data/
+data/*
 config/*
 web/assets/*
 credentials/*
+
+processed/

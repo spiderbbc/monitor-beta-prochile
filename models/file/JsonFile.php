@@ -9,6 +9,7 @@ class JsonFile {
 	public $filebase;
 	public $documentId;
 	public $fileName;
+	public $source;
 	
 	private $_path;
 	private $_data;
@@ -63,7 +64,8 @@ class JsonFile {
 	 */
 	public function save(){
 		if(!empty($this->_data)){
-			$file = $this->filebase->get($this->fileName);
+			$fileName = time();
+			$file = $this->filebase->get($fileName);
 			foreach ($this->_data as $key => $value) {
 	            $file->$key = $value;
 	        }
@@ -71,24 +73,28 @@ class JsonFile {
 		}
 	}
 
+	public function count(){
+		return $this->filebase->count();
+	}
 
-	function __construct($folderpath =[],$read_only = false,$validate = [])
+	public function findAll(){
+		return $this->filebase->findAll(true, true);
+	}
+
+
+	function __construct($documentId,$source)
 	{
-		
+		$s = DIRECTORY_SEPARATOR;
+		$this->documentId = $documentId;
+		$this->source = $source;
 		// path to folder flat archives
-		$s                = DIRECTORY_SEPARATOR;
-		$this->documentId = $folderpath['documentId'];
-		$this->fileName   = $folderpath['fileName'];
-		$folder           = $folderpath['resource'];
-		
-
 		$this->filebase = new Database([
-            'dir' => \Yii::getAlias('@data')."{$s}{$this->documentId}{$s}{$folder}",
-            'cache'          => true,
-    		'cache_expires'  => 1800,
-    		'pretty'         => true,
-	    	'safe_filename'  => true,
-	    	'read_only'      => $read_only,
+			'dir'           => \Yii::getAlias('@data')."{$s}{$this->documentId}{$s}{$this->source}",
+			'cache'         => true,
+			'cache_expires' => 1800,
+			'pretty'        => true,
+			'safe_filename' => true,
+	    	//'read_only'      => $read_only,
         ]);
 	}
 

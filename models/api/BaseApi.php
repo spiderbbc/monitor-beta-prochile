@@ -33,16 +33,12 @@ class BaseApi extends Model {
 	];
 
 	public function callResourcesApi($alerts = []){
-		
 		Console::stdout("Running: ".__METHOD__."\n", Console::BOLD);
 		if(!empty($alerts)){
-			
 			$resources = [];
-
 			for($a = 0; $a < sizeOf($alerts); $a++){
 				for($c = 0; $c < sizeOf($alerts[$a]['config']['configSources']); $c++){
 					$name = $alerts[$a]['config']['configSources'][$c];
-					
 					if(ArrayHelper::keyExists($name,$this->className, false)){
 						$className = $this->className[$name];
 						$resources[$className][] = $alerts[$a]; 
@@ -54,8 +50,6 @@ class BaseApi extends Model {
 				$this->{$method}($alerts);
 			}
 		} // if alert
-
-		
 	}
 
 	public function twitterApi($alerts = []){
@@ -68,12 +62,10 @@ class BaseApi extends Model {
 			$products_params = $tweets->prepare($alert);
 				if($products_params){
 					$data = $tweets->call($products_params);
-					
 					// path to folder flat archives
 					$folderpath = [
-						'resource' => 'twitter',
+						'source' => 'Twitter',
 						'documentId' => $alert['id'],
-						'fileName' => time(),
 					];
 					$this->saveJsonFile($folderpath,$data);
 			}
@@ -105,17 +97,56 @@ class BaseApi extends Model {
 	}
 
 
-
 	public function saveJsonFile($folderpath = [],$data){
 
 		if(!empty($data)){
+			// pass to variable
+		    list('source' => $source,'documentId' => $documentId) = $folderpath;
 			// call jsonfile
-			$jsonfile = new JsonFile($folderpath);
+			$jsonfile = new JsonFile($documentId,$source);
 			$jsonfile->load($data);
 			$jsonfile->save();
 		}
 
 	}
+
+	public function readDataResource($alerts = []){
+		$alerts= ArrayHelper::map($alerts,'id','config.configSources');
+        $data = [];
+        foreach($alerts as $alertid => $sources){
+            foreach ($sources as $source){
+                $jsonFile= new JsonFile($alertid,$source);
+                if(!empty($jsonFile->findAll())){
+                    $data[$alertid][$source] = $jsonFile->findAll();
+                    $this->moveFilesToProcessed($alertid,$source);
+                }
+                    
+            }
+               
+        }
+	}
+
+	/**
+     * [test only test]
+     * @return [type] [description]
+     */
+    public function moveFilesToProcessed($alertId,$resource){
+        $s = DIRECTORY_SEPARATOR;
+        $path = \Yii::getAlias('@data')."{$s}{$alertId}{$s}{$resource}{$s}";
+        // read the path
+        $files = \yii\helpers\FileHelper::findFiles($path,['except'=>['*.php','*.txt'],'recursive' => false]); 
+        // create directory
+        $folderName = 'processed';
+        $create = \yii\helpers\FileHelper::createDirectory("{$path}{$folderName}",$mode = 0775, $recursive = true);
+        // move files
+        foreach($files as $file){
+            $split_path = explode("{$s}",$file);
+            $fileName = end($split_path);
+            if(copy("{$file}","{$path}{$folderName}{$s}{$fileName}")){
+                unlink("{$file}");
+            }
+        }
+    }
 	
 }
 
