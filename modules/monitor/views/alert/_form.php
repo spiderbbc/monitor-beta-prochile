@@ -174,7 +174,16 @@ use mludvik\tagsinput\TagsInputWidget
             <div class="row">
                 <div class="col-md-12">
                     <?= $form->field($alert, 'files')->widget(FileInput::classname(), [
-                        'options' => ['accept' => 'text/csv'],
+                        'name' => 'files',
+                        'pluginOptions' => [
+                            'showCaption' => false,
+                            'showRemove' => false,
+                            'showUpload' => false,
+                            'browseClass' => 'btn btn-primary btn-block',
+                            'browseIcon' => '<i class="glyphicon glyphicon-file"></i> ',
+                            'browseLabel' =>  'Select File'
+                        ],
+                        'options' => ['accept' => 'text/xlsx'],
                     ]); 
                     ?>
                 </div>

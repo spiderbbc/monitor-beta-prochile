@@ -8,6 +8,7 @@ use Yii;
  * This is the model class for table "resources".
  *
  * @property int $id
+ * @property int $resourcesId
  * @property string $name
  * @property int $createdAt
  * @property int $updatedAt
@@ -15,7 +16,9 @@ use Yii;
  * @property int $updatedBy
  *
  * @property AlertconfigSources[] $alertconfigSources
+ * @property AlertsMencions[] $alertsMencions
  * @property CredencialsApi[] $credencialsApis
+ * @property TypeResources $resources
  */
 class Resources extends \yii\db\ActiveRecord
 {
@@ -33,9 +36,10 @@ class Resources extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
-            [['createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+            [['resourcesId', 'name'], 'required'],
+            [['resourcesId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['name'], 'string', 'max' => 40],
+            [['resourcesId'], 'exist', 'skipOnError' => true, 'targetClass' => TypeResources::className(), 'targetAttribute' => ['resourcesId' => 'id']],
         ];
     }
 
@@ -45,12 +49,13 @@ class Resources extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'name' => Yii::t('app', 'Name'),
-            'createdAt' => Yii::t('app', 'Created At'),
-            'updatedAt' => Yii::t('app', 'Updated At'),
-            'createdBy' => Yii::t('app', 'Created By'),
-            'updatedBy' => Yii::t('app', 'Updated By'),
+            'id'          => Yii::t('app', 'ID'),
+            'resourcesId' => Yii::t('app', 'Resources ID'),
+            'name'        => Yii::t('app', 'Name'),
+            'createdAt'   => Yii::t('app', 'Created At'),
+            'updatedAt'   => Yii::t('app', 'Updated At'),
+            'createdBy'   => Yii::t('app', 'Created By'),
+            'updatedBy'   => Yii::t('app', 'Updated By'),
         ];
     }
 
@@ -65,8 +70,24 @@ class Resources extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getAlertsMencions()
+    {
+        return $this->hasMany(AlertsMencions::className(), ['resourcesId' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getCredencialsApis()
     {
         return $this->hasMany(CredencialsApi::className(), ['resourceId' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getResources()
+    {
+        return $this->hasOne(TypeResources::className(), ['id' => 'resourcesId']);
     }
 }

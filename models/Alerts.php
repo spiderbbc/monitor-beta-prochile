@@ -88,6 +88,10 @@ class Alerts extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function SaveFile(){
+
+    } 
+
     /**
      * [getBringAllAlertsToRun get all the alerts with resources,products only use to console actions]
      * @return [array] [if not alerts with condition return a empty array]
@@ -166,7 +170,7 @@ class Alerts extends \yii\db\ActiveRecord
     
     public function getSocial(){
         $socials = Resources::getDb()->cache(function ($db) {
-            return Resources::find()->all();
+            return Resources::find()->where(['resourcesId' => 1])->all();
         },60);
         $socialIds = \yii\helpers\ArrayHelper::map($socials,'id','name');
         return $socialIds;

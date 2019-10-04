@@ -19,46 +19,78 @@ class m190813_202212_Resources extends Migration
         }
 
         $this->createTable('{{%resources}}', [
-            'id'                    => $this->primaryKey(),
-            'name'                  => $this->string(40)->notNull(),
-            'createdAt'             => $this->integer(),
-            'updatedAt'             => $this->integer(),
-            'createdBy'             => $this->integer(),
-            'updatedBy'             => $this->integer(),
+            'id'          => $this->primaryKey(),
+            'resourcesId' => $this->integer()->notNull(),
+            'name'        => $this->string(40)->notNull(),
+            'createdAt'   => $this->integer(),
+            'updatedAt'   => $this->integer(),
+            'createdBy'   => $this->integer(),
+            'updatedBy'   => $this->integer(),
 
         ], $tableOptions);
 
         $this->insert('{{%resources}}', [
-            'name'                  => 'Twitter',
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
+            'name'        => 'Twitter',
+            'resourcesId' => '1',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
         ]);
 
         $this->insert('{{%resources}}', [
-            'name'                  => 'Live Chat',
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
+            'name'        => 'Live Chat',
+            'resourcesId' => '1',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
         ]);
 
         $this->insert('{{%resources}}', [
-            'name'                  => 'Live Chat Conversations',
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
+            'name'        => 'Live Chat Conversations',
+            'resourcesId' => '1',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
         ]);
 
         $this->insert('{{%resources}}', [
-            'name'                  => 'Web page',
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
+            'name'        => 'Web page',
+            'resourcesId' => '2',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
         ]);
+
+        $this->insert('{{%resources}}', [
+            'name'        => 'Excel Document',
+            'resourcesId' => '3',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
+        ]);
+
+        // creates index for column `resourcesId`
+        $this->createIndex(
+            'idx-resources-type_resources_resourcesId',
+            'resources',
+            'resourcesId'
+        );
+
+        // add foreign key for table `type_resources`
+        $this->addForeignKey(
+            'fk-resources-type_resources_resourcesId',
+            'resources',
+            'resourcesId',
+            'type_resources',
+            'id',
+            'CASCADE',
+            'CASCADE'
+        );
 
     }
 

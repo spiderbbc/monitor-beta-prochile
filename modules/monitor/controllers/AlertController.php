@@ -128,6 +128,10 @@ class AlertController extends Controller
 
           $error = false;
           $alert->userId = Yii::$app->user->getId();
+          // only test
+          $alert->status = 1;
+
+
 
           if(!$alert->save()){ 
             $error = true;
@@ -156,6 +160,14 @@ class AlertController extends Controller
           if($products_models){
             \app\models\Products::saveProductsModelAlerts($products_models,$alert->id);
           }
+          // files
+          if(\yii\web\UploadedFile::getInstance($alert, 'files')){
+            $fileData = \app\helpers\DocumentHelper::excelToArray($alert,'files');
+            $resourcesName = \app\models\Resources::findOne(['resourcesId' => 3]);
+            \app\helpers\DocumentHelper::saveJsonFile($alert->id,$resourcesName->name,$fileData);
+          }
+
+          
           // error to page view
           if($error){
             $alert->delete();
@@ -247,6 +259,13 @@ class AlertController extends Controller
                 'alertId' => $alert->id,
             ]);
             \app\models\Products::saveProductsModelAlerts($products_models,$alert->id);
+          }
+
+          // files
+          if(\yii\web\UploadedFile::getInstance($alert, 'files')){
+            $fileData = \app\helpers\DocumentHelper::excelToArray($alert,'files');
+            $resourcesName = \app\models\Resources::findOne(['resourcesId' => 3]);
+            \app\helpers\DocumentHelper::saveJsonFile($alert->id,$resourcesName->name,$fileData);
           }
 
           // error to page view
