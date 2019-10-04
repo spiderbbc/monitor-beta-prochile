@@ -162,9 +162,19 @@ class AlertController extends Controller
           }
           // files
           if(\yii\web\UploadedFile::getInstance($alert, 'files')){
+            // convert excel to array php
             $fileData = \app\helpers\DocumentHelper::excelToArray($alert,'files');
-            $resourcesName = \app\models\Resources::findOne(['resourcesId' => 3]);
-            \app\helpers\DocumentHelper::saveJsonFile($alert->id,$resourcesName->name,$fileData);
+            // get resource document
+            $resource = \app\models\Resources::findOne(['resourcesId' => 3]);
+            // save in file json
+            \app\helpers\DocumentHelper::saveJsonFile($alert->id,$resource->name,$fileData);
+            // add resource document to the alert
+            array_push($alert->alertResourceId,$resource->id);
+            if(!$config->saveAlertconfigSources($alert->alertResourceId)){
+                //sources model
+                $error = true;
+                $messages = $config->errors;
+            }
           }
 
           
@@ -201,8 +211,6 @@ class AlertController extends Controller
         $alert = $this->findModel($id);
         $config = $alert->config;
         $drive   = new \app\models\api\DriveApi();
-        // set scenario
-        $alert->scenario = 'saveOrUpdate';
 
         //set date
         $config->start_date = DateHelper::asDatetime($config->start_date);
@@ -230,6 +238,20 @@ class AlertController extends Controller
           $config->alertId = $alert->id;
           $config->save();
 
+          // add resource alert
+          $alert->alertResourceId = Yii::$app->request->post('Alerts')['alertResourceId'];
+          // files
+          if(\yii\web\UploadedFile::getInstance($alert, 'files')){
+            // convert excel to array php
+            $fileData = \app\helpers\DocumentHelper::excelToArray($alert,'files');
+            // get resource document
+            $resource = \app\models\Resources::findOne(['resourcesId' => 3]);
+            // save in file json
+            \app\helpers\DocumentHelper::saveJsonFile($alert->id,$resource->name,$fileData);
+            // add resource document to the alert
+            array_push($alert->alertResourceId,$resource->id);
+          }
+          // set resource
           if(!$config->saveAlertconfigSources($alert->alertResourceId)){
               //sources model
               $error = true;
@@ -260,14 +282,6 @@ class AlertController extends Controller
             ]);
             \app\models\Products::saveProductsModelAlerts($products_models,$alert->id);
           }
-
-          // files
-          if(\yii\web\UploadedFile::getInstance($alert, 'files')){
-            $fileData = \app\helpers\DocumentHelper::excelToArray($alert,'files');
-            $resourcesName = \app\models\Resources::findOne(['resourcesId' => 3]);
-            \app\helpers\DocumentHelper::saveJsonFile($alert->id,$resourcesName->name,$fileData);
-          }
-
           // error to page view
           if($error){
             $alert->delete();

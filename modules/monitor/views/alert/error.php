@@ -17,7 +17,7 @@ $this->title = $name;
         <?php foreach($message as $title => $msg): ?>
             <?= nl2br(Html::encode($title)) ?>
             <?= nl2br(Html::encode($msg)) ?>
-        <?php endforeach: ?>
+        <?php endforeach; ?>
     </div>
 
     <p>

@@ -20,7 +20,23 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
  */
 class DocumentHelper
 {
-	public static function getPath($alerts){
+	public static function moveFilesToProcessed($alertId,$resource){
+
+        $s = DIRECTORY_SEPARATOR;
+        $path = \Yii::getAlias('@data')."{$s}{$alertId}{$s}{$resource}{$s}";
+        // read the path
+        $files = \yii\helpers\FileHelper::findFiles($path,['except'=>['*.php','*.txt'],'recursive' => false]); 
+        // create directory
+        $folderName = 'processed';
+        $create = \yii\helpers\FileHelper::createDirectory("{$path}{$folderName}",$mode = 0775, $recursive = true);
+        // move files
+        foreach($files as $file){
+            $split_path = explode("{$s}",$file);
+            $fileName = end($split_path);
+            if(copy("{$file}","{$path}{$folderName}{$s}{$fileName}")){
+                unlink("{$file}");
+            }
+        }
 
 	}
 

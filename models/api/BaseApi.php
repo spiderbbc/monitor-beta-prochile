@@ -60,14 +60,16 @@ class BaseApi extends Model {
 
 		foreach ($alerts as $alert) {
 			$products_params = $tweets->prepare($alert);
-				if($products_params){
-					$data = $tweets->call($products_params);
+			if($products_params){
+				$data = $tweets->call($products_params);
+				if(!empty($data)){
 					// path to folder flat archives
 					$folderpath = [
 						'source' => 'Twitter',
 						'documentId' => $alert['id'],
 					];
 					$this->saveJsonFile($folderpath,$data);
+				}
 			}
 			
 		}
@@ -118,35 +120,17 @@ class BaseApi extends Model {
                 $jsonFile= new JsonFile($alertid,$source);
                 if(!empty($jsonFile->findAll())){
                     $data[$alertid][$source] = $jsonFile->findAll();
-                    $this->moveFilesToProcessed($alertid,$source);
+                    \app\helpers\DocumentHelper::moveFilesToProcessed($alertid,$source);
                 }
                     
             }
                
         }
+        var_dump($data);
+        die();
+
 	}
 
-	/**
-     * [test only test]
-     * @return [type] [description]
-     */
-    public function moveFilesToProcessed($alertId,$resource){
-        $s = DIRECTORY_SEPARATOR;
-        $path = \Yii::getAlias('@data')."{$s}{$alertId}{$s}{$resource}{$s}";
-        // read the path
-        $files = \yii\helpers\FileHelper::findFiles($path,['except'=>['*.php','*.txt'],'recursive' => false]); 
-        // create directory
-        $folderName = 'processed';
-        $create = \yii\helpers\FileHelper::createDirectory("{$path}{$folderName}",$mode = 0775, $recursive = true);
-        // move files
-        foreach($files as $file){
-            $split_path = explode("{$s}",$file);
-            $fileName = end($split_path);
-            if(copy("{$file}","{$path}{$folderName}{$s}{$fileName}")){
-                unlink("{$file}");
-            }
-        }
-    }
 	
 }
 
