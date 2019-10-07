@@ -88,9 +88,6 @@ class Alerts extends \yii\db\ActiveRecord
         ];
     }
 
-    public static function SaveFile(){
-
-    } 
 
     /**
      * [getBringAllAlertsToRun get all the alerts with resources,products only use to console actions]

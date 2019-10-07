@@ -37,7 +37,7 @@ class m190813_215104_Credencials_Api extends Migration
         $this->insert('{{%credencials_api}}', [
             'userId'              => 1,
             'resourceId'          => 1,
-            'name_app'            => 'monitor-alfa',
+            'name_app'            => 'monitor-twitter',
             'api_key'             => 'oxmyn1WmBKihhfdcQGCTXlgQh',
             'api_secret_key'      => 'msPakDIfXECOe6NrgGrAVwkHdCtbDHzeaHMgVqO4R0ioDyPWlh',
             'access_secret_token' => 'TTdlPqtbByToHaReoou7LBSOAYPa4uS7WQKqn3xx',
@@ -52,7 +52,7 @@ class m190813_215104_Credencials_Api extends Migration
         $this->insert('{{%credencials_api}}', [
             'userId'              => 1,
             'resourceId'          => 2,
-            'name_app'            => 'admin-twitter',
+            'name_app'            => 'monitor-livechat',
             'api_key'             => 'encrycpt here',
             'api_secret_key'      => 'encrycpt here',
             'access_secret_token' => 'encrycpt here',
@@ -69,7 +69,37 @@ class m190813_215104_Credencials_Api extends Migration
         $this->insert('{{%credencials_api}}', [
             'userId'              => 1,
             'resourceId'          => 3,
-            'name_app'            => 'admin-livechatConversations',
+            'name_app'            => 'monitor-livechat-conversations',
+            'api_key'             => 'encrycpt here',
+            'api_secret_key'      => 'encrycpt here',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 1,
+            'resourceId'          => 3,
+            'name_app'            => 'monitor-facebook',
+            'api_key'             => 'encrycpt here',
+            'api_secret_key'      => 'encrycpt here',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 1,
+            'resourceId'          => 3,
+            'name_app'            => 'monitor-instagram',
             'api_key'             => 'encrycpt here',
             'api_secret_key'      => 'encrycpt here',
             'access_secret_token' => 'encrycpt here',
