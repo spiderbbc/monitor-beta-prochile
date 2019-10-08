@@ -55,6 +55,15 @@ class m190813_202211_Type_Resources extends Migration
             'createdBy'             => '1',
             'updatedBy'             => '1',
         ]);
+
+        $this->insert('{{%type_resources}}', [
+            'name'                  => 'Drive',
+            'status'                => 1,
+            'createdAt'             => '1488153462',
+            'updatedAt'             => '1488153462',
+            'createdBy'             => '1',
+            'updatedBy'             => '1',
+        ]);
     }
 
     /**

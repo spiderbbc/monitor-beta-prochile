@@ -74,6 +74,15 @@ class m190813_202212_Resources extends Migration
             'updatedBy'   => '1',
         ]);
 
+        $this->insert('{{%resources}}', [
+            'name'        => 'Excel Document Drive',
+            'resourcesId' => '4',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
+        ]);
+
         // creates index for column `resourcesId`
         $this->createIndex(
             'idx-resources-type_resources_resourcesId',

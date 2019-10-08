@@ -117,6 +117,21 @@ class m190813_215104_Credencials_Api extends Migration
             'updatedBy'           => '1',
         ]);
 
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 1,
+            'resourceId'          => 4,
+            'name_app'            => 'monitor-drive',
+            'api_key'             => 'monitor-beta-lg',
+            'api_secret_key'      => '1TmKTY180rrzhtDC91J-LpHFY898gxTxTRe6ssU-j4ag',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
          // creates index for column `userId`
         $this->createIndex(
             'idx-credencial_api_userId',
