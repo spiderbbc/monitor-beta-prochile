@@ -16,27 +16,12 @@ require_once Yii::getAlias('@vendor') . '/autoload.php'; // call google client
 class DriveApi extends Model{
 
 	private $_data;
-    private $_productsFamily = ['HA', 'HE', 'MC', 'Monitores y proyectores'];
-
     public $driveTitle; // used in form alert
 	
 
 	public function getDictionaries(){
-	    // Get the API client and construct the service object.
-	    $service = $this->_getServices();
-        $spreadsheetId = Yii::$app->params['drive']['monitor-beta-lg'];
-	    $response      = $service->spreadsheets->get($spreadsheetId);
-	    $sheetName     = [];
-	    for ($i = 0; $i < sizeof($response->sheets); $i++) {
-	    	$its_title_dictionary = $response->sheets[$i]->properties->title;
-	    	if($its_title_dictionary[0] == '_'){
-	    		$sheetName[$its_title_dictionary] = $its_title_dictionary;
-                
-	    	}
-	    }
-	    /*if (count($sheetName)) {
-	        $this->saveCategoriesDictionary($sheetName);
-	    }*/
+	    $sheetName = $this->_getTitleDocument('dictionaries');
+
 	    return (count($sheetName)) ? $sheetName : null;
 
 	}
@@ -45,8 +30,8 @@ class DriveApi extends Model{
     {
         $service = $this->_getServices();
 
-        $spreadsheetId = Yii::$app->params['drive']['monitor-beta-lg'];
-        $response      = $service->spreadsheets->get($spreadsheetId);
+        $spreadsheetId = $this->_getSpreadSheetId();;
+        $response = $this->_get($spreadsheetId);
 
         $values = [];
         foreach ($sheetNames as $sheetName) {
@@ -69,8 +54,12 @@ class DriveApi extends Model{
     {
         $service = $this->_getServices();
 
-        $sheetNames = $this->_productsFamily;
-        $spreadsheetId = Yii::$app->params['drive']['Drive Diccionario Listening'];
+        $sheetNames = $this->_getTitleDocument('products');
+        $spreadsheetId = $this->_getSpreadSheetId();
+
+        if(!$spreadsheetId){
+            throw new \yii\web\NotFoundHttpException(Yii::t('app','cannot get the spreadsheetId ლ(ಠ_ಠლ)   '));
+        }
 
         $values = [];
 
@@ -207,11 +196,6 @@ class DriveApi extends Model{
         }
     }
 
-	public function getParamsDrive(){
-		$params = Yii::$app->params['drive'];
-
-		return array_flip($params);
-	}
 
 	private function _getClient()
     {
@@ -234,6 +218,62 @@ class DriveApi extends Model{
         $client  = $this->_getClient();
         $service = new \Google_Service_Sheets($client);
         return $service;
+    }
+
+    private function _getSpreadSheetId(){
+        $spreadSheetId = (new \yii\db\Query())
+            ->select('api_secret_key')
+            ->from('credencials_api')
+            ->where(['name_app' => 'monitor-drive'])
+            ->all();
+        if($spreadSheetId)
+            $spreadSheetId = ArrayHelper::getColumn($spreadSheetId,'api_secret_key')[0]; 
+
+
+        return ($spreadSheetId != '') ? $spreadSheetId : false;       
+    }
+
+    private function _getTitleDocument($typeDocument){
+        
+        $spreadsheetId = $this->_getSpreadSheetId();;
+        $response = $this->_get($spreadsheetId);
+
+        $sheetName     = [];
+
+        if($typeDocument == 'dictionaries'){
+            for ($i = 0; $i < sizeof($response->sheets); $i++) {
+                $its_title_dictionary = $response->sheets[$i]->properties->title;
+                if($its_title_dictionary[0] == '_'){
+                    $sheetName[$its_title_dictionary] = $its_title_dictionary;
+                    
+                }
+            }
+
+        }
+
+        if($typeDocument == 'products'){
+            for ($i = 0; $i < sizeof($response->sheets); $i++) {
+                $its_title_dictionary = $response->sheets[$i]->properties->title;
+                if($its_title_dictionary[0] != '_'){
+                    $sheetName[] = $its_title_dictionary;
+                    
+                }
+            }
+
+        }
+        return $sheetName;
+
+    }
+
+    private function _get($spreadsheetId){
+        // Get the API client and construct the service object.
+        $service = $this->_getServices();
+        try {
+            $response = $service->spreadsheets->get($spreadsheetId);
+        }catch (\GuzzleHttp\Exception\ConnectException $e){
+            throw new \yii\web\NotFoundHttpException(Yii::t('app','houston we have a problem, problem in the drive document ლ(ಠ_ಠლ)   '));
+        }
+        return $response;
     }
 
     public function delete_quotation_marks($string) { 
