@@ -31,7 +31,8 @@
         "kartik-v/yii2-widget-datepicker": "dev-master",
         "mludvik/yii2-tags-input": "~1.0",
         "google/apiclient": "^2.0",
-        "phpoffice/phpspreadsheet": "^1.9"
+        "phpoffice/phpspreadsheet": "^1.9",
+        "facebook/graph-sdk": "^5.7"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
