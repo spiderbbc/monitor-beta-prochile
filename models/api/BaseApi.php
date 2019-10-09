@@ -120,13 +120,13 @@ class BaseApi extends Model {
                 $jsonFile= new JsonFile($alertid,$source);
                 if(!empty($jsonFile->findAll())){
                     $data[$alertid][$source] = $jsonFile->findAll();
-                    \app\helpers\DocumentHelper::moveFilesToProcessed($alertid,$source);
+                    //\app\helpers\DocumentHelper::moveFilesToProcessed($alertid,$source);
                 }
                     
             }
                
         }
-        var_dump($data);
+        var_dump(count($data['1']['Twitter']));
         die();
 
 	}

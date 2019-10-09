@@ -373,8 +373,8 @@ class TwitterApi extends Model {
 						$tweets[$product][$index]['id'] = $object[$o]['statuses'][$s]['id'];
 						// get user info
 						$tweets[$product][$index]['user'] = $this->_getUserData($object[$o]['statuses'][$s]);
-						// get entities url
-						$tweets[$product][$index]['url'] = $this->_getEntities($object[$o]['statuses'][$s]);
+						// get entities 
+						$tweets[$product][$index]['entities'] = $this->_getEntities($object[$o]['statuses'][$s]);
 						
 						
 
@@ -418,16 +418,29 @@ class TwitterApi extends Model {
 	}
 
 	/**
-	 * [_getEntities get data from entities url]
+	 * [_getEntities get data from entities]
 	 * @param  [type] $tweet [tweet obejct]
 	 * @return [type]        [array]
 	 */
 	private function _getEntities($tweet){
-		$data_statuses = '-';
-		if(isset($tweet['entities']['urls'][0])){
-			$data_statuses = $tweet['entities']['urls'][0]['url'];
+		$entities = [];
+		// get hashtags
+		if(isset($tweet['entities']['hashtags'])){
+			foreach($tweet['entities']['hashtags'] as $property => $value){
+				$entities['hashtags'][$property] = $value['text'];
+			}
 		}
-		return $data_statuses;
+		// get user_mentions
+		if(isset($tweet['entities']['user_mentions'])){
+			foreach($tweet['entities']['user_mentions'] as $property => $value){
+				$entities['user_mentions'][$property][] = $value;
+			}
+		}
+		// get entities url
+		if(isset($tweet['entities']['urls'][0])){
+			$entities['url'] = $tweet['entities']['urls'][0]['url'];
+		}
+		return $entities;
 	}
 
 
