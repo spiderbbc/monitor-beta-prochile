@@ -20,7 +20,7 @@ use app\models\CredencialsApi;
 class FacebookHelper
 {
 	private static $_resource_id = 3;
-	private static $_app_id = '446684435912359';
+	public static $_app_id = '446684435912359';
 	private static $_name_app = 'monitor-facebook';
 	private static $_app_secret = '8eddd9257248c5cf03ded8cb5c82b2ca';
 
@@ -46,8 +46,8 @@ class FacebookHelper
 	public static function login(){
 		$fb = self::getFacebook();
 		$helper = $fb->getRedirectLoginHelper();
-
-		$permissions = ['email']; // Optional permissions
+		// Optional permissions
+		$permissions = ['manage_pages','pages_show_list','read_page_mailboxes','ads_management','pages_messaging','instagram_basic']; 
 		// crea una URL absoluta: http://www.example.com/index.php?r=post/index
 		$url = Url::to(['monitor/facebook/login'], true);
 

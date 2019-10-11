@@ -45,16 +45,41 @@ class FacebookController extends \yii\web\Controller
           }
           exit;
         }
+
+        // The OAuth 2.0 client handler helps us manage access tokens
+        $oAuth2Client = $fb->getOAuth2Client();
+
+        // Get the access token metadata from /debug_token
+        $tokenMetadata = $oAuth2Client->debugToken($accessToken);
+
+        // Validation (these will throw FacebookSDKException's when they fail)
+        $tokenMetadata->validateAppId(\app\helpers\FacebookHelper::$_app_id); // Replace {app-id} with your app id
+        // If you know the user ID this access token belongs to, you can validate it here
+        //$tokenMetadata->validateUserId('123');
+       
+
+
+        if (! $accessToken->isLongLived()) {
+          // Exchanges a short-lived access token for a long-lived one
+          try {
+            $accessToken = $oAuth2Client->getLongLivedAccessToken($accessToken);
+          } catch (Facebook\Exceptions\FacebookSDKException $e) {
+            echo "<p>Error getting long-lived access token: " . $e->getMessage() . "</p>\n\n";
+            exit;
+          }
+        }
+        
+
         $userId = \Yii::$app->user->id;
         $access_secret_token = $accessToken->getValue();
-        $expiresAt_secret_token = $accessToken->getExpiresAt();
-        
+        $expiresAt_secret_token = $accessToken->getExpiresAt()->getTimestamp();
+      
 
         if(!\app\helpers\FacebookHelper::saveAccessToken($userId,$accessToken)){
           \Yii::$app->session->setFlash('error', 'Cannot save accessToken');
         }
 
-        if(!\app\helpers\FacebookHelper::saveExpiresAt($userId,$expiresAt_secret_token->getTimestamp())){
+        if(!\app\helpers\FacebookHelper::saveExpiresAt($userId,$expiresAt_secret_token)){
           \Yii::$app->session->setFlash('error', 'Cannot save expiresAt secret token');
         }
         
@@ -67,11 +92,15 @@ class FacebookController extends \yii\web\Controller
      * @return view the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionLogout($credencials_api_id,$next)
+    public function actionLogout($credencials_api_id)
     {
        $model = $this->findModel($credencials_api_id);
-       $model->delete(); 
-       $linkLogout = \app\helpers\FacebookHelper::logout($model->access_secret_token,$next);
+      // $model->delete(); 
+       $url = 'http://localhost/monitor-beta/web/monitor/facebook/login'; 
+
+       $linkLogout = \app\helpers\FacebookHelper::logout($model->access_secret_token,$url);
+       
+      // \Yii::$app->user->logout();
         
        return $this->render('logout',['linkLogout' => $linkLogout]);
     }
