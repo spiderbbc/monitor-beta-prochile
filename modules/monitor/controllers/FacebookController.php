@@ -13,7 +13,6 @@ class FacebookController extends \yii\web\Controller
     /**
      * Login with facebook and save the access_secret_token.
      * @return view the loaded home
-     */
     public function actionLogin()
     {
         $fb = \app\helpers\FacebookHelper::getFacebook();
@@ -85,6 +84,52 @@ class FacebookController extends \yii\web\Controller
         
         return $this->goHome();
     }
+     */
+
+    public function actionLogin(){
+      $fb = new \Facebook\Facebook([
+        'app_id' => '446684435912359',
+        'app_secret' => '8eddd9257248c5cf03ded8cb5c82b2ca',
+        'default_graph_version' => 'v3.2',
+      ]);
+
+      try {
+        $helper = $fb->getRedirectLoginHelper();
+        $accessToken = $helper->getAccessToken();
+        $oAuth2Client = $fb->getOAuth2Client();
+
+      }catch(\Facebook\Exceptions\FacebookSDKException $e) {
+          // There was an error communicating with Graph
+          return $this->render('validate-fb', [
+              'out' => '<div class="alert alert-danger">' . $e->getMessage() . '</div>'
+          ]);
+      }
+
+      if (isset($accessToken)) { // you got a valid facebook authorization token
+          $accessToken = $oAuth2Client->getLongLivedAccessToken($accessToken);
+          $expiresAt_secret_token = $accessToken->getExpiresAt()->getTimestamp();
+          $response = $fb->get('/me?fields=id,name,email', $accessToken);
+          return $this->render('validate-fb', [
+              'out' => '<legend>Facebook User Details</legend>' . '<pre>' . print_r($response->getGraphUser(), true) .print_r($accessToken,true) .print_r($expiresAt_secret_token,true).'</pre>',
+              'linkLogout' => $helper->getLogoutUrl($accessToken, 'http://localhost/monitor-beta/web/site/index'),
+          ]);
+      } elseif ($helper->getError()) {
+          // the user denied the request
+          // You could log this data . . .
+          return $this->render('validate-fb', [
+              'out' => '<legend>Validation Log</legend><pre>' .
+              '<b>Error:</b>' . print_r($helper->getError(), true) .
+              '<b>Error Code:</b>' . print_r($helper->getErrorCode(), true) .
+              '<b>Error Reason:</b>' . print_r($helper->getErrorReason(), true) .
+              '<b>Error Description:</b>' . print_r($helper->getErrorDescription(), true) .
+              '</pre>'
+          ]);
+      }
+      return $this->render('validate-fb', [
+          'out' => '<div class="alert alert-warning"><h4>Oops! Nothing much to process here.</h4></div>'
+      ]);
+    }
+
     /**
      * Finds the CredencialsApi by user and delete row.
      * If the model is not found, a 404 HTTP exception will be thrown.
