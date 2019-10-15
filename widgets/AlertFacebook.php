@@ -52,28 +52,14 @@ class AlertFacebook extends \yii\bootstrap\Widget
         ])->one();
 
         $appendClass = isset($this->options['class']) ? ' ' . $this->options['class'] : '';
-        $link = \app\helpers\FacebookHelper::login();
-        $ulr_link = '<a href="' . $link . '">Log in with Facebook!</a>';
+        $link = \app\helpers\FacebookHelper::loginLink();
+        $url_link = '<a href="' . $link . '">Log in with Facebook!</a>';
 
         
         if(!\Yii::$app->user->isGuest){
-            if($user_facebook){
+            if(!$user_facebook->status){
                 // is expired
-                $is_expired = \app\helpers\FacebookHelper::isExpired($userId);
-                if($is_expired){
-                    $message = Yii::t('app','Su sesión de facebook ha caducado: '.$ulr_link);
-                    echo \yii\bootstrap\Alert::widget([
-                            'body' => $message,
-                            'closeButton' => $this->closeButton,
-                            'options' => array_merge($this->options, [
-                                'id' => $this->getId(),
-                                'class' => $this->alertTypes['info'],
-                            ]),
-                    ]);
-                }
-                
-            }else{
-                $message = Yii::t('app','Por favor Inicie sesión con facebook: '.$ulr_link);
+                $message = Yii::t('app','Por favor Inicie sesión con facebook: '.$url_link);
                 echo \yii\bootstrap\Alert::widget([
                         'body' => $message,
                         'closeButton' => $this->closeButton,
@@ -83,19 +69,29 @@ class AlertFacebook extends \yii\bootstrap\Widget
                         ]),
                 ]);
             }
+
+            $is_expired = \app\helpers\FacebookHelper::isExpired($userId);
+            if($is_expired){
+                $message = Yii::t('app','Su sesión de facebook ha caducado: '.$url_link);
+                echo \yii\bootstrap\Alert::widget([
+                        'body' => $message,
+                        'closeButton' => $this->closeButton,
+                        'options' => array_merge($this->options, [
+                            'id' => $this->getId(),
+                            'class' => $this->alertTypes['info'],
+                        ]),
+                ]);
+            }
         }
 
         // only test for logout
-        /*if($this->logout && $user_facebook){
+        if($user_facebook->status && !$is_expired){
             // is expired
             $is_expired = \app\helpers\FacebookHelper::isExpired($userId);
             if(!$is_expired){
-                $logout_link = yii\helpers\Html::a('logout',yii\helpers\Url::to([
-                    'monitor/facebook/logout',
-                    'credencials_api_id' => $user_facebook->id,
-                    'next' => $this->logoutCallback
-                ]));
-                $message = Yii::t('app','Solo test puede salir de la session de facebook: '.$logout_link);
+                $link = \yii\helpers\Url::to(['monitor/facebook/logout','userId' => $userId],true);
+                $linkHtml = \yii\helpers\Html::a('logout',$link);
+                $message = Yii::t('app','Logout facebook: '.$linkHtml);
                 echo \yii\bootstrap\Alert::widget([
                         'body' => $message,
                         'closeButton' => $this->closeButton,
@@ -105,6 +101,6 @@ class AlertFacebook extends \yii\bootstrap\Widget
                         ]),
                 ]);
             }
-        }*/
+        }
     }
 }

@@ -39,7 +39,7 @@ class m190813_202212_Resources extends Migration
         ]);
 
         $this->insert('{{%resources}}', [
-            'name'        => 'Facebook',
+            'name'        => 'Facebook Comments',
             'resourcesId' => '1',
             'createdAt'   => '1488153462',
             'updatedAt'   => '1488153462',

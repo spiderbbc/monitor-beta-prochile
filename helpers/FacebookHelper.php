@@ -19,10 +19,14 @@ use app\models\CredencialsApi;
  */
 class FacebookHelper
 {
+
 	private static $_resource_id = 3;
-	public static $_app_id = '';
-	private static $_name_app = 'monitor-facebook';
-	private static $_app_secret = '';
+
+	public function __construct(){
+		self::$_app_id     = Yii::$app->params['facebook']['app_id'];
+		self::$_name_app   = Yii::$app->params['facebook']['name_app'];
+		self::$_app_secret = Yii::$app->params['facebook']['app_secret'];
+	}
 
 
 	/**
@@ -30,9 +34,10 @@ class FacebookHelper
      * @return facebook object
      */
 	public static function getFacebook(){
+
 		$fb = new \Facebook\Facebook([
-		  'app_id' => self::$_app_id,
-		  'app_secret' => self::$_app_secret,
+		  'app_id' => Yii::$app->params['facebook']['app_id'],
+		  'app_secret' => Yii::$app->params['facebook']['app_secret'],
 		  'default_graph_version' => 'v3.2',
 		  // 'default_access_token' => '' // https://developers.facebook.com/docs/facebook-login/access-tokens#apptokens
 		]);

@@ -27,6 +27,7 @@ class m190813_215104_Credencials_Api extends Migration
             'access_secret_token' => $this->string(206),
             'bearer_token'        => $this->string(305),
             'apiLogin'            => $this->string(206),
+            'status'              => $this->integer()->defaultValue(0),
             'expiration_date'     => $this->integer(),
             'createdAt'           => $this->integer(),
             'updatedAt'           => $this->integer(),

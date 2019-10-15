@@ -26,14 +26,16 @@ class BaseApi extends Model {
 	public $data;
 
 	public $className = [
-		'Twitter' => 'twitterApi',
-		'Live Chat' => 'liveChat',
+		'Twitter'                 => 'twitterApi',
+		'Facebook Comments'       => 'facebookCommentsApi',
+		'Live Chat'               => 'liveChat',
 		'Live Chat Conversations' => 'liveChatConversations',
-		'Web page' => 'webpage',
+		'Web page'                => 'webpage',
 	];
 
 	public function callResourcesApi($alerts = []){
 		Console::stdout("Running: ".__METHOD__."\n", Console::BOLD);
+
 		if(!empty($alerts)){
 			$resources = [];
 			for($a = 0; $a < sizeOf($alerts); $a++){
@@ -74,6 +76,17 @@ class BaseApi extends Model {
 			
 		}
 		echo "twitterApi". "\n";
+	}
+
+	public function facebookCommentsApi($alerts = []){
+		Console::stdout("calling facebookCommentsApi api class\n ", Console::BOLD);
+		$facebookCommentsApi = new \app\models\api\FacebookCommentsApi();
+
+		foreach ($alerts as $alert){
+			$query_params = $facebookCommentsApi->prepare($alert);
+			var_dump($query_params);
+		}
+
 	}
 
 	public function liveChat($alerts = []){

@@ -18,7 +18,7 @@ use yii\helpers\Url;
         <div class="col-md-12">
             <div class="well well-large">
                 <div class="text-center">
-                    <?= Html::a(' Logout', $linkLogout) ?>
+                    <?= $linkLogout ?>
                 </div>
             </div>
         </div>

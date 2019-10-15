@@ -14,6 +14,7 @@ use Yii;
  * @property string $api_key
  * @property string $api_secret_key
  * @property string $access_secret_token
+ * @property string $status
  * @property string $bearer_token
  * @property string $apiLogin
  * @property int $createdAt
@@ -26,6 +27,9 @@ use Yii;
  */
 class CredencialsApi extends \yii\db\ActiveRecord
 {
+
+    const FACEBOOK = 3;
+    const NAME_APP_FACEBOOK = 'monitor-facebook';
     /**
      * {@inheritdoc}
      */
@@ -41,7 +45,7 @@ class CredencialsApi extends \yii\db\ActiveRecord
     {
         return [
             [['userId', 'resourceId'], 'required'],
-            [['userId', 'resourceId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+            [['userId', 'resourceId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy','status'], 'integer'],
             [['name_app'], 'string', 'max' => 45],
            // [['api_key', 'api_secret_key', 'access_secret_token', 'bearer_token', 'apiLogin'], 'string', 'max' => 60],
             [['resourceId'], 'exist', 'skipOnError' => true, 'targetClass' => Resources::className(), 'targetAttribute' => ['resourceId' => 'id']],
