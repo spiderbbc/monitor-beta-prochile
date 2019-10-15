@@ -20,9 +20,9 @@ use app\models\CredencialsApi;
 class FacebookHelper
 {
 	private static $_resource_id = 3;
-	public static $_app_id = '446684435912359';
+	public static $_app_id = '';
 	private static $_name_app = 'monitor-facebook';
-	private static $_app_secret = '8eddd9257248c5cf03ded8cb5c82b2ca';
+	private static $_app_secret = '';
 
 
 	/**
@@ -43,13 +43,14 @@ class FacebookHelper
      * return login link for facebook.
      * @return string link
      */
-	public static function login(){
+	public static function loginLink(){
 		$fb = self::getFacebook();
 		$helper = $fb->getRedirectLoginHelper();
 		// Optional permissions
 		$permissions = ['manage_pages','pages_show_list','read_page_mailboxes','ads_management','pages_messaging','instagram_basic']; 
 		// crea una URL absoluta: http://www.example.com/index.php?r=post/index
-		$url = Url::to(['monitor/facebook/login'], true);
+		//$url = Url::to('monitor/facebook/validate-fb');
+		$url = 'http://localhost/monitor-beta/web/monitor/facebook/validate-fb';
 
 		$loginUrl = $helper->getLoginUrl($url, $permissions);
 
@@ -61,10 +62,16 @@ class FacebookHelper
      * @param string $next
      * @return string link
      */
-	public static function logout($access_secret_token,$next){
+	public static function logoutLink($user_facebook){
+		
 		$fb = self::getFacebook();
 		$helper = $fb->getRedirectLoginHelper();
-		$logoutUrl = $helper->getLogoutUrl($access_secret_token, $next);
+
+		// crea una URL absoluta: http://www.example.com/index.php?r=post/index
+		//$next = Url::to(['default/site/index'], true);
+		$next = 'http://localhost/monitor-beta/web/site/index';
+
+		$logoutUrl = $helper->getLogoutUrl($user_facebook->access_secret_token, $next);
 		return htmlspecialchars($logoutUrl);
 	}
 	/**
@@ -113,11 +120,13 @@ class FacebookHelper
 	public static function saveExpiresAt($userId,$expiresAt){
 		$userCredential = CredencialsApi::find() ->where( [ 
 				'userId' => $userId, 
-				'resourceId' => self::$_resource_id,
-				'name_app' => self::$_name_app,
+				'resourceId' => CredencialsApi::FACEBOOK,
+				'name_app' => CredencialsApi::NAME_APP_FACEBOOK,
 			] )->one();
 
 		$userCredential->expiration_date = $expiresAt;
+		$userCredential->status = 1;
+		
 		return ($userCredential->save());
 	}
 	/**
@@ -152,5 +161,19 @@ class FacebookHelper
             return $userCredential->expiration_date < time();
         }
         return null;
+	}
+
+
+	public static function getCredencials($userId){
+
+		$userCredential = CredencialsApi::find() ->where( [ 
+				'userId' => $userId, 
+				'resourceId' => self::$_resource_id,
+				'name_app' => self::$_name_app,
+			] )->one();
+
+		return ($userCredential) ? $userCredential : null;
+			
+
 	}
 }
