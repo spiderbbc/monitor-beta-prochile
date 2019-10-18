@@ -36,7 +36,7 @@ class FacebookCommentsApi extends Model {
 	private $_baseUrl = 'https://graph.facebook.com';
 	
 	private $_limit_post = 1;
-	private $_limit_commets = 25;
+	private $_limit_commets = 5;
 	
 	//private $_access_secret_token;
 	
@@ -72,20 +72,28 @@ class FacebookCommentsApi extends Model {
 		// get the user credentials
 		$user_credential = \app\helpers\FacebookHelper::getCredencials($this->userId);
 		// get last search in the api if in isset
-		$query = \app\helpers\AlertMentionsHelper::getAlersMentions([
+		/*$query = \app\helpers\AlertMentionsHelper::getAlersMentions([
 			'alertId'     => $this->alertId,
 			'resourcesId' => $this->resourcesId,
 			'condition'   => 'ACTIVE',
 			'type'        => 'comments',
-		]);
+		]);*/
 		
-		if(empty($query)){ // there is not  previus search .. well lets find out 
+		/*if(empty($query)){ // there is not  previus search .. well lets find out 
 			// get page token   
 			$this->_page_access_token = $this->_getPageAccessToken($user_credential->access_secret_token);
 			// loading firts query
 			$params['query'] = $this->_postCommentsSimpleQuery();
 
-		}  
+		}else{
+			$params['feeds'] = ArrayHelper::index($query,'publication_id');
+			$params['query'] = $this->_postCommentsSimpleQuery();
+		}*/
+
+		// get page token   
+		$this->_page_access_token = $this->_getPageAccessToken($user_credential->access_secret_token);
+		// loading firts query
+		$params['query'] = $this->_postCommentsSimpleQuery();  
 
 		return $params; 
 
@@ -101,14 +109,13 @@ class FacebookCommentsApi extends Model {
 
 		
 		$this->data[] = $this->_getDataApi($query_params);
-		// posible loop with product
-		//$data = $this->_orderTweets($this->data);
-		//return $data;
+		
 	}
 
 	private function _getDataApi($query_params){
 
 		$feeds = $this->_getPostsComments($query_params);
+
 		// if not empty post
 		if(!empty($feeds[0]['data'])){
 			$feeds_comments = $this->_getComments($feeds);
@@ -126,6 +133,7 @@ class FacebookCommentsApi extends Model {
 
 			$after = '';
 			$index = 0;
+			$responseData = [];
 			// lets loop if next in post or comments and there limit facebook	
 			do {
 				
@@ -136,29 +144,36 @@ class FacebookCommentsApi extends Model {
 						'access_token' => $this->_page_access_token,
 					])->send();
 
-					$responseData[$index] =  $posts->getData(); // get all post and comments
-
+					
 					$responseHeaders = $posts->headers->get('x-business-use-case-usage'); // get headers
 
 					// if get error data
-					if(\yii\helpers\ArrayHelper::getValue($responseData[$index],'error' ,false)){
+					if(\yii\helpers\ArrayHelper::getValue($posts->getData(),'error' ,false)){
 						// send email with data $responseData[$index]['error']['message']
 						break;
 					}
 					
 					// get the after
-					if(\yii\helpers\ArrayHelper::getValue($responseData[$index],'paging.next' ,false)){ // if next
-						$after = \yii\helpers\ArrayHelper::getValue($responseData[$index],'paging.cursors.after' ,false);
+					if(\yii\helpers\ArrayHelper::getValue($posts->getData(),'paging.next' ,false)){ // if next
+						$after = \yii\helpers\ArrayHelper::getValue($posts->getData(),'paging.cursors.after' ,false);
 						$is_next = true;
 					}else{
 						$is_next = false;
 					} 
+
+					$data =  $posts->getData(); // get all post and comments
+					
+
+					if(isset($data['data'][0]['comments']['data'])){
+						$responseData[$index] = $data;
+						$index++;
+					}
 					
 					// is over the limit
 					$is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders);
 					
 
-					$index++;
+					
 
 				}catch(\yii\httpclient\Exception $e){
 					// send a email with no internet connection
@@ -175,9 +190,8 @@ class FacebookCommentsApi extends Model {
 
 	private function _getComments($feeds){
 		$client = $this->_client;
-		// local variables to control data to save in AlertMentionsHelper
-		$box_data = null; 
-		// params to save in AlertMentionsHelper
+		 
+		// params to save in AlertMentionsHelper and get
 		$where = [
 			'condition'   => 'ACTIVE',
 			'type'        => 'comments',
@@ -185,35 +199,44 @@ class FacebookCommentsApi extends Model {
 			'resourcesId' => $this->resourcesId,
 		];
 
+		$query = \app\helpers\AlertMentionsHelper::getAlersMentions($where);
+		if($query){
+			$params['feeds'] = ArrayHelper::index($query,'publication_id');
+		}
+		
+
+
 		// for each pagination
 		for($p = 0; $p < sizeOf($feeds); $p++){
 			// for each feed is limit is one
 			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
-
+				// take id post
+				$id_feed = $feeds[$p]['data'][$d]['id'];
 				// if there comments
 				if(isset($feeds[$p]['data'][$d]['comments'])){
-					// save one time firts comments
-	    			if(is_null($box_data)){
-		              $unix_time = \app\helpers\DateHelper::asTimestamp($feeds[$p]['data'][$d]['comments']['data'][0]['created_time']);
-	             	  $where['publication_id'] = $feeds[$p]['data'][$d]['id'];
-		             // Console::stdout("save one time {$unix_time}.. \n", Console::BOLD);
-		              $model_alert = \app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time]);
-		              $box_data = null;
-		            }
-
 					// if there next
 					if(isset($feeds[$p]['data'][$d]['comments']['paging']['next'])){
 						
-						echo $feeds[$p]['data'][$d]['comments']['paging']['next']."\n";
-						//echo count($feeds[$p]['data'][$d]['comments']["data"])."\n";
-						
 						$next = $feeds[$p]['data'][$d]['comments']['paging']['next'];
+						/**
+						 * TODO TEST
+						 */
+						// if there next in the database
+						if (ArrayHelper::keyExists($id_feed, $params['feeds'], false)) {
+							if($params['feeds'][$id_feed]['next'] != ''){
+								$next = $params['feeds'][$id_feed]['next'];
+								// clean next in the database
+								$where['publication_id'] = $id_feed;
+								\app\helpers\AlertMentionsHelper::getAlersMentions($where,['next' => null]);
+							}
+						}
+						
 						$comments = [];
-						//$index  = 0;
+
 						do{
-							//echo $index."\n";
-							//echo $next."\n";
+
 							$commentsResponse = $client->get($next)->send();// more comments then
+
 							$comments =  $commentsResponse->getData(); // get all post and comments
 
 							$responseHeaders = $commentsResponse->headers->get('x-business-use-case-usage'); // get headers
@@ -233,39 +256,51 @@ class FacebookCommentsApi extends Model {
                             // is over the limit
                             $is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders);
                             if($is_usage_limit){
-                            	var_dump("is limit ...");
-                            	die();
-                            	// save the next 
-                            	if($next){
-                            		$where['publication_id'] = $feeds[$p]['data'][$d]['id'];
-						            Console::stdout("save one time {$next}.. \n", Console::BOLD);
-						            $model_alert = \app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => $next]);
-						            $box_data = null;
-                            	}
-                            }
+								// save the next 
+								if($next){
+									$where['publication_id'] = $id_feed;
+							        Console::stdout("save one time {$next}.. \n", Console::BOLD);
+							        $model_alert = \app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => $next]);
+								}
+							}
+                            
                             // if there more comments
                             if(!empty($comments['data'])){
                             	for($n = 0; $n < sizeOf($comments['data']); $n++){
                             		$feeds[$p]['data'][$d]['comments']['data'][] =$comments['data'][$n];
                             	}
-                                
                             }
 
                            // $index++;
 
 						}while($is_next xor $is_usage_limit);
 
-						// if put the comment taken for the pagination in comment data
-                        /*if(!empty($comments['data'])){
-                        	//echo "array push";
-                        	for($n = 0; $n < sizeOf($comments['data']); $n++){
-                        		$feeds[$p]['data'][$d]['comments']['data'][] =$comments['data'][$n];
-                        	}
-                            
-                        }*/
+
 					}
+				
+					// search for max_id
+					if(ArrayHelper::keyExists($id_feed, $params['feeds'], false)){
+						
+						$func = function($valor,$max_id){
+							var_dump($max_id);
+							die();
+						    $comments = [];
+						    $lasted_update = $params['max_id'];
+						    for($v=0; $v < count($valor['data']); $v++){
+						    	$unix_time = \app\helpers\DateHelper::asTimestamp($valor['data'][$v]['created_time']);
+						    	if(\app\helpers\FacebookHelper::isPublicationNew($lasted_update,$unix_time)){
+						    		echo 'is new';
+						    	}
+						    }
+						    //return $valor * 2;
+						};
+						$max_id = $params['feeds'][$id_feed]['max_id'];
+						$feeds[$p]['data'][$d]['comments']['data'] = array_map($func, $feeds[$p]['data'][$d]['comments'],[$max_id]);
+					}
+					
 				}
 			}
+			
 		}
 
 		return $feeds;
@@ -274,12 +309,34 @@ class FacebookCommentsApi extends Model {
 
 	private function _getSubComments($feeds_comments){
 		$client = $this->_client;
+
+		// params to save in AlertMentionsHelper and get
+		$where = [
+			'condition'   => 'ACTIVE',
+			'type'        => 'comments',
+			'alertId'     => $this->alertId,
+			'resourcesId' => $this->resourcesId,
+		];
+
+		$query = \app\helpers\AlertMentionsHelper::getAlersMentions($where);
+		if($query){
+			$params['feeds'] = ArrayHelper::index($query,'publication_id');
+		}
+		
+
+
 		// for each pagination
 		for($p = 0; $p < sizeOf($feeds_comments); $p++){
 			// for each data
 			for($d=0; $d < sizeOf($feeds_comments[$p]['data']); $d++){
+
+				$lasted_update = $feeds_comments[$p]['data'][$d]['updated_time'];
+				$id_feed = $feeds_comments[$p]['data'][$d]['id'];
+				
+
 				// if there comments
 				if(isset($feeds_comments[$p]['data'][$d]['comments'])){
+
 					// loop in comments
 					for($c=0; $c < sizeOf($feeds_comments[$p]['data'][$d]['comments']['data']); $c++){
 						// IF THERE SUBCOMMENTS
@@ -290,7 +347,7 @@ class FacebookCommentsApi extends Model {
 								
 								$id_message = $feeds_comments[$p]['data'][$d]['comments']['data'][$c]['comments']['data'][$s]['id'];
 
-								echo $id_message. "\n";
+								//echo $id_message. "\n";
 								
 								$commentsResponse = $client->get($id_message,[
 									'access_token' => $this->_page_access_token
@@ -301,9 +358,6 @@ class FacebookCommentsApi extends Model {
 	                                // send email with data $responseData[$index]['error']['message']
 	                                break;
 	                            }
-
-	                            //$subcomments[] =  $commentsResponse->getData(); // get all post and comments
-	                            
 
 	                            $responseHeaders = $commentsResponse->headers->get('x-business-use-case-usage'); // get headers
 	                            // if over the limit
@@ -317,7 +371,9 @@ class FacebookCommentsApi extends Model {
 						}
 					}
 				}	
-
+				// save lasted_update
+				$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
+  				\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
 			}
 
 		}
@@ -362,7 +418,7 @@ class FacebookCommentsApi extends Model {
 
 		$bussinessId = Yii::$app->params['facebook']['business_id'];
 
-		$post_comments_query = "{$bussinessId}/posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,like_count,message,parent,comment_count,comments.limit($this->_limit_commets){likes.limit(10),comments{message}},permalink_url}&until={$this->end_date}&since={$this->start_date}&limit={$this->_limit_post}";
+		$post_comments_query = "{$bussinessId}/posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,like_count,message,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message}},permalink_url},updated_time&until={$this->end_date}&since={$this->start_date}&limit={$this->_limit_post}";
 
 		return $post_comments_query;
 	}
