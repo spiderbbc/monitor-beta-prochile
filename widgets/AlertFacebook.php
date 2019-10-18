@@ -82,25 +82,29 @@ class AlertFacebook extends \yii\bootstrap\Widget
                         ]),
                 ]);
             }
-        }
 
-        // only test for logout
-        if($user_facebook->status && !$is_expired){
-            // is expired
-            $is_expired = \app\helpers\FacebookHelper::isExpired($userId);
-            if(!$is_expired){
-                $link = \yii\helpers\Url::to(['monitor/facebook/logout','userId' => $userId],true);
-                $linkHtml = \yii\helpers\Html::a('logout',$link);
-                $message = Yii::t('app','Logout facebook: '.$linkHtml);
-                echo \yii\bootstrap\Alert::widget([
-                        'body' => $message,
-                        'closeButton' => $this->closeButton,
-                        'options' => array_merge($this->options, [
-                            'id' => $this->getId(),
-                            'class' => $this->alertTypes['success'],
-                        ]),
-                ]);
+            // only test for logout
+            if($user_facebook->status && !$is_expired){
+                if($this->logout){
+                    // is expired
+                    $is_expired = \app\helpers\FacebookHelper::isExpired($userId);
+                    if(!$is_expired){
+                        $link = \yii\helpers\Url::to(['monitor/facebook/logout','userId' => $userId],true);
+                        $linkHtml = \yii\helpers\Html::a('logout',$link);
+                        $message = Yii::t('app','Logout facebook: '.$linkHtml);
+                        echo \yii\bootstrap\Alert::widget([
+                                'body' => $message,
+                                'closeButton' => $this->closeButton,
+                                'options' => array_merge($this->options, [
+                                    'id' => $this->getId(),
+                                    'class' => $this->alertTypes['success'],
+                                ]),
+                        ]);
+                    }
+                }
             }
         }
+
+        
     }
 }

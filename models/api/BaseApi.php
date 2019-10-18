@@ -79,12 +79,16 @@ class BaseApi extends Model {
 	}
 
 	public function facebookCommentsApi($alerts = []){
+		
 		Console::stdout("calling facebookCommentsApi api class\n ", Console::BOLD);
+		
 		$facebookCommentsApi = new \app\models\api\FacebookCommentsApi();
 
 		foreach ($alerts as $alert){
 			$query_params = $facebookCommentsApi->prepare($alert);
-			var_dump($query_params);
+			if($query_params){
+				$data = $facebookCommentsApi->call($query_params);	
+			}
 		}
 
 	}

@@ -22,13 +22,6 @@ class FacebookHelper
 
 	private static $_resource_id = 3;
 
-	public function __construct(){
-		self::$_app_id     = Yii::$app->params['facebook']['app_id'];
-		self::$_name_app   = Yii::$app->params['facebook']['name_app'];
-		self::$_app_secret = Yii::$app->params['facebook']['app_secret'];
-	}
-
-
 	/**
      * return facebook object.
      * @return facebook object
@@ -87,17 +80,17 @@ class FacebookHelper
      */
 	public static function saveAccessToken($userId,$access_secret_token){
 
-		$record_exists = CredencialsApi::find() ->where( [ 
+		$is_model = CredencialsApi::find() ->where( [ 
 						'userId' => $userId, 
 						'resourceId' => self::$_resource_id,
-						'name_app' => self::$_name_app,
+						'name_app' => Yii::$app->params['facebook']['name_app'],
 						 ] )->exists(); 
 
-		if($record_exists){
+		if($is_model){
 			$userCredential = CredencialsApi::find() ->where( [ 
 				'userId' => $userId, 
 				'resourceId' => self::$_resource_id,
-				'name_app' => self::$_name_app,
+				'name_app' => Yii::$app->params['facebook']['name_app']
 			] )->one();
 			
 			$userCredential->userId = $userId;
@@ -105,9 +98,9 @@ class FacebookHelper
 			$userCredential->access_secret_token = $access_secret_token;
 		}
 
-		if(!$record_exists){
+		if(!$is_model){
 			$userCredential = new CredencialsApi();
-			$userCredential->name_app = self::$_name_app;
+			$userCredential->name_app = Yii::$app->params['facebook']['name_app'];
 			$userCredential->userId = $userId;
 			$userCredential->resourceId = self::$_resource_id;
 			$userCredential->access_secret_token = $access_secret_token;
@@ -143,7 +136,7 @@ class FacebookHelper
 		$userCredential = CredencialsApi::find() ->where( [ 
 				'userId' => $userId, 
 				'resourceId' => self::$_resource_id,
-				'name_app' => self::$_name_app,
+				'name_app' => Yii::$app->params['facebook']['name_app'],
 			] )->one();
 		if (isset($userCredential->expiration_date)) {
             return $userCredential->expiration_date > time() + (60 * 60 * 2);
@@ -160,21 +153,62 @@ class FacebookHelper
 		$userCredential = CredencialsApi::find() ->where( [ 
 				'userId' => $userId, 
 				'resourceId' => self::$_resource_id,
-				'name_app' => self::$_name_app,
+				'name_app' => Yii::$app->params['facebook']['name_app'],
 			] )->one();
 		if (isset($userCredential->expiration_date)) {
             return $userCredential->expiration_date < time();
         }
         return null;
 	}
+	/**
+	 * [isCaseUsage true is over limit the usage api facebook or Instagram]
+	 * @param  [int]                $header_business [headers api call]
+	 * @return boolean              [true is over limit]
+	 */
+	public static function isCaseUsage($header_business){
 
+        $headers_decode = json_decode($header_business,true);
 
+        $business_id = Yii::$app->params['facebook']['business_id'];
+        $call_count = $headers_decode[$business_id][0]['call_count'];
+
+        var_dump($headers_decode);
+       
+        if($call_count > 1){
+        	return true;
+        }
+        $total_cputime = $headers_decode[$business_id][0]['total_cputime'];
+
+        
+        if($total_cputime > 1){
+        	return true;
+        }
+
+        return false;
+
+	}
+
+	public static function isPublicationNew($unix_last_date,$unix_new_date){
+
+		$diffForHumans = explode(" ",\app\helpers\DateHelper::diffForHumans($unix_last_date,$unix_new_date));
+		$adverb = end($diffForHumans);
+
+		if($adverb == 'before')
+			return true;
+		return false;
+	}
+
+	/**
+	 * [getCredencials return object credencial by userId]
+	 * @param  [int] $userId [id from user table]
+	 * @return [object / null]         [description]
+	 */
 	public static function getCredencials($userId){
 
 		$userCredential = CredencialsApi::find() ->where( [ 
 				'userId' => $userId, 
 				'resourceId' => self::$_resource_id,
-				'name_app' => self::$_name_app,
+				'name_app' => Yii::$app->params['facebook']['name_app'],
 			] )->one();
 
 		return ($userCredential) ? $userCredential : null;
