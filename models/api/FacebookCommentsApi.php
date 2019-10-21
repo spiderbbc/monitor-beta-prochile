@@ -91,7 +91,7 @@ class FacebookCommentsApi extends Model {
 		}*/
 
 		// get page token   
-		$this->_page_access_token = $this->_getPageAccessToken($user_credential->access_secret_token);
+		$this->_page_access_token = $this->_getPageAccessToken($user_credential);
 		// loading firts query
 		$params['query'] = $this->_postCommentsSimpleQuery();  
 
@@ -109,6 +109,7 @@ class FacebookCommentsApi extends Model {
 
 		
 		$this->data[] = $this->_getDataApi($query_params);
+		return $this->data;
 		
 	}
 
@@ -120,10 +121,10 @@ class FacebookCommentsApi extends Model {
 		if(!empty($feeds[0]['data'])){
 			$feeds_comments = $this->_getComments($feeds);
 			$feeds_reviews = $this->_getSubComments($feeds_comments);
-			//var_dump($feeds_reviews);
+			$model = $this->_orderFeedsComments($feeds_reviews);
 		}
 		
-
+		return $model;
 	}
 
 	private function _getPostsComments($query_params){
@@ -222,12 +223,14 @@ class FacebookCommentsApi extends Model {
 						 * TODO TEST
 						 */
 						// if there next in the database
-						if (ArrayHelper::keyExists($id_feed, $params['feeds'], false)) {
-							if($params['feeds'][$id_feed]['next'] != ''){
-								$next = $params['feeds'][$id_feed]['next'];
-								// clean next in the database
-								$where['publication_id'] = $id_feed;
-								\app\helpers\AlertMentionsHelper::getAlersMentions($where,['next' => null]);
+						if(isset($params)){
+							if (ArrayHelper::keyExists($id_feed, $params['feeds'], false)) {
+								if($params['feeds'][$id_feed]['next'] != ''){
+									$next = $params['feeds'][$id_feed]['next'];
+									// clean next in the database
+									$where['publication_id'] = $id_feed;
+									\app\helpers\AlertMentionsHelper::getAlersMentions($where,['next' => null]);
+								}
 							}
 						}
 						
@@ -277,34 +280,40 @@ class FacebookCommentsApi extends Model {
 
 
 					}
-				
-					// search for max_id
-					if(ArrayHelper::keyExists($id_feed, $params['feeds'], false)){
-						
-						$func = function($valor,$max_id){
-							var_dump($max_id);
-							die();
-						    $comments = [];
-						    $lasted_update = $params['max_id'];
-						    for($v=0; $v < count($valor['data']); $v++){
-						    	$unix_time = \app\helpers\DateHelper::asTimestamp($valor['data'][$v]['created_time']);
-						    	if(\app\helpers\FacebookHelper::isPublicationNew($lasted_update,$unix_time)){
-						    		echo 'is new';
-						    	}
-						    }
-						    //return $valor * 2;
-						};
-						$max_id = $params['feeds'][$id_feed]['max_id'];
-						$feeds[$p]['data'][$d]['comments']['data'] = array_map($func, $feeds[$p]['data'][$d]['comments'],[$max_id]);
-					}
 					
 				}
 			}
 			
 		}
 
+		/*if(isset($params)){
+			if(ArrayHelper::keyExists($id_feed, $params['feeds'], false)){
+
+				$feeds_last = $this->_isLastComments($feeds,$params,$id_feed);
+			}
+		}*/
+
+			
 		return $feeds;
 		
+	}
+
+	private function _isLastComments($feeds,$params,$id_feed){
+		
+		for ($p=0; $p < sizeOf($feeds); $p++){
+			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
+				for ($c=0;$c < sizeOf($feeds[$p]['data'][$d]['comments']['data']); $c++){
+					$created_time = $feeds[$p]['data'][$d]['comments']['data'][$c]['created_time'];
+					$unix_time = \app\helpers\DateHelper::asTimestamp($created_time);
+					var_dump($unix_time);
+					die();
+					if(\app\helpers\FacebookHelper::isPublicationNew($params['feeds'][$id_feed]['max_id'],$created_time)){
+						echo 'is new';
+					}
+
+				}
+			}
+		}
 	}
 
 	private function _getSubComments($feeds_comments){
@@ -380,7 +389,51 @@ class FacebookCommentsApi extends Model {
 		return $feeds_comments;
 	}
 
-	
+	private function _orderFeedsComments($feeds_reviews){
+
+		$model = [];
+		for($p = 0; $p < sizeOf($feeds_reviews); $p++){
+			if(!empty($feeds_reviews[$p])){
+				for($d=0; $d < sizeOf($feeds_reviews[$p]['data']); $d++){
+					// get post data
+					$model['id'] = $feeds_reviews[$p]['data'][$d]['id'];
+					$model['from'] = $feeds_reviews[$p]['data'][$d]['from']['name'];
+					$model['picture'] = $feeds_reviews[$p]['data'][$d]['full_picture'];
+					$model['message'] = $feeds_reviews[$p]['data'][$d]['message'];
+					// get in model
+					//$model[] = $feed;
+					// get comments
+					if(isset($feeds_reviews[$p]['data'][$d]['comments'])){
+						//$comment = [];
+						for($c=0; $c < sizeOf($feeds_reviews[$p]['data'][$d]['comments']['data']); $c++){
+							/*$comment['created_time'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['created_time'];
+							$comment['message'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['message'];*/
+							// if attachment
+							if(isset($feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['attachment'])){
+								//if type  photo
+								if($feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['attachment']['type'] == 'photo'){
+									$comment['id'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['id'];
+									$comment['created_time'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['created_time'];
+									$comment['like_count'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['like_count'];
+									$comment['message'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['message'];
+									$comment['src'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['attachment']['media']['image']['src'];
+
+									$model['comments'][] = $comment;
+
+								}
+
+							}
+
+							
+						}
+					}
+				}
+			}
+		}
+
+		//var_dump($model);
+		return $model;
+	}
 
 
 	/**
@@ -388,9 +441,10 @@ class FacebookCommentsApi extends Model {
 	 * @param  [string] $access_secret_token [description]
 	 * @return [string] [PageAccessToken]
 	 */
-	private function _getPageAccessToken($access_secret_token){
+	private function _getPageAccessToken($user_credential){
+		
 		$params = [
-            'access_token' => $access_secret_token
+            'access_token' => $user_credential->access_secret_token
         ];
 
         $page_access_token = null;
@@ -399,6 +453,11 @@ class FacebookCommentsApi extends Model {
         	
         	$accounts = $this->_client->get('me/accounts',$params)->send();
         	$data = $accounts->getData();
+        	if(isset($data['error'])){
+        		// to $user_credential->user->username and $user_credential->name_app
+        		// error send email with $data['error']['message']
+        		return null;
+        	}
         	$page_access_token = ArrayHelper::getColumn($data['data'],'access_token')[0]; 
 
         }catch(\yii\httpclient\Exception $e){
