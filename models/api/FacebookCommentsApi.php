@@ -413,8 +413,9 @@ class FacebookCommentsApi extends Model {
 								//if type  photo
 								if($feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['attachment']['type'] == 'photo'){
 									$comment['id'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['id'];
-									$comment['created_time'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['created_time'];
-									$comment['like_count'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['like_count'];
+									//$comment['permalink_url'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['permalink_url'];
+									//$comment['created_time'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['created_time'];
+									//$comment['like_count'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['like_count'];
 									$comment['message'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['message'];
 									$comment['src'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['attachment']['media']['image']['src'];
 
