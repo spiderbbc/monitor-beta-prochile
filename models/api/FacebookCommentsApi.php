@@ -58,7 +58,7 @@ class FacebookCommentsApi extends Model {
 			$this->start_date = $alert['config']['start_date'];
 			$this->end_date   = $alert['config']['end_date'];
 
-			 return $this->_setParams();
+			return $this->_setParams();
 		}
 		return false;
 	}
@@ -71,25 +71,6 @@ class FacebookCommentsApi extends Model {
 		$params = [];
 		// get the user credentials
 		$user_credential = \app\helpers\FacebookHelper::getCredencials($this->userId);
-		// get last search in the api if in isset
-		/*$query = \app\helpers\AlertMentionsHelper::getAlersMentions([
-			'alertId'     => $this->alertId,
-			'resourcesId' => $this->resourcesId,
-			'condition'   => 'ACTIVE',
-			'type'        => 'comments',
-		]);*/
-		
-		/*if(empty($query)){ // there is not  previus search .. well lets find out 
-			// get page token   
-			$this->_page_access_token = $this->_getPageAccessToken($user_credential->access_secret_token);
-			// loading firts query
-			$params['query'] = $this->_postCommentsSimpleQuery();
-
-		}else{
-			$params['feeds'] = ArrayHelper::index($query,'publication_id');
-			$params['query'] = $this->_postCommentsSimpleQuery();
-		}*/
-
 		// get page token   
 		$this->_page_access_token = $this->_getPageAccessToken($user_credential);
 		// loading firts query
@@ -122,6 +103,7 @@ class FacebookCommentsApi extends Model {
 			$feeds_comments = $this->_getComments($feeds);
 			$feeds_reviews = $this->_getSubComments($feeds_comments);
 			$model = $this->_orderFeedsComments($feeds_reviews);
+
 		}
 		
 		return $model;
@@ -286,12 +268,12 @@ class FacebookCommentsApi extends Model {
 			
 		}
 
-		/*if(isset($params)){
+		if(isset($params)){
 			if(ArrayHelper::keyExists($id_feed, $params['feeds'], false)){
 
-				$feeds_last = $this->_isLastComments($feeds,$params,$id_feed);
+				$feeds = $this->_isLastComments($feeds,$params,$id_feed);
 			}
-		}*/
+		}
 
 			
 		return $feeds;
@@ -299,21 +281,30 @@ class FacebookCommentsApi extends Model {
 	}
 
 	private function _isLastComments($feeds,$params,$id_feed){
+
+
 		
+		$index = 0;
+
 		for ($p=0; $p < sizeOf($feeds); $p++){
 			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
+				$comments_last = [];
 				for ($c=0;$c < sizeOf($feeds[$p]['data'][$d]['comments']['data']); $c++){
 					$created_time = $feeds[$p]['data'][$d]['comments']['data'][$c]['created_time'];
 					$unix_time = \app\helpers\DateHelper::asTimestamp($created_time);
-					var_dump($unix_time);
-					die();
+					
 					if(\app\helpers\FacebookHelper::isPublicationNew($params['feeds'][$id_feed]['max_id'],$created_time)){
-						echo 'is new';
+						$comments_last[] = $feeds[$p]['data'][$d]['comments']['data'][$c];
 					}
 
 				}
+				// check if data
+				$feeds[$p]['data'][$d]['comments']['data'] = $comments_last;
 			}
 		}
+
+
+		return $feeds;
 	}
 
 	private function _getSubComments($feeds_comments){
@@ -341,6 +332,8 @@ class FacebookCommentsApi extends Model {
 
 				$lasted_update = $feeds_comments[$p]['data'][$d]['updated_time'];
 				$id_feed = $feeds_comments[$p]['data'][$d]['id'];
+
+
 				
 
 				// if there comments
@@ -381,11 +374,16 @@ class FacebookCommentsApi extends Model {
 					}
 				}	
 				// save lasted_update
-				$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
-  				\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
+				/*$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
+  				\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);*/
 			}
 
+			$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
+			$where['publication_id'] =  $id_feed;
+			\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
+
 		}
+
 		return $feeds_comments;
 	}
 
@@ -396,37 +394,15 @@ class FacebookCommentsApi extends Model {
 			if(!empty($feeds_reviews[$p])){
 				for($d=0; $d < sizeOf($feeds_reviews[$p]['data']); $d++){
 					// get post data
-					$model['id'] = $feeds_reviews[$p]['data'][$d]['id'];
-					$model['from'] = $feeds_reviews[$p]['data'][$d]['from']['name'];
-					$model['picture'] = $feeds_reviews[$p]['data'][$d]['full_picture'];
-					$model['message'] = $feeds_reviews[$p]['data'][$d]['message'];
-					// get in model
-					//$model[] = $feed;
+					$model[$p]['id'] = $feeds_reviews[$p]['data'][$d]['id'];
+					$model[$p]['from'] = $feeds_reviews[$p]['data'][$d]['from']['name'];
+					$model[$p]['picture'] = $feeds_reviews[$p]['data'][$d]['full_picture'];
+					$model[$p]['message'] = $feeds_reviews[$p]['data'][$d]['message'];
+					$model[$p]['created_time'] = $feeds_reviews[$p]['data'][$d]['created_time'];
 					// get comments
 					if(isset($feeds_reviews[$p]['data'][$d]['comments'])){
-						//$comment = [];
-						for($c=0; $c < sizeOf($feeds_reviews[$p]['data'][$d]['comments']['data']); $c++){
-							/*$comment['created_time'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['created_time'];
-							$comment['message'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['message'];*/
-							// if attachment
-							if(isset($feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['attachment'])){
-								//if type  photo
-								if($feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['attachment']['type'] == 'photo'){
-									$comment['id'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['id'];
-									//$comment['permalink_url'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['permalink_url'];
-									//$comment['created_time'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['created_time'];
-									//$comment['like_count'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['like_count'];
-									$comment['message'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['message'];
-									$comment['src'] = $feeds_reviews[$p]['data'][$d]['comments']['data'][$c]['attachment']['media']['image']['src'];
-
-									$model['comments'][] = $comment;
-
-								}
-
-							}
-
-							
-						}
+						$comments = $feeds_reviews[$p]['data'][$d]['comments'];
+						$model[$p]['comments'] = $this->_orderComments($comments); 
 					}
 				}
 			}
@@ -436,6 +412,30 @@ class FacebookCommentsApi extends Model {
 		return $model;
 	}
 
+	private function _orderComments($comments){
+		$data = [];
+		$index = 0;
+		for($c=0; $c < sizeOf($comments['data']); $c++){
+				
+			$data[$index]['id'] = $comments['data'][$c]['id'];
+			$data[$index]['created_time'] = $comments['data'][$c]['created_time'];
+			$data[$index]['like_count'] = $comments['data'][$c]['like_count'];
+			$data[$index]['message'] = $comments['data'][$c]['message'];
+
+			
+			if(isset($comments['data'][$c]['comments'])){
+				for($s= 0; $s < sizeOf($comments['data'][$c]['comments']['data']); $s++){
+					$index ++;
+					$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
+					$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
+					$data[$index]['message'] = $comments['data'][$c]['comments']['data'][$s][0]['message'];
+					
+				}
+			}
+			$index ++;
+		}
+		return $data;
+	}
 
 	/**
 	 * [_getPageAccessToken get page access token token]

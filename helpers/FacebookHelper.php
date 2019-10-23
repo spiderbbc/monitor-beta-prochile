@@ -189,10 +189,12 @@ class FacebookHelper
 	public static function isPublicationNew($unix_last_date,$unix_new_date){
 
 		$diffForHumans = explode(" ",\app\helpers\DateHelper::diffForHumans($unix_last_date,$unix_new_date));
+		
 		$adverb = end($diffForHumans);
 
-		if($adverb == 'before')
+		if($adverb == 'before'){
 			return true;
+		}
 		return false;
 	}
 
