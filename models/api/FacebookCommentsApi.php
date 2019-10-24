@@ -8,6 +8,8 @@ use yii\helpers\Console;
 
 use yii\httpclient\Client;
 
+use app\models\file\JsonFile;
+
 
 /**
  *
@@ -90,23 +92,22 @@ class FacebookCommentsApi extends Model {
 
 		
 		$this->data[] = $this->_getDataApi($query_params);
-		return $this->data;
+		//return $this->data;
 		
 	}
 
 	private function _getDataApi($query_params){
 
 		$feeds = $this->_getPostsComments($query_params);
-
+		
 		// if not empty post
 		if(!empty($feeds[0]['data'])){
 			$feeds_comments = $this->_getComments($feeds);
 			$feeds_reviews = $this->_getSubComments($feeds_comments);
 			$model = $this->_orderFeedsComments($feeds_reviews);
-
+			return $model;
 		}
-		
-		return $model;
+			
 	}
 
 	private function _getPostsComments($query_params){
@@ -281,10 +282,14 @@ class FacebookCommentsApi extends Model {
 	}
 
 	private function _isLastComments($feeds,$params,$id_feed){
-
-
 		
-		$index = 0;
+		// params to save in AlertMentionsHelper and get
+		$where = [
+			'condition'   => 'ACTIVE',
+			'type'        => 'comments',
+			'alertId'     => $this->alertId,
+			'resourcesId' => $this->resourcesId,
+		];
 
 		for ($p=0; $p < sizeOf($feeds); $p++){
 			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
@@ -293,8 +298,13 @@ class FacebookCommentsApi extends Model {
 					$created_time = $feeds[$p]['data'][$d]['comments']['data'][$c]['created_time'];
 					$unix_time = \app\helpers\DateHelper::asTimestamp($created_time);
 					
-					if(\app\helpers\FacebookHelper::isPublicationNew($params['feeds'][$id_feed]['max_id'],$created_time)){
+
+					if(\app\helpers\FacebookHelper::isPublicationNew($params['feeds'][$id_feed]['max_id'],$unix_time)){
 						$comments_last[] = $feeds[$p]['data'][$d]['comments']['data'][$c];
+						$where['publication_id'] =  $id_feed;
+						// add plus a second to the max_id
+						$unix_time = strtotime("+1 seconds",$unix_time);
+						\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
 					}
 
 				}
@@ -373,14 +383,15 @@ class FacebookCommentsApi extends Model {
 						}
 					}
 				}	
-				// save lasted_update
-				/*$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
-  				\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);*/
+				
 			}
-
-			$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
-			$where['publication_id'] =  $id_feed;
-			\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
+			if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($id_feed)){
+				$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
+				// add plus a second to the max_id
+				$unix_time = strtotime("+1 seconds",$unix_time);
+				$where['publication_id'] =  $id_feed;
+				\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
+			}
 
 		}
 
@@ -389,6 +400,7 @@ class FacebookCommentsApi extends Model {
 
 	private function _orderFeedsComments($feeds_reviews){
 
+		
 		$model = [];
 		for($p = 0; $p < sizeOf($feeds_reviews); $p++){
 			if(!empty($feeds_reviews[$p])){
@@ -397,7 +409,12 @@ class FacebookCommentsApi extends Model {
 					$model[$p]['id'] = $feeds_reviews[$p]['data'][$d]['id'];
 					$model[$p]['from'] = $feeds_reviews[$p]['data'][$d]['from']['name'];
 					$model[$p]['picture'] = $feeds_reviews[$p]['data'][$d]['full_picture'];
-					$model[$p]['message'] = $feeds_reviews[$p]['data'][$d]['message'];
+					if(isset($feeds_reviews[$p]['data'][$d]['message'])){
+						$model[$p]['message'] = $feeds_reviews[$p]['data'][$d]['message'];
+					}else{
+						$model[$p]['message'] = "-";
+					}
+					
 					$model[$p]['created_time'] = $feeds_reviews[$p]['data'][$d]['created_time'];
 					// get comments
 					if(isset($feeds_reviews[$p]['data'][$d]['comments'])){
@@ -428,6 +445,10 @@ class FacebookCommentsApi extends Model {
 					$index ++;
 					$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
 					$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
+					if(isset($comments['data'][$c]['comments']['data'][$s][0]['like_count'])){
+						$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
+					}
+					
 					$data[$index]['message'] = $comments['data'][$c]['comments']['data'][$s][0]['message'];
 					
 				}
@@ -435,6 +456,26 @@ class FacebookCommentsApi extends Model {
 			$index ++;
 		}
 		return $data;
+	}
+
+	public function saveJsonFile(){
+		$source = 'Facebook Comments';
+		/*var_dump($this->data);
+		die();*/
+
+		for($d=0; $d < sizeOf($this->data); $d++){
+			if(!is_null($this->data[$d])){
+				$jsonfile = new JsonFile($this->alertId,$source);
+				for($p = 0; $p < sizeOf($this->data[$d]); $p++){
+					if(!empty($this->data[$d][$p]['comments'])){
+						// call jsonfile
+						$jsonfile->load($this->data[$d][$p]);
+						$jsonfile->save();
+
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -477,8 +518,10 @@ class FacebookCommentsApi extends Model {
 	private function _postCommentsSimpleQuery(){
 
 		$bussinessId = Yii::$app->params['facebook']['business_id'];
+		$end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'+1 day'));
+		
 
-		$post_comments_query = "{$bussinessId}/posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,like_count,message,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message}},permalink_url},updated_time&until={$this->end_date}&since={$this->start_date}&limit={$this->_limit_post}";
+		$post_comments_query = "{$bussinessId}/posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,like_count,message,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message}},permalink_url},updated_time&until={$end_date}&since={$this->start_date}&limit={$this->_limit_post}";
 
 		return $post_comments_query;
 	}

@@ -87,15 +87,8 @@ class BaseApi extends Model {
 		foreach ($alerts as $alert){
 			$query_params = $facebookCommentsApi->prepare($alert);
 			if($query_params){
-				$data = $facebookCommentsApi->call($query_params);
-				if(!empty($data)){
-					// path to folder flat archives
-					$folderpath = [
-						'source' => 'Facebook Comments',
-						'documentId' => $alert['id'],
-					];
-					$this->saveJsonFile($folderpath,$data);
-				}	
+				$facebookCommentsApi->call($query_params);
+				$facebookCommentsApi->saveJsonFile();
 			}
 		}
 

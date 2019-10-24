@@ -57,5 +57,13 @@ class AlertMentionsHelper
 
         return (!empty($alertsMencions)) ? $alertsMencions : null;
     }
+
+
+    public static function isAlertsMencionsExists($publication_id){
+        if(\app\models\AlertsMencions::find()->where( [ 'publication_id' => $publication_id] )->exists()){
+            return true;
+        }
+        return false;
+    }
 	
 }
