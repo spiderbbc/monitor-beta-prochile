@@ -61,8 +61,11 @@ class FacebookCommentsApi extends Model {
 			$this->userId     = $alert['userId'];
 			$this->start_date = $alert['config']['start_date'];
 			$this->end_date   = $alert['config']['end_date'];
+			// order products by his  length
+			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
-
+			
+			
 			return $this->_setParams();
 		}
 		return false;
@@ -478,7 +481,43 @@ class FacebookCommentsApi extends Model {
 	private function _orderDataByProducts($data){
 		$model = [];
 
-		for($p = 0; $p < sizeof($this->products); $p++){
+		$feed_count = count($data);
+
+		for($d = 0 ; $d < sizeOf($data); $d++){
+			for($p = 0; $p < sizeof($this->products); $p++){
+				// destrutura el product
+				$product_data = \app\helpers\StringHelper::structure_product_to_search($this->products[$p]);
+				// get message
+				$sentence = $data[$d]['message'];
+				$id_feed = $data[$d]['id'];
+				$date = \app\helpers\DateHelper::asTimestamp($data[$d]['created_time']);
+				// if containsAny
+				if(\app\helpers\StringHelper::containsAny($sentence,$product_data)){
+					if($feed_count){
+						// if a not key
+						if(!ArrayHelper::keyExists($this->products[$p], $model, false)){
+							$model [$this->products[$p]] = [] ;
+
+						}
+						// if not value
+						if(!in_array($data[$d],$model[$this->products[$p]])){
+							$where['publication_id'] = $id_feed;
+							\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date]);
+							$model[$this->products[$p]][] = $data[$d];
+							$feed_count --;
+							break;
+						}
+					}
+				}
+				//var_dump($product_data);
+			}
+
+		}
+
+		/*var_dump($this->products);
+		var_dump($model);
+		die();*/
+		/*for($p = 0; $p < sizeof($this->products); $p++){
 			$product_data = \app\helpers\StringHelper::structure_product_to_search($this->products[$p]);
 			for($c=0; $c < sizeOf($data); $c++){
 				
@@ -495,7 +534,7 @@ class FacebookCommentsApi extends Model {
 
 			}
 
-		}
+		}*/
 		
 		return $model;
 
@@ -504,16 +543,10 @@ class FacebookCommentsApi extends Model {
 	public function saveJsonFile(){
 		$source = 'Facebook Comments';
 		
-		for($d = 0; $d < sizeOf($this->data); $d++){
-			foreach($this->data[$d] as $feed){
+		foreach ($this->data as $data){
+			foreach($data as $product => $feed){
 				$jsonfile = new JsonFile($this->alertId,$source);
-				for($f = 0; $f <sizeOf($feed); $f++){
-					if(!is_null($feed[$f])){
-						$jsonfile->load($this->data[$d]);
-						// call jsonfile
-					}
-
-				}
+				$jsonfile->load($data);
 				$jsonfile->save();
 			}
 		}

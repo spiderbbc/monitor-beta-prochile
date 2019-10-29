@@ -37,10 +37,12 @@ class StringHelper
         foreach($product_exploded as $product){
             $stringy = S::create($product);
             // contamos si el product a buscar es mayor a 3 palabras o si es un valor numeric
-            if(count($stringy) >= 3 or is_numeric($stringy)){
-                // si no esta en el array para evitar repetidos
-                if(!in_array($product,$data)){
-                    $data[] = $product;
+            if(count($stringy) >= 4){
+                if(!is_numeric($stringy)){
+                    // si no esta en el array para evitar repetidos
+                    if(!in_array($product,$data)){
+                        $data[] = $product;
+                    }
                 }
             }
             
