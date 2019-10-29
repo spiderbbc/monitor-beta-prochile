@@ -30,6 +30,7 @@ class FacebookCommentsApi extends Model {
 	public $end_date;
 	public $start_date;
 	public $resourcesId;
+	public $products;
 	
 	public $data;
 
@@ -53,12 +54,14 @@ class FacebookCommentsApi extends Model {
 	 * @return [array]        [array params]
 	 */
 	public function prepare($alert){
+		
 		if(!empty($alert)){
 			// set variables
 			$this->alertId    = $alert['id'];
 			$this->userId     = $alert['userId'];
 			$this->start_date = $alert['config']['start_date'];
 			$this->end_date   = $alert['config']['end_date'];
+			$this->products   = $alert['products'];
 
 			return $this->_setParams();
 		}
@@ -91,7 +94,9 @@ class FacebookCommentsApi extends Model {
 	public function call($query_params = []){
 
 		
-		$this->data[] = $this->_getDataApi($query_params);
+		//$this->data[] = $this->_getDataApi($query_params);
+		$data = $this->_getDataApi($query_params);
+		$this->data[] = $this->_orderDataByProducts($data);
 		//return $this->data;
 		
 	}
@@ -395,11 +400,11 @@ class FacebookCommentsApi extends Model {
 
 		}
 
+
 		return $feeds_comments;
 	}
 
 	private function _orderFeedsComments($feeds_reviews){
-
 		
 		$model = [];
 		for($p = 0; $p < sizeOf($feeds_reviews); $p++){
@@ -407,8 +412,21 @@ class FacebookCommentsApi extends Model {
 				for($d=0; $d < sizeOf($feeds_reviews[$p]['data']); $d++){
 					// get post data
 					$model[$p]['id'] = $feeds_reviews[$p]['data'][$d]['id'];
+					// from
 					$model[$p]['from'] = $feeds_reviews[$p]['data'][$d]['from']['name'];
-					$model[$p]['picture'] = $feeds_reviews[$p]['data'][$d]['full_picture'];
+					// full_picture
+					if(isset($feeds_reviews[$p]['data'][$d]['full_picture'])){
+						$model[$p]['picture'] = $feeds_reviews[$p]['data'][$d]['full_picture'];
+					}else{
+						$model[$p]['picture'] = "-";
+					}
+					// attachments
+					if(isset($feeds_reviews[$p]['data'][$d]['attachments'])){
+						$model[$p]['unshimmed_url'] = $feeds_reviews[$p]['data'][$d]['attachments']['data'][0]['unshimmed_url'];
+					}else{
+						$model[$p]['attachments'] = "-";
+					}
+					
 					if(isset($feeds_reviews[$p]['data'][$d]['message'])){
 						$model[$p]['message'] = $feeds_reviews[$p]['data'][$d]['message'];
 					}else{
@@ -425,7 +443,6 @@ class FacebookCommentsApi extends Model {
 			}
 		}
 
-		//var_dump($model);
 		return $model;
 	}
 
@@ -458,24 +475,49 @@ class FacebookCommentsApi extends Model {
 		return $data;
 	}
 
+	private function _orderDataByProducts($data){
+		$model = [];
+
+		for($p = 0; $p < sizeof($this->products); $p++){
+			$product_data = \app\helpers\StringHelper::structure_product_to_search($this->products[$p]);
+			for($c=0; $c < sizeOf($data); $c++){
+				
+				$id_feed = $data[$c]['id'];
+				$sentence = $data[$c]['message'];
+				$date = \app\helpers\DateHelper::asTimestamp($data[$c]['created_time']);
+				$isContains = \app\helpers\StringHelper::containsAny($sentence,$product_data);
+				if($isContains){
+					$where['publication_id'] = $id_feed;
+					\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date]);
+					$model[$this->products[$p]][] = $data[$c];
+					
+				}
+
+			}
+
+		}
+		
+		return $model;
+
+	}
+
 	public function saveJsonFile(){
 		$source = 'Facebook Comments';
-		/*var_dump($this->data);
-		die();*/
-
-		for($d=0; $d < sizeOf($this->data); $d++){
-			if(!is_null($this->data[$d])){
+		
+		for($d = 0; $d < sizeOf($this->data); $d++){
+			foreach($this->data[$d] as $feed){
 				$jsonfile = new JsonFile($this->alertId,$source);
-				for($p = 0; $p < sizeOf($this->data[$d]); $p++){
-					if(!empty($this->data[$d][$p]['comments'])){
+				for($f = 0; $f <sizeOf($feed); $f++){
+					if(!is_null($feed[$f])){
+						$jsonfile->load($this->data[$d]);
 						// call jsonfile
-						$jsonfile->load($this->data[$d][$p]);
-						$jsonfile->save();
-
 					}
+
 				}
+				$jsonfile->save();
 			}
 		}
+
 	}
 
 	/**
