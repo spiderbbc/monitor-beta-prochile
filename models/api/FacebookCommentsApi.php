@@ -64,6 +64,8 @@ class FacebookCommentsApi extends Model {
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
+			/*var_dump($this->products);
+			die();*/
 			
 			
 			return $this->_setParams();
@@ -99,7 +101,9 @@ class FacebookCommentsApi extends Model {
 		
 		//$this->data[] = $this->_getDataApi($query_params);
 		$data = $this->_getDataApi($query_params);
-		$this->data[] = $this->_orderDataByProducts($data);
+		if($data){
+			$this->data[] = $this->_orderDataByProducts($data);
+		}
 		//return $this->data;
 		
 	}
@@ -480,19 +484,23 @@ class FacebookCommentsApi extends Model {
 
 	private function _orderDataByProducts($data){
 		$model = [];
-
+		var_dump($data);
+		die();
 		$feed_count = count($data);
 
 		for($d = 0 ; $d < sizeOf($data); $d++){
 			for($p = 0; $p < sizeof($this->products); $p++){
 				// destrutura el product
 				$product_data = \app\helpers\StringHelper::structure_product_to_search($this->products[$p]);
+				
 				// get message
 				$sentence = $data[$d]['message'];
 				$id_feed = $data[$d]['id'];
 				$date = \app\helpers\DateHelper::asTimestamp($data[$d]['created_time']);
+
+				$is_contains = (count($product_data) > 3) ? \app\helpers\StringHelper::containsAny($sentence,$product_data) : \app\helpers\StringHelper::containsAll($sentence,$product_data);
 				// if containsAny
-				if(\app\helpers\StringHelper::containsAny($sentence,$product_data)){
+				if($is_contains){
 					if($feed_count){
 						// if a not key
 						if(!ArrayHelper::keyExists($this->products[$p], $model, false)){
@@ -542,12 +550,13 @@ class FacebookCommentsApi extends Model {
 
 	public function saveJsonFile(){
 		$source = 'Facebook Comments';
-		
-		foreach ($this->data as $data){
-			foreach($data as $product => $feed){
-				$jsonfile = new JsonFile($this->alertId,$source);
-				$jsonfile->load($data);
-				$jsonfile->save();
+		if(!is_null($this->data)){
+			foreach ($this->data as $data){
+				foreach($data as $product => $feed){
+					$jsonfile = new JsonFile($this->alertId,$source);
+					$jsonfile->load($data);
+					$jsonfile->save();
+				}
 			}
 		}
 

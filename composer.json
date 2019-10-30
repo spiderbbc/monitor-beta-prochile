@@ -34,7 +34,9 @@
         "phpoffice/phpspreadsheet": "^1.9",
         "facebook/graph-sdk": "^5.7",
         "yiisoft/yii2-httpclient": "*",
-        "yii2tech/spreadsheet": "^1.0"
+        "yii2tech/spreadsheet": "^1.0",
+        "danielstjules/stringy": "~3.1.0",
+        "jasonlam604/stringizer": "^2.14.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
