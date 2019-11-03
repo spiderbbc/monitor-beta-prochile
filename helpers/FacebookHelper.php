@@ -170,15 +170,15 @@ class FacebookHelper
         $headers_decode = json_decode($header_business,true);
 
         $business_id = Yii::$app->params['facebook']['business_id'];
-        $call_count = $headers_decode[$business_id][0]['call_count'];
+        $call_count = (int) $headers_decode[$business_id][0]['call_count'];
 
-        if($call_count > 1){
+        if($call_count > 85){
         	return true;
         }
-        $total_cputime = $headers_decode[$business_id][0]['total_cputime'];
+        $total_cputime = (int) $headers_decode[$business_id][0]['total_cputime'];
 
 
-        if($total_cputime > 1){
+        if($total_cputime > 85){
         	return true;
         }
 

@@ -138,7 +138,11 @@ class FacebookCommentsApi extends Model {
 					$posts = $client->get($query_params['query'],[
 						'after' => $after,
 						'access_token' => $this->_page_access_token,
-					])->send();
+					])
+					->setOptions([
+			        //'proxy' => 'tcp://proxy.example.com:5100', // use a Proxy
+			        'timeout' => 5, // set timeout to 5 seconds for the case server is not responding
+			    	])->send();
 
 					
 					$responseHeaders = $posts->headers->get('x-business-use-case-usage'); // get headers
@@ -165,8 +169,10 @@ class FacebookCommentsApi extends Model {
 						$index++;
 					}
 					
-					// is over the limit
-					$is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders);
+					/*// is over the limit
+					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders)){
+						break;
+					}*/
 					
 
 					
@@ -178,7 +184,7 @@ class FacebookCommentsApi extends Model {
 				}
 
 			
-			}while($is_next xor $is_usage_limit);
+			}while($is_next);
 		
 			return $responseData;
 		}
@@ -221,10 +227,11 @@ class FacebookCommentsApi extends Model {
 						if(isset($params)){
 							if (ArrayHelper::keyExists($id_feed, $params['feeds'], false)) {
 								if($params['feeds'][$id_feed]['next'] != ''){
+									echo "using next ...";
 									$next = $params['feeds'][$id_feed]['next'];
 									// clean next in the database
 									$where['publication_id'] = $id_feed;
-									\app\helpers\AlertMentionsHelper::getAlersMentions($where,['next' => null]);
+									\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => null]);
 								}
 							}
 						}
@@ -253,6 +260,8 @@ class FacebookCommentsApi extends Model {
 
                             // is over the limit
                             $is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders);
+
+
                             if($is_usage_limit){
 								// save the next 
 								if($next){
@@ -268,10 +277,15 @@ class FacebookCommentsApi extends Model {
                             		$feeds[$p]['data'][$d]['comments']['data'][] =$comments['data'][$n];
                             	}
                             }
+                            // is over the limit
+							if($is_usage_limit){
+								break;
+							}
+							
 
                            // $index++;
 
-						}while($is_next xor $is_usage_limit);
+						}while($is_next);
 
 
 					}
@@ -303,6 +317,7 @@ class FacebookCommentsApi extends Model {
 			'resourcesId' => $this->resourcesId,
 		];
 
+
 		for ($p=0; $p < sizeOf($feeds); $p++){
 			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
 				$comments_last = [];
@@ -314,8 +329,10 @@ class FacebookCommentsApi extends Model {
 					if(\app\helpers\FacebookHelper::isPublicationNew($params['feeds'][$id_feed]['max_id'],$unix_time)){
 						$comments_last[] = $feeds[$p]['data'][$d]['comments']['data'][$c];
 						$where['publication_id'] =  $id_feed;
+						echo $unix_time . "\n";
+						echo $params['feeds'][$id_feed]['max_id'] . "\n";
 						// add plus a second to the max_id
-						$unix_time = strtotime("+1 seconds",$unix_time);
+						$unix_time = strtotime("+5 seconds",$unix_time);
 						\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
 					}
 
@@ -396,13 +413,13 @@ class FacebookCommentsApi extends Model {
 					}
 				}	
 				
-			}
-			if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($id_feed)){
-				$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
-				// add plus a second to the max_id
-				$unix_time = strtotime("+1 seconds",$unix_time);
-				$where['publication_id'] =  $id_feed;
-				\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
+				if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($id_feed)){
+					$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
+					// add plus a second to the max_id
+					$unix_time = strtotime("+60 seconds",$unix_time);
+					$where['publication_id'] =  $id_feed;
+					\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
+				}
 			}
 
 		}
@@ -441,6 +458,7 @@ class FacebookCommentsApi extends Model {
 					}
 					
 					$model[$p]['created_time'] = $feeds_reviews[$p]['data'][$d]['created_time'];
+					$model[$p]['updated_time'] = $feeds_reviews[$p]['data'][$d]['updated_time'];
 					// get comments
 					if(isset($feeds_reviews[$p]['data'][$d]['comments'])){
 						$comments = $feeds_reviews[$p]['data'][$d]['comments'];
@@ -454,6 +472,7 @@ class FacebookCommentsApi extends Model {
 	}
 
 	private function _orderComments($comments){
+
 		$data = [];
 		$index = 0;
 		for($c=0; $c < sizeOf($comments['data']); $c++){
@@ -484,8 +503,6 @@ class FacebookCommentsApi extends Model {
 
 	private function _orderDataByProducts($data){
 		$model = [];
-		var_dump($data);
-		die();
 		$feed_count = count($data);
 
 		for($d = 0 ; $d < sizeOf($data); $d++){
@@ -555,8 +572,8 @@ class FacebookCommentsApi extends Model {
 				foreach($data as $product => $feed){
 					$jsonfile = new JsonFile($this->alertId,$source);
 					$jsonfile->load($data);
-					$jsonfile->save();
 				}
+				$jsonfile->save();
 			}
 		}
 
