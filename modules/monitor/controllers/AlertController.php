@@ -217,6 +217,7 @@ class AlertController extends Controller
         $config->end_date = DateHelper::asDatetime($config->end_date);
         //free words
         $alert->free_words = $alert->freeKeywords;
+
         // set productIds
         $alert->productsIds  = $alert->products;
         // set tag 
@@ -267,11 +268,34 @@ class AlertController extends Controller
            // if free words is
           $free_words = Yii::$app->request->post('Alerts')['free_words'];
           if ($free_words){
+            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_NAME;
             \app\models\Keywords::deleteAll([
                         'alertId' => $alert->id,
-                        'dictionaryId' => \app\models\Dictionaries::FREE_WORDS_ID
+                        'name' => $dictionaryName
             ]);
-            \app\models\Dictionaries::saveFreeWords($free_words,$alert->id);
+            \app\models\Dictionaries::saveFreeWords($free_words,$alert->id,$dictionaryName);
+          }
+          // if product_description
+          if($config->product_description){
+            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_PRODUCT;
+            $words = explode(',', $config->product_description);
+
+            \app\models\Keywords::deleteAll([
+                        'alertId' => $alert->id,
+                        'name' => $dictionaryName
+            ]);
+            \app\models\Dictionaries::saveFreeWords($words,$alert->id,$dictionaryName);
+          }
+
+          // if competitors
+          if($config->competitors){
+            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_COMPETITION;
+            $words = explode(',', $config->competitors);
+            \app\models\Keywords::deleteAll([
+                        'alertId' => $alert->id,
+                        'name' => $dictionaryName
+            ]);
+            \app\models\Dictionaries::saveFreeWords($words,$alert->id,$dictionaryName);
           }
 
           // set product/models
@@ -294,6 +318,7 @@ class AlertController extends Controller
                 'message' => $msg,
             ]);
           }
+          // return view
           return $this->redirect(['view', 'id' => $alert->id]);
         }
 

@@ -181,7 +181,7 @@ class TwitterApi extends Model {
 		$until_date = null;
 		$max_id = null;
 
-		
+		var_dump($params);
       
       	$product = ArrayHelper::remove($params, 'product');
       	$since_date = ArrayHelper::remove($params, 'since');

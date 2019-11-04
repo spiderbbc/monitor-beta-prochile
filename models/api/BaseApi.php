@@ -33,6 +33,7 @@ class BaseApi extends Model {
 		'Web page'                => 'webpage',
 	];
 
+
 	public function callResourcesApi($alerts = []){
 		Console::stdout("Running: ".__METHOD__."\n", Console::BOLD);
 
@@ -138,15 +139,34 @@ class BaseApi extends Model {
                 $jsonFile= new JsonFile($alertid,$source);
                 if(!empty($jsonFile->findAll())){
                     $data[$alertid][$source] = $jsonFile->findAll();
-                    \app\helpers\DocumentHelper::moveFilesToProcessed($alertid,$source);
+                    //\app\helpers\DocumentHelper::moveFilesToProcessed($alertid,$source);
                 }
                     
             }
                
         }
-        var_dump($data);
-        die();
+        // no empty
+        if(!empty($data)){
+        	foreach ($data as $alertId => $resources){
+        		echo $alertId. "\n";
+        		foreach ($resources as $resource => $values){
+        			$resourceName = str_replace(" ", "",ucwords($resource));
+        			$this->{"readData{$resourceName}Api"}($alertId,$values);
+        		}
+        	}
+        }
+       
 
+	}
+
+
+	public function readDataTwitterApi($alertId,$data){
+		echo "calling readDataTwitterApi \n";
+	}
+
+
+	public function readDataFacebookCommentsApi($alertId,$data){
+		echo "calling FacebookComments \n";
 	}
 
 	
