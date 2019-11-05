@@ -375,8 +375,7 @@ class TwitterApi extends Model {
 						$tweets[$product][$index]['user'] = $this->_getUserData($object[$o]['statuses'][$s]);
 						// get entities url
 						$tweets[$product][$index]['url'] = $this->_getEntities($object[$o]['statuses'][$s]);
-						
-						
+
 
 						if(array_key_exists('place', $object[$o])){
 							if(!is_null($object[$o]['place'])){
@@ -387,6 +386,11 @@ class TwitterApi extends Model {
 						}
 
 						$tweets[$product][$index]['created_at'] = $object[$o]['statuses'][$s]['created_at'];
+						// get retweet_count
+						$tweets[$product][$index]['retweet_count'] = $object[$o]['statuses'][$s]['retweet_count'];
+						// get favorite_count
+						$tweets[$product][$index]['favorite_count'] = $object[$o]['statuses'][$s]['favorite_count'];
+						// get post_from
 						$tweets[$product][$index]['post_from'] = $object[$o]['statuses'][$s]['text'];
 						
 						$index++;

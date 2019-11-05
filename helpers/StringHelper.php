@@ -119,4 +119,9 @@ class StringHelper
         return strtr($s, $replace);
     }
 
+
+    public static function remove_emoji ($text){
+        return preg_replace('/[[:^print:]]/', '', $text);
+    }
+
 }

@@ -153,7 +153,20 @@ class AlertController extends Controller
           // if free words is
           $free_words = Yii::$app->request->post('Alerts')['free_words'];
           if ($free_words){
-            \app\models\Dictionaries::saveFreeWords($free_words,$alert->id);
+            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_NAME;
+            \app\models\Dictionaries::saveFreeWords($free_words,$alert->id,$dictionaryName);
+          }
+          // product_description
+          if($config->product_description){
+            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_PRODUCT;
+            $words = explode(',', $config->product_description);
+            \app\models\Dictionaries::saveFreeWords($words,$alert->id,$dictionaryName);
+          }
+          // tag competitors
+          if($config->competitors){
+            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_COMPETITION;
+            $words = explode(',', $config->competitors);
+            \app\models\Dictionaries::saveFreeWords($words,$alert->id,$dictionaryName);
           }
           // set product/models
           $products_models = Yii::$app->request->post('Alerts')['productsIds'];
@@ -211,7 +224,8 @@ class AlertController extends Controller
         $alert = $this->findModel($id);
         $config = $alert->config;
         $drive   = new \app\models\api\DriveApi();
-
+        // count dictionaries for the update difference
+        $countDictionaries = count($drive->dictionaries);
         //set date
         $config->start_date = DateHelper::asDatetime($config->start_date);
         $config->end_date = DateHelper::asDatetime($config->end_date);
@@ -261,28 +275,35 @@ class AlertController extends Controller
           
           // keywords/ dictionaryIds model
           $dictionaryIds = Yii::$app->request->post('Alerts')['dictionaryIds'];
-          if($dictionaryIds){
-            \app\models\Dictionaries::saveDictionaryDrive($dictionaryIds,$alert->id);
-          }
+          if($dictionaryIds != ''){
+            if(count($dictionaryIds) != $countDictionaries){
+              \app\models\Dictionaries::saveDictionaryDrive($dictionaryIds,$alert->id);
+            }
+          }else{
+              \app\models\Keywords::deleteAll(['alertId' => $alert->id]);
+          } 
+          
 
            // if free words is
           $free_words = Yii::$app->request->post('Alerts')['free_words'];
           if ($free_words){
             $dictionaryName = \app\models\Dictionaries::FREE_WORDS_NAME;
+            $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
             \app\models\Keywords::deleteAll([
                         'alertId' => $alert->id,
-                        'name' => $dictionaryName
+                        'dictionaryId' => $dictionary->id
             ]);
             \app\models\Dictionaries::saveFreeWords($free_words,$alert->id,$dictionaryName);
           }
           // if product_description
           if($config->product_description){
             $dictionaryName = \app\models\Dictionaries::FREE_WORDS_PRODUCT;
+            $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
             $words = explode(',', $config->product_description);
 
             \app\models\Keywords::deleteAll([
                         'alertId' => $alert->id,
-                        'name' => $dictionaryName
+                        'dictionaryId' => $dictionary->id
             ]);
             \app\models\Dictionaries::saveFreeWords($words,$alert->id,$dictionaryName);
           }
@@ -290,10 +311,11 @@ class AlertController extends Controller
           // if competitors
           if($config->competitors){
             $dictionaryName = \app\models\Dictionaries::FREE_WORDS_COMPETITION;
+            $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
             $words = explode(',', $config->competitors);
             \app\models\Keywords::deleteAll([
                         'alertId' => $alert->id,
-                        'name' => $dictionaryName
+                        'dictionaryId' => $dictionary->id
             ]);
             \app\models\Dictionaries::saveFreeWords($words,$alert->id,$dictionaryName);
           }

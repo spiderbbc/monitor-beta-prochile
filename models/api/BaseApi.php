@@ -148,7 +148,6 @@ class BaseApi extends Model {
         // no empty
         if(!empty($data)){
         	foreach ($data as $alertId => $resources){
-        		echo $alertId. "\n";
         		foreach ($resources as $resource => $values){
         			$resourceName = str_replace(" ", "",ucwords($resource));
         			$this->{"readData{$resourceName}Api"}($alertId,$values);
@@ -162,6 +161,13 @@ class BaseApi extends Model {
 
 	public function readDataTwitterApi($alertId,$data){
 		echo "calling readDataTwitterApi \n";
+		$searchTwitterApi = new \app\models\search\TwitterSearch();
+		$params = [$alertId,$data];
+		if(!$searchTwitterApi->load($params)){
+			// send email params in twitterApi no load with alertId and count($params)
+		}
+		$searchTwitterApi->search();
+		
 	}
 
 
