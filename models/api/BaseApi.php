@@ -28,6 +28,7 @@ class BaseApi extends Model {
 	public $className = [
 		'Twitter'                 => 'twitterApi',
 		'Facebook Comments'       => 'facebookCommentsApi',
+		'Instagram Comments'      => 'InstagramCommentsApi',
 		'Live Chat'               => 'liveChat',
 		'Live Chat Conversations' => 'liveChatConversations',
 		'Web page'                => 'webpage',
@@ -90,6 +91,22 @@ class BaseApi extends Model {
 			if($query_params){
 				$facebookCommentsApi->call($query_params);
 				$facebookCommentsApi->saveJsonFile();
+			}
+		}
+
+	}
+
+	public function InstagramCommentsApi($alerts = []){
+		
+		Console::stdout("calling InstagramCommentsApi api class\n ", Console::BOLD);
+		
+		$InstagramCommentsApi = new \app\models\api\InstagramCommentsApi();
+
+		foreach ($alerts as $alert){
+			$query_params = $InstagramCommentsApi->prepare($alert);
+			if($query_params){
+				$InstagramCommentsApi->call($query_params);
+				//$InstagramCommentsApi->saveJsonFile();
 			}
 		}
 

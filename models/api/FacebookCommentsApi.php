@@ -670,7 +670,7 @@ class FacebookCommentsApi extends Model {
 	 * @return [obj] [return object client]
 	 */
 	private function _getClient(){
-		$this->_client = new Client(['baseUrl' => 'https://graph.facebook.com']);
+		$this->_client = new Client(['baseUrl' => $this->_baseUrl]);
 		return $this->_client;
 	}
 

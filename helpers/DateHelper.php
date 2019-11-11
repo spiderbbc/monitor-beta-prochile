@@ -75,7 +75,7 @@ class DateHelper
      * @return [string]       [21101054511210 yes is not unix is example]
      */
     public static function asTimestamp($date){
-        $date = new \DateTime($date, new \DateTimeZone('America/Santiago'));;
+        $date = new \DateTime($date, new \DateTimeZone('America/Santiago'));
         return $date->getTimestamp();
     }
 
@@ -90,5 +90,26 @@ class DateHelper
     public static function isToday($date){
         $date = new Date($date);
         return $date->isToday();
+    }
+
+    /**
+     * [isBetweenDate chekcs if date is between two date ]
+     * @param  [type]  $date [date to look up]
+     * @param  [type]  $from [start date in unix]
+     * @param  [type]  $to   [end date in unix]
+     * @return boolean       [true if or not if is not]
+     */
+    public static function isBetweenDate($date,$from,$to){
+
+        $date = strtotime($date);
+
+        if($date > $from && $date < $to) {
+           return true;
+        } else {
+            return false;  
+        } 
+
+
+
     }
 }
