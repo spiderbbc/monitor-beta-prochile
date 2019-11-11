@@ -179,8 +179,10 @@ class Alerts extends \yii\db\ActiveRecord
      */
     public function getFreeKeywords()
     {
+        $dictionary = \app\models\Dictionaries::find()->where(['name' => \app\models\Dictionaries::FREE_WORDS_NAME])->one();
+        
         $keywords =  $this->hasMany(Keywords::className(), ['alertId' => 'id'])
-            ->where(['dictionaryId' => Dictionaries::FREE_WORDS_ID])
+            ->where(['dictionaryId' => $dictionary->id])
              ->select('name')
              ->orderBy('id')
              ->all();

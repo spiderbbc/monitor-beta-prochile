@@ -181,7 +181,7 @@ class TwitterApi extends Model {
 		$until_date = null;
 		$max_id = null;
 
-		
+		var_dump($params);
       
       	$product = ArrayHelper::remove($params, 'product');
       	$since_date = ArrayHelper::remove($params, 'since');
@@ -373,10 +373,9 @@ class TwitterApi extends Model {
 						$tweets[$product][$index]['id'] = $object[$o]['statuses'][$s]['id'];
 						// get user info
 						$tweets[$product][$index]['user'] = $this->_getUserData($object[$o]['statuses'][$s]);
-						// get entities 
-						$tweets[$product][$index]['entities'] = $this->_getEntities($object[$o]['statuses'][$s]);
-						
-						
+						// get entities url
+						$tweets[$product][$index]['url'] = $this->_getEntities($object[$o]['statuses'][$s]);
+
 
 						if(array_key_exists('place', $object[$o])){
 							if(!is_null($object[$o]['place'])){
@@ -387,7 +386,13 @@ class TwitterApi extends Model {
 						}
 
 						$tweets[$product][$index]['created_at'] = $object[$o]['statuses'][$s]['created_at'];
-						$tweets[$product][$index]['post_from'] = $object[$o]['statuses'][$s]['text'];
+						// get retweet_count
+						$tweets[$product][$index]['retweet_count'] = $object[$o]['statuses'][$s]['retweet_count'];
+						// get favorite_count
+						$tweets[$product][$index]['favorite_count'] = $object[$o]['statuses'][$s]['favorite_count'];
+						// get post_from
+						$tweets[$product][$index]['message'] = \app\helpers\StringHelper::replaceAccents($object[$o]['statuses'][$s]['text']);
+						$tweets[$product][$index]['message_markup'] = \app\helpers\StringHelper::replaceAccents($object[$o]['statuses'][$s]['text']);
 						
 						$index++;
 					} // for each statuses

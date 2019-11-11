@@ -87,7 +87,6 @@ $escape = new JsExpression("function(m) { return m; }");
 <div class="alerts-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
     <p>
         <?= Html::a('Create Alerts', ['create'], ['class' => 'btn btn-success']) ?>
     </p>

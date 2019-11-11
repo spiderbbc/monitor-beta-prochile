@@ -14,6 +14,7 @@ use Yii;
  * @property string $api_key
  * @property string $api_secret_key
  * @property string $access_secret_token
+ * @property string $status
  * @property string $bearer_token
  * @property string $apiLogin
  * @property int $createdAt
@@ -26,6 +27,9 @@ use Yii;
  */
 class CredencialsApi extends \yii\db\ActiveRecord
 {
+
+    const FACEBOOK = 3;
+    const NAME_APP_FACEBOOK = 'monitor-facebook';
     /**
      * {@inheritdoc}
      */
@@ -41,9 +45,9 @@ class CredencialsApi extends \yii\db\ActiveRecord
     {
         return [
             [['userId', 'resourceId'], 'required'],
-            [['userId', 'resourceId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+            [['userId', 'resourceId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy','status'], 'integer'],
             [['name_app'], 'string', 'max' => 45],
-            [['api_key', 'api_secret_key', 'access_secret_token', 'bearer_token', 'apiLogin'], 'string', 'max' => 60],
+           // [['api_key', 'api_secret_key', 'access_secret_token', 'bearer_token', 'apiLogin'], 'string', 'max' => 60],
             [['resourceId'], 'exist', 'skipOnError' => true, 'targetClass' => Resources::className(), 'targetAttribute' => ['resourceId' => 'id']],
             [['userId'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['userId' => 'id']],
         ];
@@ -55,19 +59,19 @@ class CredencialsApi extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'userId' => Yii::t('app', 'User ID'),
-            'resourceId' => Yii::t('app', 'Resource ID'),
-            'name_app' => Yii::t('app', 'Name App'),
-            'api_key' => Yii::t('app', 'Api Key'),
-            'api_secret_key' => Yii::t('app', 'Api Secret Key'),
+            'id'                  => Yii::t('app', 'ID'),
+            'userId'              => Yii::t('app', 'User ID'),
+            'resourceId'          => Yii::t('app', 'Resource ID'),
+            'name_app'            => Yii::t('app', 'Name App'),
+            'api_key'             => Yii::t('app', 'Api Key'),
+            'api_secret_key'      => Yii::t('app', 'Api Secret Key'),
             'access_secret_token' => Yii::t('app', 'Access Secret Token'),
-            'bearer_token' => Yii::t('app', 'Bearer Token'),
-            'apiLogin' => Yii::t('app', 'Api Login'),
-            'createdAt' => Yii::t('app', 'Created At'),
-            'updatedAt' => Yii::t('app', 'Updated At'),
-            'createdBy' => Yii::t('app', 'Created By'),
-            'updatedBy' => Yii::t('app', 'Updated By'),
+            'bearer_token'        => Yii::t('app', 'Bearer Token'),
+            'apiLogin'            => Yii::t('app', 'Api Login'),
+            'createdAt'           => Yii::t('app', 'Created At'),
+            'updatedAt'           => Yii::t('app', 'Updated At'),
+            'createdBy'           => Yii::t('app', 'Created By'),
+            'updatedBy'           => Yii::t('app', 'Updated By'),
         ];
     }
 

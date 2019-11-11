@@ -26,14 +26,17 @@ class BaseApi extends Model {
 	public $data;
 
 	public $className = [
-		'Twitter' => 'twitterApi',
-		'Live Chat' => 'liveChat',
+		'Twitter'                 => 'twitterApi',
+		'Facebook Comments'       => 'facebookCommentsApi',
+		'Live Chat'               => 'liveChat',
 		'Live Chat Conversations' => 'liveChatConversations',
-		'Web page' => 'webpage',
+		'Web page'                => 'webpage',
 	];
+
 
 	public function callResourcesApi($alerts = []){
 		Console::stdout("Running: ".__METHOD__."\n", Console::BOLD);
+
 		if(!empty($alerts)){
 			$resources = [];
 			for($a = 0; $a < sizeOf($alerts); $a++){
@@ -74,6 +77,22 @@ class BaseApi extends Model {
 			
 		}
 		echo "twitterApi". "\n";
+	}
+
+	public function facebookCommentsApi($alerts = []){
+		
+		Console::stdout("calling facebookCommentsApi api class\n ", Console::BOLD);
+		
+		$facebookCommentsApi = new \app\models\api\FacebookCommentsApi();
+
+		foreach ($alerts as $alert){
+			$query_params = $facebookCommentsApi->prepare($alert);
+			if($query_params){
+				$facebookCommentsApi->call($query_params);
+				$facebookCommentsApi->saveJsonFile();
+			}
+		}
+
 	}
 
 	public function liveChat($alerts = []){
@@ -126,9 +145,42 @@ class BaseApi extends Model {
             }
                
         }
-        var_dump(count($data['1']['Twitter']));
-        die();
+        // no empty
+        if(!empty($data)){
+        	foreach ($data as $alertId => $resources){
+        		foreach ($resources as $resource => $values){
+        			$resourceName = str_replace(" ", "",ucwords($resource));
+        			$this->{"readData{$resourceName}Api"}($alertId,$values);
+        		}
+        	}
+        }
+       
 
+	}
+
+
+	public function readDataTwitterApi($alertId,$data){
+		echo "calling readDataTwitterApi \n";
+		$searchTwitterApi = new \app\models\search\TwitterSearch();
+		$params = [$alertId,$data];
+		if(!$searchTwitterApi->load($params)){
+			// send email params in twitterApi no load with alertId and count($params)
+		}
+		if(!$searchTwitterApi->search()){
+			echo "moved file";
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Twitter');
+		}
+		
+	}
+
+
+	public function readDataFacebookCommentsApi($alertId,$data){
+		echo "calling FacebookComments \n";
+		$searchFacebookApi = new \app\models\search\FacebookSearch();
+		$params = [$alertId,$data];
+
+		$searchFacebookApi->load($params);
+		$searchFacebookApi->search();
 	}
 
 	

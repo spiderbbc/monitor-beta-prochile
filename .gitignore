@@ -38,3 +38,5 @@ web/assets/*
 credentials/*
 
 processed/
+
+config/

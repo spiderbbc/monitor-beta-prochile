@@ -10,6 +10,8 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 
+use app\widgets\AlertFacebook;
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -61,6 +63,8 @@ use app\assets\AppAsset;
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= Alert::widget() ?>
+        <?= AlertFacebook::widget(['logoutCallback' => Yii::$app->urlManager->createAbsoluteUrl(Yii::$app->request->pathInfo)]) ?>
+        
         <?= $content ?>
     </div>
 </div>

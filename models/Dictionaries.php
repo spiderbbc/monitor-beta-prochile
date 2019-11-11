@@ -20,7 +20,9 @@ use Yii;
 class Dictionaries extends \yii\db\ActiveRecord
 {
 
-    const FREE_WORDS_ID  = 4;
+    const FREE_WORDS_NAME  = 'Free Words';
+    const FREE_WORDS_PRODUCT  = 'Product description';
+    const FREE_WORDS_COMPETITION = 'Product Competition';
     /**
      * {@inheritdoc}
      */
@@ -61,9 +63,8 @@ class Dictionaries extends \yii\db\ActiveRecord
         if($dictionaryIds){
             $dictionaries = [];
             foreach ($dictionaryIds as $name) {
-              $isDictionary = \app\models\Dictionaries::getDb()->cache(function ($db) use($name) {
-                  return \app\models\Dictionaries::find()->where(['name' => $name])->exists();
-              });    
+              $isDictionary = \app\models\Dictionaries::find()->where(['name' => $name])->exists();
+
               if(!$isDictionary){
                 $color = substr(md5(time()), 0, 6);
                 $dictionary = new \app\models\Dictionaries();
@@ -72,13 +73,12 @@ class Dictionaries extends \yii\db\ActiveRecord
                 $dictionary->save();
               }
               else{
-                $dictionary = \app\models\Dictionaries::getDb()->cache(function ($db) use ($name) {
-                    return \app\models\Dictionaries::find()->where(['name' => $name])->one();
-                });
+                $dictionary = \app\models\Dictionaries::find()->where(['name' => $name])->one();
               }
                
               $dictionaries[$dictionary->id] = $dictionary->name;  
             } 
+           
             if($dictionaries){
               $drive   = new \app\models\api\DriveApi();
               foreach ($dictionaries as $dictionaryId => $dictionaryName){
@@ -98,10 +98,21 @@ class Dictionaries extends \yii\db\ActiveRecord
         }
     }
 
-    public static function saveFreeWords($free_words,$alertId){
+    public static function saveFreeWords($free_words,$alertId,$dictionaryName){
       $model = [];
+      $isFreeWords = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->exists();
+      if(!$isFreeWords){
+        $color = substr(md5(time()), 0, 6);
+        $dictionary = new \app\models\Dictionaries();
+        $dictionary->name = $dictionaryName;
+        $dictionary->color = '#' . $color;
+        $dictionary->save();
+      }else{
+        $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
+      }
+
       foreach ($free_words as $word){
-        $models[] = [$alertId,4,$word];
+        $models[] = [$alertId,$dictionary->id,$word];
       }
       // save free words 
       Yii::$app->db->createCommand()->batchInsert('keywords', ['alertId','dictionaryId', 'name'],$models)

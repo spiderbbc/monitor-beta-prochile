@@ -40,6 +40,17 @@ class m190813_195501_Users extends Migration
             'created_at'    => 0,
             'updated_at'    => 0,
         ]);
+
+        $this->insert('{{%users}}', [
+            'username'      => 'user',
+            'auth_key'      => 'tPwo4kDpN7JAz8Rrm9EwNAQ7q8F1p7FN',
+            // lgdafne
+            'password_hash' => '$2y$13$Xv3tYWezdvWV9GRUUv1/8.NEC8CX4fp2MRntK5L0EBJXgwy49IF.K',
+            'email'         => 'user@gmail.com',
+            'status'        => 10,
+            'created_at'    => 0,
+            'updated_at'    => 0,
+        ]);
     }
 
     /**
