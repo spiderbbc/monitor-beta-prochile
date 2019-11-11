@@ -101,6 +101,7 @@ class FacebookCommentsApi extends Model {
 		
 		//$this->data[] = $this->_getDataApi($query_params);
 		$data = $this->_getDataApi($query_params);
+
 		if($data){
 			$this->data[] = $this->_orderDataByProducts($data);
 		}
@@ -111,6 +112,7 @@ class FacebookCommentsApi extends Model {
 	private function _getDataApi($query_params){
 
 		$feeds = $this->_getPostsComments($query_params);
+
 		
 		// if not empty post
 		if(!empty($feeds[0]['data'])){
@@ -318,6 +320,8 @@ class FacebookCommentsApi extends Model {
 		];
 
 
+
+
 		for ($p=0; $p < sizeOf($feeds); $p++){
 			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
 				$comments_last = [];
@@ -329,8 +333,7 @@ class FacebookCommentsApi extends Model {
 					if(\app\helpers\FacebookHelper::isPublicationNew($params['feeds'][$id_feed]['max_id'],$unix_time)){
 						$comments_last[] = $feeds[$p]['data'][$d]['comments']['data'][$c];
 						$where['publication_id'] =  $id_feed;
-						echo $unix_time . "\n";
-						echo $params['feeds'][$id_feed]['max_id'] . "\n";
+						
 						// add plus a second to the max_id
 						$unix_time = strtotime("+5 seconds",$unix_time);
 						\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
@@ -429,7 +432,7 @@ class FacebookCommentsApi extends Model {
 	}
 
 	private function _orderFeedsComments($feeds_reviews){
-		
+
 		$model = [];
 		for($p = 0; $p < sizeOf($feeds_reviews); $p++){
 			if(!empty($feeds_reviews[$p])){
@@ -438,6 +441,14 @@ class FacebookCommentsApi extends Model {
 					$model[$p]['id'] = $feeds_reviews[$p]['data'][$d]['id'];
 					// from
 					$model[$p]['from'] = $feeds_reviews[$p]['data'][$d]['from']['name'];
+					// is popular
+					$model[$p]['is_popular'] = $feeds_reviews[$p]['data'][$d]['is_popular'];
+					//shares
+					if(isset($feeds_reviews[$p]['data'][$d]['shares'])){
+						$model[$p]['shares'] = $feeds_reviews[$p]['data'][$d]['shares'];
+					}else{
+						$model[$p]['shares'] = 0;
+					}
 					// full_picture
 					if(isset($feeds_reviews[$p]['data'][$d]['full_picture'])){
 						$model[$p]['picture'] = $feeds_reviews[$p]['data'][$d]['full_picture'];
@@ -452,7 +463,7 @@ class FacebookCommentsApi extends Model {
 					}
 					
 					if(isset($feeds_reviews[$p]['data'][$d]['message'])){
-						$model[$p]['message'] = $feeds_reviews[$p]['data'][$d]['message'];
+						$model[$p]['message'] = \app\helpers\StringHelper::remove_emoji($feeds_reviews[$p]['data'][$d]['message']);
 					}else{
 						$model[$p]['message'] = "-";
 					}
@@ -480,7 +491,8 @@ class FacebookCommentsApi extends Model {
 			$data[$index]['id'] = $comments['data'][$c]['id'];
 			$data[$index]['created_time'] = $comments['data'][$c]['created_time'];
 			$data[$index]['like_count'] = $comments['data'][$c]['like_count'];
-			$data[$index]['message'] = $comments['data'][$c]['message'];
+			$data[$index]['message'] = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['message']);
+			$data[$index]['message_markup'] = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['message']);
 
 			
 			if(isset($comments['data'][$c]['comments'])){
@@ -492,7 +504,8 @@ class FacebookCommentsApi extends Model {
 						$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
 					}
 					
-					$data[$index]['message'] = $comments['data'][$c]['comments']['data'][$s][0]['message'];
+					$data[$index]['message'] = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
+					$data[$index]['message_markup'] = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
 					
 				}
 			}
@@ -504,6 +517,8 @@ class FacebookCommentsApi extends Model {
 	private function _orderDataByProducts($data){
 		$model = [];
 		$feed_count = count($data);
+
+
 
 		for($d = 0 ; $d < sizeOf($data); $d++){
 			for($p = 0; $p < sizeof($this->products); $p++){
@@ -529,7 +544,7 @@ class FacebookCommentsApi extends Model {
 						if(!in_array($data[$d],$model[$this->products[$p]])){
 							$where['publication_id'] = $id_feed;
 							\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date]);
-							$model[$this->products[$p]][$index][] = $data[$d];
+							$model[$this->products[$p]][] = $data[$d];
 							$feed_count --;
 							$index ++;
 							break;
@@ -570,7 +585,7 @@ class FacebookCommentsApi extends Model {
 			}
 
 		}
-		
+
 		return $model;
 
 	}
@@ -632,7 +647,7 @@ class FacebookCommentsApi extends Model {
 		$end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'+1 day'));
 		
 
-		$post_comments_query = "{$bussinessId}/posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,like_count,message,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message}},permalink_url},updated_time&until={$end_date}&since={$this->start_date}&limit={$this->_limit_post}";
+		$post_comments_query = "{$bussinessId}/posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,like_count,message,permalink_url,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message}}},updated_time&until={$end_date}&since={$this->start_date}&limit={$this->_limit_post}";
 
 		return $post_comments_query;
 	}

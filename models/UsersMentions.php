@@ -3,7 +3,8 @@
 namespace app\models;
 
 use Yii;
-
+use yii\db\ActiveRecord;
+use yii\behaviors\TimestampBehavior;
 /**
  * This is the model class for table "users_mentions".
  *
@@ -28,6 +29,20 @@ class UsersMentions extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'users_mentions';
+    }
+
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['createdAt','updatedAt'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updatedAt'],
+                ],
+                'value' => function() { return date('U');  },
+            ],
+        ];
     }
 
     /**

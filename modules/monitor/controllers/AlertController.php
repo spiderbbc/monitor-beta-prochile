@@ -224,8 +224,7 @@ class AlertController extends Controller
         $alert = $this->findModel($id);
         $config = $alert->config;
         $drive   = new \app\models\api\DriveApi();
-        // count dictionaries for the update difference
-        $countDictionaries = count($drive->dictionaries);
+        
         //set date
         $config->start_date = DateHelper::asDatetime($config->start_date);
         $config->end_date = DateHelper::asDatetime($config->end_date);
@@ -237,6 +236,8 @@ class AlertController extends Controller
         // set tag 
         $config->product_description = explode(",",$config->product_description);
         $config->competitors = explode(",",$config->competitors);
+
+        $alert->scenario = 'saveOrUpdate';
         
         
         if (Yii::$app->request->post() && $alert->load(Yii::$app->request->post()) && $config->load(Yii::$app->request->post())) {
@@ -276,11 +277,8 @@ class AlertController extends Controller
           // keywords/ dictionaryIds model
           $dictionaryIds = Yii::$app->request->post('Alerts')['dictionaryIds'];
           if($dictionaryIds != ''){
-            if(count($dictionaryIds) != $countDictionaries){
-              \app\models\Dictionaries::saveDictionaryDrive($dictionaryIds,$alert->id);
-            }
-          }else{
-              \app\models\Keywords::deleteAll(['alertId' => $alert->id]);
+            \app\models\Keywords::deleteAll(['alertId' => $alert->id]);
+            \app\models\Dictionaries::saveDictionaryDrive($dictionaryIds,$alert->id);
           } 
           
 

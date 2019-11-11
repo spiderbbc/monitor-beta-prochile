@@ -166,13 +166,21 @@ class BaseApi extends Model {
 		if(!$searchTwitterApi->load($params)){
 			// send email params in twitterApi no load with alertId and count($params)
 		}
-		$searchTwitterApi->search();
+		if(!$searchTwitterApi->search()){
+			echo "moved file";
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Twitter');
+		}
 		
 	}
 
 
 	public function readDataFacebookCommentsApi($alertId,$data){
 		echo "calling FacebookComments \n";
+		$searchFacebookApi = new \app\models\search\FacebookSearch();
+		$params = [$alertId,$data];
+
+		$searchFacebookApi->load($params);
+		$searchFacebookApi->search();
 	}
 
 	

@@ -7,6 +7,9 @@ use yii;
 use Stringy\Stringy as S;
 use function Stringy\create as s;
 
+
+use Stringizer\Stringizer;
+
 /**
  *
  * @author Eduardo Morales <eduardo@montana-studio.com>
@@ -65,6 +68,42 @@ class StringHelper
 
     public static function containsAll($sentence,$data){
         return s($sentence)->containsAll($data,false);
+    }
+
+    public static function containsCount($sentence,$word){
+        $s = new Stringizer($sentence);
+        return $s->containsCount($word); // true, case insensitive
+    }
+
+    public static function replace($sentence,$word,$replace){
+        $s = new Stringizer($sentence);
+        $s->replace($word, $replace);
+        return $s->getString();
+    }
+
+    public static function replaceAccents($sentence){
+        $s = new Stringizer($sentence);
+        $s->replaceAccents(); 
+        return $s->getString();
+    }
+
+
+    public static function containsIncaseSensitive($sentence,$word){
+        $s = new Stringizer($sentence);
+        return $s->containsIncaseSensitive($word); // true, case insensitive
+    }
+
+    
+    public static function containsCountIncaseSensitive($sentence,$word){
+        $s = new Stringizer($sentence);
+        return $s->containsCountIncaseSensitive($word); // true, case insensitive
+    }
+
+
+    public static function replaceIncaseSensitive($sentence,$word,$replace){
+        $s = new Stringizer($sentence);
+        $s->replaceIncaseSensitive($word, $replace); // Fizz bar Fizz bar Fizz bar
+        return $s->getString();
     }
 
 

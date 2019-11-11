@@ -48,8 +48,11 @@ class MentionsHelper
                 $model->$property = $value;
             }
         }
+        
+        // save or update
+        $model->save();
 
-        return ($model->save()) ? $model : false;
+        return $model;
 
     }
 
@@ -83,7 +86,10 @@ class MentionsHelper
             }
         }
 
-        return ($model->save()) ? $model : false;
+        // save or update
+        $model->save();
+
+        return $model;
 
     }
 	

@@ -391,7 +391,8 @@ class TwitterApi extends Model {
 						// get favorite_count
 						$tweets[$product][$index]['favorite_count'] = $object[$o]['statuses'][$s]['favorite_count'];
 						// get post_from
-						$tweets[$product][$index]['post_from'] = $object[$o]['statuses'][$s]['text'];
+						$tweets[$product][$index]['message'] = \app\helpers\StringHelper::replaceAccents($object[$o]['statuses'][$s]['text']);
+						$tweets[$product][$index]['message_markup'] = \app\helpers\StringHelper::replaceAccents($object[$o]['statuses'][$s]['text']);
 						
 						$index++;
 					} // for each statuses

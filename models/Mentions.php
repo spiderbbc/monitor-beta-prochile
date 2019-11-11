@@ -44,9 +44,10 @@ class Mentions extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['alert_mentionId', 'origin_id', 'created_time', 'subject', 'message', 'message_markup'], 'required'],
+            [['alert_mentionId', 'origin_id', 'created_time','message'], 'required'],
             [['alert_mentionId', 'origin_id', 'created_time', 'social_id', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
-            [['mention_data', 'subject', 'message', 'message_markup', 'url', 'domain_url', 'location'], 'string', 'max' => 255],
+          //  [['mention_data'], 'save'],
+            [['subject', 'message', 'message_markup', 'url', 'domain_url', 'location'], 'string', 'max' => 255],
             [['alert_mentionId'], 'exist', 'skipOnError' => true, 'targetClass' => AlertsMencions::className(), 'targetAttribute' => ['alert_mentionId' => 'id']],
             [['origin_id'], 'exist', 'skipOnError' => true, 'targetClass' => UsersMentions::className(), 'targetAttribute' => ['origin_id' => 'id']],
         ];

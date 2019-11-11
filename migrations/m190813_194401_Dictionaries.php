@@ -30,7 +30,7 @@ class m190813_194401_Dictionaries extends Migration
         ], $tableOptions);
 
         $this->insert('{{%dictionaries}}', [
-            'name'                  => 'Positives Words',
+            'name'                  => 'Free Words',
             'color'                 => '#55e6c9',
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -39,7 +39,7 @@ class m190813_194401_Dictionaries extends Migration
         ]);
 
         $this->insert('{{%dictionaries}}', [
-            'name'                  => 'Negatives Words',
+            'name'                  => 'Product description',
             'color'                 => '#f7978f',
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -48,7 +48,7 @@ class m190813_194401_Dictionaries extends Migration
         ]);
 
         $this->insert('{{%dictionaries}}', [
-            'name'                  => 'Neutral Words',
+            'name'                  => 'Product Competition',
             'color'                 => '#f27979',
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -57,7 +57,7 @@ class m190813_194401_Dictionaries extends Migration
         ]);
 
         $this->insert('{{%dictionaries}}', [
-            'name'                  => 'Free Words',
+            'name'                  => 'Neutral Words',
             'color'                 => '#f27980',
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
