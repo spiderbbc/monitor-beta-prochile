@@ -52,9 +52,10 @@ class UsersMentions extends \yii\db\ActiveRecord
     {
         return [
             [['user_uuid', 'createdAt', 'updatedAt'], 'integer'],
+            [['message'], 'string'],
             [['name', 'screen_name'], 'required'],
             [['user_data'], 'safe'],
-            [['name', 'subject', 'message', 'screen_name', 'profile_image_url'], 'string', 'max' => 255],
+            [['name', 'subject', 'screen_name', 'profile_image_url'], 'string', 'max' => 255],
         ];
     }
 
@@ -64,16 +65,16 @@ class UsersMentions extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'user_uuid' => 'User Uuid',
-            'name' => 'Name',
-            'user_data' => 'User Data',
-            'subject' => 'Subject',
-            'message' => 'Message',
-            'screen_name' => 'Screen Name',
+            'id'                => 'ID',
+            'user_uuid'         => 'User Uuid',
+            'name'              => 'Name',
+            'user_data'         => 'User Data',
+            'subject'           => 'Subject',
+            'message'           => 'Message',
+            'screen_name'       => 'Screen Name',
             'profile_image_url' => 'Profile Image Url',
-            'createdAt' => 'Created At',
-            'updatedAt' => 'Updated At',
+            'createdAt'         => 'Created At',
+            'updatedAt'         => 'Updated At',
         ];
     }
 

@@ -72,9 +72,9 @@ class FacebookSearch
         if(!$this->isDictionaries && !$this->isBoolean){
              echo "no dictionaries .. \n";
             // save all data
-            /*$mentions = $this->data;
+            $mentions = $this->data;
             $search = $this->saveMentions($mentions);
-            return $search;*/
+            return $search;
         }
 
         // if  dictionaries and  boolean
@@ -123,6 +123,7 @@ class FacebookSearch
                                 $comments = $posts[$p]['comments'];
                                 foreach($comments as $index => $comment){
                                     $mention = $this->saveComments($comment,$alertsMencionsModel['id'],$origin->id);
+                                    
                                     if(!$mention->errors){
                                         if(ArrayHelper::keyExists('wordsId', $comment, false)){
                                             $wordIds = $comment['wordsId'];
@@ -168,7 +169,6 @@ class FacebookSearch
                         $wordsId = [];
                         for($w = 0; $w < sizeof($words); $w++){
                             $sentence = $feeds[$product][$p]['comments'][$c]['message_markup'];
-                            $sentence = \app\helpers\StringHelper::replaceAccents($sentence);
                             $containsCount = \app\helpers\StringHelper::containsCount($sentence, $words[$w]['name']);
 
 
@@ -189,7 +189,7 @@ class FacebookSearch
         }// for each feeds
 
 
-        
+
         return $feeds;
     }
 
@@ -224,6 +224,7 @@ class FacebookSearch
 
         $id = explode("_",$post['id']);
         $id = end($id);
+
 
         $author = \app\helpers\StringHelper::remove_emoji($post['from']);
         $origin = \app\helpers\MentionsHelper::saveUserMencions(

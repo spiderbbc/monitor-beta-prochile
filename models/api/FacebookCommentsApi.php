@@ -463,7 +463,11 @@ class FacebookCommentsApi extends Model {
 					}
 					
 					if(isset($feeds_reviews[$p]['data'][$d]['message'])){
-						$model[$p]['message'] = \app\helpers\StringHelper::remove_emoji($feeds_reviews[$p]['data'][$d]['message']);
+						// remove emoji
+						$message  = \app\helpers\StringHelper::remove_emoji($feeds_reviews[$p]['data'][$d]['message']);
+						// remove accent
+						$message  = \app\helpers\StringHelper::replaceAccents($message);
+						$model[$p]['message'] = \app\helpers\StringHelper::remove_emoji($message);
 					}else{
 						$model[$p]['message'] = "-";
 					}
@@ -491,8 +495,13 @@ class FacebookCommentsApi extends Model {
 			$data[$index]['id'] = $comments['data'][$c]['id'];
 			$data[$index]['created_time'] = $comments['data'][$c]['created_time'];
 			$data[$index]['like_count'] = $comments['data'][$c]['like_count'];
-			$data[$index]['message'] = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['message']);
-			$data[$index]['message_markup'] = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['message']);
+			// remove emoji 
+			$message = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['message']);
+			// remove accent
+			$message = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['message']);
+
+			$data[$index]['message'] = $message;
+			$data[$index]['message_markup'] = $message;
 
 			
 			if(isset($comments['data'][$c]['comments'])){
@@ -504,8 +513,12 @@ class FacebookCommentsApi extends Model {
 						$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
 					}
 					
-					$data[$index]['message'] = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
-					$data[$index]['message_markup'] = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
+					// remove emoji
+					$coment = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
+					$coment = \app\helpers\StringHelper::replaceAccents($coment);
+
+					$data[$index]['message'] = $coment;
+					$data[$index]['message_markup'] = $coment;
 					
 				}
 			}
