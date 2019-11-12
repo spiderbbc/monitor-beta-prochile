@@ -106,7 +106,7 @@ class BaseApi extends Model {
 			$query_params = $InstagramCommentsApi->prepare($alert);
 			if($query_params){
 				$InstagramCommentsApi->call($query_params);
-				//$InstagramCommentsApi->saveJsonFile();
+				$InstagramCommentsApi->saveJsonFile();
 			}
 		}
 
