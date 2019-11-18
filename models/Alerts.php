@@ -246,7 +246,7 @@ class Alerts extends \yii\db\ActiveRecord
         ->select(['products_models.id','products_models.name'])
         ->from('products_models')
         ->join('JOIN', 'products_models_alerts', 'products_models_alerts.product_modelId = products_models.id')
-        ->where(['products_models_alerts.alertId' => 8])
+        ->where(['products_models_alerts.alertId' => $this->id])
         ->groupBy('products_models.name')
         ->all();
         
