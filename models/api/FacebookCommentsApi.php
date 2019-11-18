@@ -145,7 +145,7 @@ class FacebookCommentsApi extends Model {
 			        //'proxy' => 'tcp://proxy.example.com:5100', // use a Proxy
 			        'timeout' => 5, // set timeout to 5 seconds for the case server is not responding
 			    	])->send();
-
+					
 					
 					$responseHeaders = $posts->headers->get('x-business-use-case-usage'); // get headers
 
@@ -467,7 +467,7 @@ class FacebookCommentsApi extends Model {
 						$message  = \app\helpers\StringHelper::remove_emoji($feeds_reviews[$p]['data'][$d]['message']);
 						// remove accent
 						$message  = \app\helpers\StringHelper::replaceAccents($message);
-						$model[$p]['message'] = \app\helpers\StringHelper::remove_emoji($message);
+						$model[$p]['message'] = $message;
 					}else{
 						$model[$p]['message'] = "-";
 					}
@@ -495,6 +495,7 @@ class FacebookCommentsApi extends Model {
 			$data[$index]['id'] = $comments['data'][$c]['id'];
 			$data[$index]['created_time'] = $comments['data'][$c]['created_time'];
 			$data[$index]['like_count'] = $comments['data'][$c]['like_count'];
+			$data[$index]['permalink_url'] = $comments['data'][$c]['permalink_url'];
 			// remove emoji 
 			$message = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['message']);
 			// remove accent
@@ -505,10 +506,14 @@ class FacebookCommentsApi extends Model {
 
 			
 			if(isset($comments['data'][$c]['comments'])){
+
 				for($s= 0; $s < sizeOf($comments['data'][$c]['comments']['data']); $s++){
 					$index ++;
 					$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
 					$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
+					if(isset($comments['data'][$c]['comments']['data'][$s][0]['permalink_url'])){
+						$data[$index]['permalink_url'] = $comments['data'][$c]['comments']['data'][$s][0]['permalink_url'];
+					}
 					if(isset($comments['data'][$c]['comments']['data'][$s][0]['like_count'])){
 						$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
 					}
@@ -660,7 +665,7 @@ class FacebookCommentsApi extends Model {
 		$end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'+1 day'));
 		
 
-		$post_comments_query = "{$bussinessId}/posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,like_count,message,permalink_url,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message}}},updated_time&until={$end_date}&since={$this->start_date}&limit={$this->_limit_post}";
+		$post_comments_query = "{$bussinessId}/posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,like_count,message,permalink_url,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message,permalink_url}}},updated_time&until={$end_date}&since={$this->start_date}&limit={$this->_limit_post}";
 
 		return $post_comments_query;
 	}

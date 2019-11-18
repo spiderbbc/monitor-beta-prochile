@@ -117,11 +117,11 @@ class TwitterSearch
      * @return [boolean]
      */
     private function saveMentions($data){
-        $error = false;
+        $error = [];
         if(!is_null($data)){
             foreach($data as $product => $tweets){
                 $alertsMencions =  $this->findAlertsMencionsByProducts($product);
-                if(!empty($alertsMencions)){
+                if(!is_null($alertsMencions)){
                     // loop over tweets
                     for($t = 0; $t < sizeof($tweets); $t++){
                         // save user mentions                    
@@ -129,11 +129,14 @@ class TwitterSearch
 
                         if(!$origin->errors){
                             // save mentions 
-                            $mention = $this->saveMencions($tweets[$t],$alertsMencions['id'],$origin->id);
-                        }else{ $error = true; // get loog an email error
+                            $mention = $this->saveMencions($tweets[$t],$alertsMencions->id,$origin->id);
+
+                        }else{ 
+                            $error['oringin'] = $origin->errors;
+                            
                         }
                        
-                        if(!$mention->errors){
+                        if(empty($mention->errors)){
                             // if words find it
                             if(ArrayHelper::keyExists('wordsId', $tweets[$t], false)){
                                 $wordIds = $tweets[$t]['wordsId'];
@@ -142,10 +145,15 @@ class TwitterSearch
                                 
                             }else{
                                 // in case update in alert
-                                \app\models\KeywordsMentions::deleteAll('mentionId = '.$mention->id);
+                                if(\app\models\KeywordsMentions::find()->where(['mentionId' => $mention->id])->exists()){
+                                    \app\models\KeywordsMentions::deleteAll('mentionId = '.$mention->id);
+                                }
+                                
                             }
 
-                        }else{ $error = true;// get loog an email error
+                        }else{ 
+                            $error['mentions'] = $mention->errors;
+                            $origin->delete();
                         }
                        
                     }
@@ -153,7 +161,7 @@ class TwitterSearch
             }
         }
 
-        return $error;
+        return (empty($error)) ? true : false;
     }
 
     /**
@@ -210,11 +218,10 @@ class TwitterSearch
             'condition'    =>  'ACTIVE',
             'type'          =>  'tweet',
             'term_searched' =>  $product,
-        ])->select('id')->asArray()->one();
+        ])->select('id')->one();
 
-        if (!empty($alertsMencions)) {
-            return $alertsMencions;
-        }
+
+        return $alertsMencions;
 
     } 
 
@@ -252,7 +259,7 @@ class TwitterSearch
      */
     private function saveMencions($tweets,$alertsMencionsId,$originId){
 
-        $url          = $tweets['url'];
+        $url          = (!empty($tweets['url'])) ? $tweets['url']['url'] : '-';
         $social_id    = $tweets['id'];
         $created_time = \app\helpers\DateHelper::asTimestamp($tweets['created_at']);
         $message      = \app\helpers\StringHelper::remove_emoji($tweets['message']);
@@ -262,7 +269,26 @@ class TwitterSearch
         $mention_data['retweet_count'] = $tweets['retweet_count'];
         $mention_data['favorite_count'] = $tweets['favorite_count'];
 
-        $mention = \app\helpers\MentionsHelper::saveMencions(
+        if(!\app\models\Mentions::find()->where(['alert_mentionId' => $alertsMencionsId,'origin_id' => $originId,'social_id' => $social_id])->exists()){
+            $model                  = new \app\models\Mentions();
+            $model->location        = '';
+            $model->subject         = '';
+            $model->url             = $url;
+            $model->domain_url      = $url;
+            $model->origin_id       = $originId;
+            $model->message         = $message;
+            $model->social_id       = $social_id;
+            $model->mention_data    = $mention_data;
+            $model->created_time    = $created_time;
+            $model->message_markup  = $message_markup;
+            $model->alert_mentionId = $alertsMencionsId;
+            if(!$model->save())
+                var_dump($model->errors);
+        }else{
+            $model = \app\models\Mentions::find()->where(['alert_mentionId' => $alertsMencionsId,'origin_id' => $originId,'social_id' => $social_id])->one();
+        }
+
+        /*$mention = \app\helpers\MentionsHelper::saveMencions(
             [
                 'alert_mentionId' => $alertsMencionsId,
                 'origin_id'       => $originId
@@ -275,12 +301,13 @@ class TwitterSearch
                 'message_markup' => $message_markup,
                 'url'            => $url ,
                 'domain_url'     => $url ,
-                'location'       => $url ,
+                'location'       => '-' ,
                 'social_id'      => $social_id ,
             ]
-        );
-
-        return $mention;
+        );*/
+        
+       // return (isset($model->id)) ? $model : $model->errors;
+        return $model;
 
     }
 

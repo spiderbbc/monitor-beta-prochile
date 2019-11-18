@@ -86,7 +86,7 @@ use mludvik\tagsinput\TagsInputWidget
                                 'multiple' => true,
                                 'theme' => 'krajee',
                                 'debug' => true,
-                                'value' => (isset($alert->keywordsIds)) ? $alert->keywordsIds : [],
+                                'value' => (isset($alert->dictionariesName)) ? $alert->dictionariesName : [],
                             ],
                             'pluginOptions' => [
                                 'depends'=>['drive-title'],
@@ -137,7 +137,7 @@ use mludvik\tagsinput\TagsInputWidget
                         'pluginOptions' => [
                             'tags' => true,
                             'tokenSeparators' => [',', ' '],
-                           // 'maximumInputLength' => 10
+                            'minimumInputLength' => 2
                         ],
                     ])->label('Tag free words'); 
                     ?>   
@@ -152,7 +152,7 @@ use mludvik\tagsinput\TagsInputWidget
                         'pluginOptions' => [
                             'tags' => true,
                             'tokenSeparators' => [',', ' '],
-                            //'maximumInputLength' => 10
+                            'minimumInputLength' => 2
                         ],
                     ])->label('Tag product description'); 
                     ?>   
@@ -164,7 +164,7 @@ use mludvik\tagsinput\TagsInputWidget
                         'pluginOptions' => [
                             'tags' => true,
                             'tokenSeparators' => [',', ' '],
-                          //  'maximumInputLength' => 10
+                            'minimumInputLength' => 2
                         ],
                     ])->label('Tag competitors'); 
                     ?> 

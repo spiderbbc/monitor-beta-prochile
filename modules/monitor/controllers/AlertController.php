@@ -279,19 +279,26 @@ class AlertController extends Controller
           if($dictionaryIds != ''){
             \app\models\Keywords::deleteAll(['alertId' => $alert->id]);
             \app\models\Dictionaries::saveDictionaryDrive($dictionaryIds,$alert->id);
+          }else{
+            \app\models\Keywords::deleteAll(['alertId' => $alert->id]);
           } 
           
 
            // if free words is
           $free_words = Yii::$app->request->post('Alerts')['free_words'];
+          $dictionaryName = \app\models\Dictionaries::FREE_WORDS_NAME;
+          $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
           if ($free_words){
-            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_NAME;
-            $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
             \app\models\Keywords::deleteAll([
                         'alertId' => $alert->id,
                         'dictionaryId' => $dictionary->id
             ]);
             \app\models\Dictionaries::saveFreeWords($free_words,$alert->id,$dictionaryName);
+          }else{
+            \app\models\Keywords::deleteAll([
+                        'alertId' => $alert->id,
+                        'dictionaryId' => $dictionary->id
+            ]);
           }
           // if product_description
           if($config->product_description){

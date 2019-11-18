@@ -194,11 +194,13 @@ class Alerts extends \yii\db\ActiveRecord
         }
         return $words;     
     }
+   
+
     /**
-     * return  dictionaries name [form]
+     * return  dictionaries name [form] depred in form alert
      * @return array
      */
-    public function getKeywordsIds(){
+    /*public function getKeywordsIds(){
         $keywords = $this->keywords;
         $dictionaryIds = [];
         foreach ($keywords as $keyword){
@@ -207,6 +209,30 @@ class Alerts extends \yii\db\ActiveRecord
           }
         }
         return $dictionaryIds;
+    }*/
+
+
+    /**
+     * return  dictionaries name [form]
+     * @return array
+     */
+    public function getDictionariesName(){
+        $rows = (new \yii\db\Query())
+        ->select('dictionaries.name')
+        ->from('dictionaries')
+        ->join('JOIN', 'keywords', 'keywords.dictionaryId = dictionaries.id')
+        ->where(['keywords.alertId' => $this->id])
+        ->groupBy('name')
+        ->all();
+
+        $dictionaryNames = [];
+
+        for($r = 0; $r < sizeOf($rows); $r++){
+            $dictionaryNames[$rows[$r]['name']] = $rows[$r]['name'];
+
+        }
+
+        return $dictionaryNames;
     }
     /**
      * return  products/models name [form]
@@ -214,13 +240,26 @@ class Alerts extends \yii\db\ActiveRecord
      */
     public function getProducts(){
 
-        $productsIds = ProductsModelsAlerts::find()->where(['alertId' => $this->id])->all();
+        /*$productsIds = ProductsModelsAlerts::find()->where(['alertId' => $this->id])->all();;*/
 
+        $rows = (new \yii\db\Query())
+        ->select(['products_models.id','products_models.name'])
+        ->from('products_models')
+        ->join('JOIN', 'products_models_alerts', 'products_models_alerts.product_modelId = products_models.id')
+        ->where(['products_models_alerts.alertId' => 8])
+        ->groupBy('products_models.name')
+        ->all();
+        
         $product_models = [];
-        foreach ($productsIds as $productsId) {
-            $product_models[$productsId->productModel->id] = $productsId->productModel->name;
+
+        for($r = 0; $r < sizeOf($rows); $r++){
+            $product_models[$rows[$r]['id']] = $rows[$r]['name'];
+
         }
+
         return $product_models;
+
+
     }
 
 

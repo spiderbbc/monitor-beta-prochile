@@ -91,8 +91,7 @@ class FacebookSearch
             $mentions = $this->data;
             $data = $this->searchDataByDictionary($mentions);
             $search = $this->saveMentions($data);
-            /*$search = $this->saveMentions($data);
-            return $search;*/
+            return $search;
         }
 
         // if  !dictionaries and  boolean
@@ -111,7 +110,7 @@ class FacebookSearch
      * @return [boolean]
      */
     private function saveMentions($data){
-        $error = false;
+        $error = [];
         if(!is_null($data)){
             foreach($data as $product => $posts){
                 for($p=0; $p < sizeof($posts); $p++){
@@ -122,26 +121,34 @@ class FacebookSearch
                             if(!empty($posts[$p]['comments'])){
                                 $comments = $posts[$p]['comments'];
                                 foreach($comments as $index => $comment){
-                                    $mention = $this->saveComments($comment,$alertsMencionsModel['id'],$origin->id);
+                                    $mention = $this->saveComments($comment,$alertsMencionsModel->id,$origin->id);
                                     
-                                    if(!$mention->errors){
+                                    if(empty($mention->errors)){
                                         if(ArrayHelper::keyExists('wordsId', $comment, false)){
                                             $wordIds = $comment['wordsId'];
                                             // save Keywords Mentions 
                                             $this->saveKeywordsMentions($wordIds,$mention->id);
                                         }else{
-                                           \app\models\KeywordsMentions::deleteAll('mentionId = '.$mention->id); 
+                                           // in case update in alert
+                                            if(\app\models\KeywordsMentions::find()->where(['mentionId' => $mention->id])->exists()){
+                                                \app\models\KeywordsMentions::deleteAll('mentionId = '.$mention->id);
+                                            }
                                         }
-                                    }else{ $error = true; }
+                                    }else{ 
+                                        $error['mentions'] = $mention->errors;
+                                        $origin->delete();
+                                    }
                                 }
                             }
-                        }else{ $error = true; }
+                        }else{ 
+                            $error['origin'] = $origin->errors;
+                        }
                     }
                 }
             }
         }
 
-        return $error;
+        return (empty($error)) ? true : false;
     }
 
     /**
@@ -160,7 +167,6 @@ class FacebookSearch
     private function searchDataByDictionary($feeds){
         $words = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->select(['name','id'])->asArray()->all();
         
-        $model =[];
 
         foreach($feeds as $product => $posts){
             for($p = 0; $p < sizeof($posts); $p++){
@@ -209,11 +215,9 @@ class FacebookSearch
             'term_searched' =>  $product,
             'publication_id' =>  $publication_id,
         ])
-        ->select('id')->asArray()->one();
+        ->select('id')->one();
 
-        if (!empty($alertsMencions)) {
-            return $alertsMencions;
-        }
+        return $alertsMencions;
 
     } 
 
@@ -251,6 +255,7 @@ class FacebookSearch
         $id = explode("_",$comment['id']);
         $id = end($id);
         $message_markup = $comment['message_markup'];
+        $url = (isset($comment['permalink_url'])) ? $comment['permalink_url'] : '-';
 
         
         $mention = \app\helpers\MentionsHelper::saveMencions(
@@ -264,6 +269,8 @@ class FacebookSearch
                 'mention_data'   => $mention_data,
                 'message'        => $message,
                 'message_markup' => $message_markup,
+                'url' => $url,
+                'domain_url' => $url,
             ]
         );
 

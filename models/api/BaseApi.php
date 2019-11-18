@@ -183,7 +183,7 @@ class BaseApi extends Model {
 		if(!$searchTwitterApi->load($params)){
 			// send email params in twitterApi no load with alertId and count($params)
 		}
-		if(!$searchTwitterApi->search()){
+		if($searchTwitterApi->search()){
 			echo "moved file";
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Twitter');
 		}
@@ -192,12 +192,33 @@ class BaseApi extends Model {
 
 
 	public function readDataFacebookCommentsApi($alertId,$data){
-		echo "calling FacebookComments \n";
+		echo "calling readDataFacebookCommentsApi \n";
 		$searchFacebookApi = new \app\models\search\FacebookSearch();
 		$params = [$alertId,$data];
 
 		$searchFacebookApi->load($params);
-		$searchFacebookApi->search();
+
+		if($searchFacebookApi->search()){
+			echo "moved file";
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Facebook Comments');
+
+		}
+	}
+
+	public function readDataInstagramCommentsApi($alertId,$data){
+		echo "calling readDataInstagramCommentsApi \n";
+		$searchInstagramApi = new \app\models\search\InstagramSearch();
+		$params = [$alertId,$data];
+
+		$searchInstagramApi->load($params);
+
+
+		if($searchInstagramApi->search()){
+			echo "moved file";
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Instagram Comments');
+
+		}
+		
 	}
 
 	

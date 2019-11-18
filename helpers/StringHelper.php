@@ -160,6 +160,7 @@ class StringHelper
 
 
     public static function remove_emoji ($text){
+        //$text = self::replaceAccents($text);
         return preg_replace('/[[:^print:]]/', '', $text);
     }
 

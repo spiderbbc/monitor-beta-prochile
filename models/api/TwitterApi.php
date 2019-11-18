@@ -411,8 +411,8 @@ class TwitterApi extends Model {
 		$data_user = [];
 		if(!empty($tweet['user'])){
 			$data_user['user_id']         = $tweet['user']['id']; 
-			$data_user['author_name']     = $tweet['user']['name']; 
-			$data_user['author_username'] = $tweet['user']['screen_name'];
+			$data_user['author_name']     = \app\helpers\StringHelper::remove_emoji($tweet['user']['name']); 
+			$data_user['author_username'] = \app\helpers\StringHelper::remove_emoji($tweet['user']['screen_name']);
 			$data_user['location']        = $tweet['user']['location'];
 			$data_user['description']     = $tweet['user']['description'];
 			$data_user['url']             = $tweet['user']['url'];
@@ -429,7 +429,7 @@ class TwitterApi extends Model {
 	 */
 	private function _getEntities($tweet){
 		$entities = [];
-		// get hashtags
+		/*// get hashtags
 		if(isset($tweet['entities']['hashtags'])){
 			foreach($tweet['entities']['hashtags'] as $property => $value){
 				$entities['hashtags'][$property] = $value['text'];
@@ -440,10 +440,12 @@ class TwitterApi extends Model {
 			foreach($tweet['entities']['user_mentions'] as $property => $value){
 				$entities['user_mentions'][$property][] = $value;
 			}
-		}
+		}*/
 		// get entities url
 		if(isset($tweet['entities']['urls'][0])){
 			$entities['url'] = $tweet['entities']['urls'][0]['url'];
+		}else{
+			$entities['url'] = '-';
 		}
 		return $entities;
 	}
