@@ -28,6 +28,7 @@ class BaseApi extends Model {
 	public $className = [
 		'Twitter'                 => 'twitterApi',
 		'Facebook Comments'       => 'facebookCommentsApi',
+		'Facebook Messages'       => 'facebookMessagesApi',
 		'Instagram Comments'      => 'InstagramCommentsApi',
 		'Live Chat'               => 'liveChat',
 		'Live Chat Conversations' => 'liveChatConversations',
@@ -91,6 +92,22 @@ class BaseApi extends Model {
 			if($query_params){
 				$facebookCommentsApi->call($query_params);
 				$facebookCommentsApi->saveJsonFile();
+			}
+		}
+
+	}
+
+	public function facebookMessagesApi($alerts = []){
+
+		Console::stdout("calling facebookMessagesApi api class\n ", Console::BOLD);
+		
+		$facebookMessagesApi = new \app\models\api\FacebookMessagesApi();
+
+		foreach ($alerts as $alert){
+			$query_params = $facebookMessagesApi->prepare($alert);
+			if($query_params){
+				$facebookMessagesApi->call($query_params);
+				$facebookMessagesApi->saveJsonFile();
 			}
 		}
 
@@ -203,6 +220,17 @@ class BaseApi extends Model {
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Facebook Comments');
 
 		}
+	}
+
+	public function readDataFacebookMessagesApi($alertId,$data){
+		echo "calling readDataFacebookMessagesApi \n";
+		$searchFacebookMessagesApi = new \app\models\search\FacebookMessagesSearch();
+		$params = [$alertId,$data];
+
+		$searchFacebookMessagesApi->load($params);
+		$searchFacebookMessagesApi->search();
+		\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Facebook Messages');
+		
 	}
 
 	public function readDataInstagramCommentsApi($alertId,$data){

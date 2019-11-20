@@ -569,37 +569,6 @@ class FacebookCommentsApi extends Model {
 						}
 					}
 				}
-
-				// looking in comments
-				/*if(count($data[$d]['comments'])){
-					for($c = 0; $c < sizeOf($data[$d]['comments']); $c++){
-						// get message
-						$sentence = $data[$d]['comments'][$c]['message'];
-						$is_contains = (count($product_data) > 3) ? \app\helpers\StringHelper::containsAny($sentence,$product_data) : \app\helpers\StringHelper::containsAll($sentence,$product_data);
-
-						// if containsAny
-						if($is_contains){
-							$index = 0;
-							if($feed_count){
-								// if a not key
-								if(!ArrayHelper::keyExists($this->products[$p], $model, false)){
-									$model [$this->products[$p]] = [] ;
-
-								}
-								// if not value
-								if(!in_array($data[$d],$model[$this->products[$p]])){
-									$where['publication_id'] = $id_feed;
-									\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date]);
-									$model[$this->products[$p]][$index][] = $data[$d]['comments'][$c];
-									//$feed_count --;
-									$index ++;
-									break;
-								}
-							}
-						}
-					}
-
-				}*/
 			}
 
 		}

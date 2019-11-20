@@ -107,9 +107,6 @@ class TwitterApi extends Model {
 		    			break;
 		    		}
 
-					/*$since_date   = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
-					$until_date   = DateHelper::add($date_searched,'1 day');
-					$query_search = "{$product} since:{$since_date} until:{$until_date}";*/
 		    		
 		    		$since_date   = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
 					$until_date   = DateHelper::add($date_searched,'1 day');
@@ -138,8 +135,6 @@ class TwitterApi extends Model {
 		    	
 		    	$params['q'] = $query_search;
 		    	$params['since'] = $since_date;
-		    	/*$params['since'] = $since_date;
-		    	$params['until'] = $until_date;*/
 		    	$params['geocode'] = $country;
 		    	
 		    	$params['product'] = $products[$p];

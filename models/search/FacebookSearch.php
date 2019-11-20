@@ -5,7 +5,7 @@ namespace app\models\search;
 use yii\helpers\ArrayHelper;
 use yii\db\Command;
 /**
- * FacebookSearch represents the model behind the search form of `app\models\Alerts`.
+ * FacebookSearch represents the model behind the search form of `app\models\api\FacebookCommentsApi`.
  */
 class FacebookSearch 
 {
@@ -17,7 +17,7 @@ class FacebookSearch
 
     /**
      * [load load in to local variables]
-     * @param  [array] $params [product [tweets]]
+     * @param  [array] $params [product [feeds]]
      * @return [boolean]
      */
     public function load($params){
@@ -35,7 +35,7 @@ class FacebookSearch
                 $products = $params[$p][$j][0];
                 // for each product
                 foreach($products as $product => $datos){
-                   // for each tweets 
+                   // for each feeds 
                    for($d = 0; $d < sizeof($datos); $d++){
                         if(!ArrayHelper::keyExists($product, $this->data, false)){
                             $this->data[$product] = [];
@@ -43,7 +43,7 @@ class FacebookSearch
                         if(!in_array($datos[$d], $this->data[$product])){
                             $this->data[$product] [] = $datos[$d];
                         }
-                   }// en foreach tweets
+                   }// en foreach feeds
                 }// end for  each product
             } // end loop json
         }

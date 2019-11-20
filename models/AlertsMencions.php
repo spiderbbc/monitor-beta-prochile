@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
 use yii\db\ActiveRecord;
 /**
  * This is the model class for table "alerts_mencions".
@@ -48,7 +49,11 @@ class AlertsMencions extends \yii\db\ActiveRecord
                     ActiveRecord::EVENT_BEFORE_INSERT => ['createdAt','updatedAt'],
                     ActiveRecord::EVENT_BEFORE_UPDATE => ['updatedAt'],
                 ],
-                'value' => function() { return date('U');  },
+            ],
+            [
+                'class'              => BlameableBehavior::className(),
+                'createdByAttribute' => 'createdBy',
+                'updatedByAttribute' => 'updatedBy',
             ],
         ];
     }
