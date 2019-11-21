@@ -114,6 +114,17 @@ class BaseApi extends Model {
 
 	public function liveChat($alerts = []){
 		echo "liveChat". "\n";
+		$LivechatTicketApi = new \app\models\api\LiveTicketApi();
+
+		foreach ($alerts as $alert){
+			$query_params = $LivechatTicketApi->prepare($alert);
+			
+			if($query_params){
+				$LivechatTicketApi->call($query_params);
+			}
+		}
+
+		
 	}
 
 	public function liveChatConversations($alerts = []){
