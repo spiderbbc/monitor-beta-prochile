@@ -6,6 +6,7 @@ use yii\base\Model;
 use yii\helpers\Console;
 use LiveChat\Api\Client as LiveChat;
 use yii\helpers\ArrayHelper;
+use app\models\file\JsonFile;
 
 class LiveTicketApi extends Model {
 
@@ -72,6 +73,7 @@ class LiveTicketApi extends Model {
 					'date_to'   => $date_to,
 					'page'      => 1
 				];
+				
 				// set AlertsMencions
 				$this->_setAlertsMencionsByProduct($productName);
 				
@@ -96,7 +98,6 @@ class LiveTicketApi extends Model {
 
 				}
 
-
 			}
 
 		} // end for products
@@ -117,7 +118,7 @@ class LiveTicketApi extends Model {
 			$this->data[$productName] =  $this->_getTickets($params);
 		}
 		$tickets = $this->_orderTickets($this->data);
-		//return $data;
+		return $tickets;
 	}
 
 
@@ -135,9 +136,12 @@ class LiveTicketApi extends Model {
 			
 			$response = $client->tickets->get($params);
 			echo "searching start date". $params['date_from']. " to  ". $params['date_to']. " in productName: ".$params['query']. "\n";
+			echo "Count result: {$response->total} ". "\n";
 
 			if(count($response->tickets)){
+				// get the data
 				$data[] = $response->tickets;
+
 			}
 			
 			$pageresponse = $response->pages;
@@ -154,17 +158,30 @@ class LiveTicketApi extends Model {
 		$model = [];
 
 		foreach($data as $productName => $groupTickets){
-			//echo $productName. "\n";
-			foreach($groupTickets as $group => $tickets){
-				//echo $group. "\n";
-				for($t = 0; $t < sizeof($tickets); $t++){
-					$model[] = $this->_exclude($tickets[$t]);
-				}
+			if(count($data[$productName])){
+				$model [$productName] = [];
+				foreach($groupTickets as $group => $tickets){
+					for($t = 0; $t < sizeof($tickets); $t++){
+						//$model[$productName][]  = $this->_exclude($tickets[$t]);
+						$ticket = $this->_exclude($tickets[$t]);
+						if(property_exists($ticket,'events')){
 
-			}
-		}
+							for($e = 0; $e < sizeOf($ticket->events); $e++){
+								
+								if(property_exists($ticket->events[$e],'message')){
+									$ticket->events[$e]->message = \app\helpers\StringHelper::collapseWhitespace($ticket->events[$e]->message);
+									$ticket->events[$e]->message_markup = $ticket->events[$e]->message;
+								}// end if arrArrayHelper
+							}
+						}// end if ArrayHelper
+						$model[$productName][]  = $ticket;
+					}// end loop tickets
 
-		var_dump($model);
+				} // end foreach groupTickets
+			} // if count
+		}// end foreach data
+
+		return $model;
 		
 	}
 
@@ -198,6 +215,7 @@ class LiveTicketApi extends Model {
 
 
 	private function _setAlertsMencionsByProduct($productName){
+		
 		$newDateSearch = \app\helpers\DateHelper::add($this->start_date,'+1 day');
 		$date_searched = strtotime($newDateSearch);
 
@@ -209,6 +227,21 @@ class LiveTicketApi extends Model {
 		$model->term_searched = $productName;
 		$model->date_searched = $date_searched;
 		$model->save();
+	}
+
+	/**
+	 * [saveJsonFile save a json file]
+	 * @return [none] [description]
+	 */
+	public function saveJsonFile($tickets){
+
+		$source = 'Live Chat';
+		if(count($tickets)){
+			$jsonfile = new JsonFile($this->alertId,$source);
+			$jsonfile->load($tickets);
+			$jsonfile->save();
+		}
+
 	}
 
 
@@ -225,7 +258,7 @@ class LiveTicketApi extends Model {
 	        'firstResponse',
 	        'ccs',
 	        'tags',
-	        'rate',
+	        //'rate',
 	        'currentGroup',
 	        'opened',
 	        'modified',
@@ -272,6 +305,7 @@ class LiveTicketApi extends Model {
 		$this->resourcesId = ArrayHelper::getColumn($resourcesId,'id')[0];    
 	}
 
+	
 	private function _setCredentials(){
 
 		$rows = (new \yii\db\Query())

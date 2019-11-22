@@ -106,6 +106,12 @@ class StringHelper
         return $s->getString();
     }
 
+    public static function collapseWhitespace($sentence){
+        $s = new Stringizer($sentence);
+        $s->collapseWhitespace(); // ȘŦŗÍñĝ ìzĕŕ
+        return $s->getString();
+    }
+
 
     /**
      * Replace language-specific characters by ASCII-equivalents.
