@@ -32,6 +32,7 @@ class BaseApi extends Model {
 		'Live Chat'               => 'liveChat',
 		'Live Chat Conversations' => 'liveChatConversations',
 		'Web page'                => 'webpage',
+		'Excel Document'          => 'excelDocument',
 	];
 
 
@@ -219,6 +220,21 @@ class BaseApi extends Model {
 
 		}
 		
+	}
+
+	public function readDataExcelDocumentApi($alertId,$data){
+		echo "calling readDataExcelDocumentApi \n";
+		$searchExcel = new \app\models\search\ExcelSearch();
+		$params = [$alertId,$data];
+
+		$searchExcel->load($params);
+
+		if($searchExcel->search()){
+			echo "moved file";
+			//\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Excel Document');
+
+		}
+
 	}
 
 	

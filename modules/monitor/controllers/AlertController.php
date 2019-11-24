@@ -122,7 +122,6 @@ class AlertController extends Controller
 
         $alert->scenario = 'saveOrUpdate';
 
-        
 
         if (Yii::$app->request->post() && $alert->load(Yii::$app->request->post()) && $config->load(Yii::$app->request->post())) {
 
@@ -238,6 +237,9 @@ class AlertController extends Controller
         $config->competitors = explode(",",$config->competitors);
 
         $alert->scenario = 'saveOrUpdate';
+
+        $isDocumentExist = \app\helpers\DocumentHelper::isDocumentExist($alert->id,'Excel Document');
+        
         
         
         if (Yii::$app->request->post() && $alert->load(Yii::$app->request->post()) && $config->load(Yii::$app->request->post())) {
@@ -257,15 +259,17 @@ class AlertController extends Controller
           // add resource alert
           $alert->alertResourceId = Yii::$app->request->post('Alerts')['alertResourceId'];
           // files
-          if(\yii\web\UploadedFile::getInstance($alert, 'files')){
-            // convert excel to array php
-            $fileData = \app\helpers\DocumentHelper::excelToArray($alert,'files');
-            // get resource document
-            $resource = \app\models\Resources::findOne(['resourcesId' => 3]);
-            // save in file json
-            \app\helpers\DocumentHelper::saveJsonFile($alert->id,$resource->name,$fileData);
-            // add resource document to the alert
-            array_push($alert->alertResourceId,$resource->id);
+          if(!$isDocumentExist){
+            if(\yii\web\UploadedFile::getInstance($alert, 'files')){
+              // convert excel to array php
+              $fileData = \app\helpers\DocumentHelper::excelToArray($alert,'files');
+              // get resource document
+              $resource = \app\models\Resources::findOne(['resourcesId' => 3]);
+              // save in file json
+              \app\helpers\DocumentHelper::saveJsonFile($alert->id,$resource->name,$fileData);
+              // add resource document to the alert
+              array_push($alert->alertResourceId,$resource->id);
+            }
           }
           // set resource
           if(!$config->saveAlertconfigSources($alert->alertResourceId)){
