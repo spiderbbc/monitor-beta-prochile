@@ -104,12 +104,37 @@ class LiveTicketSearch {
             $alertsMencionsModel = $this->findAlertsMencions($product);
             for($t = 0 ; $t < sizeof($tickets); $t ++){
                 if(ArrayHelper::keyExists('events', $tickets[$t], false)){
+                    for($w = 0 ; $w < sizeOf($tickets[$t]['events']); $w++){
+                        if(ArrayHelper::keyExists('message', $tickets[$t]['events'][$w], false)){
+                            $user = $this->saveUserMencions($tickets[$t]['events'][$w]['author']);
+
+                        }// end fi message
+                    }// end for events
+                } // if array keyExists
+            }// end for tickets
+        } // end for  each data
+    }
 
 
-                }
-            }
+    private function saveUserMencions($author){
+        $where = [
+           // 'name' => $author['name'],
+            'screen_name' => $author['id']
+        ]; 
+        $isUserExists = \app\models\UsersMentions::find()->where($where)->exists();
 
+        if($isUserExists){
+            $model = \app\models\UsersMentions::find()->where($where)->one();
+        }else{
+            $model = new \app\models\UsersMentions();
+            $model->name = $author['name'];
+            $model->screen_name = $author['id'];
+            $user_data['type'] = $author['type'];
+            $model->user_data = $user_data;
+            $model->save(); 
         }
+
+        var_dump($model->id);
     }
 
 
@@ -151,15 +176,7 @@ class LiveTicketSearch {
     }
 
 
-    private function setInterlocutors($ticket){
-        
-        $model = new \app\models\UsersMentions();
-
-        if(ArrayHelper::keyExists('assignee',$ticket)){
-            return null;
-        }
-
-    } 
+     
 
     /**
      * Finds the AlertsMencions model based on product key value.

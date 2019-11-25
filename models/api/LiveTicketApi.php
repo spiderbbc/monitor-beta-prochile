@@ -61,10 +61,12 @@ class LiveTicketApi extends Model {
 			$productName = $this->products[$p];
 			$productMention = $this->_getAlertsMencionsByProduct($productName);
 			
+			
 			if(!$productMention){
 				
 				$date_from = Yii::$app->formatter->asDate($this->start_date,'yyyy-MM-dd');
 				$date_to = \app\helpers\DateHelper::add($this->start_date,'+1 day');
+
 
 
 				$params[$productName] = [
@@ -87,7 +89,7 @@ class LiveTicketApi extends Model {
 
 
 					$params[$productName] = [
-						'query'     => $productName,
+						'query'  => $productName,
 						'date_from' => $date_from,
 						'date_to'   => $date_to,
 					];
@@ -128,11 +130,12 @@ class LiveTicketApi extends Model {
 		$page = 1;
 
 		$client = $this->_getClient();
+		//$productsNames = ArrayHelper::remove($params, 'products');
+		
 
 		do{
 			// set page 
 			$params['page'] = $page;
-
 			
 			$response = $client->tickets->get($params);
 			echo "searching start date". $params['date_from']. " to  ". $params['date_to']. " in productName: ".$params['query']. "\n";
@@ -147,6 +150,7 @@ class LiveTicketApi extends Model {
 			$pageresponse = $response->pages;
 			$page++;
 
+
 		}while($pageresponse >= $page);
 
 		return $data;
@@ -156,13 +160,14 @@ class LiveTicketApi extends Model {
 
 	private function _orderTickets($data){
 		$model = [];
-
+		$tmp = [];
 		foreach($data as $productName => $groupTickets){
 			if(count($data[$productName])){
-				$model [$productName] = [];
+				//$model [$productName] = [];
 				foreach($groupTickets as $group => $tickets){
 					for($t = 0; $t < sizeof($tickets); $t++){
 						//$model[$productName][]  = $this->_exclude($tickets[$t]);
+						
 						$ticket = $this->_exclude($tickets[$t]);
 						if(property_exists($ticket,'events')){
 
@@ -174,7 +179,11 @@ class LiveTicketApi extends Model {
 								}// end if arrArrayHelper
 							}
 						}// end if ArrayHelper
-						$model[$productName][]  = $ticket;
+						if(!in_array($tickets[$t]->id,$tmp)){
+							$model[$productName][]  = $ticket;
+							$tmp [] = $tickets[$t]->id;
+							
+						}
 					}// end loop tickets
 
 				} // end foreach groupTickets
