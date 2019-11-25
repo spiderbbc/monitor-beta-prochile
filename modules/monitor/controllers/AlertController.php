@@ -275,54 +275,67 @@ class AlertController extends Controller
           }
           
           // keywords/ dictionaryIds model
-          $dictionaryIds = Yii::$app->request->post('Alerts')['dictionaryIds'];
-          if($dictionaryIds != ''){
-            \app\models\Keywords::deleteAll(['alertId' => $alert->id]);
-            \app\models\Dictionaries::saveDictionaryDrive($dictionaryIds,$alert->id);
+          $dictionariesNames = Yii::$app->request->post('Alerts')['dictionaryIds'];
+          if($dictionariesNames != ''){
+            \app\models\Dictionaries::saveOrUpdateDictionaries($dictionariesNames,$alert->id);
           }else{
-            \app\models\Keywords::deleteAll(['alertId' => $alert->id]);
+            $dictionariesNames = $drive->dictionaries;
+            $dictionaryIds = \app\models\Dictionaries::find()->where(['name' => $dictionariesNames])->select(['id'])->asArray()->all();
+            \app\models\Keywords::deleteAll(['alertId' => $alert->id,'dictionaryId' => $dictionaryIds]);
           } 
-          
 
            // if free words is
           $free_words = Yii::$app->request->post('Alerts')['free_words'];
           $dictionaryName = \app\models\Dictionaries::FREE_WORDS_NAME;
           $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
           if ($free_words){
-            \app\models\Keywords::deleteAll([
-                        'alertId' => $alert->id,
-                        'dictionaryId' => $dictionary->id
-            ]);
-            \app\models\Dictionaries::saveFreeWords($free_words,$alert->id,$dictionaryName);
-          }else{
+           
+            \app\models\Dictionaries::saveOrUpdateWords($free_words,$alert->id,$dictionary->id);
+          }
+          else{
             \app\models\Keywords::deleteAll([
                         'alertId' => $alert->id,
                         'dictionaryId' => $dictionary->id
             ]);
           }
-          // if product_description
-          if($config->product_description){
-            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_PRODUCT;
-            $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
-            $words = explode(',', $config->product_description);
 
-            \app\models\Keywords::deleteAll([
-                        'alertId' => $alert->id,
-                        'dictionaryId' => $dictionary->id
-            ]);
-            \app\models\Dictionaries::saveFreeWords($words,$alert->id,$dictionaryName);
+
+          // if product_description
+          $dictionaryName = \app\models\Dictionaries::FREE_WORDS_PRODUCT;
+          $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
+
+          if($config->product_description){
+            $words = explode(',', $config->product_description);
+            \app\models\Dictionaries::saveOrUpdateWords($words,$alert->id,$dictionary->id);
+          }else{
+            $words = \app\models\Keywords::find()->where(['alertId' => $alert->id,'dictionaryId' => $dictionary->id ])->select(['name','id'])->all();
+            foreach($words as $word){
+                \app\models\Keywords::deleteAll([
+                  'id'           => $word->id,
+                  'alertId'      => $alert->id,
+                  'dictionaryId' => $dictionary->id,
+                  'name'         => $word->name
+                ]);
+            }
           }
 
           // if competitors
+          $dictionaryName = \app\models\Dictionaries::FREE_WORDS_COMPETITION;
+          $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
           if($config->competitors){
-            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_COMPETITION;
-            $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
             $words = explode(',', $config->competitors);
-            \app\models\Keywords::deleteAll([
-                        'alertId' => $alert->id,
-                        'dictionaryId' => $dictionary->id
-            ]);
-            \app\models\Dictionaries::saveFreeWords($words,$alert->id,$dictionaryName);
+            \app\models\Dictionaries::saveOrUpdateWords($words,$alert->id,$dictionary->id);
+          }else{
+            $words = \app\models\Keywords::find()->where(['alertId' => $alert->id,'dictionaryId' => $dictionary->id ])->select(['name','id'])->all();
+            foreach($words as $word){
+                \app\models\Keywords::deleteAll([
+                  'id'           => $word->id,
+                  'alertId'      => $alert->id,
+                  'dictionaryId' => $dictionary->id,
+                  'name'         => $word->name
+                ]);
+            }
+
           }
 
           // set product/models

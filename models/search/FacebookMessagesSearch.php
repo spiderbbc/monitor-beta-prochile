@@ -228,7 +228,8 @@ class FacebookMessagesSearch {
         $mention = \app\helpers\MentionsHelper::saveMencions(
             [
                 'alert_mentionId' => $alertId,
-                'message'         => $message,
+                'origin_id'       => $originId,
+                'created_time'    => $created_time,
             ],
             [
                 'origin_id'       => $originId, // url is unique

@@ -91,7 +91,7 @@ class Dictionaries extends \yii\db\ActiveRecord
             
             }
             if(!empty($models)){
-              \app\models\Keywords::deleteAll('alertId = '.$alertId);
+             // \app\models\Keywords::deleteAll('alertId = '.$alertId);
               Yii::$app->db->createCommand()->batchInsert('keywords', ['alertId','dictionaryId', 'name'],$models)
                         ->execute();
             }
@@ -119,6 +119,59 @@ class Dictionaries extends \yii\db\ActiveRecord
       ->execute();
     }
 
+
+    public static function saveOrUpdateWords($free_words,$alertId,$dictionaryId){
+
+      $words = \app\models\Keywords::find()->where(['alertId' => $alertId,'dictionaryId' => $dictionaryId ])->select(['name','id'])->all();
+
+      $words_delete = [];
+
+      foreach ($words as $word) {
+          if(!in_array($word->name,$free_words)){
+              $words_delete[] = $word->id;
+          }
+      }
+      
+      for($w = 0; $w < count($free_words); $w++){
+          $isExists = \app\models\Keywords::find()->where(['alertId' => $alertId,'dictionaryId' => $dictionaryId,'name' => $free_words[$w] ])->exists();
+          if(!$isExists){
+              $model = new \app\models\Keywords();
+              $model->alertId = $alertId;
+              $model->dictionaryId = $dictionaryId;
+              $model->name = $free_words[$w];
+              $model->save();
+          }
+
+      }
+
+      \app\models\Keywords::deleteAll([
+        'id' => $words_delete,
+        'alertId' => $alertId,
+        'dictionaryId' => $dictionaryId
+      ]);
+
+    }
+
+    public static function saveOrUpdateDictionaries($dictionariesNames,$alertId){
+
+      $dictionaries = \app\models\Dictionaries::find()->select(['name','id'])->all();
+
+      $dictionaries_delete = [];
+
+      foreach ($dictionaries as $dictionarie) {
+          if(!in_array($dictionarie->name,$dictionariesNames)){
+              $dictionaries_delete[] = $dictionarie->id;
+          }
+      }
+      
+      self::saveDictionaryDrive($dictionariesNames,$alertId);
+
+      \app\models\Keywords::deleteAll([
+        'alertId' => $alertId,
+        'dictionaryId' => $dictionaries_delete
+      ]);
+
+    }
     /**
      * @return \yii\db\ActiveQuery
      */
