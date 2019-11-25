@@ -120,7 +120,8 @@ class BaseApi extends Model {
 			$query_params = $LivechatTicketApi->prepare($alert);
 			
 			if($query_params){
-				$LivechatTicketApi->call($query_params);
+				$tickets = $LivechatTicketApi->call($query_params);
+				$LivechatTicketApi->saveJsonFile($tickets);
 			}
 		}
 
@@ -230,6 +231,23 @@ class BaseApi extends Model {
 
 		}
 		
+	}
+
+	public function readDataLiveChatApi($alertId,$data){
+		echo "calling readDataLiveChatApi \n";
+		$searchLiveApi = new \app\models\search\LiveTicketSearch();
+		$params = [$alertId,$data];
+
+		$searchLiveApi->load($params);
+		$searchLiveApi->search();
+
+		/*
+		if($searchLiveApi->search()){
+			echo "moved file";
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat');
+		}*/
+		
+
 	}
 
 	
