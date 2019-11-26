@@ -106,6 +106,12 @@ class StringHelper
         return $s->getString();
     }
 
+    public static function collapseWhitespace($sentence){
+        $s = new Stringizer($sentence);
+        $s->collapseWhitespace(); // ȘŦŗÍñĝ ìzĕŕ
+        return $s->getString();
+    }
+
 
     /**
      * Replace language-specific characters by ASCII-equivalents.
@@ -162,6 +168,15 @@ class StringHelper
     public static function remove_emoji ($text){
         //$text = self::replaceAccents($text);
         return preg_replace('/[[:^print:]]/', '', $text);
+    }
+
+    public static function getDomain($url){
+        $pieces = parse_url($url);
+        $domain = isset($pieces['host']) ? $pieces['host'] : '';
+        if(preg_match('/(?P<domain>[a-z0-9][a-z0-9\-]{1,63}\.[a-z\.]{2,6})$/i', $domain, $regs)){
+            return $regs['domain'];
+        }
+        return FALSE;
     }
 
 
