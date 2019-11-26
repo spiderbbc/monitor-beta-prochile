@@ -239,14 +239,11 @@ class BaseApi extends Model {
 		$params = [$alertId,$data];
 
 		$searchLiveApi->load($params);
-		$searchLiveApi->search();
-
-		/*
+		var_dump($searchLiveApi->search());
 		if($searchLiveApi->search()){
 			echo "moved file";
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat');
-		}*/
-		
+		}
 
 	}
 

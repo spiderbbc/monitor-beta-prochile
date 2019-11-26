@@ -66,8 +66,8 @@ class LiveTicketSearch {
              echo "save data .. \n";
             // save all data
             $tickets = $this->data;
-           /* $search = $this->savetickets($tickets);
-            return $search;*/
+            $search = $this->saveTickets($tickets);
+            return $search;
         }
 
         // if  dictionaries and  boolean
@@ -83,9 +83,9 @@ class LiveTicketSearch {
             echo "only dictionaries \n";
             $data = $this->data;
             $filter_data = $this->searchDataByDictionary($data);
-            $search = $this->saveMentions($filter_data);
-            /*
-            return $search;*/
+            $search = $this->saveTickets($filter_data);
+            return $search;
+            
         }
 
         // if  !dictionaries and  boolean
@@ -96,31 +96,77 @@ class LiveTicketSearch {
         }
 
     }
-
-    private function saveMentions($data){
+    /**
+     * [saveTickets save the tickets]
+     * @param  [array] $data [tickets]
+     * @return [bool]       [true if not a problem]
+     */
+    private function saveTickets($data){
         $error = [];
 
         foreach($data as $product => $tickets){
             $alertsMencionsModel = $this->findAlertsMencions($product);
-            for($t = 0 ; $t < sizeof($tickets); $t ++){
-                if(ArrayHelper::keyExists('events', $tickets[$t], false)){
-                    for($w = 0 ; $w < sizeOf($tickets[$t]['events']); $w++){
-                        if(ArrayHelper::keyExists('message', $tickets[$t]['events'][$w], false)){
-                            $user = $this->saveUserMencions($tickets[$t]['events'][$w]['author']);
+            if(!is_null($alertsMencionsModel)){
+                for($t = 0 ; $t < sizeof($tickets); $t ++){
+                   
+                    $idTicket = $tickets[$t]['id'];
+                    $requesterIp = $tickets[$t]['requester']['ip'];
+                    $geolocation = \app\helpers\MentionsHelper::getGeolocation($requesterIp);
+                    $requesterSource = $tickets[$t]['source'];
 
-                        }// end fi message
-                    }// end for events
-                } // if array keyExists
-            }// end for tickets
+                    if(ArrayHelper::keyExists('events', $tickets[$t], false)){
+                        for($w = 0 ; $w < sizeOf($tickets[$t]['events']); $w++){
+                            if(ArrayHelper::keyExists('message', $tickets[$t]['events'][$w], false)){
+                                if($tickets[$t]['events'][$w]['author']['type'] == 'client'){
+                                    $tickets[$t]['events'][$w]['author']['ip'] = $requesterIp;
+                                } // if client insert his ip
+                                $user = $this->saveUserMencions($tickets[$t]['events'][$w]['author']);
+                                
+                                if(empty($user->errors)){
+                                    // adding informacion to tickets array
+                                    $tickets[$t]['events'][$w]['id']          = $idTicket;
+                                    $tickets[$t]['events'][$w]['source']      = $requesterSource;
+                                    $tickets[$t]['events'][$w]['rate']        = $tickets[$t]['rate'];
+                                    $tickets[$t]['events'][$w]['status']      = $tickets[$t]['status'];
+                                    $tickets[$t]['events'][$w]['subject']     = $tickets[$t]['subject'];
+                                    $tickets[$t]['events'][$w]['geolocation'] = $geolocation;
+
+                                    $mention = $this->saveMentions($tickets[$t]['events'][$w],$alertsMencionsModel->id,$user);
+
+                                    if(empty($mention->errors)){
+                                        if(ArrayHelper::keyExists('wordsId', $tickets[$t]['events'][$w], false)){
+                                            $keywordsMention = $this->saveKeywordsMentions($tickets[$t]['events'][$w]['wordsId'],$mention->id);
+                                        }
+
+                                    }else{$errors['mentions'][] = 'mentions Faild!!';}// end if mention erros
+
+                                }else{ $errors['user_mentions'][] = 'user Faild!!';}// end if errors
+                            }// end fi message
+                        }// end for events
+                    } // if array keyExists
+                }// end for tickets
+            }else{ $error['alertsMencionsModel'][] = 'not found';}// end if ! null
         } // end for  each data
+        
+        return (!count($error)) ? true : false;
     }
 
-
+    /**
+     * [saveUserMencions save or return user in table user_mentions]
+     * @param  [array] $author [part of array the tickets]
+     * @return [model]         [model instance table user_mentions]
+     */
     private function saveUserMencions($author){
         $where = [
            // 'name' => $author['name'],
             'screen_name' => $author['id']
-        ]; 
+        ];
+
+        $user_data['type'] = $author['type'];
+        if(isset($author['ip'])){
+            $user_data['ip'] = $author['ip'];
+        }
+
         $isUserExists = \app\models\UsersMentions::find()->where($where)->exists();
 
         if($isUserExists){
@@ -129,14 +175,92 @@ class LiveTicketSearch {
             $model = new \app\models\UsersMentions();
             $model->name = $author['name'];
             $model->screen_name = $author['id'];
-            $user_data['type'] = $author['type'];
             $model->user_data = $user_data;
             $model->save(); 
         }
 
-        var_dump($model->id);
+        return $model;
     }
+    /**
+     * [saveMentions save mentions]
+     * @param  [type] $mention          [mention]
+     * @param  [type] $alertsMencionsId [description]
+     * @param  [type] $user             [description]
+     * @return [type]                   [description]
+     */
+    private function saveMentions($mention,$alertsMencionsId,$user){
+       
+        $date = \app\helpers\DateHelper::asTimestamp($mention['date']);
+        $mention_data = [];
+        $mention_data['id']     = $mention['id'];
+        $mention_data['status'] = $mention['status'];
+        $mention_data['geo']    = ($user->user_data['type'] == 'client') ? $mention['geolocation']: null;
+        $mention_data['source'] = $mention['source']['type'];
 
+        $subject        = $mention['subject'];
+        $message        = $mention['message'];
+        $message_markup = $mention['message_markup'];
+        $url            = ($user->user_data['type'] == 'client') ? $mention['source']['url'] : null;
+        $location       = ($user->user_data['type'] == 'client') ? $mention['geolocation']['regionName'] : null;
+        $domain_url     = ($user->user_data['type'] == 'client') ? \app\helpers\StringHelper::getDomain($mention['source']['url']) : null;
+
+
+        $where = [
+            'created_time'    => $date,
+            'message'         => $message,
+            'origin_id'       => $user->id,
+            'alert_mentionId' => $alertsMencionsId,
+        ];
+
+        $isMentions = \app\models\Mentions::find()->where($where)->exists();
+
+        if($isMentions){
+            $model = \app\models\Mentions::find()->where($where)->one();
+
+        }else{
+            
+            $model = new \app\models\Mentions();
+            
+            $model->alert_mentionId = $alertsMencionsId;
+            $model->origin_id       = $user->id;
+            $model->created_time    = $date;
+            $model->mention_data    = $mention_data;
+            $model->subject         = $subject;
+            $model->message         = $message;
+            $model->message_markup  = $message_markup;
+            $model->url             = $url;
+            $model->domain_url      = $domain_url;
+            $model->domain_url      = $domain_url;
+            $model->location        = $location;
+            $model->social_id       = null;
+            
+            $model->save();
+        }
+        return $model;
+
+
+    }
+    /**
+     * [saveKeywordsMentions save keywords id on table pivote]
+     * @param  [array] $wordsId   [id words and each repate in the sentence]
+     * @param  [type] $mentionId [id of the mentionId]
+     * @return [type]            [description]
+     */
+    private function saveKeywordsMentions($wordsId,$mentionId){
+
+        foreach($wordsId as $idwords => $count){
+            if(!\app\models\KeywordsMentions::find()->where(['mentionId'=> $mentionId,'keywordId' => $idwords])->exists()){
+                for($c = 0; $c < $count; $c++){
+                    $model = new \app\models\KeywordsMentions();
+                    $model->keywordId = $idwords;
+                    $model->mentionId = $mentionId;
+                    $model->save();
+                }
+            }
+            
+        }
+
+    }
 
     /**
      * [searchDataByDictionary looking in data words in the dictionaries]
@@ -159,9 +283,7 @@ class LiveTicketSearch {
                                     $wordsId[$words[$w]['id']] = $containsCount;
                                     $word = $words[$w]['name'];
                                     $data[$product][$t]['events'][$e]['message_markup']  = \app\helpers\StringHelper::replaceIncaseSensitive($sentence,$word,"<strong>{$word}</strong>");
-
                                 }// end if is containsCount
-
                             }// en for words
                             if(!empty($wordsId)){
                                 $data[$product][$t]['events'][$e]['wordsId'] = $wordsId;
@@ -175,8 +297,6 @@ class LiveTicketSearch {
         return $data;
     }
 
-
-     
 
     /**
      * Finds the AlertsMencions model based on product key value.
@@ -232,7 +352,12 @@ class LiveTicketSearch {
             return $keywords;
         }
         return false;
-    } 
+    }
+
+
+
+
+
 
 
 

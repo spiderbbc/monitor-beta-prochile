@@ -4,6 +4,7 @@ namespace app\helpers;
 use yii;
 use app\models\Mentions;
 use app\models\UsersMentions;
+use yii\httpclient\Client;
 
 /**
  *
@@ -90,6 +91,22 @@ class MentionsHelper
         $model->save();
 
         return $model;
+
+    }
+
+    public static function getGeolocation($ip){
+
+        $client = new Client();
+        $response = $client->createRequest()
+            ->setMethod('GET')
+            ->setUrl("http://ip-api.com/json/{$ip}")
+            ->setData(['fields' => '114713'])
+            ->send();
+            
+        if ($response->isOk && $response->data['status'] == 'success') {
+            return  $response->data;
+        }
+        return null;
 
     }
 	
