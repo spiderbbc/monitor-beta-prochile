@@ -156,7 +156,6 @@ class InstagramSearch
                 }
             }// end foreach data
         } // end if null
-        
         return (empty($error)) ? true : false;
     }
 
@@ -260,10 +259,12 @@ class InstagramSearch
                     $user_data['followers_count'] = $user_response['graphql']['user']['edge_followed_by']['count'];
                     $user_data['following_count'] = $user_response['graphql']['user']['edge_follow']['count'];
 
+                    $name = \app\helpers\StringHelper::remove_emoji($user_response['graphql']['user']['full_name']);
+
                     $id = $user_response['graphql']['user']['id'];
                     $permalink = "https://www.instagram.com/{$username}/";
                     $screen_name = $username;
-                    $name = $user_response['graphql']['user']['full_name'];
+                    $name = ($name)? $name : $username;
                     $message = $user_response['graphql']['user']['biography'];
                     $origin = \app\helpers\MentionsHelper::saveUserMencions(
                         [
