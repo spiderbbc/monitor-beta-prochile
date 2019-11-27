@@ -165,11 +165,12 @@ class FacebookHelper
 	 * @param  [int]                $header_business [headers api call]
 	 * @return boolean              [true is over limit]
 	 */
-	public static function isCaseUsage($header_business){
+	public static function isCaseUsage($header_business,$business_id = ""){
+
 
         $headers_decode = json_decode($header_business,true);
 
-        $business_id = Yii::$app->params['facebook']['business_id'];
+        $business_id = (empty($business_id)) ? Yii::$app->params['facebook']['business_id'] : $business_id;
         $call_count = (int) $headers_decode[$business_id][0]['call_count'];
 
         if($call_count > 85){

@@ -38,15 +38,7 @@ class m190813_202212_Resources extends Migration
             'updatedBy'   => '1',
         ]);
 
-        $this->insert('{{%resources}}', [
-            'name'        => 'Facebook Comments',
-            'resourcesId' => '1',
-            'createdAt'   => '1488153462',
-            'updatedAt'   => '1488153462',
-            'createdBy'   => '1',
-            'updatedBy'   => '1',
-        ]);
-
+        
         $this->insert('{{%resources}}', [
             'name'        => 'Live Chat',
             'resourcesId' => '1',
@@ -64,6 +56,25 @@ class m190813_202212_Resources extends Migration
             'createdBy'   => '1',
             'updatedBy'   => '1',
         ]);
+        
+
+        $this->insert('{{%resources}}', [
+            'name'        => 'Web page',
+            'resourcesId' => '2',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
+        ]);
+
+        $this->insert('{{%resources}}', [
+            'name'        => 'Facebook Comments',
+            'resourcesId' => '1',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
+        ]);
 
         $this->insert('{{%resources}}', [
             'name'        => 'Facebook Messages',
@@ -74,14 +85,6 @@ class m190813_202212_Resources extends Migration
             'updatedBy'   => '1',
         ]);
 
-        $this->insert('{{%resources}}', [
-            'name'        => 'Web page',
-            'resourcesId' => '2',
-            'createdAt'   => '1488153462',
-            'updatedAt'   => '1488153462',
-            'createdBy'   => '1',
-            'updatedBy'   => '1',
-        ]);
 
         $this->insert('{{%resources}}', [
             'name'        => 'Excel Document',

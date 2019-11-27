@@ -64,8 +64,6 @@ class FacebookCommentsApi extends Model {
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
-			/*var_dump($this->products);
-			die();*/
 			
 			
 			return $this->_setParams();
@@ -111,16 +109,23 @@ class FacebookCommentsApi extends Model {
 
 	private function _getDataApi($query_params){
 
+		echo "in Post.."."\n";
 		$feeds = $this->_getPostsComments($query_params);
+		echo "out Post.."."\n";
+		$feedsCandidate = $this->_setCandidate($feeds);
 
-		
+		$feeds_comments = $this->_getComments($feedsCandidate);
+		$feeds_reviews = $this->_getSubComments($feeds_comments);
+		$model = $this->_orderFeedsComments($feeds_reviews);
+		return $model;
+
 		// if not empty post
-		if(!empty($feeds[0]['data'])){
+		/*if(!empty($feeds[0]['data'])){
 			$feeds_comments = $this->_getComments($feeds);
 			$feeds_reviews = $this->_getSubComments($feeds_comments);
 			$model = $this->_orderFeedsComments($feeds_reviews);
 			return $model;
-		}
+		}*/
 			
 	}
 
@@ -143,7 +148,7 @@ class FacebookCommentsApi extends Model {
 					])
 					->setOptions([
 			        //'proxy' => 'tcp://proxy.example.com:5100', // use a Proxy
-			        'timeout' => 5, // set timeout to 5 seconds for the case server is not responding
+			        'timeout' => 15, // set timeout to 5 seconds for the case server is not responding
 			    	])->send();
 					
 					
@@ -171,10 +176,10 @@ class FacebookCommentsApi extends Model {
 						$index++;
 					}
 					
-					/*// is over the limit
+					// is over the limit
 					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders)){
 						break;
-					}*/
+					}
 					
 
 					
@@ -207,101 +212,100 @@ class FacebookCommentsApi extends Model {
 		if($query){
 			$params['feeds'] = ArrayHelper::index($query,'publication_id');
 		}
-		
-
 
 		// for each pagination
 		for($p = 0; $p < sizeOf($feeds); $p++){
-			// for each feed is limit is one
-			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
-				// take id post
-				$id_feed = $feeds[$p]['data'][$d]['id'];
-				// if there comments
-				if(isset($feeds[$p]['data'][$d]['comments'])){
-					// if there next
-					if(isset($feeds[$p]['data'][$d]['comments']['paging']['next'])){
-						
-						$next = $feeds[$p]['data'][$d]['comments']['paging']['next'];
-						/**
-						 * TODO TEST
-						 */
-						// if there next in the database
-						if(isset($params)){
-							if (ArrayHelper::keyExists($id_feed, $params['feeds'], false)) {
-								if($params['feeds'][$id_feed]['next'] != ''){
-									echo "using next ...";
-									$next = $params['feeds'][$id_feed]['next'];
-									// clean next in the database
-									$where['publication_id'] = $id_feed;
-									\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => null]);
+			if(isset($feeds['data'])){
+				// for each feed is limit is one
+				for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
+					// take id post
+					$id_feed = $feeds[$p]['data'][$d]['id'];
+					// if there comments
+					if(isset($feeds[$p]['data'][$d]['comments'])){
+						// if there next
+						if(isset($feeds[$p]['data'][$d]['comments']['paging']['next'])){
+							
+							$next = $feeds[$p]['data'][$d]['comments']['paging']['next'];
+							/**
+							 * TODO TEST
+							 */
+							// if there next in the database
+							if(isset($params)){
+								if (ArrayHelper::keyExists($id_feed, $params['feeds'], false)) {
+									if($params['feeds'][$id_feed]['next'] != ''){
+										echo "using next ...";
+										$next = $params['feeds'][$id_feed]['next'];
+										// clean next in the database
+										$where['publication_id'] = $id_feed;
+										\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => null]);
+									}
 								}
-							}
-						}
-						
-						$comments = [];
-
-						do{
-
-							$commentsResponse = $client->get($next)->send();// more comments then
-
-							$comments =  $commentsResponse->getData(); // get all post and comments
-
-							$responseHeaders = $commentsResponse->headers->get('x-business-use-case-usage'); // get headers
-							// if get error data
-                            if(\yii\helpers\ArrayHelper::getValue($comments,'error' ,false)){
-                                // send email with data $responseData[$index]['error']['message']
-                                break;
-                            }
-                            // get the after
-                            if(\yii\helpers\ArrayHelper::getValue($comments,'paging.next' ,false)){ // if next
-                                $next = \yii\helpers\ArrayHelper::getValue($comments,'paging.next' ,false);
-                                $is_next = true;
-                            }else{
-                                $is_next = false;
-                            } 
-
-                            // is over the limit
-                            $is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders);
-
-
-                            if($is_usage_limit){
-								// save the next 
-								if($next){
-									$where['publication_id'] = $id_feed;
-							        Console::stdout("save one time {$next}.. \n", Console::BOLD);
-							        $model_alert = \app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => $next]);
-								}
-							}
-                            
-                            // if there more comments
-                            if(!empty($comments['data'])){
-                            	for($n = 0; $n < sizeOf($comments['data']); $n++){
-                            		$feeds[$p]['data'][$d]['comments']['data'][] =$comments['data'][$n];
-                            	}
-                            }
-                            // is over the limit
-							if($is_usage_limit){
-								break;
 							}
 							
+							$comments = [];
 
-                           // $index++;
+							do{
 
-						}while($is_next);
+								$commentsResponse = $client->get($next)->send();// more comments then
+
+								$comments =  $commentsResponse->getData(); // get all post and comments
+
+								$responseHeaders = $commentsResponse->headers->get('x-business-use-case-usage'); // get headers
+								// if get error data
+	                            if(\yii\helpers\ArrayHelper::getValue($comments,'error' ,false)){
+	                                // send email with data $responseData[$index]['error']['message']
+	                                break;
+	                            }
+	                            // get the after
+	                            if(\yii\helpers\ArrayHelper::getValue($comments,'paging.next' ,false)){ // if next
+	                                $next = \yii\helpers\ArrayHelper::getValue($comments,'paging.next' ,false);
+	                                $is_next = true;
+	                            }else{
+	                                $is_next = false;
+	                            } 
+
+	                            // is over the limit
+	                            $is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders);
 
 
+	                            if($is_usage_limit){
+									// save the next 
+									if($next){
+										$where['publication_id'] = $id_feed;
+								        Console::stdout("save one time {$next}.. \n", Console::BOLD);
+								        $model_alert = \app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => $next]);
+									}
+								}
+	                            
+	                            // if there more comments
+	                            if(!empty($comments['data'])){
+	                            	for($n = 0; $n < sizeOf($comments['data']); $n++){
+	                            		$feeds[$p]['data'][$d]['comments']['data'][] =$comments['data'][$n];
+	                            	}
+	                            }
+	                            // is over the limit
+								if($is_usage_limit){
+									break;
+								}
+								
+
+	                           // $index++;
+
+							}while($is_next);
+
+
+						}
+						
 					}
-					
+
+					//last comments
 				}
 			}
 			
 		}
 
 		if(isset($params)){
-			if(ArrayHelper::keyExists($id_feed, $params['feeds'], false)){
-
-				$feeds = $this->_isLastComments($feeds,$params,$id_feed);
-			}
+			$feeds = $this->_isLastComments($feeds,$params);
 		}
 
 			
@@ -309,7 +313,57 @@ class FacebookCommentsApi extends Model {
 		
 	}
 
-	private function _isLastComments($feeds,$params,$id_feed){
+	private function _isLastComments($feeds,$params){
+		
+		// params to save in AlertMentionsHelper and get
+		$where = [
+			'condition'   => 'ACTIVE',
+			'type'        => 'comments',
+			'alertId'     => $this->alertId,
+			'resourcesId' => $this->resourcesId,
+		];
+
+		$query = \app\helpers\AlertMentionsHelper::getAlersMentions($where);
+		if($query){
+			$params['feeds'] = ArrayHelper::index($query,'publication_id');
+		}
+
+
+
+		for ($p=0; $p < sizeOf($feeds); $p++){
+			if(isset($feeds[$p]['data'])){
+				for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
+					// take id post
+					$id_feed = $feeds[$p]['data'][$d]['id'];
+					if(ArrayHelper::keyExists($id_feed,$params['feeds'])){
+						$comments_last = [];
+						for ($c=0;$c < sizeOf($feeds[$p]['data'][$d]['comments']['data']); $c++){
+							
+							$created_time = $feeds[$p]['data'][$d]['comments']['data'][$c]['created_time'];
+							$unix_time = \app\helpers\DateHelper::asTimestamp($created_time);
+							
+							if($unix_time > $params['feeds'][$id_feed]['max_id']){
+								$comments_last[] = $feeds[$p]['data'][$d]['comments']['data'][$c];
+								$where['publication_id'] =  $id_feed;
+								
+								// add plus a second to the max_id
+								$unix_time = strtotime("+5 seconds",$unix_time);
+								\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
+							}
+
+						}
+						// check if data
+						$feeds[$p]['data'][$d]['comments']['data'] = $comments_last;
+					}
+				}
+			}
+		}
+
+
+		return $feeds;
+	}
+
+	/*private function _isLastComments($feeds,$params,$id_feed){
 		
 		// params to save in AlertMentionsHelper and get
 		$where = [
@@ -326,11 +380,16 @@ class FacebookCommentsApi extends Model {
 			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
 				$comments_last = [];
 				for ($c=0;$c < sizeOf($feeds[$p]['data'][$d]['comments']['data']); $c++){
+					
 					$created_time = $feeds[$p]['data'][$d]['comments']['data'][$c]['created_time'];
 					$unix_time = \app\helpers\DateHelper::asTimestamp($created_time);
 					
-
-					if(\app\helpers\FacebookHelper::isPublicationNew($params['feeds'][$id_feed]['max_id'],$unix_time)){
+					//\app\helpers\FacebookHelper::isPublicationNew($params['feeds'][$id_feed]['max_id'],$unix_time)
+					if($unix_time > $params['feeds'][$id_feed]['max_id']){
+						echo "/////////////////////"."\n";
+						echo $unix_time . "\n";
+						echo $params['feeds'][$id_feed]['max_id'] . "\n";
+						echo "/////////////////////"."\n";
 						$comments_last[] = $feeds[$p]['data'][$d]['comments']['data'][$c];
 						$where['publication_id'] =  $id_feed;
 						
@@ -347,7 +406,7 @@ class FacebookCommentsApi extends Model {
 
 
 		return $feeds;
-	}
+	}*/
 
 	private function _getSubComments($feeds_comments){
 		$client = $this->_client;
@@ -370,59 +429,62 @@ class FacebookCommentsApi extends Model {
 		// for each pagination
 		for($p = 0; $p < sizeOf($feeds_comments); $p++){
 			// for each data
-			for($d=0; $d < sizeOf($feeds_comments[$p]['data']); $d++){
+			if(isset($feeds_comments[$p]['data'])){
+				for($d=0; $d < sizeOf($feeds_comments[$p]['data']); $d++){
 
-				$lasted_update = $feeds_comments[$p]['data'][$d]['updated_time'];
-				$id_feed = $feeds_comments[$p]['data'][$d]['id'];
-
-
-				
-
-				// if there comments
-				if(isset($feeds_comments[$p]['data'][$d]['comments'])){
-
-					// loop in comments
-					for($c=0; $c < sizeOf($feeds_comments[$p]['data'][$d]['comments']['data']); $c++){
-						// IF THERE SUBCOMMENTS
-						if(isset($feeds_comments[$p]['data'][$d]['comments']['data'][$c]['comments'])){
-							//echo 'its data..';
-							// loop through subcomments
-							for($s=0; $s < sizeOf($feeds_comments[$p]['data'][$d]['comments']['data'][$c]['comments']['data']); $s++){
-								
-								$id_message = $feeds_comments[$p]['data'][$d]['comments']['data'][$c]['comments']['data'][$s]['id'];
-
-								//echo $id_message. "\n";
-								
-								$commentsResponse = $client->get($id_message,[
-									'access_token' => $this->_page_access_token
-								])->send();// more comments then
-								
-								// if get error data
-	                            if(\yii\helpers\ArrayHelper::getValue($commentsResponse->getData(),'error' ,false)){
-	                                // send email with data $responseData[$index]['error']['message']
-	                                break;
-	                            }
-
-	                            $responseHeaders = $commentsResponse->headers->get('x-business-use-case-usage'); // get headers
-	                            // if over the limit
-	                            if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders)){
-	                            	break;
-	                            }
+					$lasted_update = $feeds_comments[$p]['data'][$d]['updated_time'];
+					$id_feed = $feeds_comments[$p]['data'][$d]['id'];
 
 
-								array_push($feeds_comments[$p]['data'][$d]['comments']['data'][$c]['comments']['data'][$s],$commentsResponse->getData());
+					
+
+					// if there comments
+					if(isset($feeds_comments[$p]['data'][$d]['comments'])){
+
+						// loop in comments
+						for($c=0; $c < sizeOf($feeds_comments[$p]['data'][$d]['comments']['data']); $c++){
+							// IF THERE SUBCOMMENTS
+							if(isset($feeds_comments[$p]['data'][$d]['comments']['data'][$c]['comments'])){
+								//echo 'its data..';
+								// loop through subcomments
+								for($s=0; $s < sizeOf($feeds_comments[$p]['data'][$d]['comments']['data'][$c]['comments']['data']); $s++){
+									
+									$id_message = $feeds_comments[$p]['data'][$d]['comments']['data'][$c]['comments']['data'][$s]['id'];
+
+									//echo $id_message. "\n";
+									
+									$commentsResponse = $client->get($id_message,[
+										'access_token' => $this->_page_access_token
+									])->send();// more comments then
+									
+									// if get error data
+		                            if(\yii\helpers\ArrayHelper::getValue($commentsResponse->getData(),'error' ,false)){
+		                                // send email with data $responseData[$index]['error']['message']
+		                                break;
+		                            }
+
+		                            $responseHeaders = $commentsResponse->headers->get('x-business-use-case-usage'); // get headers
+		                            // if over the limit
+		                            if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders)){
+		                            	break;
+		                            }
+
+
+									array_push($feeds_comments[$p]['data'][$d]['comments']['data'][$c]['comments']['data'][$s],$commentsResponse->getData());
+								}
 							}
 						}
+					}	
+					
+					if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($id_feed)){
+						$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
+						// add plus a second to the max_id
+						$unix_time = strtotime("+60 seconds",$unix_time);
+						$where['publication_id'] =  $id_feed;
+						\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
 					}
-				}	
-				
-				if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($id_feed)){
-					$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
-					// add plus a second to the max_id
-					$unix_time = strtotime("+60 seconds",$unix_time);
-					$where['publication_id'] =  $id_feed;
-					\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
 				}
+
 			}
 
 		}
@@ -435,7 +497,7 @@ class FacebookCommentsApi extends Model {
 
 		$model = [];
 		for($p = 0; $p < sizeOf($feeds_reviews); $p++){
-			if(!empty($feeds_reviews[$p])){
+			if(!empty($feeds_reviews[$p]) && isset($feeds_reviews[$p]['data'])){
 				for($d=0; $d < sizeOf($feeds_reviews[$p]['data']); $d++){
 					// get post data
 					$model[$p]['id'] = $feeds_reviews[$p]['data'][$d]['id'];
@@ -464,9 +526,9 @@ class FacebookCommentsApi extends Model {
 					
 					if(isset($feeds_reviews[$p]['data'][$d]['message'])){
 						// remove emoji
-						$message  = \app\helpers\StringHelper::remove_emoji($feeds_reviews[$p]['data'][$d]['message']);
+						//$message  = \app\helpers\StringHelper::remove_emoji($feeds_reviews[$p]['data'][$d]['message']);
 						// remove accent
-						$message  = \app\helpers\StringHelper::replaceAccents($message);
+						$message  = \app\helpers\StringHelper::replaceAccents($feeds_reviews[$p]['data'][$d]['message']);
 						$model[$p]['message'] = $message;
 					}else{
 						$model[$p]['message'] = "-";
@@ -491,43 +553,46 @@ class FacebookCommentsApi extends Model {
 		$data = [];
 		$index = 0;
 		for($c=0; $c < sizeOf($comments['data']); $c++){
+			if(!\app\helpers\StringHelper::isEmpty($comments['data'][$c]['message'])){
+
+				$data[$index]['id'] = $comments['data'][$c]['id'];
+				$data[$index]['created_time'] = $comments['data'][$c]['created_time'];
+				$data[$index]['like_count'] = $comments['data'][$c]['like_count'];
+				$data[$index]['permalink_url'] = $comments['data'][$c]['permalink_url'];
+				// remove emoji 
+				//$message = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['message']);
+				// remove accent
+				$message = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['message']);
+
+				$data[$index]['message'] = $message;
+				$data[$index]['message_markup'] = $message;
+
 				
-			$data[$index]['id'] = $comments['data'][$c]['id'];
-			$data[$index]['created_time'] = $comments['data'][$c]['created_time'];
-			$data[$index]['like_count'] = $comments['data'][$c]['like_count'];
-			$data[$index]['permalink_url'] = $comments['data'][$c]['permalink_url'];
-			// remove emoji 
-			$message = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['message']);
-			// remove accent
-			$message = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['message']);
+				if(isset($comments['data'][$c]['comments'])){
 
-			$data[$index]['message'] = $message;
-			$data[$index]['message_markup'] = $message;
+					for($s= 0; $s < sizeOf($comments['data'][$c]['comments']['data']); $s++){
+						$index ++;
+						$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
+						$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
+						if(isset($comments['data'][$c]['comments']['data'][$s][0]['permalink_url'])){
+							$data[$index]['permalink_url'] = $comments['data'][$c]['comments']['data'][$s][0]['permalink_url'];
+						}
+						if(isset($comments['data'][$c]['comments']['data'][$s][0]['like_count'])){
+							$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
+						}
+						
+						// remove emoji
+						//$coment = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
+						$coment = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['comments']['data'][$s][0]['message']);
 
-			
-			if(isset($comments['data'][$c]['comments'])){
-
-				for($s= 0; $s < sizeOf($comments['data'][$c]['comments']['data']); $s++){
-					$index ++;
-					$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
-					$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
-					if(isset($comments['data'][$c]['comments']['data'][$s][0]['permalink_url'])){
-						$data[$index]['permalink_url'] = $comments['data'][$c]['comments']['data'][$s][0]['permalink_url'];
+						$data[$index]['message'] = $coment;
+						$data[$index]['message_markup'] = $coment;
+						
 					}
-					if(isset($comments['data'][$c]['comments']['data'][$s][0]['like_count'])){
-						$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
-					}
-					
-					// remove emoji
-					$coment = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
-					$coment = \app\helpers\StringHelper::replaceAccents($coment);
-
-					$data[$index]['message'] = $coment;
-					$data[$index]['message_markup'] = $coment;
-					
 				}
-			}
-			$index ++;
+				$index ++;
+
+			}			
 		}
 		return $data;
 	}
@@ -535,7 +600,7 @@ class FacebookCommentsApi extends Model {
 	private function _orderDataByProducts($data){
 		$model = [];
 		$feed_count = count($data);
-
+		$data = array_values($data);
 
 
 		for($d = 0 ; $d < sizeOf($data); $d++){
@@ -575,6 +640,35 @@ class FacebookCommentsApi extends Model {
 
 		return $model;
 
+	}
+
+
+	private function _setCandidate($feeds){
+		$feeds_candidate = [];
+		
+		// for each pagination
+		for($p = 0; $p < sizeOf($feeds); $p++){
+			// for each feed is limit is one
+			$feeds_candidate[$p] =[];
+			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
+				if(isset($feeds[$p]['data'][$d]['message'])){
+					$feeds_candidate[$p]['data'] =[];
+					for($i = 0; $i < sizeof($this->products); $i++){
+						// take sentence post
+						$sentence = $feeds[$p]['data'][$d]['message'];
+						// destrutura el product
+						$product_data = \app\helpers\StringHelper::structure_product_to_search($this->products[$i]);
+						$is_contains = (count($product_data) > 3) ? \app\helpers\StringHelper::containsAny($sentence,$product_data) : \app\helpers\StringHelper::containsAll($sentence,$product_data);
+						if($is_contains){
+							if(!in_array($feeds[$p]['data'][$d],$feeds_candidate[$p]['data'])){
+								$feeds_candidate[$p]['data'][] = $feeds[$p]['data'][$d];
+							}
+						}
+					}// end loop products
+				}
+			}// end loop data
+		}// end loop pagination		
+		return $feeds_candidate;
 	}
 
 	public function saveJsonFile(){

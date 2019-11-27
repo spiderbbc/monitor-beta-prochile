@@ -155,6 +155,7 @@ class InstagramCommentsApi extends Model {
 
 					$data =  $posts->getData(); // get all post and comments
 
+
 					if(isset($data['data'][0]['timestamp'])){
 						
 						$date_post = $data['data'][0]['timestamp'];
@@ -184,7 +185,7 @@ class InstagramCommentsApi extends Model {
 					}
 					
 					// is over the limit
-					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders)){
+					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders,$this->_business_account_id)){
 						break;
 					}
 					
@@ -344,7 +345,7 @@ class InstagramCommentsApi extends Model {
 
 					}
 					// is over the limit
-                    $is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders);
+                    $is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders,$this->_business_account_id);
 					
 					if($is_usage_limit){
 						// save the next 
@@ -426,7 +427,7 @@ class InstagramCommentsApi extends Model {
 							break;
 						}
 						// is over the limit
-                    	$is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders);
+                    	$is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders,$this->_business_account_id);
                     	if($is_usage_limit){
 							// send email with is_usage_limit
 							break;

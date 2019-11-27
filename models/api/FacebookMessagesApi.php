@@ -113,8 +113,9 @@ class FacebookMessagesApi extends Model {
 	 */
 	private function _getDataApi($query_params){
 
-
+		echo "in messages". "\n";
 		$messages = $this->_getMessages($query_params);
+		echo "out messages". "\n";
 		// if there post
 		if(count($messages)){
 			$filter_messages = $this->_filterFeedsbyProducts($messages);
