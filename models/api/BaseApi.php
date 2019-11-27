@@ -42,6 +42,7 @@ class BaseApi extends Model {
 		if(!empty($alerts)){
 			$resources = [];
 			for($a = 0; $a < sizeOf($alerts); $a++){
+				array_multisort(array_map('strlen', $alerts[$a]['config']['configSources']), $alerts[$a]['config']['configSources']);
 				for($c = 0; $c < sizeOf($alerts[$a]['config']['configSources']); $c++){
 					$name = $alerts[$a]['config']['configSources'][$c];
 					if(ArrayHelper::keyExists($name,$this->className, false)){

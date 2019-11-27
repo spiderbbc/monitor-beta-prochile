@@ -112,6 +112,11 @@ class StringHelper
         return $s->getString();
     }
 
+    public static function isEmpty($sentence){
+        $s = new Stringizer($sentence);
+        return $s->isEmpty(); // true;
+    }
+
 
     /**
      * Replace language-specific characters by ASCII-equivalents.

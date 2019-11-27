@@ -252,6 +252,7 @@ class InstagramSearch
         
         if(!\app\models\UsersMentions::find()->where( [ 'screen_name' => $username] )->exists()){
             $user_response = $this->_getUser($username);
+
             if(!is_null($user_response)){
                 if(!is_null($user_response['graphql'])){
 
@@ -264,7 +265,8 @@ class InstagramSearch
                     $id = $user_response['graphql']['user']['id'];
                     $permalink = "https://www.instagram.com/{$username}/";
                     $screen_name = $username;
-                    $name = ($name)? $name : $username;
+                    $name = (\app\helpers\StringHelper::isEmpty($name)) ? $username : $name;
+                    
                     $message = $user_response['graphql']['user']['biography'];
                     $origin = \app\helpers\MentionsHelper::saveUserMencions(
                         [
