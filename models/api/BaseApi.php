@@ -147,7 +147,17 @@ class BaseApi extends Model {
 	}
 
 	public function liveChatConversations($alerts = []){
-		echo "liveChatConversations". "\n";
+		echo "liveChat Conversation". "\n";
+		$LiveChatApi = new \app\models\api\LiveChatsApi();
+
+		foreach ($alerts as $alert){
+			$query_params = $LiveChatApi->prepare($alert);
+
+			if($query_params){
+				$chats = $LiveChatApi->call($query_params);
+				$LiveChatApi->saveJsonFile($chats);
+			}
+		}
 	}
 
 	public function webpage($alerts = []){
@@ -274,6 +284,10 @@ class BaseApi extends Model {
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat');
 		}
 
+	}
+
+	public function readDataLiveChatConversationsApi($alertId,$data){
+		echo "calling readDataLiveChatConversationsApi \n";
 	}
 
 	

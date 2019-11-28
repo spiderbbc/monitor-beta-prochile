@@ -196,21 +196,6 @@ class Alerts extends \yii\db\ActiveRecord
     }
    
 
-    /**
-     * return  dictionaries name [form] depred in form alert
-     * @return array
-     */
-    /*public function getKeywordsIds(){
-        $keywords = $this->keywords;
-        $dictionaryIds = [];
-        foreach ($keywords as $keyword){
-          if(!in_array($keyword->dictionary->name,$dictionaryIds)){
-            $dictionaryIds[$keyword->dictionary->name] = $keyword->dictionary->name;
-          }
-        }
-        return $dictionaryIds;
-    }*/
-
 
     /**
      * return  dictionaries name [form]

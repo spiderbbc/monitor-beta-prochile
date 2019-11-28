@@ -174,16 +174,24 @@ class FacebookMessagesApi extends Model {
 
 					if(isset($data['data'][0]['messages']['data'][0]['created_time'])){
 						
+						$date_comment = $data['data'][0]['messages']['data'][0]['created_time'];
+						$end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'+1 day'));
 
-						$responseData[$index] = $data;
-						$index++;
 
-						$date_comment_unix = strtotime($data['data'][0]['messages']['data'][0]['created_time']);
+						$date_comment_unix = strtotime($date_comment);
 
 						if(\app\helpers\FacebookHelper::isPublicationNew($this->start_date,$date_comment_unix)){
 							$between = true;
 						}else{
 							$between = false;
+						}
+
+						if(\app\helpers\DateHelper::isBetweenDate($date_comment,$this->start_date,$end_date)){
+							$responseData[$index] = $data;
+							$index++;
+						
+						}else{
+							continue;
 						}
 
 
