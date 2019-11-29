@@ -278,7 +278,6 @@ class BaseApi extends Model {
 		$params = [$alertId,$data];
 
 		$searchLiveApi->load($params);
-		var_dump($searchLiveApi->search());
 		if($searchLiveApi->search()){
 			echo "moved file";
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat');
@@ -288,6 +287,17 @@ class BaseApi extends Model {
 
 	public function readDataLiveChatConversationsApi($alertId,$data){
 		echo "calling readDataLiveChatConversationsApi \n";
+		$searchLiveApi = new \app\models\search\LiveChatSearch();
+		$params = [$alertId,$data];
+
+		$searchLiveApi->load($params);
+
+		$searchLiveApi->search();
+
+		/*if($searchLiveApi->search()){
+			echo "moved file";
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat');
+		}*/
 	}
 
 	

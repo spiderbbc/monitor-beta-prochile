@@ -113,9 +113,11 @@ class FacebookMessagesApi extends Model {
 	 */
 	private function _getDataApi($query_params){
 
-		echo "in messages". "\n";
+		 
 		$messages = $this->_getMessages($query_params);
-		echo "out messages". "\n";
+		
+
+		
 		// if there post
 		if(count($messages)){
 			$filter_messages = $this->_filterFeedsbyProducts($messages);
@@ -144,6 +146,8 @@ class FacebookMessagesApi extends Model {
 			do{
 				
 				try{
+
+
 					// lets loop if next in post or comments and there limit facebook
 					$messagesResponse = $client->get($query_params['query'],[
 						'after' => $after,
@@ -187,11 +191,9 @@ class FacebookMessagesApi extends Model {
 						}
 
 						if(\app\helpers\DateHelper::isBetweenDate($date_comment,$this->start_date,$end_date)){
+							
 							$responseData[$index] = $data;
 							$index++;
-						
-						}else{
-							continue;
 						}
 
 
@@ -216,7 +218,6 @@ class FacebookMessagesApi extends Model {
 
 			}while($is_next && $between);
 
-			
 			return $responseData ;
 
 		}
@@ -282,6 +283,7 @@ class FacebookMessagesApi extends Model {
 				} // end for products
 			}// end for data
 		}// end for messages
+
 		return $data;
 
 	}

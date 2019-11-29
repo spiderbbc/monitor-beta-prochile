@@ -234,9 +234,9 @@ class LiveChatsApi extends Model {
 						if(property_exists($chats[$c],'messages')){
 							$chat = $this->_exclude($chats[$c]);
 							for($m = 0 ; $m < sizeof($chat->messages); $m++){
-								if(property_exists($chat->messages[$m],'message')){
-									$chat->messages[$m]->message = \app\helpers\StringHelper::collapseWhitespace($chat->messages[$m]->message);
-									$chat->messages[$m]->message_markup = $chat->messages[$m]->message;
+								if(property_exists($chat->messages[$m],'text')){
+									$chat->messages[$m]->text = \app\helpers\StringHelper::collapseWhitespace($chat->messages[$m]->text);
+									$chat->messages[$m]->message_markup = $chat->messages[$m]->text;
 								}// end if property_exists
 							}
 
@@ -320,7 +320,7 @@ class LiveChatsApi extends Model {
 		$resourcesId = (new \yii\db\Query())
 		    ->select('id')
 		    ->from('resources')
-		    ->where(['name' => 'Live Chat','resourcesId' => $socialId['id']])
+		    ->where(['name' => 'Live Chat Conversations','resourcesId' => $socialId['id']])
 		    ->all();
 		
 

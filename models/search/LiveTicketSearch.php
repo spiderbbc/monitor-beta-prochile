@@ -230,7 +230,6 @@ class LiveTicketSearch {
             $model->message_markup  = $message_markup;
             $model->url             = $url;
             $model->domain_url      = $domain_url;
-            $model->domain_url      = $domain_url;
             $model->location        = $location;
             $model->social_id       = null;
             
