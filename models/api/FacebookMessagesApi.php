@@ -356,7 +356,7 @@ class FacebookMessagesApi extends Model {
 	private function _messageSimpleQuery(){
 		$bussinessId = Yii::$app->params['facebook']['business_id'];
 		
-		$message_query = "{$bussinessId}/conversations?fields=link,message_count,name,messages{message,from,created_time}&limit={$this->_limit_message}";
+		$message_query = "{$bussinessId}/conversations?fields=link,message_count,name,updated_time,messages{message,from,created_time,updated_time}&limit={$this->_limit_message}";
 
 		return $message_query;
 	}
@@ -402,7 +402,7 @@ class FacebookMessagesApi extends Model {
 	public function saveJsonFile(){
 		$source = 'Facebook Messages';
 		
-		if(!is_null($this->data)){
+		/*if(!is_null($this->data)){
 			foreach ($this->data as $data){
 				foreach($data as $product => $feeds){
 					foreach($feeds as $feed){
@@ -417,6 +417,18 @@ class FacebookMessagesApi extends Model {
 			}
 		}
 
+*/
+		/*var_dump($this->data);
+		die();*/
+		if(!is_null($this->data)){
+			foreach ($this->data as $data){
+				foreach($data as $product => $feed){
+					$jsonfile = new JsonFile($this->alertId,$source);
+					$jsonfile->load($data);
+				}
+				$jsonfile->save();
+			}
+		}
 	}
 
 	/**
