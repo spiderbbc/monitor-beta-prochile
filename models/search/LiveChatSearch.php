@@ -124,14 +124,14 @@ class LiveChatSearch {
                                         $wordsId = $chats[$c]['messages'][$m]['wordsId'];
                                         $this->saveKeywordsMentions($wordsId,$mention->id);
                                     }
-                                }// end if errors
+                                }else{$error['mention'] = $mention->errors; }// end if errors
                             } // end if isEmpty
                         }// end loop messages
                     }// end fi keyExists messages
                 }// end for chats
-            }//end if is null
+            }else{ $error['alertsMencion'] = $alertsMencionsModel->errors; }//end if is null
     	}// end foreach data
-
+        return (empty($error)) ? true : false;
     }
 
     /**

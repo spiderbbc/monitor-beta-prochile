@@ -113,7 +113,7 @@ use mludvik\tagsinput\TagsInputWidget
                             ],
                             'pluginOptions' => [
                                 'allowClear' => true,
-                                'tags' => true,
+                                'tags' => false,
                             ],
                             'pluginEvents' => [
                                "select2:select" => "function(e) { 

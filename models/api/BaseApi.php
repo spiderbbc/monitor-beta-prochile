@@ -294,10 +294,10 @@ class BaseApi extends Model {
 
 		$searchLiveApi->search();
 
-		/*if($searchLiveApi->search()){
+		if($searchLiveApi->search()){
 			echo "moved file";
-			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat');
-		}*/
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat Conversations');
+		}
 	}
 
 	
