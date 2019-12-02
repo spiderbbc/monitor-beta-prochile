@@ -33,6 +33,7 @@ class BaseApi extends Model {
 		'Live Chat'               => 'liveChat',
 		'Live Chat Conversations' => 'liveChatConversations',
 		'Web page'                => 'webpage',
+		'Excel Document'          => 'excelDocument',
 	];
 
 
@@ -272,32 +273,19 @@ class BaseApi extends Model {
 		
 	}
 
-	public function readDataLiveChatApi($alertId,$data){
-		echo "calling readDataLiveChatApi \n";
-		$searchLiveApi = new \app\models\search\LiveTicketSearch();
+	public function readDataExcelDocumentApi($alertId,$data){
+		echo "calling readDataExcelDocumentApi \n";
+		$searchExcel = new \app\models\search\ExcelSearch();
 		$params = [$alertId,$data];
 
-		$searchLiveApi->load($params);
-		if($searchLiveApi->search()){
+		$searchExcel->load($params);
+
+		if($searchExcel->search()){
 			echo "moved file";
-			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat');
+			//\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Excel Document');
+
 		}
 
-	}
-
-	public function readDataLiveChatConversationsApi($alertId,$data){
-		echo "calling readDataLiveChatConversationsApi \n";
-		$searchLiveApi = new \app\models\search\LiveChatSearch();
-		$params = [$alertId,$data];
-
-		$searchLiveApi->load($params);
-
-		$searchLiveApi->search();
-
-		if($searchLiveApi->search()){
-			echo "moved file";
-			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat Conversations');
-		}
 	}
 
 	

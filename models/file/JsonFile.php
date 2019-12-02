@@ -64,8 +64,10 @@ class JsonFile {
 	 */
 	public function save(){
 		if(!empty($this->_data)){
-			$fileName = time();
-			$file = $this->filebase->get($fileName);
+			if(!$this->fileName){
+				$this->fileName = time();
+			}
+			$file = $this->filebase->get($this->fileName);
 			foreach ($this->_data as $key => $value) {
 	            $file->$key = $value;
 	        }

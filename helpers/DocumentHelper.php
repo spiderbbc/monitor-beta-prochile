@@ -20,6 +20,12 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
  */
 class DocumentHelper
 {
+    public static function isDocumentExist($alertId,$resource){
+        $jsonfile = new JsonFile($alertId,$resource);
+        return $jsonfile->isDocumentExist();
+
+    }
+
 	public static function moveFilesToProcessed($alertId,$resource){
 
         $s = DIRECTORY_SEPARATOR;
@@ -74,6 +80,7 @@ class DocumentHelper
 		if(!empty($data)){
 			// call jsonfile
 			$jsonfile = new JsonFile($alertId,$resourcesName);
+            $jsonfile->fileName = $alertId;
 			$jsonfile->load($data);
 			$jsonfile->save();
 		}

@@ -81,6 +81,17 @@ class StringHelper
         return $s->getString();
     }
 
+    public static function removeNonAscii($sentence){
+        $s = new Stringizer($sentence);
+        $s->removeNonAscii(); 
+        return $s->getString();
+    }
+
+    public static function isAscii($sentence){
+        $s = new Stringizer($sentence);
+        return $s->isAscii();
+    }
+
     public static function replaceAccents($sentence){
         $s = new Stringizer($sentence);
         $s->replaceAccents(); 
