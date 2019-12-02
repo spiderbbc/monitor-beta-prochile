@@ -25,6 +25,7 @@ class ExcelSearch {
         if(empty($params)){
            return false;     
         }
+
         $this->alertId = ArrayHelper::getValue($params, 0);
         $this->isDictionaries = $this->_isDictionaries();
         $this->products = $this->getProducts();
@@ -40,8 +41,13 @@ class ExcelSearch {
                 foreach($params[$p] as $data => $paginations){
                 	foreach ($paginations as $pagination => $values){
                 		for($v = 0; $v < sizeof($values); $v++){
-                			$values[$v]['message_markup'] = $values[$v]['Post Snippet'];
-                			$this->data[] = $values[$v];
+                            if(!is_null($values[$v]['Post Snippet'])){
+                                $message_markup =  \app\helpers\StringHelper::removeNonAscii($values[$v]['Post Snippet']);
+                                $values[$v]['message_markup'] = \app\helpers\StringHelper::replaceAccents($message_markup);
+                                $this->data[] = $values[$v];
+
+                            }
+                			
                 		}
                 	}
                 }
@@ -54,6 +60,9 @@ class ExcelSearch {
         
         return true;
     }
+
+
+
     /**
      * search products in the data
      */
@@ -70,53 +79,53 @@ class ExcelSearch {
     			if($data_count){
 
     				if(!is_null($title)){
-    				$is_contains = (count($product_data) > 3) ? \app\helpers\StringHelper::containsAny($title,$product_data) : \app\helpers\StringHelper::containsAll($title,$product_data);
+        				$is_contains = (count($product_data) > 3) ? \app\helpers\StringHelper::containsAny($title,$product_data) : \app\helpers\StringHelper::containsAll($title,$product_data);
 
-    				if($is_contains){
-    					// if a not key
-						if(!ArrayHelper::keyExists($this->products[$p], $data, false)){
-							$data[$this->products[$p]] = [] ;
+        				if($is_contains){
+        					// if a not key
+    						if(!ArrayHelper::keyExists($this->products[$p], $data, false)){
+    							$data[$this->products[$p]] = [] ;
 
-						}
-						// if a not in array
-						if(!in_array($this->data[$d],$data[$this->products[$p]])){
-							$data[$this->products[$p]][] = $this->data[$d];
-							$data_count --;
-							break;
+    						}
+    						// if a not in array
+    						if(!in_array($this->data[$d],$data[$this->products[$p]])){
+    							$data[$this->products[$p]][] = $this->data[$d];
+    							$data_count --;
+    							break;
 
-						}
+    						}
 
-    				}
+        				}
 
-    			}
+    			     }
 
-    			if(!is_null($message_markup)){
-    				$is_contains = (count($product_data) > 3) ? \app\helpers\StringHelper::containsAny($message_markup,$product_data) : \app\helpers\StringHelper::containsAll($message_markup,$product_data);
 
-    				if($is_contains){
-    					// if a not key
-						if(!ArrayHelper::keyExists($this->products[$p], $data, false)){
-							$data[$this->products[$p]] = [] ;
+        			if(!is_null($message_markup)){
+        				$is_contains = (count($product_data) > 3) ? \app\helpers\StringHelper::containsAny($message_markup,$product_data) : \app\helpers\StringHelper::containsAll($message_markup,$product_data);
 
-						}
-						// if a not in array
-						if(!in_array($this->data[$d],$data[$this->products[$p]])){
-							$data[$this->products[$p]][] = $this->data[$d];
-							$data_count --;
-							break;
+        				if($is_contains){
+        					// if a not key
+    						if(!ArrayHelper::keyExists($this->products[$p], $data, false)){
+    							$data[$this->products[$p]] = [] ;
 
-						}
+    						}
+    						// if a not in array
+    						if(!in_array($this->data[$d],$data[$this->products[$p]])){
+    							$data[$this->products[$p]][] = $this->data[$d];
+    							$data_count --;
+    							break;
 
-    				}
+    						}
 
-    			}
+        				}
 
-    		}
+        			}
 
+    		    }
 
     		}// end loop products
     	}// end loop data
-
+        
     	$this->data = $data;
 
     }
@@ -156,10 +165,10 @@ class ExcelSearch {
     private function saveProductsMentionsAlerts(){
     	$products = array_keys($this->data);
     	$where = [
-    		'alertId' => $this->alertId,
-    		'resourcesId'  => $this->resourcesId,
-    		'condition'    =>  'ACTIVE',
-    		'type'         =>  'document',
+            'alertId'     => $this->alertId,
+            'resourcesId' => $this->resourcesId,
+            'condition'   =>  'ACTIVE',
+            'type'        =>  'document',
 
     	];
 
@@ -178,6 +187,7 @@ class ExcelSearch {
     		}
 
     	}
+
     }
 
     /**
@@ -210,7 +220,7 @@ class ExcelSearch {
             echo "only dictionaries \n";
             $mentions = $this->data;
             $data = $this->searchDataByDictionary($mentions);
-            //$search = $this->saveMentions($data);
+            $search = $this->saveMentions($data);
             //return $search;
         }
 
@@ -223,11 +233,15 @@ class ExcelSearch {
 
     }
 
-
+    /**
+     * [searchDataByDictionary search looking by dictionaries]
+     * @param  [type] $mentions [description]
+     * @return [type]           [description]
+     */
     private function searchDataByDictionary($mentions){
     	
     	$words = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->select(['name','id'])->asArray()->all();
-
+         
     	foreach ($mentions as $product => $mention){
     		for($m =  0; $m < sizeof($mention); $m++){
     			if(!is_null($mention[$m]['message_markup'])){
@@ -248,15 +262,145 @@ class ExcelSearch {
                     }else{
                         unset($mentions[$product][$m]);
                     }
+                    array_values($mentions[$product]);
     			}// end if is_null
 
     		}// end loop mention 
     	}// end foreach mentions
 
-    	/*var_dump($mentions);
-    	die();*/
+    	return $mentions;
     }
 
+    /**
+     * [saveMentions save mentions or update in the database]
+     * @param  [type] $mentions [description]
+     * @return [type]           [description]
+     */
+    private function saveMentions($mentions){
+
+        foreach($mentions as $product => $data){
+            $alertsMencions = $this->_findAlertsMencions($product);
+            if(!is_null($alertsMencions)){
+                foreach ($data as  $mention){
+                    $user = $this->_saveUserMencions($mention);
+                    if(!$user->errors){
+                        $mention_model = $this->_saveMentions($mention,$alertsMencions->id,$user->id);
+                        if(!$mention_model->errors){
+                            if(ArrayHelper::keyExists('wordsId', $mention, false)){
+                                $wordIds = $mention['wordsId'];
+                                // save Keywords Mentions 
+                                $this->saveKeywordsMentions($wordIds,$mention_model->id);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Finds the AlertsMencions model based on product key value.
+     * @param string $product
+     * @return AlertsMencions the loaded model
+     */
+    private function _findAlertsMencions($product)
+    {
+
+        $alertsMencions =  \app\models\AlertsMencions::find()->where([
+            'alertId'        => $this->alertId,
+            'resourcesId'    =>  $this->resourcesId,
+            'condition'      =>  'ACTIVE',
+            'type'           =>  'document',
+            'term_searched'  =>  $product,
+        ])
+        ->select('id')->one();
+
+        return $alertsMencions;
+
+    }
+
+    /**
+     * [saveUserMencions save user ]
+     * @return [type] [description]
+     */
+    private function _saveUserMencions($mention){
+
+        $origin = \app\helpers\MentionsHelper::saveUserMencions(
+            [
+                'screen_name' => $mention['Author Username'],
+                'name'        => $mention['Author Name'],
+
+            ],
+            [
+                'screen_name' => $mention['Author Username'],
+                'name'        => $mention['Author Name'],
+            ]
+        );
+
+        return $origin;
+
+
+    }
+    /**
+     * [_saveMentions save mention in db]
+     * @param  [type] $mention  [description]
+     * @param  [type] $alertId  [description]
+     * @param  [type] $originId [description]
+     * @return [type]           [description]
+     */
+    private function _saveMentions($mention,$alertId,$originId){
+
+        $mention_data['plataforma'] = $mention['Plataforma'];
+        $mention_data['source']     = $mention['Source'];
+        $mention_data['sentiment']  = $mention['Sentiment'];
+
+        $mention_date   = \app\helpers\DateHelper::asTimestamp($mention['Mention Date']);
+        $url            = $mention['Mention URL'];
+        $message        = $mention['Post Snippet'];
+        $message_markup = $mention['message_markup'];
+
+        $mention = \app\helpers\MentionsHelper::saveMencions(
+            [
+                'alert_mentionId' => $alertId,
+                'origin_id'       => $originId, // url is unique
+                'created_time'    => $mention_date,
+            ],
+            [
+                'created_time'   => $mention_date,
+                'mention_data'   => $mention_data,
+                'message'        => $message,
+                'message_markup' => $message_markup,
+                'url'            => $url,
+                'domain_url'     => $url,
+            ]
+        );
+
+        return $mention;
+
+    }
+
+    /**
+     * [saveKeywordsMentions save or update  KeywordsMentions]
+     * @param  [array] $wordIds   [array wordId => total count in the sentece ]
+     * @param  [int] $mentionId   [id mention]
+     */
+    private function saveKeywordsMentions($wordIds,$mentionId){
+
+        if(\app\models\KeywordsMentions::find()->where(['mentionId'=> $mentionId])->exists()){
+            \app\models\KeywordsMentions::deleteAll('mentionId = '.$mentionId);
+        }
+
+        foreach($wordIds as $idwords => $count){
+            for($c = 0; $c < $count; $c++){
+                $model = new \app\models\KeywordsMentions();
+                $model->keywordId = $idwords;
+                $model->mentionId = $mentionId;
+                $model->save();
+            }
+        }
+
+    }
     /**
      * [_isDictionaries is the alert hace dictionaries]
      * @return boolean [description]
