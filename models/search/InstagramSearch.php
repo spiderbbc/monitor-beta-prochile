@@ -121,11 +121,13 @@ class InstagramSearch
             foreach($data as $product => $posts){
                 for($p=0; $p < sizeof($posts); $p++){
                     $alertsMencionsModel = $this->_findAlertsMencions($product,$posts[$p]['id']);
+                    $permalink = $posts[$p]['permalink'];
                     
                     if(!is_null($alertsMencionsModel) && !empty($posts[$p]['comments'])){
                        for($c = 0; $c <  sizeof($posts[$p]['comments']); $c++){
                             $user = $this->saveUserMencions($posts[$p]['comments'][$c]['username']);
                             if(empty($user->errors)){
+                                $posts[$p]['comments'][$c]['permalink'] = $permalink;
                                 $mention = $this->saveMencions($posts[$p]['comments'][$c],$alertsMencionsModel->id,$user->id);
                                 if($this->isDictionaries && ArrayHelper::keyExists('wordsId', $posts[$p]['comments'][$c], false)){
                                     $wordIds = $posts[$p]['comments'][$c]['wordsId'];
@@ -137,6 +139,7 @@ class InstagramSearch
                                         $replies = $data[$product][$p]['comments'][$c]['replies']['data'];
                                         for($r = 0; $r < sizeof($replies); $r++ ){
                                             $user_replies = $this->saveUserMencions($replies[$r]['username']);
+                                            $posts[$p]['comments'][$c]['permalink'] = $permalink;
                                             $replies_mention = $this->saveMencions($replies[$r],$alertsMencionsModel['id'],$user_replies->id);
                                             if($this->isDictionaries && ArrayHelper::keyExists('wordsId', $replies[$r], false)){
                                                 $wordIds = $replies[$r]['wordsId'];
@@ -304,15 +307,14 @@ class InstagramSearch
      */
     private function saveMencions($comment,$alertsMencionsId,$originId){
 
-        //$url          = (!empty($comment['url'])) ? $comment['url']['url'] : '-';
+        $url          = (!empty($comment['permalink'])) ? $comment['permalink']: '-';
+        $domain_url   = (!empty($url)) ? \app\helpers\StringHelper::getDomain($url): '-';
         $social_id    = $comment['id'];
         $created_time = \app\helpers\DateHelper::asTimestamp($comment['timestamp']);
         $message      = $comment['text'];
-        //$location     = \app\helpers\StringHelper::remove_emoji($comment['user']['location']);
         $message_markup = $comment['message_markup'];
 
         $mention_data['like_count'] = $comment['like_count'];
-        //$mention_data['favorite_count'] = $comment['favorite_count'];
 
         $mention = \app\helpers\MentionsHelper::saveMencions(
             [
@@ -326,9 +328,9 @@ class InstagramSearch
                 'subject'        => '',
                 'message'        => $message,
                 'message_markup' => $message_markup,
-                /*'url'            => $url ,
-                'domain_url'     => $url ,
-                'location'       => '-' ,*/
+                'url'            => $url ,
+                'domain_url'     => $domain_url ,
+                'location'       => '-' ,
                 
             ]
         );
