@@ -119,6 +119,7 @@ class LiveTicketSearch {
                             if(ArrayHelper::keyExists('message', $tickets[$t]['events'][$w], false)){
                                 if($tickets[$t]['events'][$w]['author']['type'] == 'client'){
                                     $tickets[$t]['events'][$w]['author']['ip'] = $requesterIp;
+                                    $tickets[$t]['events'][$w]['author']['geolocation'] = $geolocation;
                                 } // if client insert his ip
                                 $user = $this->saveUserMencions($tickets[$t]['events'][$w]['author']);
                                 
@@ -129,7 +130,7 @@ class LiveTicketSearch {
                                     $tickets[$t]['events'][$w]['rate']        = $tickets[$t]['rate'];
                                     $tickets[$t]['events'][$w]['status']      = $tickets[$t]['status'];
                                     $tickets[$t]['events'][$w]['subject']     = $tickets[$t]['subject'];
-                                    $tickets[$t]['events'][$w]['geolocation'] = $geolocation;
+                                   // $tickets[$t]['events'][$w]['geolocation'] = $geolocation;
 
                                     $mention = $this->saveMentions($tickets[$t]['events'][$w],$alertsMencionsModel->id,$user);
 
@@ -157,27 +158,35 @@ class LiveTicketSearch {
      * @return [model]         [model instance table user_mentions]
      */
     private function saveUserMencions($author){
+
         $where = [
            // 'name' => $author['name'],
             'screen_name' => $author['id']
         ];
 
         $user_data['type'] = $author['type'];
+        
+        if(isset($author['geolocation'])){
+            $user_data['geo']    = $author['geolocation'];
+        }        
         if(isset($author['ip'])){
             $user_data['ip'] = $author['ip'];
         }
 
-        $isUserExists = \app\models\UsersMentions::find()->where($where)->exists();
+        
 
-        if($isUserExists){
-            $model = \app\models\UsersMentions::find()->where($where)->one();
-        }else{
-            $model = new \app\models\UsersMentions();
-            $model->name = $author['name'];
-            $model->screen_name = $author['id'];
-            $model->user_data = $user_data;
-            $model->save(); 
-        }
+        $model = \app\helpers\MentionsHelper::saveUserMencions(
+            [
+                'screen_name' => $author['id'],
+
+            ],
+            [
+                'screen_name' => $author['id'],
+                'name'        => $author['name'],
+                'user_data'   => $user_data,
+            ]
+        );
+
 
         return $model;
     }
@@ -194,14 +203,14 @@ class LiveTicketSearch {
         $mention_data = [];
         $mention_data['id']     = $mention['id'];
         $mention_data['status'] = $mention['status'];
-        $mention_data['geo']    = ($user->user_data['type'] == 'client') ? $mention['geolocation']: null;
+        //$mention_data['geo']    = ($user->user_data['type'] == 'client') ? $mention['geolocation']: null;
         $mention_data['source'] = $mention['source']['type'];
 
         $subject        = $mention['subject'];
         $message        = $mention['message'];
         $message_markup = $mention['message_markup'];
         $url            = ($user->user_data['type'] == 'client') ? $mention['source']['url'] : null;
-        $location       = ($user->user_data['type'] == 'client') ? $mention['geolocation']['regionName'] : null;
+      //  $location       = ($user->user_data['type'] == 'client') ? $mention['geolocation']['regionName'] : null;
         $domain_url     = ($user->user_data['type'] == 'client') ? \app\helpers\StringHelper::getDomain($mention['source']['url']) : null;
 
 
@@ -230,7 +239,7 @@ class LiveTicketSearch {
             $model->message_markup  = $message_markup;
             $model->url             = $url;
             $model->domain_url      = $domain_url;
-            $model->location        = $location;
+         //   $model->location        = $location;
             $model->social_id       = null;
             
             $model->save();
