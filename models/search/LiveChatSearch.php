@@ -82,7 +82,7 @@ class LiveChatSearch {
             $data = $this->data;
             $filter_data = $this->searchDataByDictionary($data);
             $search = $this->saveChats($filter_data);
-            //return $search;
+            return $search;
             
         }
 
