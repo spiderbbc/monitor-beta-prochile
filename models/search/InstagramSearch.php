@@ -307,8 +307,8 @@ class InstagramSearch
      */
     private function saveMencions($comment,$alertsMencionsId,$originId){
 
-        $url          = (!empty($comment['permalink'])) ? $comment['permalink']: '-';
-        $domain_url   = (!empty($url)) ? \app\helpers\StringHelper::getDomain($url): '-';
+        $url          = (!empty($comment['permalink'])) ? $comment['permalink']: null;
+        $domain_url   = (!is_null($url)) ? \app\helpers\StringHelper::getDomain($url): null;
         $social_id    = $comment['id'];
         $created_time = \app\helpers\DateHelper::asTimestamp($comment['timestamp']);
         $message      = $comment['text'];

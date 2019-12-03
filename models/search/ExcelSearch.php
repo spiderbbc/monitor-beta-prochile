@@ -203,7 +203,7 @@ class ExcelSearch {
              echo "no dictionaries .. \n";
             // save all data
             $mentions = $this->data;
-            //$search = $this->saveMentions($mentions);
+            $search = $this->saveMentions($mentions);
             return $search;
         }
 
@@ -356,7 +356,8 @@ class ExcelSearch {
         $mention_data['sentiment']  = $mention['Sentiment'];
 
         $mention_date   = \app\helpers\DateHelper::asTimestamp($mention['Mention Date']);
-        $url            = $mention['Mention URL'];
+        $url            = (!empty($mention['Mention URL'])) ? $mention['Mention URL']: null;
+        $domain_url     = (!is_null($url)) ? \app\helpers\StringHelper::getDomain($url): null;
         $message        = $mention['Post Snippet'];
         $message_markup = $mention['message_markup'];
 
@@ -372,7 +373,7 @@ class ExcelSearch {
                 'message'        => $message,
                 'message_markup' => $message_markup,
                 'url'            => $url,
-                'domain_url'     => $url,
+                'domain_url'     => $domain_url,
             ]
         );
 
