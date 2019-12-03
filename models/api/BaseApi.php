@@ -288,6 +288,32 @@ class BaseApi extends Model {
 
 	}
 
+	public function readDataLiveChatApi($alertId,$data){ 
+		echo "calling readDataLiveChatApi \n"; 
+		$searchLiveApi = new \app\models\search\LiveTicketSearch(); 
+		$params = [$alertId,$data]; 
+ 
+		$searchLiveApi->load($params); 
+		if($searchLiveApi->search()){ 
+			echo "moved file"; 
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat'); 
+		} 
+ 
+	} 
+
+	public function readDataliveChatConversationsApi($alertId,$data){ 
+		echo "calling readDataLiveChatApi \n"; 
+		$searchLiveChatApi = new \app\models\search\LiveChatSearch(); 
+		$params = [$alertId,$data]; 
+ 
+		$searchLiveChatApi->load($params); 
+		if($searchLiveChatApi->search()){ 
+			echo "moved file"; 
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat Conversations'); 
+		} 
+ 
+	} 
+
 	
 }
 

@@ -135,7 +135,7 @@ class TwitterSearch
                             $error['oringin'] = $origin->errors;
                             
                         }
-                       
+
                         if(empty($mention->errors)){
                             // if words find it
                             if(ArrayHelper::keyExists('wordsId', $tweets[$t], false)){
@@ -232,9 +232,10 @@ class TwitterSearch
      */
     private function saveUserMencions($user){
 
+
         $user_data['followers_count'] = $user['followers_count'];
         $user_data['friends_count'] = $user['friends_count'];
-        $author = \app\helpers\StringHelper::remove_emoji($user['author_name']);
+        $author = (!empty($user['author_name'])) ? \app\helpers\StringHelper::remove_emoji($user['author_name']): $user['author_username'] ;
         $origin = \app\helpers\MentionsHelper::saveUserMencions(
             [
                 'user_uuid' => $user['user_id']
