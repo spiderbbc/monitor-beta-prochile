@@ -131,12 +131,7 @@ class TwitterSearch
                             // save mentions 
                             $mention = $this->saveMencions($tweets[$t],$alertsMencions->id,$origin->id);
 
-                        }else{ 
-                            $error['oringin'] = $origin->errors;
-                            
-                        }
-
-                        if(empty($mention->errors)){
+                            if(empty($mention->errors)){
                             // if words find it
                             if(ArrayHelper::keyExists('wordsId', $tweets[$t], false)){
                                 $wordIds = $tweets[$t]['wordsId'];
@@ -155,7 +150,11 @@ class TwitterSearch
                             $error['mentions'] = $mention->errors;
                             $origin->delete();
                         }
-                       
+
+                        }else{ 
+                            $error['oringin'] = $origin->errors;
+                            
+                        }
                     }
                 }
             }
