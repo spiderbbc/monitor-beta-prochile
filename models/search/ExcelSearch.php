@@ -221,7 +221,7 @@ class ExcelSearch {
             $mentions = $this->data;
             $data = $this->searchDataByDictionary($mentions);
             $search = $this->saveMentions($data);
-            //return $search;
+            return $search;
         }
 
         // if  !dictionaries and  boolean
@@ -277,25 +277,28 @@ class ExcelSearch {
      * @return [type]           [description]
      */
     private function saveMentions($mentions){
-
+        $error = [];
         foreach($mentions as $product => $data){
             $alertsMencions = $this->_findAlertsMencions($product);
             if(!is_null($alertsMencions)){
                 foreach ($data as  $mention){
-                    $user = $this->_saveUserMencions($mention);
-                    if(!$user->errors){
-                        $mention_model = $this->_saveMentions($mention,$alertsMencions->id,$user->id);
-                        if(!$mention_model->errors){
-                            if(ArrayHelper::keyExists('wordsId', $mention, false)){
-                                $wordIds = $mention['wordsId'];
-                                // save Keywords Mentions 
-                                $this->saveKeywordsMentions($wordIds,$mention_model->id);
-                            }
-                        }
+                    if(!empty($mention['Author Username'])){
+                        $user = $this->_saveUserMencions($mention);
+                        if(!$user->errors){
+                            $mention_model = $this->_saveMentions($mention,$alertsMencions->id,$user->id);
+                            if(!$mention_model->errors){
+                                if(ArrayHelper::keyExists('wordsId', $mention, false)){
+                                    $wordIds = $mention['wordsId'];
+                                    // save Keywords Mentions 
+                                    $this->saveKeywordsMentions($wordIds,$mention_model->id);
+                                }
+                            }else{ $error['mention'] =  $mention_model->errors; }
+                        }else{ $error['user'] =  $user->errors; }
                     }
                 }
             }
         }
+        return (empty($error)) ? true : false;
 
     }
 

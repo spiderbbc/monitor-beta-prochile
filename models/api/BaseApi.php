@@ -161,6 +161,10 @@ class BaseApi extends Model {
 		}
 	}
 
+	public function excelDocument($alerts = []){
+		echo "excelDocument". "\n";
+	}
+
 	public function webpage($alerts = []){
 		echo "webpage". "\n";
 	}
@@ -282,7 +286,7 @@ class BaseApi extends Model {
 
 		if($searchExcel->search()){
 			echo "moved file";
-			//\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Excel Document');
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Excel Document');
 
 		}
 
