@@ -117,4 +117,12 @@ class Mentions extends \yii\db\ActiveRecord
     {
         return $this->hasOne(UsersMentions::className(), ['id' => 'origin_id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOriginArray()
+    {
+        return $this->hasOne(UsersMentions::className(), ['id' => 'origin_id'])->select(['name','screen_name'])->asArray();
+    }
 }

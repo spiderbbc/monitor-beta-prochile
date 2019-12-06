@@ -38,7 +38,8 @@
         "danielstjules/stringy": "~3.1.0",
         "jasonlam604/stringizer": "^2.14.0",
         "guzzlehttp/guzzle": "~6.0",
-        "livechat/api-client-php": "@dev"
+        "livechat/api-client-php": "@dev",
+        "npm-asset/vue": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

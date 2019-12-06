@@ -121,23 +121,25 @@ class FacebookSearch
                             if(!empty($posts[$p]['comments'])){
                                 $comments = $posts[$p]['comments'];
                                 foreach($comments as $index => $comment){
-                                    $mention = $this->saveComments($comment,$alertsMencionsModel->id,$origin->id);
+                                    if(!\app\helpers\StringHelper::isEmpty($comment['message'])){
+                                        $mention = $this->saveComments($comment,$alertsMencionsModel->id,$origin->id);
                                     
-                                    if(empty($mention->errors)){
-                                        if(ArrayHelper::keyExists('wordsId', $comment, false)){
-                                            $wordIds = $comment['wordsId'];
-                                            // save Keywords Mentions 
-                                            $this->saveKeywordsMentions($wordIds,$mention->id);
-                                        }else{
-                                           // in case update in alert
-                                            if(\app\models\KeywordsMentions::find()->where(['mentionId' => $mention->id])->exists()){
-                                                \app\models\KeywordsMentions::deleteAll('mentionId = '.$mention->id);
+                                        if(empty($mention->errors)){
+                                            if(ArrayHelper::keyExists('wordsId', $comment, false)){
+                                                $wordIds = $comment['wordsId'];
+                                                // save Keywords Mentions 
+                                                $this->saveKeywordsMentions($wordIds,$mention->id);
+                                            }else{
+                                               // in case update in alert
+                                                if(\app\models\KeywordsMentions::find()->where(['mentionId' => $mention->id])->exists()){
+                                                    \app\models\KeywordsMentions::deleteAll('mentionId = '.$mention->id);
+                                                }
                                             }
+                                        }else{ 
+                                            $error['mentions'] = $mention->errors;
+                                            $origin->delete();
                                         }
-                                    }else{ 
-                                        $error['mentions'] = $mention->errors;
-                                        $origin->delete();
-                                    }
+                                    }else{ continue; }
                                 }
                             }
                         }else{ 
@@ -243,6 +245,8 @@ class FacebookSearch
             ]
         );
 
+
+
         return $origin;
     }
 
@@ -273,6 +277,13 @@ class FacebookSearch
                 'domain_url' => $url,
             ]
         );
+
+        if($mention->errors){
+             var_dump($originId);
+             var_dump($comment);
+             var_dump($mention->errors);
+             die();
+        }
 
         return $mention;
         

@@ -124,42 +124,45 @@ class TwitterSearch
                 if(!is_null($alertsMencions)){
                     // loop over tweets
                     for($t = 0; $t < sizeof($tweets); $t++){
-                        // save user mentions                    
-                        $origin = $this->saveUserMencions($tweets[$t]['user']);
+                        if(!\app\helpers\StringHelper::isEmpty($tweets[$t]['message'])){
+                            // save user mentions                    
+                            $origin = $this->saveUserMencions($tweets[$t]['user']);
 
-                        if(!$origin->errors){
-                            // save mentions 
-                            $mention = $this->saveMencions($tweets[$t],$alertsMencions->id,$origin->id);
+                            if(!$origin->errors){
+                                // save mentions 
+                                $mention = $this->saveMencions($tweets[$t],$alertsMencions->id,$origin->id);
 
-                            if(empty($mention->errors)){
-                            // if words find it
-                            if(ArrayHelper::keyExists('wordsId', $tweets[$t], false)){
-                                $wordIds = $tweets[$t]['wordsId'];
-                                // save Keywords Mentions 
-                                $this->saveKeywordsMentions($wordIds,$mention->id);
-                                
-                            }else{
-                                // in case update in alert
-                                if(\app\models\KeywordsMentions::find()->where(['mentionId' => $mention->id])->exists()){
-                                    \app\models\KeywordsMentions::deleteAll('mentionId = '.$mention->id);
+                                if(empty($mention->errors)){
+                                    // if words find it
+                                    if(ArrayHelper::keyExists('wordsId', $tweets[$t], false)){
+                                        $wordIds = $tweets[$t]['wordsId'];
+                                        // save Keywords Mentions 
+                                        $this->saveKeywordsMentions($wordIds,$mention->id);
+                                        
+                                    }
+                                    else{
+                                        // in case update in alert
+                                        if(\app\models\KeywordsMentions::find()->where(['mentionId' => $mention->id])->exists()){
+                                            \app\models\KeywordsMentions::deleteAll('mentionId = '.$mention->id);
+                                        }
+                                            
+                                    }
+
+                                }else{ 
+                                    $error['mentions'] = $mention->errors;
+                                    $origin->delete();
                                 }
+
+                            }else{ 
+                                $error['oringin'] = $origin->errors;
                                 
                             }
-
-                        }else{ 
-                            $error['mentions'] = $mention->errors;
-                            $origin->delete();
-                        }
-
-                        }else{ 
-                            $error['oringin'] = $origin->errors;
-                            
                         }
                     }
                 }
             }
         }
-
+        
         return (empty($error)) ? true : false;
     }
 
@@ -234,7 +237,7 @@ class TwitterSearch
 
         $user_data['followers_count'] = $user['followers_count'];
         $user_data['friends_count'] = $user['friends_count'];
-        $author = (!empty($user['author_name'])) ? \app\helpers\StringHelper::remove_emoji($user['author_name']): $user['author_username'] ;
+        $author = (!\app\helpers\StringHelper::isEmpty($user['author_name'])) ? $user['author_name']: $user['author_username'] ;
         $origin = \app\helpers\MentionsHelper::saveUserMencions(
             [
                 'user_uuid' => $user['user_id']
@@ -262,9 +265,9 @@ class TwitterSearch
         $url          = (!empty($tweets['url'])) ? $tweets['url']['url'] : '-';
         $social_id    = $tweets['id'];
         $created_time = \app\helpers\DateHelper::asTimestamp($tweets['created_at']);
-        $message      = \app\helpers\StringHelper::remove_emoji($tweets['message']);
+        $message      = $tweets['message'];
         $location     = \app\helpers\StringHelper::remove_emoji($tweets['user']['location']);
-        $message_markup = \app\helpers\StringHelper::remove_emoji($tweets['message_markup']);
+        $message_markup = $tweets['message_markup'];
 
         $mention_data['retweet_count'] = $tweets['retweet_count'];
         $mention_data['favorite_count'] = $tweets['favorite_count'];
@@ -284,6 +287,7 @@ class TwitterSearch
             $model->alert_mentionId = $alertsMencionsId;
             if(!$model->save())
                 var_dump($model->errors);
+
         }else{
             $model = \app\models\Mentions::find()->where(['alert_mentionId' => $alertsMencionsId,'origin_id' => $originId,'social_id' => $social_id])->one();
         }

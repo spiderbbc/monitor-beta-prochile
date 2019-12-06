@@ -24,7 +24,7 @@ use yii\db\ActiveRecord;
  *
  * @property Alerts $alert
  * @property Resources $resources
- * @property MentionsPostfrom[] $mentionsPostfroms
+ * @property Mentions[] $mentions
  */
 class AlertsMencions extends \yii\db\ActiveRecord
 {
@@ -111,8 +111,16 @@ class AlertsMencions extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getMentionsPostfroms()
+    public function getMentions()
     {
-        return $this->hasMany(MentionsPostfrom::className(), ['alert_mentionId' => 'id']);
+        return $this->hasMany(Mentions::className(), ['alert_mentionId' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMentionsCount()
+    {
+        return $this->hasMany(Mentions::className(), ['alert_mentionId' => 'id'])->count();
     }
 }
