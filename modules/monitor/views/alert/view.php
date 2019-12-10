@@ -6,6 +6,8 @@ use macgyer\yii2materializecss\widgets\data\DetailView;
 
 \app\assets\AxiosAsset::register($this);
 \app\assets\VueAsset::register($this);
+\app\assets\DataTableAsset::register($this);
+\app\assets\JqcloudAsset::register($this);
 \app\assets\AppAsset::register($this);
 
 /* @var $this yii\web\View */
@@ -78,6 +80,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
             'config.end_date:datetime',
         ],
     ]) ?>
+    
 
     <div v-if="isData">
         <div class="row">
@@ -86,9 +89,9 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         <div class="row">
             <total-resources v-for="(value, resource) in resourcescount"  :resourcescount="resourcescount" :value="value" :resource="resource" :key="resource">
         </div>
-        <div class="row">
-            <list-mentions></list-mentions>
-        </div>
+
+        <list-mentions></list-mentions>
+        
     </div>
     <div v-else>
         loading Animation ....
@@ -119,6 +122,36 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 <!-- template que muestra todas las menciones -->
 <script type="text/x-template" id="list-mentions">
     <div>
-        <h1>Component Table Here</h1>
+        <h4>Menciones</h4>
+        <div class="row">
+            <div class="col-md-12">
+                <table id="list-mentions" class="table table-striped table-bordered" cellspacing="0"  style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Recurso</th>
+                            <th>Producto</th>
+                            <th>Fecha</th>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Titulo</th>
+                            <th>mensaje</th>
+                            <th>Url</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Recurso</th>
+                            <th>Producto</th>
+                            <th>Fecha</th>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Titulo</th>
+                            <th>mensaje</th>
+                            <th>Url</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </div>
 </script>

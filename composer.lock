@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3c67967ff098ca10f2e363e345d2865a",
+    "content-hash": "6042ed0fe11d1a022f7d3470a55cfc6e",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -119,6 +119,28 @@
             "license": [
                 "http://opensource.org/licenses/mit-license.php"
             ]
+        },
+        {
+            "name": "bower-asset/jqcloud2",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:mistic100/jQCloud.git",
+                "reference": "9b96818fa866c29998557efb9fcdc8566d3685b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mistic100/jQCloud/zipball/9b96818fa866c29998557efb9fcdc8566d3685b1",
+                "reference": "9b96818fa866c29998557efb9fcdc8566d3685b1"
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.9.0"
+            },
+            "type": "bower-asset",
+            "license": [
+                "MIT"
+            ],
+            "time": "2017-05-02T06:36:44+00:00"
         },
         {
             "name": "bower-asset/jquery",
@@ -2054,6 +2076,28 @@
             "time": "2019-11-26T19:09:42+00:00"
         },
         {
+            "name": "npm-asset/datatables",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:DataTables/DataTables.git",
+                "reference": "83657a29e33ce93ee940ce25684940eb3acb2913"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DataTables/DataTables/zipball/83657a29e33ce93ee940ce25684940eb3acb2913",
+                "reference": "83657a29e33ce93ee940ce25684940eb3acb2913"
+            },
+            "require": {
+                "npm-asset/jquery": ">=1.7"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ],
+            "time": "2019-10-01T13:42:32+00:00"
+        },
+        {
             "name": "npm-asset/debug",
             "version": "3.1.0",
             "dist": {
@@ -2077,6 +2121,18 @@
             },
             "require": {
                 "npm-asset/debug": "3.1.0"
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
+            "name": "npm-asset/jquery",
+            "version": "3.4.1",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/jquery/-/jquery-3.4.1.tgz"
             },
             "type": "npm-asset",
             "license": [
@@ -6308,7 +6364,9 @@
         "kartik-v/yii2-widget-datepicker": 20,
         "livechat/api-client-php": 20,
         "npm-asset/vue": 20,
-        "npm-asset/axios": 20
+        "npm-asset/axios": 20,
+        "npm-asset/datatables": 20,
+        "bower-asset/jqcloud2": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

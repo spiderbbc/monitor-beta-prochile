@@ -40,7 +40,9 @@
         "guzzlehttp/guzzle": "~6.0",
         "livechat/api-client-php": "@dev",
         "npm-asset/vue": "dev-master",
-        "npm-asset/axios": "dev-master"
+        "npm-asset/axios": "dev-master",
+        "npm-asset/datatables": "dev-master",
+        "bower-asset/jqcloud2": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
