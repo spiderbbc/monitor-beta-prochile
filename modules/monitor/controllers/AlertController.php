@@ -399,6 +399,11 @@ class AlertController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    public function actionResource($resourceId,$alertId){
+      var_dump($resourceId);
+      var_dump($alertId);
+    }
     /**
      * Finds the Alerts model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

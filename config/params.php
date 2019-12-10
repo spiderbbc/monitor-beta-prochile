@@ -9,5 +9,12 @@ return [
 	'adminEmail'  => 'eduardo@montana-studio.com',
 	'senderEmail' => 'eduardo@montana-studio.com',
 	'senderName'  => 'monitor-beta',
+	'facebook'    => [   
+		'business_id' => '169441517247',
+		'app_id'      => '446684435912359',
+		'name_app'    => 'monitor-facebook',
+		'app_secret'  => '541f2431cc1ad60c9d5bb4836eed1356'
+
+	],
 ];
 

@@ -2,7 +2,6 @@
 namespace app\assets;
 
 use yii\web\AssetBundle;
-use yii\web\View;
 
 /**
  * Main application asset bundle.
@@ -10,20 +9,18 @@ use yii\web\View;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class VueAsset extends AssetBundle
+class AxiosAsset extends AssetBundle
 {
-    public $sourcePath = '@npm/vue/dist';
+    public $sourcePath = '@npm/axios/dist';
 
-    /**
-     * @inheritdoc
-     */
-    public $js = [
-        YII_ENV_DEV ? 'vue.js' : 'vue.min.js',
-    ];
-
-
+    public function init()
+    {
+        parent::init();
+        $this->js[] = YII_ENV_DEV ? 'axios.js':'axios.min.js';
+    }
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
+        'yii\bootstrap\BootstrapPluginAsset',
     ]; 
 }

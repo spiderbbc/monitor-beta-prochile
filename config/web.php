@@ -18,6 +18,9 @@ $config = [
         ],
     ],
     'components' => [
+        'assetManager' => [
+            'linkAssets' => true,
+        ],
         'formatter' => [
            'dateFormat' => 'dd/mm/yyyy',
        ],

@@ -176,7 +176,7 @@ class TwitterApi extends Model {
 		$until_date = null;
 		$max_id = null;
 
-		var_dump($params);
+		//var_dump($params);
       
       	$product = ArrayHelper::remove($params, 'product');
       	$since_date = ArrayHelper::remove($params, 'since');
@@ -278,9 +278,9 @@ class TwitterApi extends Model {
 	 * @return [type]         [data]
 	 */
 	public function search_tweets($params = []){
-		sleep(1);
+		//sleep(1);
 		$this->codebird->setReturnFormat(CODEBIRD_RETURNFORMAT_ARRAY);
-		ini_set('memory_limit', '800M');  // 
+		//ini_set('memory_limit', '800M');  // 
 		return $this->codebird->search_tweets($params, true);
 	}
 
