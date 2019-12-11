@@ -23,18 +23,7 @@ class MentionsController extends \yii\web\Controller
        
        */
 
-       // menciones por fecha
-
-       /*$expression = new Expression("DATE(FROM_UNIXTIME(created_time)) AS date,COUNT(*) AS total");
-       $expressionGroup = new Expression(" DATE(FROM_UNIXTIME(created_time))");
-
-       $rows = (new \yii\db\Query())
-        ->select($expression)
-        ->from('mentions')
-        ->groupBy($expressionGroup)
-        ->all();
-
-        var_dump($rows);*/
+       
 
         // menciones por recurso y fecha
         
@@ -144,6 +133,7 @@ class MentionsController extends \yii\web\Controller
 
     $mentions = \app\models\Mentions::find()->where(['alert_mentionId' => $alertsId])->with(['alertMention','alertMention.resources','origin'])->asArray()->all();
 
+
     return array('data' => $mentions);
 
   }
@@ -160,6 +150,52 @@ class MentionsController extends \yii\web\Controller
 
     return array('status'=>true,'resourceId'=>$model->id);
 
+  }
+
+
+  public function actionListWords($alertId){
+   \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+
+    $keywords = \app\models\Keywords::find()->where(['alertId' => $alertId])->all();
+
+    $wordsModel = [];
+    $index = 0;
+    foreach ($keywords as $keyword){
+      if($keyword->keywordsMentions){
+        $wordsModel[$index]['text']      = $keyword->name;
+        $wordsModel[$index]['weight']    = $keyword->getKeywordsMentions()->count();
+        $wordsModel[$index]['link']      = \yii\helpers\Url::to(['alert/view-word', 'id' => $keyword->id],true);
+        $index++; 
+      }
+    }
+
+    return array('status'=>true,'wordsModel' => $wordsModel);
+  }
+
+
+  public function actionMentionOnDate($alertId){
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
+    $alertsMencionsId = [];
+    foreach ($alertMentions as $alertMention){
+      if($alertMention->mentionsCount){
+        $alertsMencionsId[] = $alertMention->id;
+      }
+    }
+    // menciones por fecha
+    $expression = new Expression("DATE(FROM_UNIXTIME(created_time)) AS date,COUNT(*) AS total");
+    $expressionGroup = new Expression(" DATE(FROM_UNIXTIME(created_time))");
+
+
+
+    $rows = (new \yii\db\Query())
+      ->select($expression)
+      ->from('mentions')
+      ->where(['alert_mentionId' => $alertsMencionsId])
+      ->groupBy($expressionGroup)
+      ->all();
+
+    return array('status'=>true,'rows' => $rows);  
   }
 
   /**

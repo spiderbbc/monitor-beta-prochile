@@ -1,6 +1,8 @@
 
-let id          = document.getElementById('alertId').value;
-const baseUrl   = 'http://localhost/monitor-beta/web/monitor/api/mentions/';
+let id            = document.getElementById('alertId').value;
+const baseUrlApi  = 'http://localhost/monitor-beta/web/monitor/api/mentions/';
+const baseUrlView = 'http://localhost/monitor-beta/web/monitor/alert/';
+
 let refreshTime = 10000;
 let refreshTimeTable = 30000;
 
@@ -35,10 +37,10 @@ const count_resources = Vue.component('total-resources',{
 	computed:{
 		fetchResourceName(){
 			axios
-		      .get(baseUrl + 'get-resource-id' + '?resourceName=' +this.resource)
+		      .get(baseUrlApi + 'get-resource-id' + '?resourceName=' +this.resource)
 		      .then(response => (this.resourceId = response.data.resourceId))
 		      .catch(error => console.log(error))
-		    var link = `http://localhost/monitor-beta/web/monitor/alert/resource?resourceId=${this.resourceId}&alertId=${id}`;  
+		    var link = `${baseUrlView}resource?resourceId=${this.resourceId}&alertId=${id}`;  
 		    return link;
 		}
 	}	
@@ -56,7 +58,6 @@ const listMentions = Vue.component('list-mentions',{
 	mounted(){
 		var table = this.setDataTable();
 		setInterval( function () {
-			console.log(1);
 		    table.ajax.reload();
 		}, refreshTimeTable );
 	},
@@ -66,6 +67,44 @@ const listMentions = Vue.component('list-mentions',{
 			return initSearchTable();
 		}
 	}
+});
+
+const cloudWords = Vue.component('cloud-words',{
+	'template': '#cloud-words',
+	data: function () {
+	    return {
+	    	response:null,
+	    	loaded: true
+	    }
+	},
+	mounted(){
+		setInterval(function () {
+	      this.fetchWords();
+	    }.bind(this), refreshTime);
+		
+		
+	},
+	methods:{
+		fetchWords(){
+			axios.get(baseUrlApi + 'list-words' + '?alertId=' + id )
+		      .then((response) => {
+		        this.response = response.data.wordsModel
+		        if(this.response.length){
+		        	this.loaded = true;
+		        	var some_words_with_same_weight =
+					    $("#jqcloud").jQCloud(this.response, {
+					      width: 1000,
+      					  height: 350
+					    });
+		        }
+		        
+		    })
+		},
+		loadjQCloud(){
+			
+		}
+	},
+
 });
 
 // vue here
@@ -89,7 +128,7 @@ var vm = new Vue({
 	methods: {
 		fetchIsData(){
 			axios
-		      .get(baseUrl + 'count-mentions' + '?alertId=' +this.alertId)
+		      .get(baseUrlApi + 'count-mentions' + '?alertId=' +this.alertId)
 		      .then(response => (this.count = response.data.count))
 		      .catch(error => console.log(error))
 		    if(this.count > 0){
@@ -98,7 +137,7 @@ var vm = new Vue({
 		},
 		fetchResourceCount(){
 			axios
-		      .get(baseUrl + 'count-sources-mentions' + '?alertId=' +this.alertId)
+		      .get(baseUrlApi + 'count-sources-mentions' + '?alertId=' +this.alertId)
 		      .then(response => (this.resourcescount = response.data.resources))
 		      .catch(error => console.log(error))
 		}
@@ -108,7 +147,8 @@ var vm = new Vue({
 	components:{
 		count_mentions,
 		count_resources,
-		listMentions
+		listMentions,
+		cloudWords
 	}	
 });
 
@@ -125,7 +165,7 @@ function initSearchTable(){
     	'scrollCollapse' : true,
 		"processing": true,
 	    "ajax": {
-	    	'url': 'http://localhost/monitor-beta/web/monitor/api/mentions/list-mentions?alertId=' + id,
+	    	'url': baseUrlApi +'list-mentions?alertId=' + id,
 	    	//"dataSrc": "mentions"
 	    },
         "fixedColumns": true,

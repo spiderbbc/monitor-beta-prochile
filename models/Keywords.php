@@ -63,9 +63,9 @@ class Keywords extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAlertsKeywords()
+    public function getKeywordsMentions()
     {
-        return $this->hasMany(AlertsKeywords::className(), ['keywordId' => 'id']);
+        return $this->hasMany(KeywordsMentions::className(), ['keywordId' => 'id']);
     }
 
     /**

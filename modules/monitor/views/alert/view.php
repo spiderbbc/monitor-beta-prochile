@@ -91,6 +91,8 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         </div>
 
         <list-mentions></list-mentions>
+
+        <cloud-words></cloud-words>
         
     </div>
     <div v-else>
@@ -155,3 +157,14 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         </div>
     </div>
 </script>
+
+
+<script type="text/x-template" id="cloud-words">
+    <div v-if="loaded" class="col-md-12 well">
+        <h1>Cloud words</h1>
+        <div id="jqcloud" class="jqcloud"></div>
+    </div>    
+</script>
+
+
+

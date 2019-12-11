@@ -84,7 +84,9 @@ class Dictionaries extends \yii\db\ActiveRecord
               foreach ($dictionaries as $dictionaryId => $dictionaryName){
                 $keywords_drive = $drive->getContentDictionaryByTitle([$dictionaryName]);
                 foreach ($keywords_drive[$dictionaryName] as $word) {
-                  $models[] = [$alertId,$dictionaryId,$word];
+                  if(!\app\models\Keywords::find()->where(['alertId' => $alertId,'dictionaryId'=> $dictionaryId,'name'=> $word])->exists()){
+                    $models[] = [$alertId,$dictionaryId,$word];
+                  }
                 }
                   
               }
