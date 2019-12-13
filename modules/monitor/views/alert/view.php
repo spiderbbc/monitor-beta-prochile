@@ -8,6 +8,7 @@ use macgyer\yii2materializecss\widgets\data\DetailView;
 \app\assets\VueAsset::register($this);
 \app\assets\DataTableAsset::register($this);
 \app\assets\JqcloudAsset::register($this);
+\app\assets\highchartsAsset::register($this);
 \app\assets\AppAsset::register($this);
 
 /* @var $this yii\web\View */
@@ -80,7 +81,6 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
             'config.end_date:datetime',
         ],
     ]) ?>
-    
 
     <div v-if="isData">
         <div class="row">
@@ -90,13 +90,23 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
             <total-resources v-for="(value, resource) in resourcescount"  :resourcescount="resourcescount" :value="value" :resource="resource" :key="resource">
         </div>
 
-        <list-mentions></list-mentions>
+        <div class="row">
+            <list-mentions></list-mentions>
+        </div>
 
-        <cloud-words></cloud-words>
+        <div class="row">
+            <cloud-words></cloud-words>
+        </div>
+        
+        <div class="row">
+            <resource-date-mentions></resource-date-mentions>
+        </div>
         
     </div>
     <div v-else>
-        loading Animation ....
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
     </div>
  
      
@@ -114,7 +124,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 
 <!-- template que muestra el total de todas las menciones por Red Social -->
 <script type="text/x-template" id="view-total-mentions-resources">
-    <div :class="columns" style="margin-right: 10px;">
+    <div :class="columns" style="margin-right: 5px; width: 250px;">
         <h4><a :href="fetchResourceName">{{resource}}:</a></h4>
         <p>{{value}}</p>
     </div>
@@ -158,12 +168,37 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     </div>
 </script>
 
-
+<!-- template que muestra las nubes de palabras -->
 <script type="text/x-template" id="cloud-words">
     <div v-if="loaded" class="col-md-12 well">
-        <h1>Cloud words</h1>
+        <h2>Cloud words</h2>
         <div id="jqcloud" class="jqcloud"></div>
     </div>    
+</script>
+
+<!-- template que muestra las tablas recurso: fecha - total -->
+<script type="text/x-template" id="resource-date-mentions">
+    <div>
+        <div v-for="(values,resource) in response" class="col-md-12 well">
+            <h2>{{resource}}</h2>
+            <table class="table table-striped table-bordered" cellspacing="0"  style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Fecha</th>
+                        <th>Cant. Menciones</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr v-for="value in values">
+                        <th>{{value.product_searched}}</th>
+                        <th>{{value.date}}</th>
+                        <th>{{value.total}}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div> 
+    </div>   
 </script>
 
 

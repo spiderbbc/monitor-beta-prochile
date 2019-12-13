@@ -6,6 +6,8 @@ const baseUrlView = 'http://localhost/monitor-beta/web/monitor/alert/';
 let refreshTime = 10000;
 let refreshTimeTable = 30000;
 
+
+
 const count_mentions = Vue.component('total-mentions',{
 	props: ['count'],
 	data: function () {
@@ -74,7 +76,7 @@ const cloudWords = Vue.component('cloud-words',{
 	data: function () {
 	    return {
 	    	response:null,
-	    	loaded: true
+	    	loaded: false
 	    }
 	},
 	mounted(){
@@ -91,20 +93,55 @@ const cloudWords = Vue.component('cloud-words',{
 		        this.response = response.data.wordsModel
 		        if(this.response.length){
 		        	this.loaded = true;
+		        	var words = this.handlers(this.response);
 		        	var some_words_with_same_weight =
-					    $("#jqcloud").jQCloud(this.response, {
+					    $("#jqcloud").jQCloud(words, {
 					      width: 1000,
       					  height: 350
-					    });
+					});
 		        }
 		        
 		    })
 		},
-		loadjQCloud(){
-			
+		handlers(response){
+			var words = response.map(function(r){
+				r.handlers = {click: function() {
+			      $("#list-mentions").DataTable().search(r.text).draw();
+			    }};
+			    return r;
+			});
+			return words;
 		}
+
 	},
 
+});
+
+const tableDate = Vue.component('resource-date-mentions',{
+	template: '#resource-date-mentions',
+	data: function () {
+	    return {
+	    	response:null,
+	    	resourceName:null,
+	    	model: [],
+	    	date: null,
+	    	count: 0
+	    }
+	},
+	mounted(){
+		setInterval(function () {
+	      this.fetchMentionsDate();
+	    }.bind(this), refreshTime);
+	},
+	methods:{
+		fetchMentionsDate(){
+			axios.get(baseUrlApi + 'resource-on-date' + '?alertId=' + id )
+		      .then((response) => {
+		        this.response = response.data.resourceDateCount
+		    })
+
+		}
+	}
 });
 
 // vue here
@@ -148,7 +185,8 @@ var vm = new Vue({
 		count_mentions,
 		count_resources,
 		listMentions,
-		cloudWords
+		cloudWords,
+		tableDate
 	}	
 });
 
@@ -228,120 +266,3 @@ function initSearchTable(){
     return table;
 }
 
-/*function initTable(){
-	return $('#list-mentions').DataTable( {
-		"initComplete": function () {
-	        var api = this.api();
-	        api.$('td').click( function () {
-	            api.search( this.innerHTML ).draw();
-	        } );
-	    },
-		"processing": true,
-	    "ajax": {
-	    	'url': 'http://localhost/monitor-beta/web/monitor/api/mentions/list-mentions?alertId=' + id,
-	    	//"dataSrc": "mentions"
-	    },
-	    "columns": [
-	        { "data": "alertMention.resources.name" },
-	        { "data": "alertMention.term_searched" },
-	        { 
-	        	"data": "created_time" ,
-	        	"type":"date",
-	        	"render": function(data){
-	        		var a = new Date(data * 1000);
-					var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-					var year = a.getFullYear();
-					var month = months[a.getMonth()];
-					var date = a.getDate();
-					var hour = a.getHours();
-					var min = a.getMinutes();
-					var sec = a.getSeconds();
-					var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-					return time;
-	        	}
-	        },
-	        {"data": "origin.name"},
-	        {"data": "origin.screen_name"},
-	        { "data": "subject" },
-	        { "data": "message_markup" },
-	        { 
-	        	"data": "url",
-	        	"render": function(data){
-	        		var link = "-";
-	        		if(data !== null && data !== '-'){
-	        			var href = "<a href=";
-	                    var url = data;
-	                    var target =   " target=" + '.$target.'
-	                    var text = ">link</a>";
-	                    link = href.concat(url,target ,text);
-	                    return link;
-	        		}
-	        		return '-'
-	               
-	        	}
-
-	         }
-	    ]
-	} );
-}
-*/
-// datatable here
-/*var table = $('#list-mentions').DataTable( {
-	"initComplete": function () {
-        var api = this.api();
-        api.$('td').click( function () {
-            api.search( this.innerHTML ).draw();
-        } );
-    },
-	"processing": true,
-    "ajax": {
-    	'url': 'http://localhost/monitor-beta/web/monitor/api/mentions/list-mentions?alertId=' + id,
-    	//"dataSrc": "mentions"
-    },
-    "columns": [
-        { "data": "alertMention.resources.name" },
-        { "data": "alertMention.term_searched" },
-        { 
-        	"data": "created_time" ,
-        	"type":"date",
-        	"render": function(data){
-        		var a = new Date(data * 1000);
-				var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-				var year = a.getFullYear();
-				var month = months[a.getMonth()];
-				var date = a.getDate();
-				var hour = a.getHours();
-				var min = a.getMinutes();
-				var sec = a.getSeconds();
-				var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-				return time;
-        	}
-        },
-        {"data": "origin.name"},
-        {"data": "origin.screen_name"},
-        { "data": "subject" },
-        { "data": "message_markup" },
-        { 
-        	"data": "url",
-        	"render": function(data){
-        		var link = "-";
-        		if(data !== null && data !== '-'){
-        			var href = "<a href=";
-                    var url = data;
-                    var target =   " target=" + '.$target.'
-                    var text = ">link</a>";
-                    link = href.concat(url,target ,text);
-                    return link;
-        		}
-        		return '-'
-               
-        	}
-
-         }
-    ]
-} );
-
-setInterval( function () {
-	console.log(1);
-    table.ajax.reload();
-}, 200000 );*/

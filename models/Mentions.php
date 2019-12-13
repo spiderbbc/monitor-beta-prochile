@@ -63,7 +63,7 @@ class Mentions extends \yii\db\ActiveRecord
             [['alert_mentionId', 'origin_id', 'created_time', 'social_id', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['mention_data'], 'safe'],
             [['subject', 'url', 'domain_url', 'location'], 'string', 'max' => 255],
-            [['message', 'message_markup'], 'string', 'max' => 800],
+            [['message', 'message_markup'], 'string'],
             [['alert_mentionId'], 'exist', 'skipOnError' => true, 'targetClass' => AlertsMencions::className(), 'targetAttribute' => ['alert_mentionId' => 'id']],
             [['origin_id'], 'exist', 'skipOnError' => true, 'targetClass' => UsersMentions::className(), 'targetAttribute' => ['origin_id' => 'id']],
         ];

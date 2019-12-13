@@ -123,7 +123,7 @@ class m190813_215104_Credencials_Api extends Migration
             'resourceId'          => 4,
             'name_app'            => 'monitor-drive',
             'api_key'             => 'monitor-beta-lg',
-            'api_secret_key'      => '1TmKTY180rrzhtDC91J-LpHFY898gxTxTRe6ssU-j4ag',
+            'api_secret_key'      => '1LBf9kTwPswIQuvNx0xH8RiMBZiXNZeBGi_QjTrHVwAc',
             'access_secret_token' => 'encrycpt here',
             'bearer_token'        => 'encrycpt here',
             'apiLogin'            => 'encrycpt here',

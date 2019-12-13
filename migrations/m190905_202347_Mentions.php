@@ -25,7 +25,7 @@ class m190905_202347_Mentions extends Migration
             'mention_data'    => $this->json(),
             'subject'         => $this->text(),
             'message'         => $this->text()->notNull(),
-            'message_markup'  => $this->string(800),
+            'message_markup'  => $this->text()->notNull(),
             'url'             => $this->string(),
             'domain_url'      => $this->string(),
             'location'        => $this->string(),

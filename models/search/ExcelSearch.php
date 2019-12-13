@@ -282,7 +282,7 @@ class ExcelSearch {
             $alertsMencions = $this->_findAlertsMencions($product);
             if(!is_null($alertsMencions)){
                 foreach ($data as  $mention){
-                    if(!empty($mention['Author Username'])){
+                    if(!empty($mention['Author Username']) && !empty($mention['Author Name']) && !is_numeric($mention['Author Username']) && !is_numeric($mention['Author Name']) ){
                         $user = $this->_saveUserMencions($mention);
                         if(!$user->errors){
                             $mention_model = $this->_saveMentions($mention,$alertsMencions->id,$user->id);
@@ -298,6 +298,7 @@ class ExcelSearch {
                 }
             }
         }
+        var_dump($error);
         return (empty($error)) ? true : false;
 
     }

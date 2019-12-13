@@ -193,6 +193,10 @@ class TwitterApi extends Model {
         	
         	// get data twitter api
         	$data[$index] = $this->search_tweets($params);
+        	echo $data[$index]['rate']['remaining']."\n";
+        	if($data[$index]['rate']['remaining'] < $this->minimum){
+        		break;
+        	}
         	// if there 200 status
         	if($data[$index]['httpstatus'] == 200){
         		Console::stdout(" is 200 \n", Console::FG_GREEN);
@@ -501,6 +505,8 @@ class TwitterApi extends Model {
 		
 		Codebird::setConsumerKey($api_key, $api_secret_key); // static, see README
 		$this->codebird = Codebird::getInstance();
+		$this->codebird->setTimeout(20000);
+		$this->codebird->setConnectionTimeout(9000);
 		$reply = $this->codebird->oauth2_token();
 		$bearer_token = $reply->access_token;
 		

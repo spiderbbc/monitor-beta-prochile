@@ -110,7 +110,7 @@ class Alerts extends \yii\db\ActiveRecord
                 ]);
             $query->with(['configSources.alertResource']);
         }
-        ])->asArray()->all();
+        ])->orderBy('id DESC')->asArray()->all();
 
         $alertsConfig = [];
         // there is alert in the model

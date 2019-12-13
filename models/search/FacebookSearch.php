@@ -279,8 +279,8 @@ class FacebookSearch
         );
 
         if($mention->errors){
-             var_dump($originId);
-             var_dump($comment);
+            /* var_dump($originId);
+             var_dump($comment);*/
              var_dump($mention->errors);
              die();
         }

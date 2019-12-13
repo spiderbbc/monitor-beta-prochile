@@ -25,37 +25,7 @@ class MentionsController extends \yii\web\Controller
 
        
 
-        // menciones por recurso y fecha
         
-        /*$expression = new Expression("DATE(FROM_UNIXTIME(created_time)) AS date,COUNT(*) AS total");
-        $expressionGroup = new Expression("DATE(FROM_UNIXTIME(created_time))");
-        
-        $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
-        $resourceDateCount = [];
-       	
-       	foreach ($alertMentions as $alertMention){
-       		if($alertMention->mentionsCount){
-       			if(!in_array($alertMention->resources,$resourceDateCount)){
-       				$rows = (new \yii\db\Query())
-			        ->select($expression)
-			        ->from('mentions')
-			        ->where(['alert_mentionId' => $alertMention->id])
-			        ->groupBy($expressionGroup)
-			        ->all();
-
-			        foreach ($rows as $row){
-			        	$resourceDateCount[$alertMention->resources->name][] = $row;	
-			        }
-
-       				
-       			} // end if in_array
-
-       		}// is not null 
-       		
-       	}// end foreach
-       	echo "<pre>";
-       	print_r($resourceDateCount);
-       	echo "</pre>";*/
 
        	// menciones por producto por recurso y por fecha
        	
@@ -87,7 +57,7 @@ class MentionsController extends \yii\web\Controller
 
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
     // cuenta por menciones
-    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
+    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'DESC'])->all();
     $resourceCount = [];
     foreach ($alertMentions as $alertMention){
       $mentionCount = \app\models\Mentions::find()->where(['alert_mentionId' => $alertMention->id])->count(); 
@@ -164,7 +134,8 @@ class MentionsController extends \yii\web\Controller
       if($keyword->keywordsMentions){
         $wordsModel[$index]['text']      = $keyword->name;
         $wordsModel[$index]['weight']    = $keyword->getKeywordsMentions()->count();
-        $wordsModel[$index]['link']      = \yii\helpers\Url::to(['alert/view-word', 'id' => $keyword->id],true);
+        //$wordsModel[$index]['link']      = \yii\helpers\Url::to(['alert/view-word','keywordId' => $keyword->id,'alertId'=> $alertId],true);
+        //$wordsModel[$index]['handlers']      = ['click: function() {$("#list-mentions").DataTable().search('.$keyword->name.').draw()}'];
         $index++; 
       }
     }
@@ -196,6 +167,42 @@ class MentionsController extends \yii\web\Controller
       ->all();
 
     return array('status'=>true,'rows' => $rows);  
+  }
+
+
+
+  public function actionResourceOnDate($alertId){
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    //menciones por recurso y fecha
+    $expression = new Expression("DATE(FROM_UNIXTIME(created_time)) AS date,COUNT(*) AS total");
+    $expressionGroup = new Expression("DATE(FROM_UNIXTIME(created_time))");
+    
+    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
+    $resourceDateCount = [];
+    
+    foreach ($alertMentions as $alertMention){
+      if($alertMention->mentionsCount){
+        if(!in_array($alertMention->resources,$resourceDateCount)){
+          $rows = (new \yii\db\Query())
+          ->select($expression)
+          ->from('mentions')
+          ->where(['alert_mentionId' => $alertMention->id])
+          ->orderBy('total DESC')
+          ->groupBy($expressionGroup)
+          ->all();
+
+          foreach ($rows as $row){
+            $row['product_searched'] = $alertMention->term_searched;
+            $resourceDateCount[$alertMention->resources->name][] = $row;  
+          }
+
+          
+        } // end if in_array
+
+      }// is not null 
+      
+    }// end foreach
+    return array('status'=>true,'resourceDateCount' => $resourceDateCount);  
   }
 
   /**

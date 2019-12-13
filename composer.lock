@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6042ed0fe11d1a022f7d3470a55cfc6e",
+    "content-hash": "9aec3f9a86a618674bf3f85406d89249",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -65,7 +65,7 @@
             "version": "v3.4.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:twbs/bootstrap.git",
+                "url": "https://github.com/twbs/bootstrap.git",
                 "reference": "68b0d231a13201eb14acd3dc84e51543d16e5f7e"
             },
             "dist": {
@@ -2126,6 +2126,25 @@
             "license": [
                 "MIT"
             ]
+        },
+        {
+            "name": "npm-asset/highcharts",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:highcharts/highcharts-dist.git",
+                "reference": "6b1a03af7f26ce8ed9b62bab6a041a7f477b3f7c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/highcharts/highcharts-dist/zipball/6b1a03af7f26ce8ed9b62bab6a041a7f477b3f7c",
+                "reference": "6b1a03af7f26ce8ed9b62bab6a041a7f477b3f7c"
+            },
+            "type": "npm-asset",
+            "license": [
+                "https://www.highcharts.com/license"
+            ],
+            "time": "2019-10-31T13:31:23+00:00"
         },
         {
             "name": "npm-asset/jquery",
@@ -6366,6 +6385,7 @@
         "npm-asset/vue": 20,
         "npm-asset/axios": 20,
         "npm-asset/datatables": 20,
+        "npm-asset/highcharts": 20,
         "bower-asset/jqcloud2": 20
     },
     "prefer-stable": false,

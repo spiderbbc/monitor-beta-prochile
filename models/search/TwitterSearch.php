@@ -162,7 +162,7 @@ class TwitterSearch
                 }
             }
         }
-        
+        //var_dump($error);
         return (empty($error)) ? true : false;
     }
 
