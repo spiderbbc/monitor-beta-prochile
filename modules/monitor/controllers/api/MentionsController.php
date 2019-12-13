@@ -7,30 +7,15 @@ use yii\web\NotFoundHttpException;
 
 class MentionsController extends \yii\web\Controller
 {
+  /**
+   * [actionIndex action to the index view]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
+  public function actionIndex($alertId){
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
 
-    public function actionIndex($alertId)
-    {
-       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
-       
-		
-       
-       /*
-		
-       
-
-       
-
-       
-       */
-
-       
-
-        
-
-       	// menciones por producto por recurso y por fecha
-       	
-
-    }
+  }
 
   /**
    * [actionCountMentions return count the total mentions]
@@ -52,7 +37,11 @@ class MentionsController extends \yii\web\Controller
 
     }
   }
-
+  /**
+   * [actionCountSourcesMentions count by sources]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
   public function actionCountSourcesMentions($alertId){
 
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
@@ -63,14 +52,17 @@ class MentionsController extends \yii\web\Controller
       $mentionCount = \app\models\Mentions::find()->where(['alert_mentionId' => $alertMention->id])->count(); 
       $mentionsModel = ['count' => $mentionCount,'resourcesId' => $alertMention->resources->id];
       $resourceCount[$alertMention->resources->name][] = $mentionCount;
-      /*$resourceCount[$alertMention->resources->name][] = $mentionsModel;*/
     }
     $resourceCount = array_map("array_sum", $resourceCount);
      
     return array('status'=>true,'resources'=>$resourceCount);
 
   }
-
+  /**
+   * [actionCountByProducts count mentions by products]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
   public function actionCountByProducts($alertId){
 
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
@@ -87,7 +79,11 @@ class MentionsController extends \yii\web\Controller
 
 
   }
-
+  /**
+   * [actionListMentions list all mention by id]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
   public function actionListMentions($alertId){
 
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
@@ -122,7 +118,11 @@ class MentionsController extends \yii\web\Controller
 
   }
 
-
+  /**
+   * [actionListWords list words found it]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
   public function actionListWords($alertId){
    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
 
@@ -134,8 +134,6 @@ class MentionsController extends \yii\web\Controller
       if($keyword->keywordsMentions){
         $wordsModel[$index]['text']      = $keyword->name;
         $wordsModel[$index]['weight']    = $keyword->getKeywordsMentions()->count();
-        //$wordsModel[$index]['link']      = \yii\helpers\Url::to(['alert/view-word','keywordId' => $keyword->id,'alertId'=> $alertId],true);
-        //$wordsModel[$index]['handlers']      = ['click: function() {$("#list-mentions").DataTable().search('.$keyword->name.').draw()}'];
         $index++; 
       }
     }

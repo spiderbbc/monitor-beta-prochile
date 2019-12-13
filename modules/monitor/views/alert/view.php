@@ -87,7 +87,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
             <total-mentions :count="count">
         </div>
         <div class="row">
-            <total-resources v-for="(value, resource) in resourcescount"  :resourcescount="resourcescount" :value="value" :resource="resource" :key="resource">
+            <total-resources>
         </div>
 
         <div class="row">
@@ -123,10 +123,24 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 </script>
 
 <!-- template que muestra el total de todas las menciones por Red Social -->
-<script type="text/x-template" id="view-total-mentions-resources">
+<!-- <script type="text/x-template" id="view-total-mentions-resources">
     <div :class="columns" style="margin-right: 5px; width: 250px;">
         <h4><a :href="fetchResourceName">{{resource}}:</a></h4>
         <p>{{value}}</p>
+    </div>
+</script> -->
+
+<script type="text/x-template" id="view-total-mentions-resources">
+    <div v-if="loaded">
+        <div v-for="(value,resource) in response" class="col-md-2">
+            <div class="well text-center">
+                <h4><a :href="fetchResourceName(resource)">{{resource}}:</a></h4>
+                <p>{{value}}</p>
+            </div>
+        </div>
+    </div>
+    <div v-else>
+        loading ...
     </div>
 </script>
 
