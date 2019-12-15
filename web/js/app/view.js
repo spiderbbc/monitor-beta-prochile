@@ -121,8 +121,11 @@ const count_resources = Vue.component('total-resources',{
 			loaded: false
 		}
 	},
-	created(){
-		this.fetchResourceCount();
+	mounted(){
+		setInterval(function () {
+	      this.fetchResourceCount();
+	    }.bind(this), refreshTime);
+		
 	},
 	methods:{
 		fetchResourceCount(){
@@ -168,7 +171,6 @@ const listMentions = Vue.component('list-mentions',{
 	},
 	methods:{
 		setDataTable(){
-			//var table = initTable();
 			return initSearchTable();
 		}
 	}
@@ -225,10 +227,7 @@ const tableDate = Vue.component('resource-date-mentions',{
 	data: function () {
 	    return {
 	    	response:null,
-	    	resourceName:null,
-	    	model: [],
-	    	date: null,
-	    	count: 0
+	    	loaded: false
 	    }
 	},
 	mounted(){
@@ -241,8 +240,15 @@ const tableDate = Vue.component('resource-date-mentions',{
 			axios.get(baseUrlApi + 'resource-on-date' + '?alertId=' + id )
 		      .then((response) => {
 		        this.response = response.data.resourceDateCount
+		        if(typeof this.response === 'object'){
+		      		this.loaded = true;
+		      	}
 		    })
+		    .catch(error => console.log(error))
 
+		},
+		collapseValue(target="",index){
+			return `${target}collapse${index + 1}`;
 		}
 	}
 });

@@ -105,7 +105,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     </div>
     <div v-else>
         <div class="loader">
-          <div class="spinner"></div>
+          <div class="spinner" style="height: 15vh;width:  15vh;"></div>
         </div>
     </div>
  
@@ -140,7 +140,9 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         </div>
     </div>
     <div v-else>
-        loading ...
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
     </div>
 </script>
 
@@ -187,14 +189,20 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     <div v-if="loaded" class="col-md-12 well">
         <h2>Cloud words</h2>
         <div id="jqcloud" class="jqcloud"></div>
+    </div>
+    <div v-else>
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
     </div>    
 </script>
 
 <!-- template que muestra las tablas recurso: fecha - total -->
-<script type="text/x-template" id="resource-date-mentions">
-    <div>
-        <div v-for="(values,resource) in response" class="col-md-12 well">
+<!-- <script type="text/x-template" id="resource-date-mentions">
+    <div v-if="loaded">
+        <div v-for="(values,resource,index) in response" class="col-md-12 well">
             <h2>{{resource}}</h2>
+            <h2>{{index + 1}}</h2>
             <table class="table table-striped table-bordered" cellspacing="0"  style="width:100%">
                 <thead>
                     <tr>
@@ -212,7 +220,50 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
                 </tfoot>
             </table>
         </div> 
+    </div>
+    <div v-else>
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
     </div>   
+</script> -->
+
+<script type="text/x-template" id="resource-date-mentions">
+    <div v-if="loaded" class="panel-group" id="accordion">
+      <div v-for="(values,resource,index) in response" class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" :href="collapseValue('#',index)">
+            <h2>{{resource}}</h2></a>
+          </h2>
+        </div>
+        <div :id="collapseValue('',index)" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <table class="table table-striped table-bordered" cellspacing="0"  style="width:100%">
+              <thead>
+                  <tr>
+                      <th>Producto</th>
+                      <th>Fecha</th>
+                      <th>Cant. Menciones</th>
+                  </tr>
+              </thead>
+              <tfoot>
+                  <tr v-for="value in values">
+                      <th>{{value.product_searched}}</th>
+                      <th>{{value.date}}</th>
+                      <th>{{value.total}}</th>
+                  </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
+    </div>
 </script>
 
 

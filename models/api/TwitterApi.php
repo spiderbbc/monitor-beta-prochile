@@ -92,6 +92,7 @@ class TwitterApi extends Model {
 
 		    // Make sure to urlencode any parameter values that contain query-reserved characters
 		    $product = urlencode($products[$p]);
+		   // $product = $products[$p];
 		    $country = (!is_null($this->country)) ? $this->country : '';
 		    
 		    if($query){
@@ -110,7 +111,9 @@ class TwitterApi extends Model {
 		    		
 		    		$since_date   = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
 					$until_date   = DateHelper::add($date_searched,'1 day');
-					$query_search = "{$product} since:{$since_date} until:{$until_date}";
+					//$query_search = "".$product." since:{$since_date} until:{$until_date}";
+					$query_search = '"'.$product.'" since:'.$since_date.' until:'.$until_date.'';
+					
 
 		    		if($since_id && ($max_id == '')){
 						$params['since_id'] = $since_id;
@@ -124,18 +127,20 @@ class TwitterApi extends Model {
 					$params['q']       = $query_search;
 					$params['since']   = $since_date;
 					$params['product'] = $products[$p];
-					$params['geocode'] = $country;
+					//$params['geocode'] = '-33.459229,-70.645348,50000km';
 		    		
 					array_push($products_to_searched,$params);
 		    	} 
 		    }else{
 				$since_date = Yii::$app->formatter->asDatetime($this->start_date,'yyyy-MM-dd');
 				$until_date = DateHelper::add($this->start_date,'1 day');
-		    	$query_search = "{$product} since:{$since_date} until:{$until_date}";
+		    	//$query_search = "".$product." since:{$since_date} until:{$until_date}";
+		    	$query_search = '"'.$product.'" since:'.$since_date.' until:'.$until_date.'';
+		    	
 		    	
 		    	$params['q'] = $query_search;
 		    	$params['since'] = $since_date;
-		    	$params['geocode'] = $country;
+		    	//$params['geocode'] = '-33.459229,-70.645348,50000km';
 		    	
 		    	$params['product'] = $products[$p];
 		    	array_push($products_to_searched,$params);
@@ -176,7 +181,7 @@ class TwitterApi extends Model {
 		$until_date = null;
 		$max_id = null;
 
-		//var_dump($params);
+		var_dump($params);
       
       	$product = ArrayHelper::remove($params, 'product');
       	$since_date = ArrayHelper::remove($params, 'since');
@@ -505,7 +510,7 @@ class TwitterApi extends Model {
 		
 		Codebird::setConsumerKey($api_key, $api_secret_key); // static, see README
 		$this->codebird = Codebird::getInstance();
-		$this->codebird->setTimeout(20000);
+		$this->codebird->setTimeout(2000);
 		$this->codebird->setConnectionTimeout(9000);
 		$reply = $this->codebird->oauth2_token();
 		$bearer_token = $reply->access_token;
