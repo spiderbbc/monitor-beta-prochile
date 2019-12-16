@@ -151,3 +151,8 @@ table th {
     transform: rotate(359deg);
   }
 }
+
+/* jQCloud */
+.pointer-jqcloud{
+  cursor: pointer;
+}

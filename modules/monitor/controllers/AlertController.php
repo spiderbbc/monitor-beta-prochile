@@ -80,6 +80,15 @@ class AlertController extends Controller
 
     }
 
+    public function actionReloadProducts(){
+      \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+      
+      $drive = new \app\models\api\DriveApi();
+      $drive->getContentDocument();
+
+      return array('status'=>true);
+    }
+
     /**
      * Lists all Alerts models.
      * @return mixed
@@ -411,11 +420,6 @@ class AlertController extends Controller
         }
 
         return $this->redirect(['index']);
-    }
-
-    public function actionResource($resourceId,$alertId){
-      var_dump($resourceId);
-      var_dump($alertId);
     }
     /**
      * Finds the Alerts model based on its primary key value.

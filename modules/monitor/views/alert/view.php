@@ -148,7 +148,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 
 
 <!-- template que muestra todas las menciones -->
-<script type="text/x-template" id="list-mentions">
+<script type="text/x-template" id="mentions-list">
     <div>
         <h4>Menciones</h4>
         <div class="row">
@@ -188,13 +188,9 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 <script type="text/x-template" id="cloud-words">
     <div v-if="loaded" class="col-md-12 well">
         <h2>Cloud words</h2>
+        <button v-on:click.prevent="reload" class="btn btn-sm btn-primary" id="update-demo">Update</button>
         <div id="jqcloud" class="jqcloud"></div>
     </div>
-    <div v-else>
-        <div class="loader">
-          <div class="spinner"></div>
-        </div>
-    </div>    
 </script>
 
 <!-- template que muestra las tablas recurso: fecha - total -->

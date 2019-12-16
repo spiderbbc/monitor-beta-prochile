@@ -78,39 +78,6 @@ const count_mentions = Vue.component('total-mentions',{
 	template: '#view-total-mentions',
 });
 
-/*const count_resources = Vue.component('total-resources',{
-	props: ['value','resource','resourcescount'],
-	template: '#view-total-mentions-resources',
-	data(){
-		return {
-			columns:0,
-			resourceId:''
-		}
-	},
-	created(){
-		this.colpropeties();
-	},
-	methods:{
-		colpropeties(){
-			var total_resources = Object.keys(this.resourcescount).length;
-			var total = Math.round(12 / total_resources);
-			this.columns =  'col-md-' + total + ' well';
-		}
-	},	
-	computed:{
-		fetchResourceName(){
-			axios
-		      .get(baseUrlApi + 'get-resource-id' + '?resourceName=' +this.resource)
-		      .then(response => (this.resourceId = response.data.resourceId))
-		      .catch(error => console.log(error))
-		    var link = `${baseUrlView}resource?resourceId=${this.resourceId}&alertId=${id}`;  
-		    return link;
-		}
-	}	
-		
-	
-});*/
-
 const count_resources = Vue.component('total-resources',{
 	template: '#view-total-mentions-resources',
 	data(){
@@ -157,7 +124,7 @@ const count_resources = Vue.component('total-resources',{
 });
 
 const listMentions = Vue.component('list-mentions',{
-	template: '#list-mentions',
+	template: '#mentions-list',
 	data: function () {
 	    return {
 	    	table:null
@@ -202,17 +169,23 @@ const cloudWords = Vue.component('cloud-words',{
 		        	var some_words_with_same_weight =
 					    $("#jqcloud").jQCloud(words, {
 					      width: 1000,
-      					  height: 350
+      					  height: 350,
+      					  delay: 50
 					});
 		        }
 		        
 		    })
+		},
+		reload(){
+			var words = this.handlers(this.response);
+			$('#jqcloud').jQCloud('update', words);
 		},
 		handlers(response){
 			var words = response.map(function(r){
 				r.handlers = {click: function() {
 			      $("#list-mentions").DataTable().search(r.text).draw();
 			    }};
+			    r.html = {'class': 'pointer-jqcloud'};
 			    return r;
 			});
 			return words;

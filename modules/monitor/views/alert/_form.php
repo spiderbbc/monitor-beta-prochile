@@ -11,14 +11,16 @@ use app\models\Resources;
 use kartik\select2\Select2;
 use kartik\date\DatePicker;
 use kartik\file\FileInput;
-use mludvik\tagsinput\TagsInputWidget
+use mludvik\tagsinput\TagsInputWidget;
+
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\form\AlertForm */
 /* @var $form ActiveForm */
 
 ?>
-<div class="modules-monitor-views-alert">
+<div id="views-alert" class="modules-monitor-views-alert">
     <?php $form = ActiveForm::begin(); ?>
         <div class="row">
             <div class="row">
@@ -53,7 +55,7 @@ use mludvik\tagsinput\TagsInputWidget
             </div>
             <!-- dictionaries and social -->
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <?= $form->field($alert, 'alertResourceId')->widget(Select2::classname(), [
                             'data' => $alert->social,
                             'options' => [
@@ -104,25 +106,26 @@ use mludvik\tagsinput\TagsInputWidget
                     <?= $form->field($alert, 'productsIds')->widget(Select2::classname(), [
                             'data' => Products::getProducts(),
                             'options' => [
-                                'id' => 'productsIds',
+                               // 'id' => 'productsIds',
                                 'placeholder' => 'Select a products...',
                                 'multiple' => true,
                                 'theme' => 'krajee',
-                                'debug' => true,
+                               // 'debug' => true,
                                 //'value' => [1 => 'LG G7 ThinQ (G710 / New Aurora Black'],
                             ],
                             'pluginOptions' => [
-                                'allowClear' => true,
+                                'allowClear' => false,
                                 'tags' => false,
                             ],
-                            'pluginEvents' => [
+                            /*'pluginEvents' => [
                                "select2:select" => "function(e) { 
                                     return null;
                                }",
-                            ]
+                            ]*/
                         ]);
                     ?>
                 </div>
+                <sync-product></sync-product>
             </div>
             <!-- config properties-->
             <div class="row">
@@ -194,5 +197,21 @@ use mludvik\tagsinput\TagsInputWidget
             </div>
         </div>
     <?php ActiveForm::end(); ?>
-
 </div><!-- modules-monitor-views-alert -->
+
+<!-- template que muestra las nubes de palabras -->
+<script type="text/x-template" id="sync-product-id">
+    <div class="col-md-1">
+        <div class="form-group field-alerts-productsids">
+            <button style="margin-top: 25px"  v-on:click.prevent="reload">{{msg}}</button>
+        </div>
+    </div>
+</script>
+
+<?php 
+$this->registerJsFile(
+    '@web/js/app/form.js',
+    ['depends' => [\app\assets\VueAsset::className()]]
+);
+
+?>
