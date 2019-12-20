@@ -13,6 +13,7 @@ class FacebookController extends \yii\web\Controller
     
 
     public function actionValidateFb(){
+      
       $fb = new \Facebook\Facebook([
         'app_id' => \Yii::$app->params['facebook']['app_id'],
         'app_secret' => \Yii::$app->params['facebook']['app_secret'],
@@ -25,6 +26,9 @@ class FacebookController extends \yii\web\Controller
 
         try {
             $helper       = $fb->getRedirectLoginHelper();
+            if (isset($_GET['state'])) {
+              $helper->getPersistentDataHandler()->set('state', $_GET['state']);
+            }
             $accessToken  = $helper->getAccessToken();
             $oAuth2Client = $fb->getOAuth2Client();
 
