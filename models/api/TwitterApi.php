@@ -510,7 +510,7 @@ class TwitterApi extends Model {
 		
 		Codebird::setConsumerKey($api_key, $api_secret_key); // static, see README
 		$this->codebird = Codebird::getInstance();
-		$this->codebird->setTimeout(2000);
+		$this->codebird->setTimeout(4000);
 		$this->codebird->setConnectionTimeout(9000);
 		$reply = $this->codebird->oauth2_token();
 		$bearer_token = $reply->access_token;

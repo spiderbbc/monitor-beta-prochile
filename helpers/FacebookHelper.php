@@ -20,7 +20,7 @@ use app\models\CredencialsApi;
 class FacebookHelper
 {
 
-	private static $_resource_id = 3;
+	private static $_resource_id = 5;
 
 	/**
      * return facebook object.
@@ -47,8 +47,7 @@ class FacebookHelper
 		// Optional permissions
 		$permissions = ['manage_pages','pages_show_list','read_page_mailboxes','ads_management','pages_messaging','instagram_basic','pages_show_list']; 
 		// crea una URL absoluta: http://www.example.com/index.php?r=post/index
-		//$url = Url::to('monitor/facebook/validate-fb');
-		$url = 'http://localhost/monitor-beta/web/monitor/facebook/validate-fb';
+		$url = Url::to(['monitor/facebook/validate-fb'],true);
 
 		$loginUrl = $helper->getLoginUrl($url, $permissions);
 
@@ -118,8 +117,8 @@ class FacebookHelper
 	public static function saveExpiresAt($userId,$expiresAt){
 		$userCredential = CredencialsApi::find() ->where( [ 
 				'userId' => $userId, 
-				'resourceId' => CredencialsApi::FACEBOOK,
-				'name_app' => CredencialsApi::NAME_APP_FACEBOOK,
+				'resourceId' => self::$_resource_id,
+				'name_app' => Yii::$app->params['facebook']['name_app'],
 			] )->one();
 
 		$userCredential->expiration_date = $expiresAt;
@@ -216,4 +215,7 @@ class FacebookHelper
 			
 
 	}
+
+
+
 }

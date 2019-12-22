@@ -27,9 +27,6 @@ use Yii;
  */
 class CredencialsApi extends \yii\db\ActiveRecord
 {
-
-    const FACEBOOK = 3;
-    const NAME_APP_FACEBOOK = 'monitor-facebook';
     /**
      * {@inheritdoc}
      */

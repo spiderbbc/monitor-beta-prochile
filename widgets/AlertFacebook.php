@@ -9,7 +9,7 @@ use Yii;
  */
 class AlertFacebook extends \yii\bootstrap\Widget
 {
-    public $resourceId  = 3;
+    public $resourceId;
     
     public $name_app = 'monitor-facebook';
     
@@ -44,6 +44,8 @@ class AlertFacebook extends \yii\bootstrap\Widget
     {
         // get userId
         $userId = Yii::$app->user->id;
+        $this->resourceId = $this->_setResourceId();
+        
         // if there register with facebook
         $user_facebook = \app\models\CredencialsApi::find()->where([
             'userId' => $userId,
@@ -107,4 +109,21 @@ class AlertFacebook extends \yii\bootstrap\Widget
 
         
     }
+
+
+    /**
+     * [_setResourceId return the id from resource]
+     */
+    private function _setResourceId(){
+        
+        $resourcesId = (new \yii\db\Query())
+            ->select('id')
+            ->from('resources')
+            ->where(['name' => 'Facebook Comments','resourcesId' => 1])
+            ->one();
+        
+
+        return $resourcesId['id'];    
+    }
+
 }

@@ -69,7 +69,7 @@ class m190813_215104_Credencials_Api extends Migration
         ]);
 
         
-
+/*
         $this->insert('{{%credencials_api}}', [
             'userId'              => 1,
             'resourceId'          => 3,
@@ -84,11 +84,11 @@ class m190813_215104_Credencials_Api extends Migration
             'updatedAt'           => '1488153462',
             'createdBy'           => '1',
             'updatedBy'           => '1',
-        ]);
+        ]);*/
 
         $this->insert('{{%credencials_api}}', [
             'userId'              => 1,
-            'resourceId'          => 3,
+            'resourceId'          => 5,
             'name_app'            => 'monitor-facebook',
             'api_key'             => 'encrycpt here',
             'api_secret_key'      => 'encrycpt here',
@@ -102,7 +102,7 @@ class m190813_215104_Credencials_Api extends Migration
             'updatedBy'           => '1',
         ]);
 
-        $this->insert('{{%credencials_api}}', [
+        /*$this->insert('{{%credencials_api}}', [
             'userId'              => 1,
             'resourceId'          => 3,
             'name_app'            => 'monitor-instagram',
@@ -116,11 +116,11 @@ class m190813_215104_Credencials_Api extends Migration
             'updatedAt'           => '1488153462',
             'createdBy'           => '1',
             'updatedBy'           => '1',
-        ]);
+        ]);*/
 
         $this->insert('{{%credencials_api}}', [
             'userId'              => 1,
-            'resourceId'          => 4,
+            'resourceId'          => 9,
             'name_app'            => 'monitor-drive',
             'api_key'             => 'monitor-beta-lg',
             'api_secret_key'      => '1LBf9kTwPswIQuvNx0xH8RiMBZiXNZeBGi_QjTrHVwAc',

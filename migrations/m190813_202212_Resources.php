@@ -28,7 +28,7 @@ class m190813_202212_Resources extends Migration
             'updatedBy'   => $this->integer(),
 
         ], $tableOptions);
-
+        // 1
         $this->insert('{{%resources}}', [
             'name'        => 'Twitter',
             'resourcesId' => '1',
@@ -38,7 +38,7 @@ class m190813_202212_Resources extends Migration
             'updatedBy'   => '1',
         ]);
 
-        
+        // 2
         $this->insert('{{%resources}}', [
             'name'        => 'Live Chat',
             'resourcesId' => '1',
@@ -47,7 +47,7 @@ class m190813_202212_Resources extends Migration
             'createdBy'   => '1',
             'updatedBy'   => '1',
         ]);
-
+        // 3
         $this->insert('{{%resources}}', [
             'name'        => 'Live Chat Conversations',
             'resourcesId' => '1',
@@ -57,7 +57,7 @@ class m190813_202212_Resources extends Migration
             'updatedBy'   => '1',
         ]);
         
-
+        // 4
         $this->insert('{{%resources}}', [
             'name'        => 'Web page',
             'resourcesId' => '2',
@@ -66,7 +66,7 @@ class m190813_202212_Resources extends Migration
             'createdBy'   => '1',
             'updatedBy'   => '1',
         ]);
-
+        // 5
         $this->insert('{{%resources}}', [
             'name'        => 'Facebook Comments',
             'resourcesId' => '1',
@@ -75,7 +75,7 @@ class m190813_202212_Resources extends Migration
             'createdBy'   => '1',
             'updatedBy'   => '1',
         ]);
-
+        // 6
         $this->insert('{{%resources}}', [
             'name'        => 'Instagram Comments',
             'resourcesId' => '1',
@@ -84,7 +84,7 @@ class m190813_202212_Resources extends Migration
             'createdBy'   => '1',
             'updatedBy'   => '1',
         ]);
-
+        // 7
         $this->insert('{{%resources}}', [
             'name'        => 'Facebook Messages',
             'resourcesId' => '1',
@@ -94,7 +94,7 @@ class m190813_202212_Resources extends Migration
             'updatedBy'   => '1',
         ]);
 
-
+        // 8
         $this->insert('{{%resources}}', [
             'name'        => 'Excel Document',
             'resourcesId' => '3',
@@ -103,7 +103,7 @@ class m190813_202212_Resources extends Migration
             'createdBy'   => '1',
             'updatedBy'   => '1',
         ]);
-
+        // 9
         $this->insert('{{%resources}}', [
             'name'        => 'Excel Document Drive',
             'resourcesId' => '4',
