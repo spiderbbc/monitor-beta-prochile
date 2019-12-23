@@ -144,7 +144,7 @@ const listMentions = Vue.component('list-mentions',{
 });
 
 const cloudWords = Vue.component('cloud-words',{
-	'template': '#cloud-words',
+    'template': '#cloud-words',
 	data: function () {
 	    return {
 	    	response:null,
@@ -226,6 +226,32 @@ const tableDate = Vue.component('resource-date-mentions',{
 	}
 });
 
+const listEmojis = Vue.component('list-emojis',{
+    'template' : '#emojis-list',
+	data: function () {
+	    return {
+	    	response:null,
+	    	loaded: false
+	    }
+	},
+	mounted(){
+		setInterval(function () {
+	      this.fetchEmojis();
+	    }.bind(this), refreshTime);
+	},
+	methods:{
+		fetchEmojis(){
+			axios.get(baseUrlApi + 'list-emojis' + '?alertId=' + id )
+		      .then((response) => {
+		        if(typeof response.data.data.length === 'undefined'){
+		        	this.response = response.data.data;
+		        	this.loaded = true;
+		        }
+		    })
+		},
+	},
+});
+
 // vue here
 var vm = new Vue({
 	el: '#alerts-view',
@@ -236,7 +262,7 @@ var vm = new Vue({
 		resourcescount:[],
 	},
 	mounted(){
-
+		this.init();
 		setInterval(function () {
 	      this.fetchIsData();
 	    }.bind(this), refreshTime);
@@ -252,6 +278,12 @@ var vm = new Vue({
 		    if(this.count > 0){
 		    	this.isData = true; 
 		    } 
+		},
+		init(){
+			axios
+		      .get(baseUrlApi)
+		      .then(response => (console.log("calling cronb tab")))
+		      .catch(error => console.log(error))
 		}
 	},
 	components:{
@@ -259,7 +291,8 @@ var vm = new Vue({
 		count_resources,
 		listMentions,
 		cloudWords,
-		tableDate
+		tableDate,
+		listEmojis
 	}	
 });
 

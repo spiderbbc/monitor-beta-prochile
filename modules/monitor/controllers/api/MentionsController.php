@@ -12,8 +12,12 @@ class MentionsController extends \yii\web\Controller
    * @param  [type] $alertId [description]
    * @return [type]          [description]
    */
-  public function actionIndex($alertId){
+  public function actionIndex(){
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    $basePath = \yii::$app->basePath;
+    shell_exec("php {$basePath}\yii daemon/alerts-run 2>&1");
+    shell_exec("php {$basePath}\yii daemon/data-search 2>&1");
+    return array('status'=>true);
 
   }
 
@@ -201,6 +205,46 @@ class MentionsController extends \yii\web\Controller
       
     }// end foreach
     return array('status'=>true,'resourceDateCount' => $resourceDateCount);  
+  }
+
+  /**
+   * [actionListEmojis list emojis count in mentions]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
+  public function actionListEmojis($alertId){
+
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+
+    // list mentions: mentions
+    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
+    $alertsId = [];
+    foreach ($alertMentions as $alertMention){
+      if($alertMention->mentionsCount){
+        $alertsId[] = $alertMention->id;
+      }
+    }
+
+    $mentions = \app\models\Mentions::find()->select(['id','message'])->where(['alert_mentionId' => $alertsId])->asArray()->all();
+    $model = [];
+    foreach ($mentions as $mention){
+      $emojis = \Emoji\detect_emoji($mention['message']);
+      if(!empty($emojis)){
+          foreach($emojis as $emoji){
+            $name = $emoji['short_name'];
+            if(isset($model[$name])){
+              $model[$name]['count'] += 1;
+              
+            }else{
+              $emoji = $emoji['emoji'];
+              $model[$name] = ['count' => 1,'emoji' => $emoji ];
+            }
+          }
+      }
+    }
+
+    return array('data' => $model);    
+
   }
 
   /**

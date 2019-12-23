@@ -101,6 +101,10 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         <div class="row">
             <resource-date-mentions></resource-date-mentions>
         </div>
+
+        <div class="row">
+            <list-emojis></list-emojis>
+        </div>
         
     </div>
     <div v-else>
@@ -121,15 +125,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         <h2>Total de Menciones: {{count}}</h2>
     </div>
 </script>
-
 <!-- template que muestra el total de todas las menciones por Red Social -->
-<!-- <script type="text/x-template" id="view-total-mentions-resources">
-    <div :class="columns" style="margin-right: 5px; width: 250px;">
-        <h4><a :href="fetchResourceName">{{resource}}:</a></h4>
-        <p>{{value}}</p>
-    </div>
-</script> -->
-
 <script type="text/x-template" id="view-total-mentions-resources">
     <div v-if="loaded">
         <div v-for="(value,resource) in response" class="col-md-2">
@@ -145,8 +141,6 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         </div>
     </div>
 </script>
-
-
 <!-- template que muestra todas las menciones -->
 <script type="text/x-template" id="mentions-list">
     <div>
@@ -183,7 +177,6 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         </div>
     </div>
 </script>
-
 <!-- template que muestra las nubes de palabras -->
 <script type="text/x-template" id="cloud-words">
     <div v-if="loaded" class="col-md-12 well">
@@ -192,38 +185,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         <div id="jqcloud" class="jqcloud"></div>
     </div>
 </script>
-
 <!-- template que muestra las tablas recurso: fecha - total -->
-<!-- <script type="text/x-template" id="resource-date-mentions">
-    <div v-if="loaded">
-        <div v-for="(values,resource,index) in response" class="col-md-12 well">
-            <h2>{{resource}}</h2>
-            <h2>{{index + 1}}</h2>
-            <table class="table table-striped table-bordered" cellspacing="0"  style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Fecha</th>
-                        <th>Cant. Menciones</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr v-for="value in values">
-                        <th>{{value.product_searched}}</th>
-                        <th>{{value.date}}</th>
-                        <th>{{value.total}}</th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div> 
-    </div>
-    <div v-else>
-        <div class="loader">
-          <div class="spinner"></div>
-        </div>
-    </div>   
-</script> -->
-
 <script type="text/x-template" id="resource-date-mentions">
     <div v-if="loaded" class="panel-group" id="accordion">
       <div v-for="(values,resource,index) in response" class="panel panel-default">
@@ -233,7 +195,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
             <h2>{{resource}}</h2></a>
           </h2>
         </div>
-        <div :id="collapseValue('',index)" class="panel-collapse collapse in">
+        <div :id="collapseValue('',index)" class="panel-collapse collapse">
           <div class="panel-body">
             <table class="table table-striped table-bordered" cellspacing="0"  style="width:100%">
               <thead>
@@ -261,6 +223,41 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         </div>
     </div>
 </script>
+<!-- template que muestra la tabla de lista de emojis -->
+<script type="text/x-template" id="emojis-list">
+    <div v-if="loaded" class="panel-group" id="accordion">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h2 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#emoji1">
+            <h2>Listas de Emojis</h2></a>
+          </h2>
+        </div>
+        <div id="emoji1" class="panel-collapse collapse">
+          <div class="panel-body">
+            <table class="table table-striped table-bordered" cellspacing="0"  style="width:100%">
+              <thead>
+                  <tr>
+                      <th>Nombre</th>
+                      <th>Emojis</th>
+                      <th>Count</th>
+                  </tr>
+              </thead>
+              <tfoot>
+                  <tr v-for="(emojis,name,index) in response">
+                      <th>{{name}}</th>
+                      <th>{{emojis.emoji}}</th>
+                      <th>{{emojis.count}}</th>
+                  </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+</script>
+
+
 
 
 

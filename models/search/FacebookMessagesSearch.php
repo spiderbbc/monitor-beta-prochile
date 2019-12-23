@@ -175,10 +175,10 @@ class FacebookMessagesSearch {
                         $wordsId = [];
                         for($w = 0; $w < sizeof($words); $w++){
                             $sentence = $model[$product][$id_message][$index][$m]['message_markup'];
-                            $containsCount = \app\helpers\StringHelper::containsCount($sentence, $words[$w]['name']);
+                            $word = " {$words[$w]['name']} ";
+                            $containsCount = \app\helpers\StringHelper::containsCount($sentence, $word);
                             if($containsCount){
                                 $wordsId[$words[$w]['id']] = $containsCount;
-                                $word = $words[$w]['name'];
                                 $model[$product][$id_message][$index][$m]['message_markup']  = \app\helpers\StringHelper::replaceIncaseSensitive($sentence,$word,"<strong>{$word}</strong>");
                             } // end if containsCount
                         }// end loop words

@@ -181,9 +181,9 @@ class TwitterSearch
                 //$msg = \app\helpers\StringHelper::remove_emoji($tweets[$t]['message']);
                 $wordsId = [];
                 for($w = 0; $w < sizeof($words); $w++){
-                    $containsCount = \app\helpers\StringHelper::containsCount($tweets[$t]['message_markup'], $words[$w]['name']);
+                    $word = " {$words[$w]['name']} ";
+                    $containsCount = \app\helpers\StringHelper::containsCount($tweets[$t]['message_markup'], $word);
                     if($containsCount){
-                        $word = " {$words[$w]['name']} ";
                         $tweets[$t]['message_markup'] = \app\helpers\StringHelper::replace($tweets[$t]['message_markup'],$word,"<strong>{$word}</strong>");
                         $wordsId[$words[$w]['id']] = $containsCount;
 

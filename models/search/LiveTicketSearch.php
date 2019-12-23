@@ -286,10 +286,10 @@ class LiveTicketSearch {
                             $wordsId = [];
                             for($w = 0; $w < sizeof($words); $w++){
                                 $sentence = $data[$product][$t]['events'][$e]['message_markup'];
-                                $containsCount = \app\helpers\StringHelper::containsCount($sentence, $words[$w]['name']);
+                                $word = " {$words[$w]['name']} ";
+                                $containsCount = \app\helpers\StringHelper::containsCount($sentence, $word);
                                 if($containsCount){
                                     $wordsId[$words[$w]['id']] = $containsCount;
-                                    $word = $words[$w]['name'];
                                     $data[$product][$t]['events'][$e]['message_markup']  = \app\helpers\StringHelper::replaceIncaseSensitive($sentence,$word,"<strong>{$word}</strong>");
                                 }// end if is containsCount
                             }// en for words
