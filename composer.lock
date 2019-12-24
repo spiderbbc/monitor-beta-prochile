@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9aec3f9a86a618674bf3f85406d89249",
+    "content-hash": "7074e55196183d9337276489424f7576",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -147,7 +147,7 @@
             "version": "3.4.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jquery/jquery-dist.git",
+                "url": "git@github.com:jquery/jquery-dist.git",
                 "reference": "15bc73803f76bc53b654b9fdbbbc096f56d7c03d"
             },
             "dist": {
@@ -2175,7 +2175,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/vuejs/vue.git",
+                "url": "git@github.com:vuejs/vue.git",
                 "reference": "0948d999f2fddf9f90991956493f976273c5da1f"
             },
             "dist": {
@@ -2188,6 +2188,47 @@
                 "MIT"
             ],
             "time": "2017-10-13T03:07:14+00:00"
+        },
+        {
+            "name": "p3k/emoji-detector",
+            "version": "0.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aaronpk/emoji-detector-php.git",
+                "reference": "fb0765845e554f04ccd2b594a7ab8ca44d804bab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aaronpk/emoji-detector-php/zipball/fb0765845e554f04ccd2b594a7ab8ca44d804bab",
+                "reference": "fb0765845e554f04ccd2b594a7ab8ca44d804bab",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Emoji.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aaron Parecki",
+                    "email": "aaron@parecki.com",
+                    "homepage": "https://aaronparecki.com/"
+                }
+            ],
+            "description": "Detect and return all emoji found in a string",
+            "homepage": "https://github.com/aaronpk/emoji-detector-php",
+            "time": "2017-11-30T21:02:53+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",

@@ -43,7 +43,8 @@
         "npm-asset/axios": "dev-master",
         "npm-asset/datatables": "dev-master",
         "npm-asset/highcharts": "dev-master",
-        "bower-asset/jqcloud2": "dev-master"
+        "bower-asset/jqcloud2": "dev-master",
+        "p3k/emoji-detector": "^0.2.1"
 
     },
     "require-dev": {
