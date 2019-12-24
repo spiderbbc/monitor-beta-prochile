@@ -289,6 +289,8 @@ class TwitterApi extends Model {
 	public function search_tweets($params = []){
 		//sleep(1);
 		$this->codebird->setReturnFormat(CODEBIRD_RETURNFORMAT_ARRAY);
+		$this->codebird->setTimeout(4000);
+		$this->codebird->setConnectionTimeout(9000);
 		//ini_set('memory_limit', '800M');  // 
 		return $this->codebird->search_tweets($params, true);
 	}
@@ -510,8 +512,6 @@ class TwitterApi extends Model {
 		
 		Codebird::setConsumerKey($api_key, $api_secret_key); // static, see README
 		$this->codebird = Codebird::getInstance();
-		$this->codebird->setTimeout(4000);
-		$this->codebird->setConnectionTimeout(9000);
 		$reply = $this->codebird->oauth2_token();
 		$bearer_token = $reply->access_token;
 		

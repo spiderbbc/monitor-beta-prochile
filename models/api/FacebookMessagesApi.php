@@ -116,8 +116,6 @@ class FacebookMessagesApi extends Model {
 		 
 		$messages = $this->_getMessages($query_params);
 		
-
-		
 		// if there post
 		if(count($messages)){
 			$filter_messages = $this->_filterFeedsbyProducts($messages);
@@ -253,30 +251,32 @@ class FacebookMessagesApi extends Model {
 						$message =  $messages[$m]['data'][$d]['messages']['data'][$c]['message'];
 						
 						if(!empty($message)){
+							$created_time = $messages[$m]['data'][$d]['messages']['data'][$c]['created_time'];
+							if(\app\helpers\DateHelper::isBetweenDate($created_time,$this->start_date,$this->end_date)){
+								echo $created_time . "\n";
+								$messages[$m]['data'][$d]['messages']['data'][$c]['url'] = $url_link; 
+								// destrutura el product
+								$product_data = \app\helpers\StringHelper::structure_product_to_search($this->products[$p]);
+								// if mentions products
+								$is_contains =  \app\helpers\StringHelper::containsAny($message,$product_data);
+								
+								if($is_contains){
+									if(!in_array($message_id, $id_recolect)){
+										if(!ArrayHelper::keyExists($this->products[$p], $data, false)){
+										$data[$this->products[$p]] = [] ;
+										}
+										if(!ArrayHelper::keyExists($message_id,$data[$this->products[$p]], false)){
 
-							$messages[$m]['data'][$d]['messages']['data'][$c]['url'] = $url_link; 
-							// destrutura el product
-							$product_data = \app\helpers\StringHelper::structure_product_to_search($this->products[$p]);
-							// if mentions products
-							$is_contains =  \app\helpers\StringHelper::containsAny($message,$product_data);
-							
-							if($is_contains){
-								if(!in_array($message_id, $id_recolect)){
-									if(!ArrayHelper::keyExists($this->products[$p], $data, false)){
-									$data[$this->products[$p]] = [] ;
+											$data[$this->products[$p]][$message_id] = $messages[$m]['data'][$d]['messages']['data'];
+											$where['publication_id'] = $message_id;
+											\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p]]);
+											$id_recolect[] = $message_id;
+
+										}
 									}
-									if(!ArrayHelper::keyExists($message_id,$data[$this->products[$p]], false)){
 
-										$data[$this->products[$p]][$message_id] = $messages[$m]['data'][$d]['messages']['data'];
-										$where['publication_id'] = $message_id;
-										\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p]]);
-										$id_recolect[] = $message_id;
-
-									}
-								}
-
-							}// end if contains
-
+								}// end if contains
+							}
 						}// end if not empty
 
 					} // end for messages data
