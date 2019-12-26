@@ -459,19 +459,26 @@ class InstagramCommentsApi extends Model {
 					if(!in_array($posts[$p],$model[$product])){
 						$model[$product][] = $posts[$p];
 						for($c = 0; $c <  sizeof($comments); $c++){
-							$tmp = $comments[$c];
-							$tmp['message_markup'] = $comments[$c]['text'];
-							if(ArrayHelper::keyExists('replies', $comments[$c], false)){
-								if(count($comments[$c]['replies']['data'])){
-									for($r = 0; $r < sizeof($comments[$c]['replies']['data']);$r++){
-										$tmp['replies']['data'][$r]['message_markup'] = $comments[$c]['replies']['data'][$r]['text'];
-									}//end for replies
-								}// end if !count
-							}// end if array keyExists
-							if(!in_array($comments[$c],$model[$product][$p]['comments'])){
-								$model[$product][$p]['comments'][] = $tmp;
-							}// end if in array
 
+							if(\app\helpers\DateHelper::isBetweenDate($comments[$c]['timestamp'],$this->start_date,$this->end_date)){
+								$tmp = $comments[$c];
+								$tmp['message_markup'] = $comments[$c]['text'];
+								if(ArrayHelper::keyExists('replies', $comments[$c], false)){
+									if(count($comments[$c]['replies']['data'])){
+										for($r = 0; $r < sizeof($comments[$c]['replies']['data']);$r++){
+											if(\app\helpers\DateHelper::isBetweenDate($tmp['replies']['data'][$r]['timestamp'],$this->start_date,$this->end_date)){
+												$tmp['replies']['data'][$r]['message_markup'] = $comments[$c]['replies']['data'][$r]['text'];
+											}else{
+												unset($tmp['replies']['data'][$r]);
+											}
+										}//end for replies
+									}// end if !count
+								}// end if array keyExists
+								if(!in_array($comments[$c],$model[$product][$p]['comments'])){
+									$model[$product][$p]['comments'][] = $tmp;
+								}// end if in array
+
+							}
 						}
 					}// en if in array
 
