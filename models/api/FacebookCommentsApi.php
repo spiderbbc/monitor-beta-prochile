@@ -119,13 +119,6 @@ class FacebookCommentsApi extends Model {
 		$model = $this->_orderFeedsComments($feeds_reviews);
 		return $model;
 
-		// if not empty post
-		/*if(!empty($feeds[0]['data'])){
-			$feeds_comments = $this->_getComments($feeds);
-			$feeds_reviews = $this->_getSubComments($feeds_comments);
-			$model = $this->_orderFeedsComments($feeds_reviews);
-			return $model;
-		}*/
 			
 	}
 
@@ -555,42 +548,50 @@ class FacebookCommentsApi extends Model {
 		for($c=0; $c < sizeOf($comments['data']); $c++){
 			if(!\app\helpers\StringHelper::isEmpty($comments['data'][$c]['message'])){
 
-				$data[$index]['id'] = $comments['data'][$c]['id'];
-				$data[$index]['created_time'] = $comments['data'][$c]['created_time'];
-				$data[$index]['like_count'] = $comments['data'][$c]['like_count'];
-				$data[$index]['permalink_url'] = $comments['data'][$c]['permalink_url'];
-				// remove emoji 
-				//$message = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['message']);
-				// remove accent
-				$message = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['message']);
+				if(\app\helpers\DateHelper::isBetweenDate($comments['data'][$c]['created_time'],$this->start_date,$this->end_date)){
 
-				$data[$index]['message'] = $message;
-				$data[$index]['message_markup'] = $message;
+					$data[$index]['id'] = $comments['data'][$c]['id'];
+					$data[$index]['created_time'] = $comments['data'][$c]['created_time'];
+					$data[$index]['like_count'] = $comments['data'][$c]['like_count'];
+					$data[$index]['permalink_url'] = $comments['data'][$c]['permalink_url'];
+					// remove emoji 
+					//$message = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['message']);
+					// remove accent
+					$message = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['message']);
 
-				
-				if(isset($comments['data'][$c]['comments'])){
+					$data[$index]['message'] = $message;
+					$data[$index]['message_markup'] = $message;
 
-					for($s= 0; $s < sizeOf($comments['data'][$c]['comments']['data']); $s++){
-						$index ++;
-						$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
-						$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
-						if(isset($comments['data'][$c]['comments']['data'][$s][0]['permalink_url'])){
-							$data[$index]['permalink_url'] = $comments['data'][$c]['comments']['data'][$s][0]['permalink_url'];
+					
+					if(isset($comments['data'][$c]['comments'])){
+
+						for($s= 0; $s < sizeOf($comments['data'][$c]['comments']['data']); $s++){
+
+							if(\app\helpers\DateHelper::isBetweenDate($comments['data'][$c]['comments']['data'][$s][0]['created_time'],$this->start_date,$this->end_date)){
+
+								$index ++;
+								$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
+								$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
+								if(isset($comments['data'][$c]['comments']['data'][$s][0]['permalink_url'])){
+									$data[$index]['permalink_url'] = $comments['data'][$c]['comments']['data'][$s][0]['permalink_url'];
+								}
+								if(isset($comments['data'][$c]['comments']['data'][$s][0]['like_count'])){
+									$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
+								}
+								
+								// remove emoji
+								//$coment = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
+								$coment = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['comments']['data'][$s][0]['message']);
+
+								$data[$index]['message'] = $coment;
+								$data[$index]['message_markup'] = $coment;
+
+							}
 						}
-						if(isset($comments['data'][$c]['comments']['data'][$s][0]['like_count'])){
-							$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
-						}
-						
-						// remove emoji
-						//$coment = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
-						$coment = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['comments']['data'][$s][0]['message']);
-
-						$data[$index]['message'] = $coment;
-						$data[$index]['message_markup'] = $coment;
-						
 					}
+					$index ++;
+
 				}
-				$index ++;
 
 			}			
 		}
