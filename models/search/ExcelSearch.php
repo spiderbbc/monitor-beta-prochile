@@ -16,6 +16,9 @@ class ExcelSearch {
     public $isDictionaries = false;
     public $isBoolean = false;
 
+    public $start_date;
+    public $end_date;
+
 	/**
      * [load load in to local variables]
      * @param  [array] $params [product [tweets]]
@@ -30,7 +33,10 @@ class ExcelSearch {
         $this->isDictionaries = $this->_isDictionaries();
         $this->products = $this->getProducts();
         $this->resourcesId = $this->_setResourceId();
-      
+
+        $this->_setDateAlerts();
+
+
         // is boolean
 
         // loop data
@@ -55,6 +61,8 @@ class ExcelSearch {
         }
         // looking products
         $this->searchProductsData();
+        // filter date
+        $this->filterData();
         // save products found it
         $this->saveProductsMentionsAlerts();
         
@@ -162,6 +170,24 @@ class ExcelSearch {
         
     }
 
+    private function filterData(){
+        $model = [];
+
+        foreach($this->data as $product => $data){
+            for($d = 0; $d < sizeof($data); $d++){
+                $mention_date = \Yii::$app->formatter->asDatetime($data[$d]['Mention Date'],'yyyy-MM-dd');
+                if(\app\helpers\DateHelper::isBetweenDate($mention_date,$this->start_date,$this->end_date)){
+                    $model[$product][] = $this->data[$product][$d];
+
+                }
+
+            }
+
+        }
+
+        $this->data = $model;
+    }
+
     private function saveProductsMentionsAlerts(){
     	$products = array_keys($this->data);
     	$where = [
@@ -189,6 +215,8 @@ class ExcelSearch {
     	}
 
     }
+
+
 
     /**
      * methodh applied depends of type search
@@ -438,5 +466,11 @@ class ExcelSearch {
 
 		return ArrayHelper::getColumn($resourcesId,'id')[0];    
 	}
+
+    private function _setDateAlerts(){
+        $config = \app\models\AlertConfig::findOne(['alertId' => $this->alertId]);
+        $this->start_date = $config->start_date;
+        $this->end_date = $config->end_date;
+    }
 
 }
