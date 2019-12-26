@@ -100,16 +100,19 @@ class DateHelper
      * @return boolean       [true if or not if is not]
      */
     public static function isBetweenDate($date,$from,$to){
+        // set default timezone
+        date_default_timezone_set('America/Santiago');
 
-        $date = strtotime($date);
+        $date = date('Y-m-d', strtotime(str_replace("/", "-", $date)));
 
-        if($date > $from && $date < $to) {
-           return true;
-        } else {
+        $stratDate = date('Y-m-d', $from);
+        $endDate = date('Y-m-d', $to);
+
+        if (($date >= $stratDate) && ($date <= $endDate)){
+            return true;
+        }else{
             return false;  
-        } 
-
-
+        }
 
     }
 }

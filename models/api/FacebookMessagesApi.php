@@ -248,10 +248,8 @@ class FacebookMessagesApi extends Model {
 				$id_recolect = [];
 				for($p = 0; $p < sizeof($this->products); $p++){
 					for($c = 0; $c < sizeOf($messages[$m]['data'][$d]['messages']['data']); $c++){
-						
 
 						$message =  $messages[$m]['data'][$d]['messages']['data'][$c]['message'];
-						
 						if(!empty($message)){
 
 							$messages[$m]['data'][$d]['messages']['data'][$c]['url'] = $url_link; 
@@ -263,11 +261,11 @@ class FacebookMessagesApi extends Model {
 							if($is_contains){
 								if(!in_array($message_id, $id_recolect)){
 									if(!ArrayHelper::keyExists($this->products[$p], $data, false)){
-									$data[$this->products[$p]] = [] ;
+										$data[$this->products[$p]] = [] ;
 									}
 									if(!ArrayHelper::keyExists($message_id,$data[$this->products[$p]], false)){
 
-										$data[$this->products[$p]][$message_id] = $messages[$m]['data'][$d]['messages']['data'];
+										$data[$this->products[$p]][$message_id] = $this->_filterByDate($messages[$m]['data'][$d]['messages']['data']);
 										$where['publication_id'] = $message_id;
 										\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p]]);
 										$id_recolect[] = $message_id;
@@ -283,9 +281,18 @@ class FacebookMessagesApi extends Model {
 				} // end for products
 			}// end for data
 		}// end for messages
-
 		return $data;
 
+	}
+
+	private function _filterByDate($messages){
+		$data = [];
+		for($c = 0; $c < sizeOf($messages); $c++){
+			if(\app\helpers\DateHelper::isBetweenDate($messages[$c]['created_time'],$this->start_date,$this->end_date)){
+				$data[] = $messages[$c];
+			}
+		}
+		return $data;
 	}
 
 
@@ -401,25 +408,6 @@ class FacebookMessagesApi extends Model {
 	 */
 	public function saveJsonFile(){
 		$source = 'Facebook Messages';
-		
-		/*if(!is_null($this->data)){
-			foreach ($this->data as $data){
-				foreach($data as $product => $feeds){
-					foreach($feeds as $feed){
-						$jsonfile = new JsonFile($this->alertId,$source);
-						if(!empty($feed)){
-							$jsonfile->load($data);
-						}
-						$jsonfile->save();
-					}
-					
-				}
-			}
-		}
-
-*/
-		/*var_dump($this->data);
-		die();*/
 		if(!is_null($this->data)){
 			foreach ($this->data as $data){
 				foreach($data as $product => $feed){
