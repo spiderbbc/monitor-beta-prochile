@@ -138,15 +138,17 @@ class InstagramSearch
                                     if(count($data[$product][$p]['comments'][$c]['replies']['data'])){
                                         $replies = $data[$product][$p]['comments'][$c]['replies']['data'];
                                         for($r = 0; $r < sizeof($replies); $r++ ){
-                                            $user_replies = $this->saveUserMencions($replies[$r]['username']);
-                                            $posts[$p]['comments'][$c]['permalink'] = $permalink;
-                                            $replies_mention = $this->saveMencions($replies[$r],$alertsMencionsModel['id'],$user_replies->id);
-                                            if($this->isDictionaries && ArrayHelper::keyExists('wordsId', $replies[$r], false)){
-                                                $wordIds = $replies[$r]['wordsId'];
-                                                // save Keywords Mentions 
-                                                $this->saveKeywordsMentions($wordIds,$replies_mention->id);
-                                            }
+                                            if(isset($replies[$r]['message_markup'])){
+                                                $user_replies = $this->saveUserMencions($replies[$r]['username']);
+                                                $posts[$p]['comments'][$c]['permalink'] = $permalink;
+                                                $replies_mention = $this->saveMencions($replies[$r],$alertsMencionsModel['id'],$user_replies->id);
+                                                if($this->isDictionaries && ArrayHelper::keyExists('wordsId', $replies[$r], false)){
+                                                    $wordIds = $replies[$r]['wordsId'];
+                                                    // save Keywords Mentions 
+                                                    $this->saveKeywordsMentions($wordIds,$replies_mention->id);
+                                                }
 
+                                            }
                                         }
                                     }
 
@@ -191,14 +193,16 @@ class InstagramSearch
                                 for($r = 0; $r < sizeof($replies); $r++){
                                     $wordsIdReplies = [];
                                     for($w = 0; $w < sizeof($words); $w++){
-                                        $sentence_replies = $mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup'];
-                                        $containsCount = \app\helpers\StringHelper::containsCount($sentence_replies, $word);
-                                        if($containsCount){
-                                            $wordsIdReplies[$words[$w]['id']] = $containsCount;
-                                            $word_replies = $words[$w]['name'];
-                                            $mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup']  = \app\helpers\StringHelper::replaceIncaseSensitive($sentence_replies,$word_replies,"<strong>{$word_replies}</strong>");
-                                        }
+                                        if(isset($mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup'])){
+                                            $sentence_replies = $mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup'];
+                                            $containsCount = \app\helpers\StringHelper::containsCount($sentence_replies, $word);
+                                            if($containsCount){
+                                                $wordsIdReplies[$words[$w]['id']] = $containsCount;
+                                                $word_replies = $words[$w]['name'];
+                                                $mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup']  = \app\helpers\StringHelper::replaceIncaseSensitive($sentence_replies,$word_replies,"<strong>{$word_replies}</strong>");
+                                            }
 
+                                        }
                                     }// end loop words
                                     if(!empty($wordsIdReplies)){
                                         $mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['wordsId'] = $wordsIdReplies;

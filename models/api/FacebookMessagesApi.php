@@ -112,12 +112,8 @@ class FacebookMessagesApi extends Model {
 	 * @return [type]               [description]
 	 */
 	private function _getDataApi($query_params){
-
 		 
 		$messages = $this->_getMessages($query_params);
-		
-
-		
 		// if there post
 		if(count($messages)){
 			$filter_messages = $this->_filterFeedsbyProducts($messages);
@@ -265,7 +261,12 @@ class FacebookMessagesApi extends Model {
 									}
 									if(!ArrayHelper::keyExists($message_id,$data[$this->products[$p]], false)){
 
-										$data[$this->products[$p]][$message_id] = $this->_filterByDate($messages[$m]['data'][$d]['messages']['data']);
+										
+										$filter_messages =  $this->_filterByDate($messages[$m]['data'][$d]['messages']['data']);
+										if(!empty($filter_messages)){
+											$data[$this->products[$p]][$message_id] = $filter_messages;
+										}
+
 										$where['publication_id'] = $message_id;
 										\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p]]);
 										$id_recolect[] = $message_id;

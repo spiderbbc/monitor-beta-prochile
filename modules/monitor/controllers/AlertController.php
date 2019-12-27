@@ -189,13 +189,6 @@ class AlertController extends Controller
             $resource = \app\models\Resources::findOne(['resourcesId' => 3]);
             // save in file json
             \app\helpers\DocumentHelper::saveJsonFile($alert->id,$resource->name,$fileData);
-            // add resource document to the alert
-            array_push($alert->alertResourceId,$resource->id);
-            if(!$config->saveAlertconfigSources($alert->alertResourceId)){
-                //sources model
-                $error = true;
-                $messages = $config->errors;
-            }
           }
 
           
@@ -278,7 +271,7 @@ class AlertController extends Controller
             // save in file json
             \app\helpers\DocumentHelper::saveJsonFile($alert->id,$resource->name,$fileData);
             // add resource document to the alert
-            array_push($alert->alertResourceId,$resource->id);
+            //array_push($alert->alertResourceId,$resource->id);
             
           }else{
             if($isDocumentExist){

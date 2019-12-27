@@ -4,7 +4,7 @@ const baseUrlApi  = 'http://localhost/monitor-beta/web/monitor/api/mentions/';
 const baseUrlView = 'http://localhost/monitor-beta/web/monitor/alert/';
 
 let refreshTime = 10000;
-let refreshTimeTable = 30000;
+let refreshTimeTable = 100000;
 
 let controllerName = {
 	"Twitter": "Twitter",
@@ -262,7 +262,7 @@ var vm = new Vue({
 		resourcescount:[],
 	},
 	mounted(){
-		this.init();
+		//this.init();
 		setInterval(function () {
 	      this.fetchIsData();
 	    }.bind(this), refreshTime);

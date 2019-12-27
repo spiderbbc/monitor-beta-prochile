@@ -468,8 +468,6 @@ class InstagramCommentsApi extends Model {
 										for($r = 0; $r < sizeof($comments[$c]['replies']['data']);$r++){
 											if(\app\helpers\DateHelper::isBetweenDate($tmp['replies']['data'][$r]['timestamp'],$this->start_date,$this->end_date)){
 												$tmp['replies']['data'][$r]['message_markup'] = $comments[$c]['replies']['data'][$r]['text'];
-											}else{
-												unset($tmp['replies']['data'][$r]);
 											}
 										}//end for replies
 									}// end if !count

@@ -183,8 +183,14 @@ class LiveTicketApi extends Model {
 							for($e = 0; $e < sizeOf($ticket->events); $e++){
 								
 								if(property_exists($ticket->events[$e],'message')){
-									$ticket->events[$e]->message = \app\helpers\StringHelper::collapseWhitespace($ticket->events[$e]->message);
-									$ticket->events[$e]->message_markup = $ticket->events[$e]->message;
+									if(\app\helpers\DateHelper::isBetweenDate($ticket->events[$e]->date,$this->start_date,$this->end_date)){
+										$ticket->events[$e]->message = \app\helpers\StringHelper::collapseWhitespace($ticket->events[$e]->message);
+										$ticket->events[$e]->message_markup = $ticket->events[$e]->message;
+									}else{
+										unset($ticket->events[$e]->message);
+									}
+
+									
 								}// end if property_exists
 							}
 						}// end if ArrayHelper

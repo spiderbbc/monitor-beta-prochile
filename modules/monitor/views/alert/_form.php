@@ -180,13 +180,43 @@ use mludvik\tagsinput\TagsInputWidget;
                         'name' => 'files',
                         'pluginOptions' => [
                             'showCaption' => false,
-                            'showRemove' => false,
+                            'showRemove' => true,
                             'showUpload' => false,
                             'browseClass' => 'btn btn-primary btn-block',
                             'browseIcon' => '<i class="glyphicon glyphicon-file"></i> ',
                             'browseLabel' =>  'Select File'
                         ],
                         'options' => ['accept' => 'text/xlsx'],
+                        'pluginEvents' => [
+                               "fileselect" => "function(e) { 
+                                    var social = $('#social_resourcesId');
+                                    var current_values = social.val();
+                                    var data = {
+                                        id: '8',
+                                        text: 'Excel Document'
+                                    };
+
+                                    // Set the value, creating a new option if necessary
+                                    if (social.find('option[value=' + data.id +']').length) {
+                                        current_values.push(data.id);
+                                        social.val(current_values).trigger('change');
+                                    } else { 
+                                        // Create a DOM Option and pre-select by default
+                                        var newOption = new Option(data.text, data.id, true, true);
+                                        // Append it to the select
+                                        social.append(newOption).trigger('change');
+                                    }
+                               }",
+                               "fileclear" => " function(e){ 
+                                    var social = $('#social_resourcesId');
+                                    var current_values = social.val();
+                                    var index = current_values.indexOf(8);
+                                    if(index === -1){
+                                        current_values.splice(index, 1);
+                                    }
+                                    social.val(current_values).trigger('change');
+                                }"
+                        ]
                     ]); 
                     ?>
                 </div>
