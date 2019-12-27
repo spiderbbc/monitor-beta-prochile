@@ -75,6 +75,18 @@ class DaemonController extends Controller
         $drive->getContentDocument();
         return ExitCode::OK;
     }
+
+    public function actionVerifyAlertsFinish(){
+        $alert = new Alerts();
+        $alertsConfig = $alert->getBringAllAlertsToFinish();
+        var_dump($alertsConfig);
+        
+
+        $this->stdout("runnig verify that alerts are finished.. \n", Console::BOLD);
+
+
+        return ExitCode::OK;
+    }
     /**
      * [only development function]
      * @return [type] [description]

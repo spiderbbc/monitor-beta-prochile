@@ -152,6 +152,44 @@ class Alerts extends \yii\db\ActiveRecord
        return $alertsConfig;
     }
 
+    public function getBringAllAlertsToFinish(){
+        // get time
+        $expression = new \yii\db\Expression('NOW()');
+        $now = (new \yii\db\Query)->select($expression)->scalar();
+        $timestamp = time($now);
+        // get all alert with relation config with the condicion start_date less or equals to $timestamp
+        $alerts = $this->find()->where([
+            'status' => self::STATUS_ACTIVE,
+        ])->with(['config' => function($query) use($timestamp) {
+            $query->andWhere([
+                'and',
+                    ['<=', 'end_date', $timestamp],
+                   // ['>=', 'end_date', $timestamp],
+                ]);
+            $query->with(['configSources.alertResource']);
+        }
+        ])->orderBy('id DESC')->asArray()->all();
+
+        $alertsConfig = [];
+
+        if(!empty($alerts)){
+            // loop searching alert with mentions relation and config relation
+            for($a = 0; $a < sizeOf($alerts); $a++){
+                if((!empty($alerts[$a]['config']))){
+                    // reduce configSources.alertResource
+                    for($s = 0; $s < sizeOf($alerts[$a]['config']['configSources']); $s ++){
+                        $alertResource = ArrayHelper::getValue($alerts[$a]['config']['configSources'][$s], 'alertResource');
+                        $alerts[$a]['config']['configSources'][$s] = $alertResource;
+                    } // end for $alerts[$a]['config']['configSources']
+                    array_push($alertsConfig, $alerts[$a]);
+                } // end if not empty
+            } // end loop alerts config
+
+        }
+
+        return $alertsConfig;
+    }
+
     /**
      * [getDictionaries get dictionaries for form]
      * @return [array] []
