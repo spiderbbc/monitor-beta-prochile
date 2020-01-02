@@ -117,6 +117,7 @@ class FacebookCommentsApi extends Model {
 		$feeds_comments = $this->_getComments($feedsCandidate);
 		$feeds_reviews = $this->_getSubComments($feeds_comments);
 		$model = $this->_orderFeedsComments($feeds_reviews);
+		$this->searchFinish();
 		return $model;
 
 		// if not empty post
@@ -682,6 +683,44 @@ class FacebookCommentsApi extends Model {
 				$jsonfile->save();
 			}
 		}
+
+	}
+
+	private function searchFinish()
+	{
+		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
+		    ->where([
+				'alertId'       => $this->alertId,
+				'resourcesId'   => $this->resourcesId,
+				'type'          => 'comments',
+		    ])
+		->all();
+
+		$model = [
+            'Facebook Comments' => [
+                'resourceId' => $this->resourcesId,
+                'status' => 'Finish'
+            ]
+        ];
+
+		if(count($dates_searched)){
+			$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+
+			$count = 0;
+			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
+				$date_searched = $dates_searched[$i]['date_searched'];
+				if($date_searched >= $date_searched_flag){
+	    			$count++;
+	    		}
+			}
+
+			if($count >= count($dates_searched)){
+				$model['Facebook Comments']['status'] = 'Finish'; 
+			}
+
+		}
+		
+		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
 
 	}
 

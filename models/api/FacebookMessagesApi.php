@@ -121,6 +121,7 @@ class FacebookMessagesApi extends Model {
 			$filter_messages = $this->_filterFeedsbyProducts($messages);
 			$filter_last_messages = $this->_filterByLastMessage($filter_messages);
 			$model = $this->_addingMessagesMarkup($filter_last_messages);
+			$this->searchFinish();
 			return $model;
 
 		}
@@ -253,7 +254,6 @@ class FacebookMessagesApi extends Model {
 						if(!empty($message)){
 							$created_time = $messages[$m]['data'][$d]['messages']['data'][$c]['created_time'];
 							if(\app\helpers\DateHelper::isBetweenDate($created_time,$this->start_date,$this->end_date)){
-								echo $created_time . "\n";
 								$messages[$m]['data'][$d]['messages']['data'][$c]['url'] = $url_link; 
 								// destrutura el product
 								$product_data = \app\helpers\StringHelper::structure_product_to_search($this->products[$p]);
@@ -429,6 +429,44 @@ class FacebookMessagesApi extends Model {
 				$jsonfile->save();
 			}
 		}
+	}
+
+	private function searchFinish()
+	{
+		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
+		    ->where([
+				'alertId'       => $this->alertId,
+				'resourcesId'   => $this->resourcesId,
+				'type'          => 'messages Facebook',
+		    ])
+		->all();
+
+		$model = [
+            'Facebook' => [
+                'resourceId' => $this->resourcesId,
+                'status' => 'Finish'
+            ]
+        ];
+
+		if(count($dates_searched)){
+			$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+
+			$count = 0;
+			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
+				$date_searched = $dates_searched[$i]['date_searched'];
+				if($date_searched >= $date_searched_flag){
+	    			$count++;
+	    		}
+			}
+
+			if($count >= count($dates_searched)){
+				$model['Facebook']['status'] = 'Finish'; 
+			}
+
+		}
+		
+		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
+
 	}
 
 	/**

@@ -59,7 +59,11 @@ class TwitterApi extends Model {
 			
 			// prepare the products
 			$products = $alert['products'];
+			// set if search finish
+			$this->searchFinish();
+			// set products
 			$products_params = $this->setProductsParams($products);
+
 			return $products_params;
 		}
 		return false;
@@ -105,7 +109,8 @@ class TwitterApi extends Model {
 					
 
 		    		if($date_searched >= $date_searched_flag){
-		    			break;
+		    			
+		    			return null;
 		    		}
 
 		    		
@@ -162,7 +167,10 @@ class TwitterApi extends Model {
 			Console::stdout("loop in call method {$product}.. \n", Console::BOLD);
 			$this->data[$product] = $this->_getTweets($products_params[$p]);
 		}
+		
+
 		$data = $this->_orderTweets($this->data);
+
 		return $data;
 	}
 
@@ -454,6 +462,44 @@ class TwitterApi extends Model {
 			$entities['url'] = '-';
 		}
 		return $entities;
+	}
+
+	private function searchFinish()
+	{
+		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
+		    ->where([
+				'alertId'       => $this->alertId,
+				'resourcesId'   => $this->resourcesId,
+				'type'          => 'tweet',
+		    ])
+		->all();
+
+		$model = [
+            'Twitter' => [
+                'resourceId' => $this->resourcesId,
+                'status' => 'Pending'
+            ]
+        ];
+
+		if(count($dates_searched)){
+			$date_searched_flag   = strtotime(DateHelper::add($this->end_date,'1 day'));
+
+			$count = 0;
+			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
+				$date_searched = $dates_searched[$i]['date_searched'];
+				if($date_searched >= $date_searched_flag){
+	    			$count++;
+	    		}
+			}
+
+			if($count >= count($dates_searched)){
+				$model['Twitter']['status'] = 'Finish'; 
+			}
+
+		}
+
+		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
+
 	}
 
 

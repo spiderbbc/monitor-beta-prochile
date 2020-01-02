@@ -40,7 +40,9 @@ class LiveChatsApi extends Model {
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
-
+			// set if search finish
+			$this->searchFinish();
+			
 			return $this->_setParams();
 		}
 		return false;
@@ -293,6 +295,44 @@ class LiveChatsApi extends Model {
 			$jsonfile->load($chats);
 			$jsonfile->save();
 		}
+
+	}
+
+	private function searchFinish()
+	{
+		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
+		    ->where([
+				'alertId'       => $this->alertId,
+				'resourcesId'   => $this->resourcesId,
+				'type'          => 'chat',
+		    ])
+		->all();
+
+		$model = [
+            'LiveChat' => [
+                'resourceId' => $this->resourcesId,
+                'status' => 'Pending'
+            ]
+        ];
+
+		if(count($dates_searched)){
+			$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+
+			$count = 0;
+			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
+				$date_searched = $dates_searched[$i]['date_searched'];
+				if($date_searched >= $date_searched_flag){
+	    			$count++;
+	    		}
+			}
+
+			if($count >= count($dates_searched)){
+				$model['LiveChat']['status'] = 'Finish'; 
+			}
+
+		}
+		
+		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
 
 	}
 
