@@ -57,8 +57,9 @@ class TwitterApi extends Model {
 
 			$this->country       = (!is_null($alert['config']['country'])) ? $this->_setCountry($alert['config']['country']): null ;
 			
-			// prepare the products
-			$products = $alert['products'];
+			// order products by his  length
+			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
+			$products   = $alert['products'];
 			// set if search finish
 			$this->searchFinish();
 			// set products
@@ -106,13 +107,15 @@ class TwitterApi extends Model {
 		    		list('since_id' => $since_id,'max_id' => $max_id,'date_searched' => $date_searched) = $query;
 		    		
 					$date_searched_flag   = strtotime(DateHelper::add($this->end_date,'1 day'));
+					//echo $date_searched_flag."\n";
+					//echo $date_searched."\n";
 					
 
-		    		if($date_searched >= $date_searched_flag){
+		    		
+					if($date_searched >= $date_searched_flag){
 		    			
-		    			return null;
+		    			continue;
 		    		}
-
 		    		
 		    		$since_date   = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
 					$until_date   = DateHelper::add($date_searched,'1 day');
@@ -482,11 +485,13 @@ class TwitterApi extends Model {
         ];
 
 		if(count($dates_searched)){
-			$date_searched_flag   = strtotime(DateHelper::add($this->end_date,'1 day'));
+			$date_searched_flag   = $this->end_date;
+			//echo $date_searched_flag."\n";
 
 			$count = 0;
 			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
 				$date_searched = $dates_searched[$i]['date_searched'];
+				//echo $date_searched."\n";
 				if($date_searched >= $date_searched_flag){
 	    			$count++;
 	    		}
