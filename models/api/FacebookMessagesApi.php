@@ -114,11 +114,16 @@ class FacebookMessagesApi extends Model {
 	private function _getDataApi($query_params){
 		 
 		$messages = $this->_getMessages($query_params);
+<<<<<<< HEAD
+=======
+		
+>>>>>>> finaly_alert
 		// if there post
 		if(count($messages)){
 			$filter_messages = $this->_filterFeedsbyProducts($messages);
 			$filter_last_messages = $this->_filterByLastMessage($filter_messages);
 			$model = $this->_addingMessagesMarkup($filter_last_messages);
+			$this->searchFinish();
 			return $model;
 
 		}
@@ -247,6 +252,7 @@ class FacebookMessagesApi extends Model {
 
 						$message =  $messages[$m]['data'][$d]['messages']['data'][$c]['message'];
 						if(!empty($message)){
+<<<<<<< HEAD
 
 							$messages[$m]['data'][$d]['messages']['data'][$c]['url'] = $url_link; 
 							// destrutura el product
@@ -275,7 +281,33 @@ class FacebookMessagesApi extends Model {
 								}
 
 							}// end if contains
+=======
+							$created_time = $messages[$m]['data'][$d]['messages']['data'][$c]['created_time'];
+							if(\app\helpers\DateHelper::isBetweenDate($created_time,$this->start_date,$this->end_date)){
+								$messages[$m]['data'][$d]['messages']['data'][$c]['url'] = $url_link; 
+								// destrutura el product
+								$product_data = \app\helpers\StringHelper::structure_product_to_search($this->products[$p]);
+								// if mentions products
+								$is_contains =  \app\helpers\StringHelper::containsAny($message,$product_data);
+								
+								if($is_contains){
+									if(!in_array($message_id, $id_recolect)){
+										if(!ArrayHelper::keyExists($this->products[$p], $data, false)){
+										$data[$this->products[$p]] = [] ;
+										}
+										if(!ArrayHelper::keyExists($message_id,$data[$this->products[$p]], false)){
 
+											$data[$this->products[$p]][$message_id] = $messages[$m]['data'][$d]['messages']['data'];
+											$where['publication_id'] = $message_id;
+											\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p]]);
+											$id_recolect[] = $message_id;
+
+										}
+									}
+>>>>>>> finaly_alert
+
+								}// end if contains
+							}
 						}// end if not empty
 
 					} // end for messages data
@@ -418,6 +450,48 @@ class FacebookMessagesApi extends Model {
 				$jsonfile->save();
 			}
 		}
+	}
+
+	private function searchFinish()
+	{
+		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
+		    ->where([
+				'alertId'       => $this->alertId,
+				'resourcesId'   => $this->resourcesId,
+				'type'          => 'messages Facebook',
+		    ])
+		->all();
+
+		$model = [
+            'Facebook' => [
+                'resourceId' => $this->resourcesId,
+                'status' => 'Finish'
+            ]
+        ];
+
+		if(count($dates_searched)){
+			$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+
+			$count = 0;
+			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
+				$date_searched = $dates_searched[$i]['date_searched'];
+				$since = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
+
+				if($date_searched >= $date_searched_flag || !\app\helpers\DateHelper::isToday($since)){
+	    			$count++;
+	    		}
+			}
+
+			if($count >= count($dates_searched)){
+				$model['Facebook']['status'] = 'Finish'; 
+			}else{
+				$model['Facebook']['status'] = 'Pending'; 
+			}
+
+		}
+		
+		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
+
 	}
 
 	/**

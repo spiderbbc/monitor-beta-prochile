@@ -57,9 +57,14 @@ class TwitterApi extends Model {
 
 			$this->country       = (!is_null($alert['config']['country'])) ? $this->_setCountry($alert['config']['country']): null ;
 			
-			// prepare the products
-			$products = $alert['products'];
+			// order products by his  length
+			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
+			$products   = $alert['products'];
+			// set if search finish
+			$this->searchFinish();
+			// set products
 			$products_params = $this->setProductsParams($products);
+
 			return $products_params;
 		}
 		return false;
@@ -102,12 +107,15 @@ class TwitterApi extends Model {
 		    		list('since_id' => $since_id,'max_id' => $max_id,'date_searched' => $date_searched) = $query;
 		    		
 					$date_searched_flag   = strtotime(DateHelper::add($this->end_date,'1 day'));
+					//echo $date_searched_flag."\n";
+					//echo $date_searched."\n";
 					
 
-		    		if($date_searched >= $date_searched_flag){
-		    			break;
+		    		
+					if($date_searched >= $date_searched_flag){
+		    			
+		    			continue;
 		    		}
-
 		    		
 		    		$since_date   = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
 					$until_date   = DateHelper::add($date_searched,'1 day');
@@ -162,7 +170,10 @@ class TwitterApi extends Model {
 			Console::stdout("loop in call method {$product}.. \n", Console::BOLD);
 			$this->data[$product] = $this->_getTweets($products_params[$p]);
 		}
+		
+
 		$data = $this->_orderTweets($this->data);
+
 		return $data;
 	}
 
@@ -289,6 +300,8 @@ class TwitterApi extends Model {
 	public function search_tweets($params = []){
 		//sleep(1);
 		$this->codebird->setReturnFormat(CODEBIRD_RETURNFORMAT_ARRAY);
+		$this->codebird->setTimeout(4000);
+		$this->codebird->setConnectionTimeout(9000);
 		//ini_set('memory_limit', '800M');  // 
 		return $this->codebird->search_tweets($params, true);
 	}
@@ -454,6 +467,46 @@ class TwitterApi extends Model {
 		return $entities;
 	}
 
+	private function searchFinish()
+	{
+		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
+		    ->where([
+				'alertId'       => $this->alertId,
+				'resourcesId'   => $this->resourcesId,
+				'type'          => 'tweet',
+		    ])
+		->all();
+
+		$model = [
+            'Twitter' => [
+                'resourceId' => $this->resourcesId,
+                'status' => 'Pending'
+            ]
+        ];
+
+		if(count($dates_searched)){
+			$date_searched_flag   = $this->end_date;
+			//echo $date_searched_flag."\n";
+
+			$count = 0;
+			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
+				$date_searched = $dates_searched[$i]['date_searched'];
+				//echo $date_searched."\n";
+				if($date_searched >= $date_searched_flag){
+	    			$count++;
+	    		}
+			}
+
+			if($count >= count($dates_searched)){
+				$model['Twitter']['status'] = 'Finish'; 
+			}
+
+		}
+
+		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
+
+	}
+
 
 	private function _setCountry($country){
 		
@@ -510,8 +563,6 @@ class TwitterApi extends Model {
 		
 		Codebird::setConsumerKey($api_key, $api_secret_key); // static, see README
 		$this->codebird = Codebird::getInstance();
-		$this->codebird->setTimeout(4000);
-		$this->codebird->setConnectionTimeout(9000);
 		$reply = $this->codebird->oauth2_token();
 		$bearer_token = $reply->access_token;
 		
