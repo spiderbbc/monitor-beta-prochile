@@ -317,7 +317,6 @@ class LiveChatsApi extends Model {
 
 		if(count($dates_searched)){
 			$date_searched_flag   = $this->end_date;
-			echo $date_searched_flag. "\n";
 
 			$count = 0;
 			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
