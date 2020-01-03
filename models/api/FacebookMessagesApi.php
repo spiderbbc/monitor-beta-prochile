@@ -454,13 +454,17 @@ class FacebookMessagesApi extends Model {
 			$count = 0;
 			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
 				$date_searched = $dates_searched[$i]['date_searched'];
-				if($date_searched >= $date_searched_flag){
+				$since = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
+
+				if($date_searched >= $date_searched_flag || !\app\helpers\DateHelper::isToday($since)){
 	    			$count++;
 	    		}
 			}
 
 			if($count >= count($dates_searched)){
 				$model['Facebook']['status'] = 'Finish'; 
+			}else{
+				$model['Facebook']['status'] = 'Pending'; 
 			}
 
 		}

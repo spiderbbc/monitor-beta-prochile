@@ -282,7 +282,7 @@ class LiveTicketApi extends Model {
         ];
 
 		if(count($dates_searched)){
-			$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+			$date_searched_flag   = $this->end_date;
 
 			$count = 0;
 			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 

@@ -102,6 +102,7 @@ class FacebookCommentsApi extends Model {
 
 		if($data){
 			$this->data[] = $this->_orderDataByProducts($data);
+			$this->searchFinish();
 		}
 		//return $this->data;
 		
@@ -117,7 +118,7 @@ class FacebookCommentsApi extends Model {
 		$feeds_comments = $this->_getComments($feedsCandidate);
 		$feeds_reviews = $this->_getSubComments($feeds_comments);
 		$model = $this->_orderFeedsComments($feeds_reviews);
-		$this->searchFinish();
+		
 		return $model;
 
 		// if not empty post
@@ -709,13 +710,17 @@ class FacebookCommentsApi extends Model {
 			$count = 0;
 			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
 				$date_searched = $dates_searched[$i]['date_searched'];
-				if($date_searched >= $date_searched_flag){
+				$since = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
+
+				if($date_searched >= $date_searched_flag || !\app\helpers\DateHelper::isToday($since)){
 	    			$count++;
 	    		}
 			}
 
 			if($count >= count($dates_searched)){
 				$model['Facebook Comments']['status'] = 'Finish'; 
+			}else{
+				$model['Facebook Comments']['status'] = 'Pending'; 
 			}
 
 		}
