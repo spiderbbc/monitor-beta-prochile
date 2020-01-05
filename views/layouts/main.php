@@ -63,7 +63,7 @@ use app\widgets\AlertFacebook;
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= Alert::widget() ?>
-        <?= AlertFacebook::widget(['logoutCallback' => Yii::$app->urlManager->createAbsoluteUrl(Yii::$app->request->pathInfo)]) ?>
+            <?= AlertFacebook::widget() ?>
         
         <?= $content ?>
     </div>
