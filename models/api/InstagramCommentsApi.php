@@ -66,7 +66,6 @@ class InstagramCommentsApi extends Model {
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
 			
-			
 			return $this->_setParams();
 		}
 		return false;
@@ -103,6 +102,8 @@ class InstagramCommentsApi extends Model {
 			$feeds_comments = $this->_getComments($filter_feeds);
 			$feeds_comments_replies = $this->_getReplies($feeds_comments);
 			$model = $this->_orderFeedsComments($feeds_comments_replies);
+			// set if search finish
+			$this->searchFinish();
 			return $model;
 
 		}
@@ -583,6 +584,50 @@ class InstagramCommentsApi extends Model {
 				$jsonfile->save();
 			}
 		}
+
+	}
+
+	private function searchFinish()
+	{
+		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
+		    ->where([
+				'alertId'       => $this->alertId,
+				'resourcesId'   => $this->resourcesId,
+				'type'          => 'comments Instagram',
+		    ])
+		->all();
+
+		$model = [
+            'Instagram' => [
+                'resourceId' => $this->resourcesId,
+                'status' => 'Finish'
+            ]
+        ];
+
+		if(count($dates_searched)){
+			$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+
+			$count = 0;
+			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
+
+				$date_searched = $dates_searched[$i]['date_searched'];
+				$since = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
+
+				if($date_searched >= $date_searched_flag || !\app\helpers\DateHelper::isToday($since)){
+	    			$count++;
+	    		}
+			
+			}
+
+			if($count >= count($dates_searched)){
+				$model['Instagram']['status'] = 'Finish'; 
+			}else{
+				$model['Instagram']['status'] = 'Pending'; 
+			}
+
+		}
+		
+		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
 
 	}
 
