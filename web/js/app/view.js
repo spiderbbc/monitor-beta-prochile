@@ -116,10 +116,6 @@ const count_resources = Vue.component('total-resources',{
 		    return link;
 		}
 	},	
-	computed:{
-
-	}	
-		
 	
 });
 
@@ -252,6 +248,56 @@ const listEmojis = Vue.component('list-emojis',{
 	},
 });
 
+const statusAlert = Vue.component('status-alert',{
+	'template' : '#status-alert',
+	'props': ['resourceids'],
+	data: function () {
+	    return {
+	    	response:null,
+	    	status: null,
+	    	resourceId: this.resourceids,
+	    	classColor:'status-indicator',
+	    }
+	},
+	mounted(){
+		setInterval(function () {
+	      this.fetchStatus();
+	    }.bind(this), refreshTime);
+	    //this.init();
+	},
+	methods:{
+		fetchStatus(){
+			axios.get(baseUrlApi + 'status-alert' + '?alertId=' + id )
+		      .then((response) => {
+		        this.response = response.data.data;
+		    })
+		},
+		init(){
+			console.log(1)
+		}
+	},
+	computed:{
+		colorClass(){
+			var valueClass = 'status-indicator--yellow';
+			if(this.response === undefined || this.response === null){
+			}else{
+				var search_data_response = this.response.search_data;
+				for(let propeties in search_data_response){
+					var span = document.getElementById(search_data_response[propeties].resourceId);
+					if(search_data_response[propeties].status == 'Finish'){
+						span.className = 'status-indicator status-indicator--red';
+					}else{
+						span.className = 'status-indicator status-indicator--green';
+					}
+				}
+			}
+			
+			return valueClass;
+		}
+	}
+
+});
+
 // vue here
 var vm = new Vue({
 	el: '#alerts-view',
@@ -292,7 +338,8 @@ var vm = new Vue({
 		listMentions,
 		cloudWords,
 		tableDate,
-		listEmojis
+		listEmojis,
+
 	}	
 });
 

@@ -172,6 +172,12 @@ table th {
    box-shadow: 0 0 15px rgba(17, 255, 51, 2);
    position: relative;
 }
+
+.status-indicator--yellow {
+   background: yellow;
+   box-shadow: 0 0 15px rgba(17, 255, 51, 2);
+   position: relative;
+}
  .status-indicator--green::after {
    opacity: 0.5;
    border-radius: 50em;
