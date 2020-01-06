@@ -91,7 +91,8 @@ class AlertFacebook extends \yii\bootstrap\Widget
                     // is expired
                     $is_expired = \app\helpers\FacebookHelper::isExpired($userId);
                     if(!$is_expired){
-                        $link = \yii\helpers\Url::to(['monitor/facebook/logout','userId' => $userId],true);
+                        $link = Yii::$app->urlManager->createAbsoluteUrl(['monitor/facebook/logout','userId' => $userId]);
+                        
                         $linkHtml = \yii\helpers\Html::a('logout',$link);
                         $message = Yii::t('app','Logout facebook: '.$linkHtml);
                         echo \yii\bootstrap\Alert::widget([
