@@ -265,6 +265,7 @@ class Alerts extends \yii\db\ActiveRecord
 
         /*$productsIds = ProductsModelsAlerts::find()->where(['alertId' => $this->id])->all();;*/
 
+        /*
         $rows = (new \yii\db\Query())
         ->select(['products_models.id','products_models.name'])
         ->from('products_models')
@@ -278,6 +279,14 @@ class Alerts extends \yii\db\ActiveRecord
         for($r = 0; $r < sizeOf($rows); $r++){
             $product_models[$rows[$r]['id']] = $rows[$r]['name'];
 
+        }
+        */
+
+        $productsIds = ProductsModelsAlerts::find()->where(['alertId' => $this->id])->all();
+        $product_models = [];
+
+        foreach ($productsIds as $product) {
+            $product_models[$product->productModel->id] = $product->productModel->name;
         }
 
         return $product_models;

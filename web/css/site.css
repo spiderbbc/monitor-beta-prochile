@@ -156,3 +156,53 @@ table th {
 .pointer-jqcloud{
   cursor: pointer;
 }
+
+/* pointer indicator social media*/
+.status-indicator {
+   display: inline-block;
+   width: 10px;
+   height: 10px;
+   border-radius: 50em;
+   background: #f1f5f8;
+   margin-right: 0.5em;
+   margin-left: 0.5em;
+}
+ .status-indicator--green {
+   background: #1f3;
+   box-shadow: 0 0 15px rgba(17, 255, 51, 2);
+   position: relative;
+}
+ .status-indicator--green::after {
+   opacity: 0.5;
+   border-radius: 50em;
+   content: '';
+   position: absolute;
+   top: 0;
+   bottom: 0;
+   left: 0;
+   right: 0;
+   background: #1f3;
+   width: 10px;
+   height: 10px;
+   animation: blip 0.8s ease-in infinite;
+}
+ .status-indicator--red {
+   background: #f13;
+   box-shadow: 0 0 15px rgba(255, 17, 51, 2);
+   position: relative;
+}
+ .status-indicator--red::after {
+   opacity: 0.5;
+   border-radius: 50em;
+   content: '';
+   position: absolute;
+   top: 0;
+   bottom: 0;
+   left: 0;
+   right: 0;
+   background: #f13;
+   width: 10px;
+   height: 10px;
+   animation: blip 0.8s ease-in infinite;
+}
+ 

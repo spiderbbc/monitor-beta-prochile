@@ -246,6 +246,18 @@ class MentionsController extends \yii\web\Controller
     return array('data' => $model);    
 
   }
+  /**
+   * [actionStatusAlert return a list wiht social media and his status]
+   * @param  [int] $alertId [id of the alert]
+   * @return [json]          [list social media and his status]
+   */
+  public function actionStatusAlert($alertId)
+  {
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    $model =  \app\models\HistorySearch::findOne(['alertId' => $alertId]);
+
+    return array('data' => $model);  
+  }
 
   /**
    * Finds the Alerts model based on its primary key value.

@@ -262,7 +262,7 @@ var vm = new Vue({
 		resourcescount:[],
 	},
 	mounted(){
-		//this.init();
+		this.init();
 		setInterval(function () {
 	      this.fetchIsData();
 	    }.bind(this), refreshTime);

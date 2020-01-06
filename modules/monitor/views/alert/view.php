@@ -71,7 +71,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
                 'value' => function($model) {
                     $html = '';
                     foreach ($model->config->configSources as $alert) {
-                        $html .= " <span class='label label-info'>{$alert->alertResource->name}</span>";
+                        $html .= "<span class='label label-info'>{$alert->alertResource->name}</span><span class='status-indicator status-indicator--green'></span>";
                     }
                     return $html;
                 },

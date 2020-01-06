@@ -2,9 +2,9 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=monitor-beta-emoji',
-    'username' => 'root',
-    'password' => '',
+    'dsn' => 'mysql:host=localhost;dbname=monitor',
+    'username' => 'phpmyadmin',
+    'password' => 'deathnote',
     //'charset' => 'utf8',
     'charset' => 'utf8mb4',
 
