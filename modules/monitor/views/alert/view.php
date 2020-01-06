@@ -4,6 +4,7 @@ use yii\helpers\Html;
 //use yii\widgets\DetailView;
 use macgyer\yii2materializecss\widgets\data\DetailView;
 
+\app\assets\SweetAlertAsset::register($this);
 \app\assets\AxiosAsset::register($this);
 \app\assets\VueAsset::register($this);
 \app\assets\DataTableAsset::register($this);
@@ -85,6 +86,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     ]) ?>
 
     <div v-if="isData">
+        <modal-alert></modal-alert>
         <div class="row">
             <total-mentions :count="count">
         </div>

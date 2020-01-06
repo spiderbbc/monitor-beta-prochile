@@ -69,6 +69,16 @@ let tableConfig = {
 };
 
 
+/*
+Swal.fire({
+  title: 'Error!',
+  text: 'Do you want to continue',
+  icon: 'error',
+  confirmButtonText: 'Cool'
+})
+
+*/
+
 const count_mentions = Vue.component('total-mentions',{
 	props: ['count'],
 	data: function () {
@@ -263,7 +273,6 @@ const statusAlert = Vue.component('status-alert',{
 		setInterval(function () {
 	      this.fetchStatus();
 	    }.bind(this), refreshTime);
-	    //this.init();
 	},
 	methods:{
 		fetchStatus(){
@@ -272,15 +281,11 @@ const statusAlert = Vue.component('status-alert',{
 		        this.response = response.data.data;
 		    })
 		},
-		init(){
-			console.log(1)
-		}
 	},
 	computed:{
 		colorClass(){
 			var valueClass = 'status-indicator--yellow';
-			if(this.response === undefined || this.response === null){
-			}else{
+			if(this.response != undefined || this.response != null){
 				var search_data_response = this.response.search_data;
 				for(let propeties in search_data_response){
 					var span = document.getElementById(search_data_response[propeties].resourceId);
@@ -290,11 +295,50 @@ const statusAlert = Vue.component('status-alert',{
 						span.className = 'status-indicator status-indicator--green';
 					}
 				}
+
 			}
 			
 			return valueClass;
 		}
 	}
+
+});
+
+const sweetAlert = Vue.component('modal-alert',{
+	'template' : '#modal-alert',
+	data: function () {
+	    return {
+	    	response:null,
+	    }
+	},
+	mounted(){
+		setInterval(function () {
+	      this.fetchStatus();
+	      this.modal();
+	    }.bind(this), refreshTime);
+	},
+	methods:{
+		fetchStatus(){
+			axios.get(baseUrlApi + 'status-alert' + '?alertId=' + id )
+		      .then((response) => {
+		        this.response = response.data.data;
+		    })
+		},
+		modal(){
+			if(this.response != undefined || this.response != null){
+				//var resources_count = Object.keys(this.response.search_data);
+				var resources_finish = Object.filter(this.response.search_data,function(key){
+					return this.response.search_data[key].status == "Finish";
+				});
+
+				//console.log(resources_count);
+			//	console.log(resources_finish);
+
+
+			}
+
+		}
+	},
 
 });
 
@@ -339,6 +383,7 @@ var vm = new Vue({
 		cloudWords,
 		tableDate,
 		listEmojis,
+		sweetAlert,
 
 	}	
 });
