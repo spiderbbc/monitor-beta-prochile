@@ -368,7 +368,7 @@ const sweetAlert = Vue.component('modal-alert',{
 		    })
 
 		    swalWithBootstrapButtons.fire({
-		      title: '<strong>Status de la Alerta</strong>',
+		      title: '<strong>Alerta Finalizada</strong>',
 		      icon: 'info',
 		      html:
 		        'Usted puede pulsar en <b>continuar</b>, para mantenerse en esta vista <hr> Puede pulsar en <b> Generar Informe </b> para recibir el documento pdf <hr> Puede pulsar en <b>actualizar la alerta</b> para buscar bajo otros parametros',
