@@ -15,8 +15,8 @@ class MentionsController extends \yii\web\Controller
   public function actionIndex(){
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
     $basePath = \yii::$app->basePath;
-    shell_exec("php {$basePath}\yii daemon/alerts-run 2>&1");
-    shell_exec("php {$basePath}\yii daemon/data-search 2>&1");
+    shell_exec("php {$basePath}/yii daemon/alerts-run 2>&1");
+    shell_exec("php {$basePath}/yii daemon/data-search 2>&1");
     return array('status'=>true);
 
   }

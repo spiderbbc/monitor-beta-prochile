@@ -1,7 +1,11 @@
 
 let id            = document.getElementById('alertId').value;
-const baseUrlApi  = 'http://localhost/monitor-beta/web/monitor/api/mentions/';
-const baseUrlView = 'http://localhost/monitor-beta/web/monitor/alert/';
+const origin        = location.origin;
+const baseUrlApi  = `${origin}/monitor-beta/web/monitor/api/mentions/`;
+const baseUrlView = `${origin}/monitor-beta/web/monitor/alert/`;
+
+console.log(baseUrlView);
+console.log(baseUrlApi);
 
 let refreshTime = 10000;
 let refreshTimeTable = 100000;
@@ -313,12 +317,6 @@ const sweetAlert = Vue.component('modal-alert',{
 	    }
 	},
 	async mounted(){
-		/*
-		setTimeout(function () {
-	      this.fetchStatus();
-	    }.bind(this), refreshTime);
-	    console.log(this.isShowModal);
-		*/
 
 	    while(!this.isShowModal){
 	    	await sleep(2000);
@@ -361,12 +359,27 @@ const sweetAlert = Vue.component('modal-alert',{
 			}
 		},
 		modal(){
-			Swal.fire({
-			  title: 'Fin de la Alerta!',
-			  text: 'Quiere Continuar',
-			  icon: 'error',
-			  confirmButtonText: 'Cool'
-			})
+			const swalWithBootstrapButtons = Swal.mixin({
+		      customClass: {
+		        confirmButton: 'btn btn-info',
+		        cancelButton: 'btn btn-success'
+		      },
+		      buttonsStyling: true
+		    })
+
+		    swalWithBootstrapButtons.fire({
+		      title: '<strong>Status de la Alerta</strong>',
+		      icon: 'info',
+		      html:
+		        'Usted puede pulsar en <b>continuar</b>, para mantenerse en esta vista <hr> Puede pulsar en <b> Generar Informe </b> para recibir el documento pdf <hr> Puede pulsar en <b>actualizar la alerta</b> para buscar bajo otros parametros',
+		      showCancelButton: true,
+		      confirmButtonText: 'Generar Informe!',
+		      cancelButtonText: 'Continuar!',
+		      reverseButtons: true,
+		      footer: '<a class="btn btn-dark" href= '+ baseUrlView + 'update?id='+ id + '&fresh=true' +'>update the alert?</a>'
+		    }).then(function(result){
+		        console.log(result.value)
+		    });
 
 		}
 	},

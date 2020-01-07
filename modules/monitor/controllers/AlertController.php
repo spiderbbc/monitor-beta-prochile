@@ -242,6 +242,11 @@ class AlertController extends Controller
 
         $isDocumentExist = \app\helpers\DocumentHelper::isDocumentExist($alert->id,'Excel Document');
 
+        // reset alerts_mentions
+        if (Yii::$app->getRequest()->getQueryParam('fresh') == 'true') {
+          $alerts_mentions = \app\models\AlertsMencions::deleteAll('alertId = :alertId', [':alertId' => $id]);
+        }
+
         
         
         
