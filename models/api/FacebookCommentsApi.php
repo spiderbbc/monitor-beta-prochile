@@ -99,10 +99,11 @@ class FacebookCommentsApi extends Model {
 		
 		//$this->data[] = $this->_getDataApi($query_params);
 		$data = $this->_getDataApi($query_params);
+		$this->searchFinish();
 
 		if($data){
 			$this->data[] = $this->_orderDataByProducts($data);
-			$this->searchFinish();
+			
 		}
 		//return $this->data;
 		
@@ -691,10 +692,10 @@ class FacebookCommentsApi extends Model {
 	private function searchFinish()
 	{
 		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
-		    ->where([
-				'alertId'       => $this->alertId,
-				'resourcesId'   => $this->resourcesId,
-				'type'          => 'comments',
+		->where([
+			'alertId'       => $this->alertId,
+			'resourcesId'   => $this->resourcesId,
+			'type'          => 'comments',
 		    ])
 		->all();
 

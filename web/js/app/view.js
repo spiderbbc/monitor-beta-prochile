@@ -309,33 +309,64 @@ const sweetAlert = Vue.component('modal-alert',{
 	data: function () {
 	    return {
 	    	response:null,
+	    	isShowModal:false
 	    }
 	},
-	mounted(){
-		setInterval(function () {
+	async mounted(){
+		/*
+		setTimeout(function () {
 	      this.fetchStatus();
-	      this.modal();
 	    }.bind(this), refreshTime);
+	    console.log(this.isShowModal);
+		*/
+
+	    while(!this.isShowModal){
+	    	await sleep(2000);
+	    	console.log(1);
+	    	this.fetchStatus();
+	    }
+		
+	    if(this.isShowModal){
+	    	this.modal();
+	    }
+
+	   
 	},
 	methods:{
 		fetchStatus(){
 			axios.get(baseUrlApi + 'status-alert' + '?alertId=' + id )
 		      .then((response) => {
 		        this.response = response.data.data;
+		        if(this.response != undefined || this.response != null){
+		        	this.setStatus();
+		        }
+		        
 		    })
 		},
-		modal(){
+		setStatus(){
 			if(this.response != undefined || this.response != null){
-				//var resources_count = Object.keys(this.response.search_data);
-				var resources_finish = Object.filter(this.response.search_data,function(key){
-					return this.response.search_data[key].status == "Finish";
+				var resources_count = Object.keys(this.response.search_data).length;
+				var search_data = this.response.search_data;
+				var statuses = Object.keys(search_data).filter(function(key) {
+				   return search_data[key].status <= "Finish";
 				});
 
-				//console.log(resources_count);
-			//	console.log(resources_finish);
+				if(statuses.length == resources_count){
+					this.isShowModal = true;
+				}else{
+					this.isShowModal = false;
+				}
 
 
 			}
+		},
+		modal(){
+			Swal.fire({
+			  title: 'Fin de la Alerta!',
+			  text: 'Quiere Continuar',
+			  icon: 'error',
+			  confirmButtonText: 'Cool'
+			})
 
 		}
 	},
@@ -410,3 +441,7 @@ function initSearchTable(){
     return table;
 }
 
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
