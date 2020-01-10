@@ -117,8 +117,11 @@ class FacebookCommentsApi extends Model {
 		$feedsCandidate = $this->_setCandidate($feeds);
 
 		$feeds_comments = $this->_getComments($feedsCandidate);
+
 		$feeds_reviews = $this->_getSubComments($feeds_comments);
+
 		$model = $this->_orderFeedsComments($feeds_reviews);
+
 		
 		return $model;
 
@@ -303,8 +306,9 @@ class FacebookCommentsApi extends Model {
 		if(isset($params)){
 			$feeds = $this->_isLastComments($feeds,$params);
 		}
+	
 
-			
+
 		return $feeds;
 		
 	}
@@ -354,7 +358,6 @@ class FacebookCommentsApi extends Model {
 				}
 			}
 		}
-
 
 		return $feeds;
 	}
@@ -607,6 +610,7 @@ class FacebookCommentsApi extends Model {
 		$data = array_values($data);
 
 
+
 		for($d = 0 ; $d < sizeOf($data); $d++){
 			for($p = 0; $p < sizeof($this->products); $p++){
 				// destrutura el product
@@ -614,7 +618,10 @@ class FacebookCommentsApi extends Model {
 				
 				// get message
 				$sentence = $data[$d]['message'];
+				// get url
+				$url  = $data[$d]['unshimmed_url'];
 				$id_feed = $data[$d]['id'];
+				
 				$date = \app\helpers\DateHelper::asTimestamp($data[$d]['created_time']);
 
 				$is_contains = (count($product_data) > 3) ? \app\helpers\StringHelper::containsAny($sentence,$product_data) : \app\helpers\StringHelper::containsAll($sentence,$product_data);
@@ -630,7 +637,7 @@ class FacebookCommentsApi extends Model {
 						// if not value
 						if(!in_array($data[$d],$model[$this->products[$p]])){
 							$where['publication_id'] = $id_feed;
-							\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date]);
+							\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date,'title' => $sentence, 'url' => $url]);
 							$model[$this->products[$p]][] = $data[$d];
 							$feed_count --;
 							$index ++;
@@ -697,6 +704,7 @@ class FacebookCommentsApi extends Model {
 			'resourcesId'   => $this->resourcesId,
 			'type'          => 'comments',
 		    ])
+		->andWhere(['not', ['date_searched' => null]])
 		->all();
 
 		$model = [
@@ -705,7 +713,9 @@ class FacebookCommentsApi extends Model {
                 'status' => 'Finish'
             ]
         ];
-
+      //  $is_date_searched = \yii\helpers\ArrayHelper::getColumn($dates_searched,'date_searched')[0]; 
+      
+		
 		if(count($dates_searched)){
 			$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
 
