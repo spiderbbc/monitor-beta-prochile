@@ -35,6 +35,7 @@ tests/_support/_generated
 data/*
 config/*
 web/assets/*
+web/pdf/*
 credentials/*
 
 processed/

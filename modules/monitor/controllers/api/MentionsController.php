@@ -49,17 +49,34 @@ class MentionsController extends \yii\web\Controller
   public function actionCountSourcesMentions($alertId){
 
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
-    // cuenta por menciones
-    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'DESC'])->all();
+    // cuenta por menciones old version
+    /*$alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'DESC'])->all();
     $resourceCount = [];
     foreach ($alertMentions as $alertMention){
       $mentionCount = \app\models\Mentions::find()->where(['alert_mentionId' => $alertMention->id])->count(); 
       $mentionsModel = ['count' => $mentionCount,'resourcesId' => $alertMention->resources->id];
       $resourceCount[$alertMention->resources->name][] = $mentionCount;
     }
-    $resourceCount = array_map("array_sum", $resourceCount);
+    $resourceCount = array_map("array_sum", $resourceCount);*/
+
+    // cuenta por menciones
+    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'DESC'])->all();
+    $resourcesCount = [];
+    foreach ($alertMentions as $alertMention){
+      $mentionCount = \app\models\Mentions::find()->where(['alert_mentionId' => $alertMention->id])->count(); 
+      $resourcesCount[$alertMention->resources->name][] = $mentionCount;
+    }
+
+    $data = [];
+    $resource_ids = \yii\helpers\ArrayHelper::map(\app\models\Resources::find()->select(['id','name'])->all(),'name','id');
+    
+    $color_sources = ['Facebook Messages' => '#8ECAFF','Facebook Comments' => '#4267B1','Instagram Comments' => '#993049','Twitter' => '#32A1F2','Live Chat' => '#D3662E','Live Chat Conversations' => '#4285F4','Excel Document' => '#1D6E42' ];
+    foreach ($resourcesCount as $resource => $count) {
+        $model = [$resource, array_sum($count), $color_sources[$resource],$resource_ids[$resource]];
+        $data[] = $model;
+    } 
      
-    return array('status'=>true,'resources'=>$resourceCount);
+   return array('status'=>true,'data'=>$data);
 
   }
   /**

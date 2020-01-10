@@ -48,7 +48,7 @@ use yii\helpers\Url;
         <div class="row">
             <div class="col-md-12">
                 <div class="">
-                        <?= Html::img($data) ?>
+                        <?= Html::img($chart_bar_resources_count) ?>
                 </div>
             </div>
         </div>

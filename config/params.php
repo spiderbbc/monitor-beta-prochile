@@ -3,6 +3,8 @@
 $s = DIRECTORY_SEPARATOR;
 
 Yii::setAlias('@data',dirname(dirname(__DIR__)). "{$s}monitor-beta{$s}data");
+Yii::setAlias('@img',dirname(dirname(__DIR__)). "{$s}monitor-beta{$s}web{$s}img");
+Yii::setAlias('@pdf',dirname(dirname(__DIR__)). "{$s}monitor-beta{$s}web{$s}pdf");
 Yii::setAlias('@credencials',dirname(dirname(__DIR__)). "{$s}monitor-beta{$s}credentials{$s}monitor-app-96f0293a0153.json");
 
 return [

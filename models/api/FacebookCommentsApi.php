@@ -705,8 +705,10 @@ class FacebookCommentsApi extends Model {
                 'status' => 'Finish'
             ]
         ];
+        
+        //$is_date_searched = \yii\helpers\ArrayHelper::getColumn($dates_searched,'date_searched')[0];
 
-		if(count($dates_searched)){
+		if(!empty($is_date_searched)){
 			$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
 
 			$count = 0;

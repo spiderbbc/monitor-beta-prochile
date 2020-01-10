@@ -10,6 +10,7 @@ use macgyer\yii2materializecss\widgets\data\DetailView;
 \app\assets\DataTableAsset::register($this);
 \app\assets\JqcloudAsset::register($this);
 \app\assets\highchartsAsset::register($this);
+\app\assets\GoogleChartAsset::register($this);
 \app\assets\AppAsset::register($this);
 
 /* @var $this yii\web\View */
@@ -91,7 +92,10 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
             <total-mentions :count="count">
         </div>
         <div class="row">
-            <total-resources>
+            <!-- <total-resources> -->
+            <div class="col-md-12 text-center">
+                <total-resources-chart>
+            </div>
         </div>
 
         <div class="row">
@@ -122,9 +126,6 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 </div>
 
 <?= $this->render('_templates-vue');  ?>
-
-
-
 
 
 

@@ -4,12 +4,23 @@
         <h2>Total de Menciones: {{count}}</h2>
     </div>
 </script>
+<!-- template chart google -->
+<script type="tex/x-template" id="view-total-resources-chart">
+  <div v-if="loaded">
+    <div id="resources_chart_count"></div>
+  </div>
+  <div v-else>
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
+    </div>  
+</script>
 <!-- template que muestra el total de todas las menciones por Red Social -->
 <script type="text/x-template" id="view-total-mentions-resources">
     <div v-if="loaded">
         <div v-for="(value,resource) in response" class="col-md-2">
             <div class="well text-center">
-                <h4><a :href="fetchResourceName(resource)">{{resource}}:</a></h4>
+              <h4><a href="#">{{resource}}:</a></h4>
                 <p>{{value}}</p>
             </div>
         </div>

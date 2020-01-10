@@ -128,6 +128,11 @@ class StringHelper
         return $s->isEmpty(); // true;
     }
 
+    public static function replacingSpacesWithUnderscores($sentence){
+        $s = new Stringizer($sentence);
+        return str_replace(' ', '_', $s->camelToSnake()); // true;
+    }
+
 
     /**
      * Replace language-specific characters by ASCII-equivalents.
