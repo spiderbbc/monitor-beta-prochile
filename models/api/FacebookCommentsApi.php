@@ -609,7 +609,14 @@ class FacebookCommentsApi extends Model {
 		$feed_count = count($data);
 		$data = array_values($data);
 
-
+		// params to save in AlertMentionsHelper and get
+		$where = [
+			'condition'   => 'ACTIVE',
+			'type'        => 'comments',
+			'alertId'     => $this->alertId,
+			'resourcesId' => $this->resourcesId,
+		];
+		
 
 		for($d = 0 ; $d < sizeOf($data); $d++){
 			for($p = 0; $p < sizeof($this->products); $p++){
@@ -627,7 +634,6 @@ class FacebookCommentsApi extends Model {
 				$is_contains = (count($product_data) > 3) ? \app\helpers\StringHelper::containsAny($sentence,$product_data) : \app\helpers\StringHelper::containsAll($sentence,$product_data);
 				// if containsAny
 				if($is_contains){
-					$index = 0;
 					if($feed_count){
 						// if a not key
 						if(!ArrayHelper::keyExists($this->products[$p], $model, false)){
@@ -637,10 +643,10 @@ class FacebookCommentsApi extends Model {
 						// if not value
 						if(!in_array($data[$d],$model[$this->products[$p]])){
 							$where['publication_id'] = $id_feed;
+							
 							\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date,'title' => $sentence, 'url' => $url]);
 							$model[$this->products[$p]][] = $data[$d];
 							$feed_count --;
-							$index ++;
 							break;
 						}
 					}
@@ -648,6 +654,7 @@ class FacebookCommentsApi extends Model {
 			}
 
 		}
+		//var_dump($model);
 
 		return $model;
 

@@ -69,7 +69,8 @@ class AlertsMencions extends \yii\db\ActiveRecord
             [['alertId', 'resourcesId'], 'required'],
             [['alertId', 'resourcesId','since_id','max_id', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
           //  [['product_obj'], 'safe'],
-            [['condition', 'type','publication_id','title','url'], 'string', 'max' => 255],
+            [['title', 'url'], 'string'],
+            [['condition', 'type','publication_id','term_searched'], 'string', 'max' => 255],
             [['alertId'], 'exist', 'skipOnError' => true, 'targetClass' => Alerts::className(), 'targetAttribute' => ['alertId' => 'id']],
             [['resourcesId'], 'exist', 'skipOnError' => true, 'targetClass' => Resources::className(), 'targetAttribute' => ['resourcesId' => 'id']],
         ];

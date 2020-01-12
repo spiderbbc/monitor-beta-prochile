@@ -3,7 +3,7 @@
 $s = DIRECTORY_SEPARATOR;
 
 Yii::setAlias('@data',dirname(dirname(__DIR__)). "{$s}monitor-beta{$s}data");
-Yii::setAlias('@credencials',dirname(dirname(__DIR__)). "{$s}monitor-beta{$s}credentials{$s}monitor-app-96f0293a0153.json");
+Yii::setAlias('@credencials',dirname(dirname(__DIR__)). "{$s}monitor-beta{$s}credencials{$s}monitor-app-96f0293a0153.json");
 
 return [
 	'adminEmail'  => 'eduardo@montana-studio.com',
