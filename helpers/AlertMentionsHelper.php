@@ -21,7 +21,6 @@ class AlertMentionsHelper
      * @return [type]             [description]
      */
     public static function saveAlertsMencions($where = [], $properties = []){
-       
 
         $is_model = \app\models\AlertsMencions::find()->where($where)->one();
         // if there a record 
@@ -44,7 +43,6 @@ class AlertMentionsHelper
                 $model->$property = $value;
             }
         }
-
         return ($model->save()) ? $model : false;
 
     }
