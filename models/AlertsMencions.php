@@ -181,4 +181,86 @@ class AlertsMencions extends \yii\db\ActiveRecord
 
     }
 
+    public function getLikesInstagramPost()
+    {
+        $like_count = 0;
+        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
+        foreach ($alertMentions as $alertMention) {
+            $mention_data = $alertMention->mention_data;
+            $like_count += $mention_data['like_count'];
+        }
+        return (string) $like_count;
+    }
+
+    public function getTwitterRetweets()
+    {
+        $retweets_count = 0;
+        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
+        foreach ($alertMentions as $alertMention) {
+            if($alertMention->mentionsCount){
+                foreach ($alertMention->mentions as $mentions => $mention) {
+                    $mention_data = $mention->mention_data;
+                    $retweets_count += $mention_data['retweet_count'];
+                }
+
+            }
+        }
+        return (string) $retweets_count;
+    }
+
+    public function getTwitterLikes()
+    {
+        $likes_count = 0;
+        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
+        foreach ($alertMentions as $alertMention) {
+            if($alertMention->mentionsCount){
+                foreach ($alertMention->mentions as $mentions => $mention) {
+                    $mention_data = $mention->mention_data;
+                    $likes_count += $mention_data['favorite_count'];
+                }
+
+            }
+        }
+        return (string) $likes_count;
+    }
+
+    public function getTwitterTotal($value='')
+    {
+        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
+        $total = 0;
+        foreach ($alertMentions as $alertMention) {
+            if($alertMention->mentionsCount){
+                $total += $alertMention->mentionsCount;
+
+            }
+
+        }
+
+        $alertMentionsDocuments = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => 8])->all();
+        foreach ($alertMentionsDocuments as $alertMentionsDocument) {
+            if($alertMentionsDocument->mentionsCount){
+                $total += $this->getCountDocumentByResource('TWITTER',$alertMentionsDocument->id);
+            }
+        }
+
+        return (string) $total;
+    }
+
+
+    public function getCountDocumentByResource($resource,$alert_mentionId)
+    {
+        $data = json_encode(['source'=> $resource]);
+        
+        $expression = new \yii\db\Expression("JSON_CONTAINS(mention_data,'{$data}')");
+
+
+        $count = (new \yii\db\Query())
+        ->from('mentions')
+        ->where($expression)
+        ->andWhere(['alert_mentionId' => $alert_mentionId])
+        ->count();
+
+        return $count;
+    }
+
 }

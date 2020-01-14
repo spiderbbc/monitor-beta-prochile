@@ -305,6 +305,8 @@ class ExcelSearch {
      * @return [type]           [description]
      */
     private function saveMentions($mentions){
+
+        
         $error = [];
         foreach($mentions as $product => $data){
             $alertsMencions = $this->_findAlertsMencions($product);
@@ -326,6 +328,16 @@ class ExcelSearch {
                 }
             }
         }
+        if(empty($error)){
+            $model = [
+                'Excel Document' => [
+                    'resourceId' => $this->resourcesId,
+                    'status' => 'Finish'
+                ]
+            ];
+            \app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
+        }
+
         return (empty($error)) ? true : false;
 
     }
@@ -407,7 +419,6 @@ class ExcelSearch {
                 'domain_url'     => $domain_url,
             ]
         );
-
         return $mention;
 
     }

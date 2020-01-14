@@ -76,16 +76,32 @@ class AlertMentionsHelper
                 $model->alertId = $alertId;
                 $model->resourcesId = $resource_id;
                 
-                return array($resource_name,$model->shareFaceBookPost,'0',$model->likesFacebookComments,'0','0',$model->total);
+                return array($resource_name,$model->shareFaceBookPost,'0',$model->likesFacebookComments,$model->total);
                 break;
+
+            case 'Facebook Messages':
+                $model = new \app\models\AlertsMencions();
+                $model->alertId = $alertId;
+                $model->resourcesId = $resource_id;
+                
+                return array($resource_name,$model->shareFaceBookPost,'0',$model->likesFacebookComments,$model->total);
+                break;    
 
             case 'Instagram Comments':
                 $model = new \app\models\AlertsMencions();
                 $model->alertId = $alertId;
                 $model->resourcesId = $resource_id;
                 
-                return array($resource_name,'0',$model->likesFacebookComments,'0','0',$model->total);
-                break;    
+                return array($resource_name,'0',$model->likesInstagramPost,$model->likesFacebookComments,$model->total);
+                break;
+            case 'Twitter':
+                $model = new \app\models\AlertsMencions();
+                $model->alertId = $alertId;
+                $model->resourcesId = $resource_id;
+
+                return array($resource_name,$model->twitterRetweets,'0',$model->twitterLikes,$model->twitterTotal);
+            
+                break;        
 
             
             default:
