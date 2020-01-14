@@ -12,9 +12,9 @@ class m190813_203507_Alerts_Mencions extends Migration
      */
     public function up()
     {
-        $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+        $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_bin ENGINE=InnoDB';
         if ($this->db->driverName === 'mysql') {
-            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+            $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_bin ENGINE=InnoDB';
         }
 
         $this->createTable('{{%alerts_mencions}}',[
@@ -31,6 +31,7 @@ class m190813_203507_Alerts_Mencions extends Migration
             'next'           => $this->string(),
             'title'          => $this->text(),
             'url'            => $this->text(),
+            'mention_data'   => $this->json(),
             'createdAt'      => $this->integer(),
             'updatedAt'      => $this->integer(),
             'createdBy'      => $this->integer(),

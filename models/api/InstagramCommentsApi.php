@@ -228,6 +228,10 @@ class InstagramCommentsApi extends Model {
 					
 					$feedId    = $feeds[$f]['data'][$d]['id'];
 					$caption   = $feeds[$f]['data'][$d]['caption'];
+					$url   = $feeds[$f]['data'][$d]['permalink'];
+					$like_count   = $feeds[$f]['data'][$d]['like_count'];
+
+
 					$timestamp = \app\helpers\DateHelper::asTimestamp($feeds[$f]['data'][$d]['timestamp']);
 					
 					for($p = 0; $p < sizeof($this->products); $p++){
@@ -246,7 +250,10 @@ class InstagramCommentsApi extends Model {
 								// if not value
 								if(!in_array($feeds[$f]['data'][$d],$posts[$this->products[$p]])){
 									$where['publication_id'] = $feedId;
-									\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $timestamp]);
+									$mention_data['like_count'] = $like_count;
+									
+									\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $timestamp,'title' => $caption,'url' => $url,'mention_data' => $mention_data]);
+									
 									$posts[$this->products[$p]][] = $feeds[$f]['data'][$d];
 									$feed_count--;
 									break;
