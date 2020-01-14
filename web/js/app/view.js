@@ -5,7 +5,7 @@ const baseUrlApi       = `${origin}/monitor-beta/web/monitor/api/mentions/`;
 const baseUrlDocument  = `${origin}/monitor-beta/web/monitor/pdf/`;
 const baseUrlView      = `${origin}/monitor-beta/web/monitor/alert/`;
 
-let refreshTime = 5000;
+let refreshTime = 2000;
 let refreshTimeTable = 40000;
 
 let controllerName = {
@@ -127,45 +127,100 @@ const count_resources = Vue.component('total-resources',{
 
 
 /**
- * [count_resources_chat google]
+ * [Gráfico de número de interacciones por red social]
  */
 const count_resources_chat = Vue.component('total-resources-chart',{
 	template: '#view-total-resources-chart',
 	data: function () {
 	    return {
 	    	alertId:id,
-	    	response: null,
-	    	loaded: false,
-	    	dataTable: ["Element", "Cantidad", { role: "style"},"id" ],
+	    	response: [
+	    	  ['Red Social', 'Shares', 'Likes Post', 'Likes','Total Tweets','Retweets','Total'],	
+	    	  ['Facebook Comment', 1000, 400, 199,50,700,80],
+	          ['Facebook Messages', 1170, 460, 250,70,50,10],
+	          ['Instagram Comment', 660, 1120, 300,25,70,15],
+	          ['Twitter', 1030, 540, 350,20,15,10],
+	          ['Live Chats', 1030, 540, 350,90,400,155],
+	          ['Live Chats Tickets', 1030, 540, 350,40,100,90]
+
+
+	    	],
+	    	//loaded: false,
+	    	loaded: true,
+	    	//dataTable: ['Red Social', 'Shares', 'Likes Post', 'Likes','Total Tweets','Retweets','Total'],
 	    	view:null,
-	    	column: [0,1,
-                { 
+	    	column: [0,
+	    		1,
+	    		{ 
                 	calc: "stringify",
                     sourceColumn: 1,
                     type: "string",
                     role: "annotation" 
-                },2
+                },
+                2,
+	    		{ 
+                	calc: "stringify",
+                    sourceColumn: 2,
+                    type: "string",
+                    role: "annotation" 
+                },
+                3,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 3,
+                    type: "string",
+                    role: "annotation" 
+                },
+                4,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 4,
+                    type: "string",
+                    role: "annotation" 
+                },
+                5,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 5,
+                    type: "string",
+                    role: "annotation" 
+                },
+                6,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 6,
+                    type: "string",
+                    role: "annotation" 
+                }
             ],
+            
+
             options: {
-	          title: "Gráfico de número de interacciones por red social",
-	          width: 800,
+	          chart: {
+	            title: 'Company Performance',
+	            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+	          },
+	          bars: 'vertical',
+	          vAxis: {format: 'decimal'},
+	       //   is3D:true,
 	          height: 400,
-	          bar: {groupWidth: "65%"},
-	          legend: { position: "none" },
+	          //width: 930,
+	          colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab','#b5d817'],
+	          chartArea: {width: "70%"}
 	        },
 	    }
 	},
 	mounted(){
-		this.response = [this.dataTable];
+		//this.response = [this.dataTable];
 		// Load the Visualization API and the corechart package.
      	google.charts.load('current', {'packages':['corechart']});
-        
+        google.charts.setOnLoadCallback(this.drawColumnChart);	
 
-        this.fetchResourceCount();
+        /*this.fetchResourceCount();
 		setInterval(function () {
 		   google.charts.setOnLoadCallback(this.drawColumnChart);	
 	      this.fetchResourceCount();
-	    }.bind(this), refreshTime);
+	    }.bind(this), refreshTime);*/
 		
 	},
 	methods: {
@@ -185,8 +240,21 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 		      .catch(error => console.log(error))
 		},
 		drawColumnChart(){
-			 
 			var data = google.visualization.arrayToDataTable(this.response);
+			var view = new google.visualization.DataView(data);
+			view.setColumns(this.column);
+			var chart = new google.visualization.ColumnChart(document.getElementById("resources_chart_count"));
+
+			google.visualization.events.addListener(chart, 'ready', function () {
+	          data_chart = { 'chart_bar_resources_count' : chart.getImageURI()};
+
+	        });
+
+			var container = document.getElementById("resources_chart_count");
+			container.style.width = "100%";
+			chart.draw(view, this.options);
+			 
+			/*var data = google.visualization.arrayToDataTable(this.response);
 			var view = new google.visualization.DataView(data);
 			view.setColumns(this.column);
 			var chart = new google.visualization.ColumnChart(document.getElementById("resources_chart_count"));
@@ -196,7 +264,7 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 	        });
 
 			chart.draw(view, this.options);
-
+*/
 		},
 
 	}
@@ -515,7 +583,7 @@ var vm = new Vue({
 		resourcescount:[],
 	},
 	mounted(){
-		this.init();
+		//this.init();
 		setInterval(function () {
 	      this.fetchIsData();
 	    }.bind(this), refreshTime);
@@ -543,11 +611,11 @@ var vm = new Vue({
 		count_mentions,
 		count_resources_chat,
 		//count_resources,
-		listMentions,
+		/*listMentions,
 		cloudWords,
 		tableDate,
 		listEmojis,
-		sweetAlert,
+		sweetAlert,*/
 
 	}	
 });

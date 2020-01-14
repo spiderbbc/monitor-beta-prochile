@@ -126,4 +126,59 @@ class AlertsMencions extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Mentions::className(), ['alert_mentionId' => 'id'])->count();
     }
+
+
+    public function getShareFaceBookPost()
+    {
+        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
+        
+        
+        $origin_ids = [];
+        foreach ($alertMentions as $alertMention) {
+            if($alertMention->mentionsCount){
+                foreach ($alertMention->mentions as $mentions => $mention) {
+                    if(!in_array($mention->origin_id, $origin_ids)){
+                        $origin_ids[] = $mention->origin_id;
+                    }
+                }
+            }
+        }
+        $shares = 0;
+        $post_models = \app\models\UsersMentions::find()->where(['id' => $origin_ids])->all();
+        foreach ($post_models as $post => $value) {
+            $shares +=  $value['user_data']['shares']['count'];
+        }
+
+        return (string) $shares;
+    }
+
+    public function getLikesFacebookComments()
+    {
+       $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
+       $likes_count = 0;
+
+       foreach ($alertMentions as $alertMention) {
+            if($alertMention->mentionsCount){
+                foreach ($alertMention->mentions as $mentions => $mention) {
+                    $mention_data = $mention->mention_data;
+                    $likes_count += $mention_data['like_count'];
+                }
+            }
+        }
+
+        return (string) $likes_count;
+
+    }
+
+    public function getTotal()
+    {
+        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
+        $total = 0;
+        foreach ($alertMentions as $alertMention) {
+            $total += $alertMention->mentionsCount;
+        }
+        return (string) $total;
+
+    }
+
 }

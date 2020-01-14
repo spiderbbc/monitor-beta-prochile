@@ -63,5 +63,36 @@ class AlertMentionsHelper
         }
         return false;
     }
+
+
+    public static function getSocialNetworkInteractions($resource_name,$resource_id,$alertId)
+    {
+        $data = [];
+
+        switch ($resource_name) {
+            
+            case 'Facebook Comments':
+                $model = new \app\models\AlertsMencions();
+                $model->alertId = $alertId;
+                $model->resourcesId = $resource_id;
+                
+                return array($resource_name,$model->shareFaceBookPost,'0',$model->likesFacebookComments,'0','0',$model->total);
+                break;
+
+            case 'Instagram Comments':
+                $model = new \app\models\AlertsMencions();
+                $model->alertId = $alertId;
+                $model->resourcesId = $resource_id;
+                
+                return array($resource_name,'0',$model->likesFacebookComments,'0','0',$model->total);
+                break;    
+
+            
+            default:
+                # code...
+                return '1';
+                break;
+        }
+    }
 	
 }

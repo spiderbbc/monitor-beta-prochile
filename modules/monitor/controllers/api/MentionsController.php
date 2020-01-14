@@ -48,35 +48,24 @@ class MentionsController extends \yii\web\Controller
    */
   public function actionCountSourcesMentions($alertId){
 
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
-    // cuenta por menciones old version
-    /*$alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'DESC'])->all();
-    $resourceCount = [];
-    foreach ($alertMentions as $alertMention){
-      $mentionCount = \app\models\Mentions::find()->where(['alert_mentionId' => $alertMention->id])->count(); 
-      $mentionsModel = ['count' => $mentionCount,'resourcesId' => $alertMention->resources->id];
-      $resourceCount[$alertMention->resources->name][] = $mentionCount;
-    }
-    $resourceCount = array_map("array_sum", $resourceCount);*/
-
-    // cuenta por menciones
-    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'DESC'])->all();
-    $resourcesCount = [];
-    foreach ($alertMentions as $alertMention){
-      $mentionCount = \app\models\Mentions::find()->where(['alert_mentionId' => $alertMention->id])->count(); 
-      $resourcesCount[$alertMention->resources->name][] = $mentionCount;
-    }
-
-    $data = [];
-    $resource_ids = \yii\helpers\ArrayHelper::map(\app\models\Resources::find()->select(['id','name'])->all(),'name','id');
     
-    $color_sources = ['Facebook Messages' => '#8ECAFF','Facebook Comments' => '#4267B1','Instagram Comments' => '#993049','Twitter' => '#32A1F2','Live Chat' => '#D3662E','Live Chat Conversations' => '#4285F4','Excel Document' => '#1D6E42' ];
-    foreach ($resourcesCount as $resource => $count) {
-        $model = [$resource, array_sum($count), $color_sources[$resource],$resource_ids[$resource]];
-        $data[] = $model;
-    } 
-     
-   return array('status'=>true,'data'=>$data);
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    // cuenta por menciones
+    $model = \app\models\Alerts::findOne($alertId);
+    $data = [];
+
+    foreach ($model->config->sources as $sources){
+
+      if(!\app\helpers\StringHelper::in_array_r($sources->name,$data)){
+          $data[] = \app\helpers\AlertMentionsHelper::getSocialNetworkInteractions($sources->name,$sources->id,$model->id);
+
+      }
+      
+    }
+
+    var_dump($data);
+    
+  //return array('status'=>true,'data'=>$data);
 
   }
   /**
