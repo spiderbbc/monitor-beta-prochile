@@ -93,7 +93,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         </div>
         <div class="row">
             <!-- <total-resources> -->
-            <div class="col-md-12 text-center">
+            <div class="col-md-12">
                 <total-resources-chart>
             </div>
         </div>

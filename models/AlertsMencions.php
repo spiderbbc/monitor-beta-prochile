@@ -128,6 +128,11 @@ class AlertsMencions extends \yii\db\ActiveRecord
     }
 
 
+
+    /**
+     * [getShareFaceBookPost return share count]
+     * @return [string] [description]
+     */
     public function getShareFaceBookPost()
     {
         $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
@@ -151,7 +156,10 @@ class AlertsMencions extends \yii\db\ActiveRecord
 
         return (string) $shares;
     }
-
+    /**
+     * [getLikesFacebookComments return likes coment]
+     * @return [type] [description]
+     */
     public function getLikesFacebookComments()
     {
        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
@@ -169,7 +177,10 @@ class AlertsMencions extends \yii\db\ActiveRecord
         return (string) $likes_count;
 
     }
-
+    /**
+     * [getTotal total mencion]
+     * @return [type] [description]
+     */
     public function getTotal()
     {
         $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
@@ -180,7 +191,10 @@ class AlertsMencions extends \yii\db\ActiveRecord
         return (string) $total;
 
     }
-
+    /**
+     * [getLikesInstagramPost total likes post instagram]
+     * @return [type] [description]
+     */
     public function getLikesInstagramPost()
     {
         $like_count = 0;
@@ -191,7 +205,10 @@ class AlertsMencions extends \yii\db\ActiveRecord
         }
         return (string) $like_count;
     }
-
+    /**
+     * [getTwitterRetweets count retweets]
+     * @return [type] [description]
+     */
     public function getTwitterRetweets()
     {
         $retweets_count = 0;
@@ -207,7 +224,10 @@ class AlertsMencions extends \yii\db\ActiveRecord
         }
         return (string) $retweets_count;
     }
-
+    /**
+     * [getTwitterLikes return likes or favorite twitter]
+     * @return [type] [description]
+     */
     public function getTwitterLikes()
     {
         $likes_count = 0;
@@ -223,8 +243,11 @@ class AlertsMencions extends \yii\db\ActiveRecord
         }
         return (string) $likes_count;
     }
-
-    public function getTwitterTotal($value='')
+    /**
+     * [getTwitterTotal twitter total]
+     * @return [type]        [description]
+     */
+    public function getTwitterTotal()
     {
         $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
         $total = 0;
@@ -235,7 +258,7 @@ class AlertsMencions extends \yii\db\ActiveRecord
             }
 
         }
-
+        // count values in document
         $alertMentionsDocuments = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => 8])->all();
         foreach ($alertMentionsDocuments as $alertMentionsDocument) {
             if($alertMentionsDocument->mentionsCount){
@@ -246,7 +269,12 @@ class AlertsMencions extends \yii\db\ActiveRecord
         return (string) $total;
     }
 
-
+    /**
+     * [getCountDocumentByResource return mention document by resource name]
+     * @param  [type] $resource        [description]
+     * @param  [type] $alert_mentionId [description]
+     * @return [type]                  [description]
+     */
     public function getCountDocumentByResource($resource,$alert_mentionId)
     {
         $data = json_encode(['source'=> $resource]);

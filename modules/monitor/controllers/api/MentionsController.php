@@ -55,17 +55,22 @@ class MentionsController extends \yii\web\Controller
     $data = [];
 
     foreach ($model->config->sources as $sources){
-
       if(!\app\helpers\StringHelper::in_array_r($sources->name,$data)){
           $data[] = \app\helpers\AlertMentionsHelper::getSocialNetworkInteractions($sources->name,$sources->id,$model->id);
-
       }
-      
     }
 
-    var_dump($data);
+    // chage values to int
+    for($d = 0; $d < sizeof($data); $d++){
+      for ($r=0; $r <sizeof($data[$d]) ; $r++) { 
+        if(is_numeric($data[$d][$r])){
+          $data[$d][$r] = intval($data[$d][$r]);
+        }
+      }
+    }
+
     
-  //return array('status'=>true,'data'=>$data);
+    return array('status'=>true,'data'=>$data);
 
   }
   /**

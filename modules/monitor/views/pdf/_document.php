@@ -48,13 +48,11 @@ use yii\helpers\Url;
         <div class="row">
             <div class="col-md-12">
                 <div class="">
-                        <?= Html::img($chart_bar_resources_count) ?>
+                    <?= Html::img($chart_bar_resources_count,['width'=>700,'height'=>200]) ?>
                 </div>
             </div>
         </div>
         <!-- end top belt -->
-        <div id="test"></div>
-        <div id="chart_div"></div>
 
 
 

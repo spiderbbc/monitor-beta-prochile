@@ -84,7 +84,7 @@ class AlertMentionsHelper
                 $model->alertId = $alertId;
                 $model->resourcesId = $resource_id;
                 
-                return array($resource_name,$model->shareFaceBookPost,'0',$model->likesFacebookComments,$model->total);
+                return array($resource_name,'0','0','0',$model->total);
                 break;    
 
             case 'Instagram Comments':
@@ -101,7 +101,24 @@ class AlertMentionsHelper
 
                 return array($resource_name,$model->twitterRetweets,'0',$model->twitterLikes,$model->twitterTotal);
             
-                break;        
+                break;
+            case 'Live Chat':
+                $model = new \app\models\AlertsMencions();
+                $model->alertId = $alertId;
+                $model->resourcesId = $resource_id;
+
+                return array($resource_name,'0','0','0',$model->total);
+
+                break;
+
+            case 'Live Chat Conversations':
+                $model = new \app\models\AlertsMencions();
+                $model->alertId = $alertId;
+                $model->resourcesId = $resource_id;
+
+                return array($resource_name,'0','0','0',$model->total);
+
+                break;                
 
             
             default:

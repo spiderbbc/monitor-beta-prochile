@@ -70,10 +70,14 @@ let tableConfig = {
     ]
 };
 
-let data_chart = new Object();;
+let data_chart = new Object();
 
-
-
+/**
+ * [componente que muestra el total de menciones]
+ * @param  {[count]} )   
+ * template: '#view-total-mentions' [description]
+ * @return {[component]}           [component]
+ */
 const count_mentions = Vue.component('total-mentions',{
 	props: ['count'],
 	data: function () {
@@ -84,70 +88,19 @@ const count_mentions = Vue.component('total-mentions',{
 });
 
 
-const count_resources = Vue.component('total-resources',{
-	template: '#view-total-mentions-resources',
-	data(){
-		return {
-			alertId:id,
-			response:null,
-			resourceId:null,
-			loaded: false
-		}
-	},
-	mounted(){
-		setInterval(function () {
-	      this.fetchResourceCount();
-	    }.bind(this), refreshTime);
-		
-	},
-	methods:{
-		fetchResourceCount(){
-			axios
-		      .get(baseUrlApi + 'count-sources-mentions' + '?alertId=' +this.alertId)
-		      .then(response => {
-		      	this.response = response.data.resources;
-		      	if(typeof this.response === 'object'){
-		      		this.loaded = true;
-		      	}
-
-		      })
-		      .catch(error => console.log(error))
-		},
-		fetchResourceName(resourceName){
-			axios
-		      .get(baseUrlApi + 'get-resource-id' + '?resourceName=' +resourceName)
-		      .then(response => (this.resourceId = response.data.resourceId))
-		      .catch(error => console.log(error))
-		    var link = `${baseUrlView}${controllerName[resourceName]}?resourceId=${this.resourceId}&alertId=${this.alertId}`;  
-		    return link;
-		}
-	},	
-	
-});
-
-
 /**
- * [Gráfico de número de interacciones por red social]
+ * [componente que muestra grafico de menciones x red social]
+ * template: '#view-total-resources-chart' [description]
+ * @return {[component]}           [component]
  */
 const count_resources_chat = Vue.component('total-resources-chart',{
 	template: '#view-total-resources-chart',
 	data: function () {
 	    return {
 	    	alertId:id,
-	    	response: [
-	    	  ['Red Social', 'Shares', 'Likes Post', 'Likes','Total Tweets','Retweets','Total'],	
-	    	  ['Facebook Comment', 1000, 400, 199,50,700,80],
-	          ['Facebook Messages', 1170, 460, 250,70,50,10],
-	          ['Instagram Comment', 660, 1120, 300,25,70,15],
-	          ['Twitter', 1030, 540, 350,20,15,10],
-	          ['Live Chats', 1030, 540, 350,90,400,155],
-	          ['Live Chats Tickets', 1030, 540, 350,40,100,90]
-
-
-	    	],
-	    	//loaded: false,
-	    	loaded: true,
-	    	//dataTable: ['Red Social', 'Shares', 'Likes Post', 'Likes','Total Tweets','Retweets','Total'],
+	    	response: [],
+	    	loaded: false,
+	    	dataTable: ['Red Social', 'Shares/Retweets', 'Likes Post', 'Likes','Total'],
 	    	view:null,
 	    	column: [0,
 	    		1,
@@ -178,20 +131,7 @@ const count_resources_chat = Vue.component('total-resources-chart',{
                     type: "string",
                     role: "annotation" 
                 },
-                5,
-                { 
-                	calc: "stringify",
-                    sourceColumn: 5,
-                    type: "string",
-                    role: "annotation" 
-                },
-                6,
-                { 
-                	calc: "stringify",
-                    sourceColumn: 6,
-                    type: "string",
-                    role: "annotation" 
-                }
+               
             ],
             
 
@@ -202,25 +142,20 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 	          },
 	          bars: 'vertical',
 	          vAxis: {format: 'decimal'},
-	       //   is3D:true,
-	          height: 400,
-	          //width: 930,
 	          colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab','#b5d817'],
-	          chartArea: {width: "70%"}
 	        },
 	    }
 	},
 	mounted(){
-		//this.response = [this.dataTable];
+		this.response = [this.dataTable];
 		// Load the Visualization API and the corechart package.
      	google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(this.drawColumnChart);	
-
-        /*this.fetchResourceCount();
+        this.fetchResourceCount();
 		setInterval(function () {
 		   google.charts.setOnLoadCallback(this.drawColumnChart);	
 	      this.fetchResourceCount();
-	    }.bind(this), refreshTime);*/
+	    }.bind(this), refreshTime);
 		
 	},
 	methods: {
@@ -229,6 +164,7 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 		      .get(baseUrlApi + 'count-sources-mentions' + '?alertId=' +this.alertId)
 		      .then(response => {
 		      	if(typeof this.response === 'object'){
+
 		      		this.response.splice(1,response.data.data.length);
 			      	for(let index in response.data.data){
 			      		this.response.push(response.data.data[index]);
@@ -250,30 +186,24 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 
 	        });
 
-			var container = document.getElementById("resources_chart_count");
-			container.style.width = "100%";
-			chart.draw(view, this.options);
-			 
-			/*var data = google.visualization.arrayToDataTable(this.response);
-			var view = new google.visualization.DataView(data);
-			view.setColumns(this.column);
-			var chart = new google.visualization.ColumnChart(document.getElementById("resources_chart_count"));
-			google.visualization.events.addListener(chart, 'ready', function () {
-	          data_chart = { 'chart_bar_resources_count' : chart.getImageURI()};
+		    var options = {
+		        title: 'Gráfico de número de interacciones por red social',
+		        vAxis: {format: 'decimal'},
+		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
+		    }
 
-	        });
-
-			chart.draw(view, this.options);
-*/
+			chart.draw(view, options);
 		},
 
 	}
 
 });
 
-
-
-
+/**
+ * [tabla de menciones]
+ * template: '#mentions-list' [description]
+ * @return {[component]}           [component]
+ */
 const listMentions = Vue.component('list-mentions',{
 	template: '#mentions-list',
 	data: function () {
@@ -294,6 +224,12 @@ const listMentions = Vue.component('list-mentions',{
 	}
 });
 
+
+/**
+ * [nuebe de palabras del diccionario]
+ * template: '#mentions-list' [description]
+ * @return {[component]}           [component]
+ */
 const cloudWords = Vue.component('cloud-words',{
     'template': '#cloud-words',
 	data: function () {
@@ -346,6 +282,12 @@ const cloudWords = Vue.component('cloud-words',{
 
 });
 
+
+/**
+ * [tabla de las fechas de las mencines por x red social]
+ * template: '#mentions-list' [description]
+ * @return {[component]}           [component]
+ */
 const tableDate = Vue.component('resource-date-mentions',{
 	template: '#resource-date-mentions',
 	data: function () {
@@ -377,6 +319,11 @@ const tableDate = Vue.component('resource-date-mentions',{
 	}
 });
 
+/**
+ * [liswtado de emojis encontrados]
+ * template: '#emojis-list' [description]
+ * @return {[component]}           [component]
+ */
 const listEmojis = Vue.component('list-emojis',{
     'template' : '#emojis-list',
 	data: function () {
@@ -403,6 +350,11 @@ const listEmojis = Vue.component('list-emojis',{
 	},
 });
 
+/**
+ * [indicador de status por cada red social]
+ * template: '#status-alert' [description]
+ * @return {[component]}           [component]
+ */
 const statusAlert = Vue.component('status-alert',{
 	'template' : '#status-alert',
 	'props': ['resourceids'],
@@ -448,7 +400,11 @@ const statusAlert = Vue.component('status-alert',{
 	}
 
 });
-
+/**
+ * [modal de sweetalert]
+ * template: '#modal-alert' [description]
+ * @return {[component]}           [component]
+ */
 const sweetAlert = Vue.component('modal-alert',{
 	'template' : '#modal-alert',
 	data: function () {
@@ -543,38 +499,14 @@ const sweetAlert = Vue.component('modal-alert',{
 
 });
 
-function pdfModal(){
-	let timerInterval
-	Swal.fire({
-	  title: 'Generando el Pdf!',
-	  html: 'I will close in <b></b> milliseconds.',
-	  timer: 8000,
-	  timerProgressBar: true,
-	  onBeforeOpen: () => {
-	    Swal.showLoading()
-	    timerInterval = setInterval(() => {
-	      Swal.getContent().querySelector('b')
-	        .textContent = Swal.getTimerLeft()
-	    }, 100)
-	  },
-	  onClose: () => {
-	    clearInterval(timerInterval)
-	  }
-	}).then((result) => {
-	  if (
-	    /* Read more about handling dismissals below */
-	    result.dismiss === Swal.DismissReason.timer
-	  ) {
-	  	return true
-	    console.log('I was closed by the timer') // eslint-disable-line
-	  }
-	})
-	
-}
 
 
-// vue here
-var vm = new Vue({
+/**
+ * [componente principal de vue]
+ * template: '#mentions-list' [description]
+ * @return {[component]}           [component]
+ */
+const vm = new Vue({
 	el: '#alerts-view',
 	data: {
 		alertId:id,
@@ -621,6 +553,10 @@ var vm = new Vue({
 });
 
 
+
+/**
+ * [metodo inicializa lac tabla de menciones]
+ */
 function initSearchTable(){
 	// Setup - add a text input to each footer cell
     $('#list-mentions thead th').each( function () {
@@ -643,6 +579,10 @@ function initSearchTable(){
 }
 
 
+/**
+ * [sleep time]
+ * @return {[Promise]}       
+ */
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
