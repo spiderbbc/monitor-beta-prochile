@@ -74,6 +74,37 @@ class MentionsController extends \yii\web\Controller
 
   }
   /**
+   * [actionTopPostInteration top post face or instagram with more interation]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
+  public function actionTopPostInteration($alertId)
+  {
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    $model = \app\models\Alerts::findOne($alertId);
+    $data = [];
+    foreach ($model->config->sources as $sources){
+      $data[] = \app\helpers\AlertMentionsHelper::getPostInteractions($sources->name,$sources->id,$model->id);
+    }
+
+    // reorder array
+    $model = [];
+    for ($d=0; $d <sizeof($data) ; $d++) { 
+      for ($s=0; $s <sizeof($data[$d]) ; $s++) { 
+        if(is_numeric($data[$d][$s])){
+          $data[$d][$s] = intval($data[$d][$s]);
+        }
+        $model[] = $data[$d][$s];
+      }
+    }
+
+    return array('status'=>true,'data'=>$model);
+
+  }
+
+
+
+  /**
    * [actionCountByProducts count mentions by products]
    * @param  [type] $alertId [description]
    * @return [type]          [description]

@@ -133,6 +133,20 @@ class StringHelper
         return str_replace(' ', '_', $s->camelToSnake()); // true;
     }
 
+    public static function substring($sentence,$start,$end){
+        $s = new Stringizer($sentence);
+        return $s->subString($start,$end);
+    }
+
+    public static function ensureRightPoints($sentence){
+        $s = new Stringizer($sentence);
+        $s->ensureRight("....");
+        return $s->getString();
+    }
+
+
+
+
     
     public static function in_array_r($needle, $haystack, $strict = false) {
         foreach ($haystack as $item) {

@@ -199,6 +199,120 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 
 });
 
+
+
+/**
+ * [componente que muestra grafico de post con mas menciones]
+ * template: '#view-total-resources-chart' [description]
+ * @return {[component]}           [component]
+ */
+const post_interations_chart = Vue.component('post-interation-chart',{
+	template: '#view-post-mentions-chart',
+	data: function () {
+	    return {
+	    	alertId:id,
+	    	response: [],
+	    	loaded: false,
+	    	dataTable: ['Post Titulo', 'Share', 'Like Post','Likes Comments','Total'],
+	    	view:null,
+	    	column: [0,
+	    		1,
+	    		{ 
+                	calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation" 
+                },
+                2,
+	    		{ 
+                	calc: "stringify",
+                    sourceColumn: 2,
+                    type: "string",
+                    role: "annotation" 
+                },
+                3,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 3,
+                    type: "string",
+                    role: "annotation" 
+                },
+                4,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 4,
+                    type: "string",
+                    role: "annotation" 
+                },
+               
+            ],
+            
+
+            options: {
+	          chart: {
+	            title: 'Company Performance',
+	            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+	          },
+	          bars: 'vertical',
+	          vAxis: {format: 'decimal'},
+	          colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab','#b5d817'],
+	        },
+	    }
+	},
+	mounted(){
+		this.response = [this.dataTable];
+		// Load the Visualization API and the corechart package.
+     	google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(this.drawColumnChart);	
+        this.fetchResourceCount();
+		setInterval(function () {
+		   google.charts.setOnLoadCallback(this.drawColumnChart);	
+	      this.fetchResourceCount();
+	    }.bind(this), refreshTime);
+		
+	},
+	methods: {
+		fetchResourceCount(){
+			axios
+		      .get(baseUrlApi + 'top-post-interation' + '?alertId=' +this.alertId)
+		      .then(response => {
+		      	if(typeof this.response === 'object'){
+
+		      		this.response.splice(1,response.data.data.length);
+			      	for(let index in response.data.data){
+			      		this.response.push(response.data.data[index]);
+			      	}
+		      		this.loaded = true;
+		      	}
+
+		      })
+		      .catch(error => console.log(error))
+		},
+		drawColumnChart(){
+			var data = google.visualization.arrayToDataTable(this.response);
+			var view = new google.visualization.DataView(data);
+			view.setColumns(this.column);
+			var chart = new google.visualization.ColumnChart(document.getElementById("post_mentions"));
+
+			google.visualization.events.addListener(chart, 'ready', function () {
+	          data_chart = { 'post_mentions' : chart.getImageURI()};
+
+	        });
+
+		    var options = {
+		        title: 'Gráfico Post con mas interaciones',
+		        vAxis: {format: 'decimal'},
+		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
+		    }
+
+			chart.draw(view, options);
+		},
+
+	}
+
+});
+
+
 /**
  * [tabla de menciones]
  * template: '#mentions-list' [description]
@@ -542,12 +656,13 @@ const vm = new Vue({
 	components:{
 		count_mentions,
 		count_resources_chat,
+		post_interations_chart,
 		//count_resources,
-		/*listMentions,
+		listMentions,
 		cloudWords,
 		tableDate,
 		listEmojis,
-		sweetAlert,*/
+		sweetAlert,
 
 	}	
 });

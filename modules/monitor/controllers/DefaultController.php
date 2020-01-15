@@ -15,6 +15,11 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+    	$msg = "¡Mantente en contacto sin hacer contacto! 🤯 Utiliza los comandos del LG G8s ThinQ para manejar tu smartphone sin tocar su pantalla. 🙌🏼 Descubrelo, aquí 👉🏻 http://lge.ai/61781bnaj";
+
+    	$msg =  \app\helpers\StringHelper::substring($msg,0,80);
+    	$msg =  \app\helpers\StringHelper::ensureRightPoints($msg);
+    	echo $msg;
+        //return $this->render('index');
     }
 }

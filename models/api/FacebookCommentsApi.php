@@ -625,6 +625,8 @@ class FacebookCommentsApi extends Model {
 				// get url
 				$url  = $data[$d]['unshimmed_url'];
 				$id_feed = $data[$d]['id'];
+				// get share
+				$share_feed['shares'] = (isset($data[$d]['shares']['count'])) ? $data[$d]['shares']['count'] : 0;
 				
 				$date = \app\helpers\DateHelper::asTimestamp($data[$d]['created_time']);
 
@@ -641,7 +643,7 @@ class FacebookCommentsApi extends Model {
 						if(!in_array($data[$d],$model[$this->products[$p]])){
 							$where['publication_id'] = $id_feed;
 							
-							\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date,'title' => $sentence, 'url' => $url]);
+							\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date,'title' => $sentence, 'url' => $url,'mention_data' => $share_feed]);
 							$model[$this->products[$p]][] = $data[$d];
 							$feed_count --;
 							break;

@@ -291,4 +291,75 @@ class AlertsMencions extends \yii\db\ActiveRecord
         return $count;
     }
 
+
+    public function getTopPostFacebookInterations()
+    {
+        $connection = \yii::$app->getDb();
+        $command = $connection->createCommand("
+            SELECT id, title,url, JSON_EXTRACT(mention_data, '$.shares') AS shares 
+            FROM `alerts_mencions` 
+            WHERE alertId =:alertId AND mention_data IS NOT NULL AND resourcesId = :resourcesId  
+            ORDER BY shares DESC LIMIT 3", 
+            [':resourcesId' => $this->resourcesId,':alertId' => $this->alertId]
+        );
+
+        $results = $command->queryAll();  
+        $data = [];
+
+        for ($r=0; $r < sizeof($results) ; $r++) { 
+            $title = \app\helpers\StringHelper::ensureRightPoints(\app\helpers\StringHelper::substring($results[$r]['title'],0,80));
+            $title .= ' (facebook)';
+
+            $mentions = \app\models\Mentions::find()->where(['alert_mentionId' => $results[$r]['id']])->all();
+            $likes_count = 0;
+            $count = count($mentions);
+
+            if($count){
+                foreach ($mentions as $mention) {
+                    $likes = $mention->mention_data['like_count'];
+                    $likes_count += $likes;
+                }
+
+            }
+
+            $data[] = array(\yii\helpers\Html::a($title,$results[$r]['url']),(int)$results[$r]['shares'],0,(int)$likes_count,(int)$count);
+        }
+        return $data;
+    }
+
+    public function getTopPostInstagramInterations()
+    {
+        $connection = \yii::$app->getDb();
+        $command = $connection->createCommand("
+            SELECT id, title,url, JSON_EXTRACT(mention_data, '$.like_count') AS like_count 
+            FROM `alerts_mencions` 
+            WHERE alertId =:alertId AND mention_data IS NOT NULL AND resourcesId = :resourcesId  
+            ORDER BY like_count DESC LIMIT 3", 
+            [':resourcesId' => $this->resourcesId,':alertId' => $this->alertId]
+        );
+
+        $results = $command->queryAll();  
+        $data = [];
+
+        for ($r=0; $r < sizeof($results) ; $r++) { 
+            $title = \app\helpers\StringHelper::ensureRightPoints(\app\helpers\StringHelper::substring($results[$r]['title'],0,80));
+            $title .= ' (instagram)';
+            $mentions = \app\models\Mentions::find()->where(['alert_mentionId' => $results[$r]['id']])->all();
+            $likes_count = 0;
+            $count = count($mentions);
+
+            if($count){
+                foreach ($mentions as $mention) {
+                    $likes = $mention->mention_data['like_count'];
+                    $likes_count += $likes;
+                }
+
+            }
+
+            $data[] = array(\yii\helpers\Html::a($title,$results[$r]['url']),0,(int)$results[$r]['like_count'],(int)$likes_count,(int)$count);
+
+        }
+        return $data;
+    }
+
 }

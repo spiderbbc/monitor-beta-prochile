@@ -56,7 +56,11 @@ class AlertMentionsHelper
         return (!empty($alertsMencions)) ? $alertsMencions : null;
     }
 
-
+    /**
+     * [isAlertsMencionsExists if a mention alert exits]
+     * @param  [type]  $publication_id [description]
+     * @return boolean                 [description]
+     */
     public static function isAlertsMencionsExists($publication_id){
         if(\app\models\AlertsMencions::find()->where( [ 'publication_id' => $publication_id] )->exists()){
             return true;
@@ -65,6 +69,13 @@ class AlertMentionsHelper
     }
 
 
+    /**
+     * [getSocialNetworkInteractions return array of social with interation]
+     * @param  [type] $resource_name [description]
+     * @param  [type] $resource_id   [description]
+     * @param  [type] $alertId       [description]
+     * @return [type]                [description]
+     */
     public static function getSocialNetworkInteractions($resource_name,$resource_id,$alertId)
     {
         $data = [];
@@ -123,9 +134,34 @@ class AlertMentionsHelper
             
             default:
                 # code...
-                return '1';
+                return  null;
                 break;
         }
     }
 	
+    public static function getPostInteractions($resource_name,$resource_id,$alertId)
+    {
+        $data = [];
+        switch ($resource_name) {
+            case 'Facebook Comments':
+                $model = new \app\models\AlertsMencions();
+                $model->alertId = $alertId;
+                $model->resourcesId = $resource_id;
+                
+                return $model->topPostFacebookInterations;
+                break;
+            case 'Instagram Comments':
+                $model = new \app\models\AlertsMencions();
+                $model->alertId = $alertId;
+                $model->resourcesId = $resource_id;
+                
+                return $model->topPostInstagramInterations;
+                break;    
+            
+            default:
+                # code...
+                break;
+        }
+    }
+
 }

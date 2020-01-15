@@ -15,6 +15,16 @@
         </div>
     </div>  
 </script>
+<script type="text/x-template" id="view-post-mentions-chart">
+  <div v-if="loaded">
+    <div id="post_mentions"></div>
+  </div>
+  <div v-else>
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
+    </div>  
+</script>
 <!-- template que muestra el total de todas las menciones por Red Social -->
 <script type="text/x-template" id="view-total-mentions-resources">
     <div v-if="loaded">
