@@ -307,8 +307,8 @@ class AlertsMencions extends \yii\db\ActiveRecord
         $data = [];
 
         for ($r=0; $r < sizeof($results) ; $r++) { 
-            $title = \app\helpers\StringHelper::ensureRightPoints(\app\helpers\StringHelper::substring($results[$r]['title'],0,80));
-            $title .= ' (facebook)';
+            $title = \app\helpers\StringHelper::ensureRightPoints(\app\helpers\StringHelper::substring($results[$r]['title'],0,30));
+            $title .= ' (FB)';
 
             $mentions = \app\models\Mentions::find()->where(['alert_mentionId' => $results[$r]['id']])->all();
             $likes_count = 0;
@@ -322,7 +322,7 @@ class AlertsMencions extends \yii\db\ActiveRecord
 
             }
 
-            $data[] = array(\yii\helpers\Html::a($title,$results[$r]['url']),(int)$results[$r]['shares'],0,(int)$likes_count,(int)$count);
+            $data[] = array($title,(int)$results[$r]['shares'],0,(int)$likes_count,(int)$count,$results[$r]['url']);
         }
         return $data;
     }
@@ -342,8 +342,8 @@ class AlertsMencions extends \yii\db\ActiveRecord
         $data = [];
 
         for ($r=0; $r < sizeof($results) ; $r++) { 
-            $title = \app\helpers\StringHelper::ensureRightPoints(\app\helpers\StringHelper::substring($results[$r]['title'],0,80));
-            $title .= ' (instagram)';
+            $title = \app\helpers\StringHelper::ensureRightPoints(\app\helpers\StringHelper::substring($results[$r]['title'],0,30));
+            $title .= ' (IG)';
             $mentions = \app\models\Mentions::find()->where(['alert_mentionId' => $results[$r]['id']])->all();
             $likes_count = 0;
             $count = count($mentions);
@@ -356,7 +356,7 @@ class AlertsMencions extends \yii\db\ActiveRecord
 
             }
 
-            $data[] = array(\yii\helpers\Html::a($title,$results[$r]['url']),0,(int)$results[$r]['like_count'],(int)$likes_count,(int)$count);
+            $data[] = array($title,0,(int)$results[$r]['like_count'],(int)$likes_count,(int)$count,$results[$r]['url']);
 
         }
         return $data;

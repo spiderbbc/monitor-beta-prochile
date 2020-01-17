@@ -1,6 +1,6 @@
 <!-- template que muestra el total de todas las menciones -->
 <script type="text/x-template" id="view-total-mentions">
-    <div class="col-md-12 well">
+    <div id="menciones" class="col-md-12 well">
         <h2>Total de Menciones: {{count}}</h2>
     </div>
 </script>
@@ -8,6 +8,7 @@
 <script type="tex/x-template" id="view-total-resources-chart">
   <div v-if="loaded">
     <div id="resources_chart_count"></div>
+    <hr>
   </div>
   <div v-else>
         <div class="loader">
@@ -15,9 +16,39 @@
         </div>
     </div>  
 </script>
+
+<!-- template chart by date google chart -->
+<script type="tex/x-template" id="view-date-resources-chart">
+  <div v-if="loaded">
+    <div id="date-resources-chart"></div>
+    <hr>
+  </div>
+  <div v-else>
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
+    </div>  
+</script>
+
+<!-- chart products interations -->
+<script type="tex/x-template" id="view-products-interations-chart">
+  <div v-if="loaded">
+    <div id="products-interation-chart">
+      
+    </div>
+    <hr>
+  </div>
+  <div v-else>
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
+    </div>  
+</script>
+
 <script type="text/x-template" id="view-post-mentions-chart">
   <div v-if="loaded">
     <div id="post_mentions"></div>
+    <hr>
   </div>
   <div v-else>
         <div class="loader">

@@ -96,12 +96,15 @@ class InstagramCommentsApi extends Model {
 
 
 		$feeds = $this->_getPosts($query_params);
+
 		// if there post
 		if(count($feeds)){
 			$filter_feeds = $this->_filterFeedsbyProducts($feeds);
+
 			$feeds_comments = $this->_getComments($filter_feeds);
 			$feeds_comments_replies = $this->_getReplies($feeds_comments);
 			$model = $this->_orderFeedsComments($feeds_comments_replies);
+
 			// set if search finish
 			$this->searchFinish();
 			return $model;
@@ -179,7 +182,7 @@ class InstagramCommentsApi extends Model {
 						break;
 					}
 					
-
+					// test
 					if(isset($data['data'][0]['comments']['data'])){
 						$responseData[$index] = $data;
 						$index++;
@@ -274,6 +277,7 @@ class InstagramCommentsApi extends Model {
 	 * @return [array]        [description]
 	 */
 	private function _getComments($feeds){
+
 		$client = $this->_client;
 
 		// params to save in AlertMentionsHelper and get
@@ -370,6 +374,7 @@ class InstagramCommentsApi extends Model {
 				// looking new comments
 				if(\yii\helpers\ArrayHelper::keyExists($id_feed,$params['feeds'])){
 					//var_dump($params['feeds'][$id_feed]);
+
 					$model = \app\models\AlertsMencions::findOne(['publication_id' => $id_feed]);
 					if(!$params['feeds'][$id_feed]['max_id']){
 						$firts_comment = reset($data);
@@ -381,14 +386,17 @@ class InstagramCommentsApi extends Model {
 						}// if there firts_comment
 					}else{// if not max_id records
 						$max_id = $params['feeds'][$id_feed]['max_id'];
+
 						for($d = 0; $d < sizeof($data); $d++){
 							$unix_date = \app\helpers\DateHelper::asTimestamp($data[$d]['timestamp']);
-							if($unix_date > $max_id){
+							$feeds[$product][$f]['comments'][] = $data[$d];
+							// coment by update likes in comments
+							/*if($unix_date > $max_id){
 								$model->max_id = $unix_date;
 								if($model->save()){
 									$feeds[$product][$f]['comments'][] = $data[$d];
 								}
-							}
+							}*/
 						}
 					}// if max_id	
 				}// if old records
@@ -445,6 +453,7 @@ class InstagramCommentsApi extends Model {
 				}// end if comments key
 			}// end loop feed	
 		}// end foreach	
+
 		return $feeds;	
 	}
 

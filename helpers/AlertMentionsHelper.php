@@ -78,7 +78,6 @@ class AlertMentionsHelper
      */
     public static function getSocialNetworkInteractions($resource_name,$resource_id,$alertId)
     {
-        $data = [];
 
         switch ($resource_name) {
             
@@ -129,7 +128,9 @@ class AlertMentionsHelper
 
                 return array($resource_name,'0','0','0',$model->total);
 
-                break;                
+                break;  
+            case 'Excel Document':
+                break;                  
 
             
             default:
@@ -138,10 +139,15 @@ class AlertMentionsHelper
                 break;
         }
     }
-	
+	/**
+     * [getPostInteractions return post interations by social]
+     * @param  [type] $resource_name [description]
+     * @param  [type] $resource_id   [description]
+     * @param  [type] $alertId       [description]
+     * @return [type]                [description]
+     */
     public static function getPostInteractions($resource_name,$resource_id,$alertId)
     {
-        $data = [];
         switch ($resource_name) {
             case 'Facebook Comments':
                 $model = new \app\models\AlertsMencions();
@@ -162,6 +168,141 @@ class AlertMentionsHelper
                 # code...
                 break;
         }
+    }
+
+
+    public static function getProductInterations($resourceName,$alerts_mention_ids,$alertId)
+    {
+        $data = [];
+        $models = \app\models\AlertsMencions::find()->where(['id' => $alerts_mention_ids,'alertId' => $alertId])->all();
+
+        switch ($resourceName) {
+            case 'Facebook Comments':
+                // contadores
+                $shares = 0;
+                $likes = 0;
+                $total = 0;
+                foreach ($models as $model) {
+                    $shares += $model->mention_data['shares'];
+                    if($model->mentionsCount){
+                        $total += $model->mentionsCount;
+                        foreach ($model->mentions as $mention) {
+                            $likes += $mention->mention_data['like_count'];
+                        }
+                    }
+                }
+                // shares
+                $data['shares'] = $shares;
+                //likes
+                $data['likes'] = $likes;
+                // total
+                $data['total'] = $total;
+                return $data;                
+                break;
+            
+            case 'Facebook Messages':
+                $total = 0;
+                foreach ($models as $model) {
+                    if($model->mentionsCount){
+                        $total += $model->mentionsCount;
+                    }
+                }
+                // total
+                $data['total'] = $total;
+                return $data;
+                break;
+            case 'Instagram Comments':
+                $like_post = 0;
+                $total = 0;
+                foreach ($models as $model) {
+                    if($model->mentionsCount){
+                        $total += $model->mentionsCount;
+                        $like_post += $model->mention_data['like_count'];
+                    }
+                }
+                // like post
+                $data['like_post'] = $like_post;
+                // total
+                $data['total'] = $total;
+                return $data; 
+            case 'Twitter':
+                $likes = 0;
+                $retweets = 0;
+                $total = 0;
+                foreach ($models as $model) {
+                    if($model->mentionsCount){
+                        $total += $model->mentionsCount;
+                        foreach ($model->mentions as $mention) {
+                            $likes += $mention->mention_data['favorite_count'];
+                            $retweets += $mention->mention_data['retweet_count'];
+                        }
+
+                    }
+                }
+                // count values in document
+                $alertsMencions = new \app\models\AlertsMencions();
+                $alertMentionsDocuments = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => 8])->all();
+                foreach ($alertMentionsDocuments as $alertMentionsDocument) {
+                    if($alertMentionsDocument->mentionsCount){
+                        $total += $alertsMencions->countDocumentByResource('TWITTER',$alertMentionsDocument->id);
+                    }
+                }
+                // set
+                $data['total'] = $total;
+                $data['likes_twitter'] = $likes;
+                $data['retweets'] = $retweets;
+                return $data;
+                break;
+            case 'Live Chat':
+                $total = 0;
+                foreach ($models as $model) {
+                    if ($model->mentionsCount) {
+                        $total += $model->mentionsCount;
+                    }
+                }
+                // set
+                $data['total'] = $total;
+                return $data; 
+                break;
+
+            case 'Live Chat Conversations':
+                $total = 0;
+                foreach ($models as $model) {
+                    if ($model->mentionsCount) {
+                        $total += $model->mentionsCount;
+                    }
+                }
+                // set
+                $data['total'] = $total;
+                return $data; 
+
+                break;     
+
+            default:
+                # code...
+                break;
+        }
+    }
+
+    /**
+     * [getProductByTermSearch return model product or nul if not exits]
+     * @param  [type] $term_searched [description]
+     * @return [obj/ null]                [description]
+     */
+    public static function getProductByTermSearch($term_searched)
+    {
+        $is_model = \app\models\ProductsModels::find()->where(['name' => $term_searched])->exists();
+        $model = [];
+
+        if($is_model){
+            $product_model = \app\models\ProductsModels::findOne(['name' => $term_searched]);
+            $model = \app\models\Products::findOne($product_model->productId);
+        }else{
+            $model = \app\models\Products::findOne(['name' => $term_searched]);
+        }
+
+        return $model;
+
     }
 
 }

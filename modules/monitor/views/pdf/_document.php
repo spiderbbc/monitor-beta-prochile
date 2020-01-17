@@ -36,7 +36,10 @@ use yii\helpers\Url;
             <p style="font-family: 'PT Sans Narrow', sans-serif;"><?=  Yii::$app->formatter->asDate('now', 'yyyy-MM-dd');  ?></p>
             <p>---</p>
             <p style="font-family: 'PT Sans Narrow', sans-serif; font-size: 16px; color: blue"><?= $model->user->username ?></p>
+
             <p style="font-family: 'PT Sans Narrow', sans-serif; font-size: 16px;">Social Media Trends</p>
+            
+            <p style="font-family: 'PT Sans Narrow', sans-serif; font-size: 16px;">Nombre de la Alerta: <?= $model->name ?></p>
 
             </div>
         </div>
@@ -48,12 +51,21 @@ use yii\helpers\Url;
         <div class="row">
             <div class="col-md-12">
                 <div class="">
-                    <?= Html::img($chart_bar_resources_count,['width'=>700,'height'=>200]) ?>
+                    <?= Html::img($chart_bar_resources_count,['width'=>550,'height'=>180]) ?>
                 </div>
             </div>
         </div>
         <!-- end top belt -->
-
+        <div class="row">
+            <div class="col-md-12">
+                <?= Html::img($post_mentions,['width'=>550,'height'=>180]) ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <?= Html::img($products_interations,['width'=>550,'height'=>180]) ?>
+            </div>
+        </div>
 
 
         

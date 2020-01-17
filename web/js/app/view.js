@@ -88,6 +88,7 @@ const count_mentions = Vue.component('total-mentions',{
 });
 
 
+
 /**
  * [componente que muestra grafico de menciones x red social]
  * template: '#view-total-resources-chart' [description]
@@ -140,6 +141,7 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 	            title: 'Company Performance',
 	            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
 	          },
+	          theme: 'material',
 	          bars: 'vertical',
 	          vAxis: {format: 'decimal'},
 	          colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab','#b5d817'],
@@ -153,7 +155,10 @@ const count_resources_chat = Vue.component('total-resources-chart',{
         google.charts.setOnLoadCallback(this.drawColumnChart);	
         this.fetchResourceCount();
 		setInterval(function () {
-		   google.charts.setOnLoadCallback(this.drawColumnChart);	
+			if(this.loaded){
+				google.charts.setOnLoadCallback(this.drawColumnChart);	
+			}
+		   
 	      this.fetchResourceCount();
 	    }.bind(this), refreshTime);
 		
@@ -182,13 +187,15 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 			var chart = new google.visualization.ColumnChart(document.getElementById("resources_chart_count"));
 
 			google.visualization.events.addListener(chart, 'ready', function () {
-	          data_chart = { 'chart_bar_resources_count' : chart.getImageURI()};
+	          data_chart['chart_bar_resources_count'] = chart.getImageURI();
 
 	        });
 
 		    var options = {
 		        title: 'Gráfico de número de interacciones por red social',
 		        vAxis: {format: 'decimal'},
+		        width: 1000,
+            	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
 		    }
 
@@ -198,7 +205,6 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 	}
 
 });
-
 
 
 /**
@@ -213,7 +219,7 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 	    	alertId:id,
 	    	response: [],
 	    	loaded: false,
-	    	dataTable: ['Post Titulo', 'Share', 'Like Post','Likes Comments','Total'],
+	    	dataTable: ['Post Titulo', 'Share', 'Like Post','Likes Comments','Total','link'],
 	    	view:null,
 	    	column: [0,
 	    		1,
@@ -253,6 +259,7 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 	            title: 'Company Performance',
 	            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
 	          },
+	          theme: 'material',
 	          bars: 'vertical',
 	          vAxis: {format: 'decimal'},
 	          colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab','#b5d817'],
@@ -295,23 +302,247 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 			var chart = new google.visualization.ColumnChart(document.getElementById("post_mentions"));
 
 			google.visualization.events.addListener(chart, 'ready', function () {
-	          data_chart = { 'post_mentions' : chart.getImageURI()};
+	          data_chart['post_mentions'] = chart.getImageURI();
 
 	        });
 
 		    var options = {
 		        title: 'Gráfico Post con mas interaciones',
 		        vAxis: {format: 'decimal'},
+		        width: 1000,
+            	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
 		    }
 
 			chart.draw(view, options);
+			addLink(data, 'post_mentions');
 		},
 
 	}
 
 });
 
+/**
+ * [componente que muestra grafico de productos con mas menciones]
+ * template: '#view-products-interations-chart' [description]
+ * @return {[component]}           [component]
+ */
+const products_interations_chart = Vue.component('products-interations-chart',{
+	template: '#view-products-interations-chart',
+	data: function () {
+	    return {
+	    	alertId:id,
+	    	response: [],
+	    	loaded: true,
+	    	dataTable: ['Producto', 'Shares', 'Like Post','Likes','Favorites','Retweets','Likes Twitter','Total'],
+	    	view:null,
+	    	column: [0,
+	    		1,
+	    		{ 
+                	calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation" 
+                },
+                2,
+	    		{ 
+                	calc: "stringify",
+                    sourceColumn: 2,
+                    type: "string",
+                    role: "annotation" 
+                },
+                3,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 3,
+                    type: "string",
+                    role: "annotation" 
+                },
+                4,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 4,
+                    type: "string",
+                    role: "annotation" 
+                },
+                5,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 5,
+                    type: "string",
+                    role: "annotation" 
+                },
+                6,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 6,
+                    type: "string",
+                    role: "annotation" 
+                },
+                7,
+                { 
+                	calc: "stringify",
+                    sourceColumn: 7,
+                    type: "string",
+                    role: "annotation" 
+                },
+               
+            ],
+	    }
+	},
+	mounted(){
+		this.response = [this.dataTable];
+		// Load the Visualization API and the corechart package.
+     	google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(this.drawColumnChart);	
+        this.fetchResourceCount();
+		setInterval(function () {
+		   google.charts.setOnLoadCallback(this.drawColumnChart);	
+	      this.fetchResourceCount();
+	    }.bind(this), refreshTime);
+		
+	},
+	methods:{
+		fetchResourceCount(){
+			axios
+		      .get(baseUrlApi + 'product-interation' + '?alertId=' +this.alertId)
+		      .then(response => {
+		      	if(typeof this.response === 'object'){
+		      		this.response.splice(1,response.data.data.length);
+		      		for(let index in response.data.data){
+			      		this.response.push(response.data.data[index]);
+			      	}
+			      	//console.log(this.response);
+		      		this.loaded = true;
+		      	}
+
+		      })
+		      .catch(error => console.log(error))
+		},
+		drawColumnChart(){
+			var data = google.visualization.arrayToDataTable(this.response);
+			var view = new google.visualization.DataView(data);
+			view.setColumns(this.column);
+			var chart = new google.visualization.ColumnChart(document.getElementById("products-interation-chart"));
+
+			google.visualization.events.addListener(chart, 'ready', function () {
+	          data_chart['products_interations'] = chart.getImageURI();
+
+	        });
+
+		    var options = {
+		        title: 'Gráfico de número de interacciones por productos',
+		        vAxis: {format: 'decimal'},
+		        width: 1000,
+            	height: 400,
+		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
+		    }
+
+			chart.draw(view, options);
+
+		}
+
+	}
+	
+});
+
+
+/**
+ * [componente que muestra grafico de post por fecha (no terminado en el backend)]
+ * template: '#view-total-resources-chart' [description]
+ * @return {[component]}           [component]
+ */
+/*const count_resources_date_chat = Vue.component('count-date-resources-chart',{
+	template: '#view-date-resources-chart',
+	data: function () {
+	    return {
+	    	alertId:id,
+	    	response: [],
+	    	loaded: false,
+	    	dataTable: null,
+	    	view:null,
+	    }
+	},
+	mounted(){
+		// Load the Visualization API and the corechart package.
+	    google.charts.load('current', {'packages':['line']});
+	    this.fetchResourceCount();
+        google.charts.setOnLoadCallback(this.drawColumnChart);	
+	},
+	methods: {
+		fetchResourceCount(){
+			axios
+		      .get(baseUrlApi + 'resource-product-on-date' + '?alertId=' +this.alertId)
+		      .then(response => {
+		      	if(typeof this.response === 'object'){
+		      		this.response = response.data.resourceDateCount;
+		      		this.loaded = true;
+		      	}
+
+		      })
+		      .catch(error => console.log(error))
+		},
+		drawColumnChart(){
+			var data = google.visualization.arrayToDataTable(this.response);
+			var view = new google.visualization.DataView(data);
+			var column = [0,
+                1,
+                { 
+                    calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation" 
+                },
+                2,
+                { 
+                    calc: "stringify",
+                    sourceColumn: 2,
+                    type: "string",
+                    role: "annotation" 
+                },
+                3,
+                { 
+                    calc: "stringify",
+                    sourceColumn: 3,
+                    type: "string",
+                    role: "annotation" 
+                },
+                4,
+                { 
+                    calc: "stringify",
+                    sourceColumn: 4,
+                    type: "string",
+                    role: "annotation" 
+                }
+        ];
+    		view.setColumns(column);  
+			//view.setColumns(this.column);
+			console.log(document.getElementById("date-resources-chart"));
+			var chart = new google.visualization.LineChart(document.getElementById("date-resources-chart"));
+
+		    var options = {
+		        title: 'Gráfico de número de interacciones por red social',
+		        bar: {groupWidth:'30%'},
+		        vAxis: {format: 'decimal'},
+		        width: 900,
+            	height: 400,
+            	theme: 'material',
+            	annotations: {
+                    alwaysOutside: true,
+                    highContrast: true,  // default is true, but be sure
+                    textStyle: {
+                      bold: true
+                    }
+                  },
+		        colors: ['#efe521', '#ea5320', '#1055ea','#ed177e','#bf16ab'],
+		    }
+
+			chart.draw(view,options);
+		},
+
+	}
+});
+*/
 
 /**
  * [tabla de menciones]
@@ -591,6 +822,8 @@ const sweetAlert = Vue.component('modal-alert',{
 		        if(result.value){
 		        	axios.post(baseUrlDocument + 'document' , {
 			            chart_bar_resources_count: data_chart['chart_bar_resources_count'],
+			            post_mentions: data_chart['post_mentions'],
+			            products_interations: data_chart['products_interations'],
 			            alertId: id,
 			        })
 			        .then(function (response) {
@@ -657,6 +890,8 @@ const vm = new Vue({
 		count_mentions,
 		count_resources_chat,
 		post_interations_chart,
+		products_interations_chart,
+		//count_resources_date_chat,
 		//count_resources,
 		listMentions,
 		cloudWords,
@@ -701,3 +936,56 @@ function initSearchTable(){
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+
+  /* find the value in array */
+function inArray(val, arr) {
+  var i, n = arr.length;
+  val = val.replace('…', ''); // remove ellipsis
+
+  for (i = 0; i < n; ++i) {
+    if (i in arr && 0 === arr[i].label.indexOf(val)) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+/* add a link to each label */
+function addLink(data, id) {
+  var n, p, info = [],
+    ns = 'http://www.w3.org/1999/xlink';
+
+  // make an array for label and link.
+  info = [];
+  n = data.getNumberOfRows();
+  for (i = 0; i < n; ++i) {
+    info.push({
+      label: data.getValue(i, 0),
+      link: data.getValue(i, 5)
+    });
+  }
+  /*var element = document.querySelector('#' + id);
+  console.log(element);*/
+  
+  $('#' + id).find('text').each(function(i, elm) {
+        p = elm.parentNode;
+        if ('g' === p.tagName.toLowerCase()) {
+          i = inArray(elm.textContent, info);
+          if (-1 !== i) {
+            n = document.createElementNS('http://www.w3.org/2000/svg', 'a');
+            n.setAttributeNS(ns, 'xlink:href', info[i].link);
+            n.setAttributeNS(ns, 'title', info[i].label);
+            n.setAttribute('target', '_blank');
+            n.setAttribute('class', 'city-name');
+            n.appendChild(p.removeChild(elm));
+            p.appendChild(n);
+            info.splice(i, 1); // for speeding up
+          }
+        }
+      });
+   
+}
+
+

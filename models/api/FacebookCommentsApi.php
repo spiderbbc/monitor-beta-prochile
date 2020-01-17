@@ -300,9 +300,9 @@ class FacebookCommentsApi extends Model {
 			
 		}
 
-		if(isset($params)){
+		/*if(isset($params)){
 			$feeds = $this->_isLastComments($feeds,$params);
-		}
+		}*/
 	
 
 

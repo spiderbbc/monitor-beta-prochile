@@ -175,7 +175,8 @@ class ExcelSearch {
 
         foreach($this->data as $product => $data){
             for($d = 0; $d < sizeof($data); $d++){
-                $mention_date = \Yii::$app->formatter->asDatetime($data[$d]['Mention Date'],'yyyy-MM-dd');
+                //$mention_date = \Yii::$app->formatter->asDatetime($data[$d]['Mention Date'],'yyyy-MM-dd');
+                $mention_date = $data[$d]['Mention Date'];
                 if(\app\helpers\DateHelper::isBetweenDate($mention_date,$this->start_date,$this->end_date)){
                     $model[$product][] = $this->data[$product][$d];
 
@@ -398,7 +399,8 @@ class ExcelSearch {
         $mention_data['source']     = $mention['Source'];
         $mention_data['sentiment']  = $mention['Sentiment'];
 
-        $mention_date   = \app\helpers\DateHelper::asTimestamp($mention['Mention Date']);
+        //$mention_date   = \app\helpers\DateHelper::asTimestamp($mention['Mention Date']);
+        $mention_date   = strtotime($mention['Mention Date']);
         $url            = (!empty($mention['Mention URL'])) ? $mention['Mention URL']: null;
         $domain_url     = (!is_null($url)) ? \app\helpers\StringHelper::getDomain($url): null;
         $message        = $mention['Post Snippet'];
