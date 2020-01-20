@@ -299,7 +299,7 @@ class FacebookCommentsApi extends Model {
 			}
 			
 		}
-
+		// coment because get likes
 		/*if(isset($params)){
 			$feeds = $this->_isLastComments($feeds,$params);
 		}*/

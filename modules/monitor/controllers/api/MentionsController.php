@@ -107,7 +107,7 @@ class MentionsController extends \yii\web\Controller
     }
 
     if(empty($model)){
-      $model[] = ['not found',0,0,0,0];
+      $model[] = ['not found',0,0,0,0,0];
     }
 
     return array('status'=>true,'data'=>$model);

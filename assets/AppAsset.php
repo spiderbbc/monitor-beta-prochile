@@ -24,6 +24,10 @@ class AppAsset extends AssetBundle
        
     ];
     public $js = [
+        // include js for general variables
+        'js/app/variables.js',
+        // include js for general functions
+        'js/app/functions.js',
         // include js for View view
         'js/app/view.js',
     ];
