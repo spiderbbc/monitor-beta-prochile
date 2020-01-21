@@ -130,6 +130,11 @@ class AlertMentionsHelper
 
                 break;  
             case 'Excel Document':
+                $model = new \app\models\AlertsMencions();
+                $model->alertId = $alertId;
+                $model->resourcesId = $resource_id;
+
+                return array($resource_name,'0','0','0',$model->twitterTotal);
                 break;                  
 
             
@@ -170,7 +175,13 @@ class AlertMentionsHelper
         }
     }
 
-
+    /**
+     * [getProductInterations get interations from products]
+     * @param  [type] $resourceName       [description]
+     * @param  [type] $alerts_mention_ids [description]
+     * @param  [type] $alertId            [description]
+     * @return [type]                     [description]
+     */
     public static function getProductInterations($resourceName,$alerts_mention_ids,$alertId)
     {
         $data = [];
@@ -241,7 +252,7 @@ class AlertMentionsHelper
                 }
                 // count values in document
                 $alertsMencions = new \app\models\AlertsMencions();
-                $alertMentionsDocuments = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => 8])->all();
+                $alertMentionsDocuments = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'type' => 'document'])->all();
                 foreach ($alertMentionsDocuments as $alertMentionsDocument) {
                     if($alertMentionsDocument->mentionsCount){
                         $total += $alertsMencions->countDocumentByResource('TWITTER',$alertMentionsDocument->id);
@@ -276,7 +287,18 @@ class AlertMentionsHelper
                 $data['total'] = $total;
                 return $data; 
 
-                break;     
+                break;
+            case 'Excel Document':
+                $total = 0;
+                foreach ($models as $model) {
+                    if ($model->mentionsCount) {
+                        $total += $model->mentionsCount;
+                    }
+                }
+                // set
+                $data['total'] = $total;
+                return $data; 
+                break;         
 
             default:
                 # code...

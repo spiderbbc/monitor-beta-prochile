@@ -125,6 +125,11 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 		        width: 1000,
             	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
+		        animation: {
+		          startup: true,
+		          duration: 1500,
+		          easing: 'out',
+		      },
 		    }
 
 			chart.draw(view, options);
@@ -240,6 +245,11 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 		        width: 1000,
             	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
+		        animation: {
+		          startup: true,
+		          duration: 1500,
+		          easing: 'out',
+		      },
 		    }
 
 			chart.draw(view, options);
@@ -364,6 +374,12 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 		        width: 1000,
             	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
+		        animation: {
+		          startup: true,
+		          duration: 1500,
+		          easing: 'out',
+		      },
+
 		    }
 
 			chart.draw(view, options);
@@ -380,12 +396,13 @@ const products_interations_chart = Vue.component('products-interations-chart',{
  * template: '#view-total-resources-chart' [description]
  * @return {[component]}           [component]
  */
-/*const count_resources_date_chat = Vue.component('count-date-resources-chart',{
+const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 	template: '#view-date-resources-chart',
 	data: function () {
 	    return {
 	    	alertId:id,
 	    	response: [],
+	    	headers:[],
 	    	loaded: false,
 	    	dataTable: null,
 	    	view:null,
@@ -393,17 +410,21 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 	},
 	mounted(){
 		// Load the Visualization API and the corechart package.
-	    google.charts.load('current', {'packages':['line']});
+	    google.charts.load('current', {'packages':['corechart','line']});
 	    this.fetchResourceCount();
-        google.charts.setOnLoadCallback(this.drawColumnChart);	
+		setInterval(function () {
+		   google.charts.setOnLoadCallback(this.drawColumnChart);	
+	      this.fetchResourceCount();
+	    }.bind(this), refreshTime);	
 	},
 	methods: {
 		fetchResourceCount(){
 			axios
-		      .get(baseUrlApi + 'resource-product-on-date' + '?alertId=' +this.alertId)
+		      .get(baseUrlApi + 'mention-on-date' + '?alertId=' +this.alertId)
 		      .then(response => {
 		      	if(typeof this.response === 'object'){
-		      		this.response = response.data.resourceDateCount;
+		      		this.response = response.data.model;
+		      		this.headers = response.data.resourceNames;
 		      		this.loaded = true;
 		      	}
 
@@ -411,66 +432,52 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 		      .catch(error => console.log(error))
 		},
 		drawColumnChart(){
-			var data = google.visualization.arrayToDataTable(this.response);
-			var view = new google.visualization.DataView(data);
-			var column = [0,
-                1,
-                { 
-                    calc: "stringify",
-                    sourceColumn: 1,
-                    type: "string",
-                    role: "annotation" 
-                },
-                2,
-                { 
-                    calc: "stringify",
-                    sourceColumn: 2,
-                    type: "string",
-                    role: "annotation" 
-                },
-                3,
-                { 
-                    calc: "stringify",
-                    sourceColumn: 3,
-                    type: "string",
-                    role: "annotation" 
-                },
-                4,
-                { 
-                    calc: "stringify",
-                    sourceColumn: 4,
-                    type: "string",
-                    role: "annotation" 
-                }
-        ];
-    		view.setColumns(column);  
-			//view.setColumns(this.column);
-			console.log(document.getElementById("date-resources-chart"));
-			var chart = new google.visualization.LineChart(document.getElementById("date-resources-chart"));
+			var data = new google.visualization.DataTable();
+			data.addColumn('string', 'Date');
+      		for (var i = 0; i < this.headers.length; i++) {
+      			data.addColumn('number', this.headers[i]);
+      		}
+      		data.addRows(this.response);
+      		var view = new google.visualization.DataView(data);
 
-		    var options = {
-		        title: 'Gráfico de número de interacciones por red social',
-		        bar: {groupWidth:'30%'},
-		        vAxis: {format: 'decimal'},
-		        width: 900,
+			var column = [0];
+
+			for (var i = 0; i < this.headers.length; i++) {
+				column.push(i +1)
+				column.push({
+					calc: "stringify",
+			        sourceColumn: i + 1,
+			        type: "string",
+			        role: "annotation" 
+
+				});
+			}
+
+			view.setColumns(column);
+			var options = {
+				width: 1000,
             	height: 400,
-            	theme: 'material',
-            	annotations: {
-                    alwaysOutside: true,
-                    highContrast: true,  // default is true, but be sure
-                    textStyle: {
-                      bold: true
-                    }
-                  },
-		        colors: ['#efe521', '#ea5320', '#1055ea','#ed177e','#bf16ab'],
-		    }
+		        vAxis:{title:'Cantidad',textStyle:{color: '#005500',fontSize: '12', paddingRight: '100',marginRight: '100'}},
+   				hAxis: { title: 'Fechas', textStyle: { color: '#005500', fontSize: '12', paddingRight: '100', marginRight: '100'} },
+		        series: {
+		          1: {curveType: 'function'}
+		        },
+		        animation: {
+		          startup: true,
+		          duration: 1500,
+		          easing: 'out',
+		      	},
+		    };
+		    
 
-			chart.draw(view,options);
+		    var chart = new google.visualization.LineChart(document.getElementById('date-resources-chart'));
+		    chart.draw(view, options);
+    		
 		},
 
 	}
 });
-*/
+
 
 /**
  * [tabla de menciones]
@@ -819,7 +826,7 @@ const vm = new Vue({
 		count_resources_chat,
 		post_interations_chart,
 		products_interations_chart,
-		//count_resources_date_chat,
+		count_resources_date_chat,
 		//count_resources,
 		listMentions,
 		cloudWords,

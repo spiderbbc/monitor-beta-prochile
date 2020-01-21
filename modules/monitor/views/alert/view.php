@@ -102,17 +102,17 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
                 <post-interation-chart>
             </div>
         </div>
-        <!-- <div class="row">
-            <div class="col-md-12">
-                <count-date-resources-chart>
-            </div>
-        </div> -->
+
         <div class="row">
             <div class="col-md-12">
                 <products-interations-chart>
             </div>
         </div>
-
+        <div class="row">
+            <div class="col-md-12">
+                <count-date-resources-chart>
+            </div>
+        </div>
         <div class="row">
             <list-mentions></list-mentions>
         </div>

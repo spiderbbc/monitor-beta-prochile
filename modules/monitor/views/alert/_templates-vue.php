@@ -17,10 +17,9 @@
     </div>  
 </script>
 
-<!-- template chart by date google chart -->
-<script type="tex/x-template" id="view-date-resources-chart">
+<script type="text/x-template" id="view-post-mentions-chart">
   <div v-if="loaded">
-    <div id="date-resources-chart"></div>
+    <div id="post_mentions"></div>
     <hr>
   </div>
   <div v-else>
@@ -45,9 +44,11 @@
     </div>  
 </script>
 
-<script type="text/x-template" id="view-post-mentions-chart">
+
+<!-- template chart by date google chart -->
+<script type="tex/x-template" id="view-date-resources-chart">
   <div v-if="loaded">
-    <div id="post_mentions"></div>
+    <div id="date-resources-chart"></div>
     <hr>
   </div>
   <div v-else>
@@ -56,6 +57,8 @@
         </div>
     </div>  
 </script>
+
+
 <!-- template que muestra el total de todas las menciones por Red Social -->
 <script type="text/x-template" id="view-total-mentions-resources">
     <div v-if="loaded">

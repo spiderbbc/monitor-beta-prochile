@@ -65,6 +65,8 @@ class ExcelSearch {
         $this->filterData();
         // save products found it
         $this->saveProductsMentionsAlerts();
+        // finish search
+        $this->searchFinish();
         
         return true;
     }
@@ -485,5 +487,32 @@ class ExcelSearch {
         $this->start_date = $config->start_date;
         $this->end_date = $config->end_date;
     }
+
+    private function searchFinish()
+    {
+        $dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
+            ->where([
+                'alertId'       => $this->alertId,
+                'resourcesId'   => $this->resourcesId,
+                'type'          => 'document',
+            ])
+        ->all();
+
+        $model = [
+            'Excel Document' => [
+                'resourceId' => $this->resourcesId,
+                'status' => 'Pending'
+            ]
+        ];
+
+        if(count($dates_searched)){
+            $model['Excel Document']['status'] = 'Finish';
+
+        }
+
+        \app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
+
+    }
+
 
 }

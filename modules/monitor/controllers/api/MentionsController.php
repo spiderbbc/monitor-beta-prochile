@@ -22,7 +22,7 @@ class MentionsController extends \yii\web\Controller
   }
 
   /**
-   * [actionCountMentions return count the total mentions]
+   * [actionCountMentions return count the total mentions / call component vue: total-mentions]
    * @param  [type] $alertId [description]
    * @return [type]          [description]
    */
@@ -42,7 +42,7 @@ class MentionsController extends \yii\web\Controller
     }
   }
   /**
-   * [actionCountSourcesMentions count by sources]
+   * [actionCountSourcesMentions count by sources / call component vue: total-resources-chart]
    * @param  [type] $alertId [description]
    * @return [type]          [description]
    */
@@ -69,7 +69,8 @@ class MentionsController extends \yii\web\Controller
         }
       }
     }
-
+    
+    //var_dump($data);
     if(is_null($data[0])){
       $data[0] = ['not found',0,0,0,0];
     }
@@ -79,7 +80,7 @@ class MentionsController extends \yii\web\Controller
 
   }
   /**
-   * [actionTopPostInteration top post face or instagram with more interation]
+   * [actionTopPostInteration top post face or instagram with more interation / call component vue: post-interation-chart]
    * @param  [type] $alertId [description]
    * @return [type]          [description]
    */
@@ -114,6 +115,11 @@ class MentionsController extends \yii\web\Controller
 
   }
 
+  /**
+   * [actionProductInteration interations by products / call component vue: products-interations-chart]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
   public function actionProductInteration($alertId)
   {
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
@@ -170,30 +176,29 @@ class MentionsController extends \yii\web\Controller
   }
 
 
-
-  /**
-   * [actionCountByProducts count mentions by products]
-   * @param  [type] $alertId [description]
-   * @return [type]          [description]
-   */
-  public function actionCountByProducts($alertId){
-
+  public function actionResourceOnDateChart($alertId)
+  {
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
-    // cuenta por resource and producto
-    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
-    $resourceCount = [];
-    foreach ($alertMentions as $alertMention){
-      $mentionCount = \app\models\Mentions::find()->where(['alert_mentionId' => $alertMention->id])->count(); 
-      if($mentionCount){
-        $resourceCount[$alertMention->resources->name][$alertMention->term_searched][] = $mentionCount;
-      }
-    }
-    return array('status'=>true,'resources'=>$resourceCount);
+    $model = \app\models\Alerts::findOne($alertId);
+    $alerts_mentions = \app\models\AlertsMencions::find()->where(['alertId' => $model->id])->all();
 
+    // get resources with mentions
+    $resources = [];
+    foreach ($alerts_mentions as $alerts_mention) {
+      if($alerts_mention->mentionsCount){
+        $resources[] = $alerts_mention->resources->name;
+      }// end if
+    }// end foreach
 
+    // get data by date for each resources
+    $data = [];
+
+    return array('status'=>true,'resources'=> $resources,'data' => $data);
   }
+
+
   /**
-   * [actionListMentions list all mention by id]
+   * [actionListMentions list all mention by id / call component vue: list-mentions]
    * @param  [type] $alertId [description]
    * @return [type]          [description]
    */
@@ -218,21 +223,7 @@ class MentionsController extends \yii\web\Controller
   }
 
   /**
-   * [actionGetResourceId return id from resource]
-   * @param  [type] $resourceName [description]
-   * @return [type]               [description]
-   */
-  public function actionGetResourceId($resourceName){
-    
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
-     $model = \app\models\Resources::find()->where(['name' => $resourceName])->one(); 
-
-    return array('status'=>true,'resourceId'=>$model->id);
-
-  }
-
-  /**
-   * [actionListWords list words found it]
+   * [actionListWords list words found it / call component vue: cloud-words]
    * @param  [type] $alertId [description]
    * @return [type]          [description]
    */
@@ -254,34 +245,11 @@ class MentionsController extends \yii\web\Controller
     return array('status'=>true,'wordsModel' => $wordsModel);
   }
 
-
-  public function actionMentionOnDate($alertId){
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
-    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
-    $alertsMencionsId = [];
-    foreach ($alertMentions as $alertMention){
-      if($alertMention->mentionsCount){
-        $alertsMencionsId[] = $alertMention->id;
-      }
-    }
-    // menciones por fecha
-    $expression = new Expression("DATE(FROM_UNIXTIME(created_time)) AS date,COUNT(*) AS total");
-    $expressionGroup = new Expression(" DATE(FROM_UNIXTIME(created_time))");
-
-
-
-    $rows = (new \yii\db\Query())
-      ->select($expression)
-      ->from('mentions')
-      ->where(['alert_mentionId' => $alertsMencionsId])
-      ->groupBy($expressionGroup)
-      ->all();
-
-    return array('status'=>true,'rows' => $rows);  
-  }
-
-
-
+  /**
+   * [actionResourceOnDate description / call component vue: resource-date-mentions]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
   public function actionResourceOnDate($alertId){
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
     //menciones por recurso y fecha
@@ -318,8 +286,8 @@ class MentionsController extends \yii\web\Controller
   }
 
 
-  /**
-   * [actionListEmojis list emojis count in mentions]
+    /**
+   * [actionListEmojis list emojis count in mentions / call component vue: list-emojis]
    * @param  [type] $alertId [description]
    * @return [type]          [description]
    */
@@ -357,8 +325,9 @@ class MentionsController extends \yii\web\Controller
     return array('data' => $model);    
 
   }
-  /**
-   * [actionStatusAlert return a list wiht social media and his status]
+
+   /**
+   * [actionStatusAlert return a list wiht social media and his status / call component vue: status-alert and modal-alert]
    * @param  [int] $alertId [id of the alert]
    * @return [json]          [list social media and his status]
    */
@@ -369,6 +338,127 @@ class MentionsController extends \yii\web\Controller
 
     return array('data' => $model);  
   }
+
+ 
+
+  /**
+   * [actionCountByProducts count mentions by products]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
+  public function actionCountByProducts($alertId){
+
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    // cuenta por resource and producto
+    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
+    $resourceCount = [];
+    foreach ($alertMentions as $alertMention){
+      $mentionCount = \app\models\Mentions::find()->where(['alert_mentionId' => $alertMention->id])->count(); 
+      if($mentionCount){
+        $resourceCount[$alertMention->resources->name][$alertMention->term_searched][] = $mentionCount;
+      }
+    }
+    return array('status'=>true,'resources'=>$resourceCount);
+
+
+  }
+
+  /**
+   * [actionGetResourceId return id from resource]
+   * @param  [type] $resourceName [description]
+   * @return [type]               [description]
+   */
+  public function actionGetResourceId($resourceName){
+    
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+     $model = \app\models\Resources::find()->where(['name' => $resourceName])->one(); 
+
+    return array('status'=>true,'resourceId'=>$model->id);
+
+  }
+
+
+
+  public function actionMentionOnDate($alertId){
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    //menciones por recurso y fecha
+    $expression = new Expression("created_time,DATE(FROM_UNIXTIME(created_time)) AS date,COUNT(*) AS total");
+    $expressionGroup = new Expression("DATE(FROM_UNIXTIME(created_time))");
+    
+    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
+    
+    $resourceDateCount = [];
+    $resourceNames = [];
+    
+    foreach ($alertMentions as $alertMention){
+      if($alertMention->mentionsCount){
+        if(!in_array($alertMention->resources,$resourceDateCount)){
+          $rows = (new \yii\db\Query())
+          ->select($expression)
+          ->from('mentions')
+          ->where(['alert_mentionId' => $alertMention->id])
+          ->orderBy('created_time ASC')
+          ->groupBy($expressionGroup)
+          ->all();
+
+          if(!in_array($alertMention->resources->name, $resourceNames)){
+            $resourceNames[] = $alertMention->resources->name;
+          }
+
+          foreach ($rows as $row){
+            $date = $row['date'];
+            $row['created_time'] = $date;
+            $row['product_searched'] = $alertMention->term_searched;
+            $row['resourceName'] = $alertMention->resources->name;
+            $resourceDateCount[] = $row;  
+          }
+
+          
+        } // end if in_array
+
+      }// is not null 
+      
+    }// end foreach
+
+    \yii\helpers\ArrayHelper::multisort($resourceDateCount, ['created_time'], [SORT_ASC]);
+
+    $data = [];
+    for ($r=0; $r < sizeof($resourceDateCount) ; $r++) { 
+      $data[$resourceDateCount[$r]['date']][] = $resourceDateCount[$r];
+    }
+
+
+
+    $model = array();
+    $i = 0;
+    foreach ($data as $date => $values) {
+      $model[$i] = array($date);
+      $b = 1;
+      foreach ($resourceNames as $index => $resourceName) {
+        $model[$i][$b] = 0;
+        for ($v=0; $v <sizeof($values) ; $v++) { 
+          if ($resourceName == $values[$v]['resourceName']) {
+              if(!empty($model[$i][$b])){
+                $model[$i][$b] += $values[$v]['total'];
+              }else{
+                $model[$i][$b] = (int) $values[$v]['total'];
+              }
+              
+          }
+        }
+        $b++;
+      }
+      $i ++;
+    }
+
+
+    return array('status'=>true,'model' => $model,'data' => $data,'resourceNames' => $resourceNames);  
+  }
+
+
+
+
+
 
   /**
    * Finds the Alerts model based on its primary key value.

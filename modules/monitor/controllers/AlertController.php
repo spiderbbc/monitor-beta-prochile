@@ -410,7 +410,18 @@ class AlertController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        //if model
+        if($model){
+          // delete alert
+          $model->delete();
+          $history_search = \app\models\HistorySearch::findOne(['alertId' => $id]);
+          if($history_search){
+            // delete history
+            $history_search->delete();
+          }
+
+        }
         // delete product models
         $ProductsModelsAlerts = \app\models\ProductsModelsAlerts::find()->where(['alertId' => $id])->all();
         foreach ($ProductsModelsAlerts as $productsModel){

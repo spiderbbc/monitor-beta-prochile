@@ -249,7 +249,7 @@ class AlertsMencions extends \yii\db\ActiveRecord
      */
     public function getTwitterTotal()
     {
-        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->all();
+        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId,'type' => 'tweet'])->all();
         $total = 0;
         foreach ($alertMentions as $alertMention) {
             if($alertMention->mentionsCount){
@@ -259,7 +259,7 @@ class AlertsMencions extends \yii\db\ActiveRecord
 
         }
         // count values in document
-        $alertMentionsDocuments = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => 8])->all();
+        $alertMentionsDocuments = $this->find()->where(['alertId' => $this->alertId,'type'=>'document'])->all();
         foreach ($alertMentionsDocuments as $alertMentionsDocument) {
             if($alertMentionsDocument->mentionsCount){
                 $total += $this->getCountDocumentByResource('TWITTER',$alertMentionsDocument->id);
