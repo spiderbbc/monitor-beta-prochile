@@ -66,6 +66,11 @@ use yii\helpers\Url;
                 <?= Html::img($products_interations,['width'=>550,'height'=>180]) ?>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                <?= Html::img($date_resources,['width'=>550,'height'=>180]) ?>
+            </div>
+        </div>
 
 
         

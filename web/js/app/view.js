@@ -471,6 +471,11 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 		    
 
 		    var chart = new google.visualization.LineChart(document.getElementById('date-resources-chart'));
+
+		    google.visualization.events.addListener(chart, 'ready', function () {
+	          data_chart['date_resources'] = chart.getImageURI();
+
+	        });
 		    chart.draw(view, options);
     		
 		},
@@ -759,6 +764,7 @@ const sweetAlert = Vue.component('modal-alert',{
 			            chart_bar_resources_count: data_chart['chart_bar_resources_count'],
 			            post_mentions: data_chart['post_mentions'],
 			            products_interations: data_chart['products_interations'],
+			            date_resources: data_chart['date_resources'],
 			            alertId: id,
 			        })
 			        .then(function (response) {

@@ -21,6 +21,7 @@ class PdfController extends \yii\web\Controller
     	$chart_bar_resources_count = $data_post->chart_bar_resources_count;
         $post_mentions = $data_post->post_mentions;
         $products_interations = $data_post->products_interations;
+        $date_resources = $data_post->date_resources;
     	// load images
     	$url_logo_small = \yii\helpers\Url::to('@img/logo_small.png');
         $url_logo = \yii\helpers\Url::to('@img/logo.jpg');
@@ -55,6 +56,7 @@ class PdfController extends \yii\web\Controller
             'model' => $model,
             'url_logo' => $url_logo,
             'post_mentions' => $post_mentions,
+            'date_resources' => $date_resources,
             'url_logo_small' => $url_logo_small,
             'products_interations' => $products_interations,
             'chart_bar_resources_count' => $chart_bar_resources_count
