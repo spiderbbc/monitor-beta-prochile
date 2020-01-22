@@ -1,4 +1,53 @@
-
+// flag to chart line
+let loadedChart = false;
+/**
+ * [componente que muestra el button report]
+ * @param  {[count]} )   
+ * template: '#view-button-report [description]
+ * @return {[component]}           [component]
+ */
+const report_button = Vue.component('button-report',{
+	props: ['count'],
+	template: '#view-button-report',
+	data: function () {
+		return {
+			isdisabled: true,
+		}
+	},
+	mounted(){
+		setInterval(function () {
+			if(this.count > 0 && loadedChart){
+				this.isdisabled = false;
+			}
+	    }.bind(this), 2000);
+		
+	},
+	methods:{
+		send(event){
+			if(this.count > 0 && loadedChart){
+				axios.post(baseUrlDocument + 'document' , {
+		            chart_bar_resources_count: data_chart['chart_bar_resources_count'],
+		            post_mentions: data_chart['post_mentions'],
+		            products_interations: data_chart['products_interations'],
+		            date_resources: data_chart['date_resources'],
+		            alertId: id,
+		        })
+		        .then(function (response) {
+		          var link = document.createElement('a');
+		          link.href = origin + response.data.data;
+		          link.download = response.data.filename;
+		          link.dispatchEvent(new MouseEvent('click'));
+		          
+		            
+		        })
+		        .catch(function (error) {
+		           console.log(error);
+		        });
+			}
+			
+		}
+	}
+});
 
 /**
  * [componente que muestra el total de menciones]
@@ -413,8 +462,8 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 	    google.charts.load('current', {'packages':['corechart','line']});
 	    this.fetchResourceCount();
 		setInterval(function () {
-		   google.charts.setOnLoadCallback(this.drawColumnChart);	
 	      this.fetchResourceCount();
+		   google.charts.setOnLoadCallback(this.drawColumnChart);	
 	    }.bind(this), refreshTime);	
 	},
 	methods: {
@@ -426,18 +475,25 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 		      		this.response = response.data.model;
 		      		this.headers = response.data.resourceNames;
 		      		this.loaded = true;
+		      		
 		      	}
 
 		      })
 		      .catch(error => console.log(error))
 		},
 		drawColumnChart(){
+			
+
 			var data = new google.visualization.DataTable();
+			
 			data.addColumn('string', 'Date');
+      		
       		for (var i = 0; i < this.headers.length; i++) {
       			data.addColumn('number', this.headers[i]);
       		}
+      		
       		data.addRows(this.response);
+      		
       		var view = new google.visualization.DataView(data);
 
 			var column = [0];
@@ -469,6 +525,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 		      	},
 		    };
 		    
+		    
 
 		    var chart = new google.visualization.LineChart(document.getElementById('date-resources-chart'));
 
@@ -478,6 +535,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 	        });
 		    chart.draw(view, options);
     		
+    		loadedChart = true;
 		},
 
 	}
@@ -828,6 +886,7 @@ const vm = new Vue({
 		}
 	},
 	components:{
+		report_button,
 		count_mentions,
 		count_resources_chat,
 		post_interations_chart,

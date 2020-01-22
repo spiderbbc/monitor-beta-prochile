@@ -1,3 +1,11 @@
+<?php 
+use yii\helpers\Html;
+?>
+<!-- template que muestra el boton para solicitar el pdf -->
+<script type="text/x-template" id="view-button-report">
+  <button class="btn btn-info" v-on:click.prevent="send" v-bind:class="{ disabled: isdisabled}">Report</button>
+</script>
+
 <!-- template que muestra el total de todas las menciones -->
 <script type="text/x-template" id="view-total-mentions">
     <div id="menciones" class="col-md-12 well">
