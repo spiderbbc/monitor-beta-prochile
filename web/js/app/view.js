@@ -294,11 +294,6 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 		        width: 1000,
             	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
-		        animation: {
-		          startup: true,
-		          duration: 1500,
-		          easing: 'out',
-		      },
 		    }
 
 			chart.draw(view, options);

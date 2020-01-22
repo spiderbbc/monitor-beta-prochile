@@ -70,6 +70,19 @@ class AlertMentionsHelper
 
 
     /**
+     * [isAlertsMencionsExists if a mention alert exits by property]
+     * @param  [type]  $publication_id [description]
+     * @return boolean                 [description]
+     */
+    public static function isAlertsMencionsExistsByProperties($where){
+        if(\app\models\AlertsMencions::find()->where($where)->exists()){
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
      * [getSocialNetworkInteractions return array of social with interation]
      * @param  [type] $resource_name [description]
      * @param  [type] $resource_id   [description]

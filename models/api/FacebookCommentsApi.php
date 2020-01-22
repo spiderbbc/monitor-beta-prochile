@@ -641,10 +641,16 @@ class FacebookCommentsApi extends Model {
 						}
 						// if not value
 						if(!in_array($data[$d],$model[$this->products[$p]])){
-							$where['publication_id'] = $id_feed;
+
+							if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExistsByProperties(['title' => $sentence])){
+
+								$where['publication_id'] = $id_feed;
 							
-							\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date,'title' => $sentence, 'url' => $url,'mention_data' => $share_feed]);
-							$model[$this->products[$p]][] = $data[$d];
+								\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date,'title' => $sentence, 'url' => $url,'mention_data' => $share_feed]);
+								$model[$this->products[$p]][] = $data[$d];
+
+							}
+							
 							$feed_count --;
 							break;
 						}
