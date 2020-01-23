@@ -316,7 +316,7 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 	    	alertId:id,
 	    	response: [],
 	    	loaded: true,
-	    	dataTable: ['Producto', 'Shares', 'Like Post','Likes','Favorites','Retweets','Likes Twitter','Total'],
+	    	dataTable: ['Producto', 'Shares', 'Like Post','Likes','Retweets','Likes Twitter','Total'],
 	    	view:null,
 	    	column: [0,
 	    		1,
@@ -358,13 +358,6 @@ const products_interations_chart = Vue.component('products-interations-chart',{
                 { 
                 	calc: "stringify",
                     sourceColumn: 6,
-                    type: "string",
-                    role: "annotation" 
-                },
-                7,
-                { 
-                	calc: "stringify",
-                    sourceColumn: 7,
                     type: "string",
                     role: "annotation" 
                 },
@@ -506,6 +499,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 
 			view.setColumns(column);
 			var options = {
+				title: 'Cantidad de Comentarios por Red Social',
 				width: 1000,
             	height: 400,
 		        vAxis:{title:'Cantidad',textStyle:{color: '#005500',fontSize: '12', paddingRight: '100',marginRight: '100'}},

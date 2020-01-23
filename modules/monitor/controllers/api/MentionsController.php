@@ -146,26 +146,24 @@ class MentionsController extends \yii\web\Controller
     }
 
     //reorder data
-    $properties = ['shares','likes','total','like_post','favorite_count','retweets','likes_twitter'];
+    $properties = ['shares','likes','total','like_post','retweets','likes_twitter'];
     $dataCount = [];
     foreach ($data as $product => $values) {
         $total = 0;
         $shares = 0;
         $likes = 0;
         $like_post = 0;
-        $favorite_count = 0;
         $retweets = 0;
         $likes_twitter = 0;
         foreach ($values as $value) {
           $shares += (isset($value['shares'])) ? $value['shares']: 0;
           $likes  += (isset($value['likes'])) ? $value['likes']: 0;
           $like_post  += (isset($value['like_post'])) ? $value['like_post']: 0;
-          $favorite_count  += (isset($value['favorite_count'])) ? $value['favorite_count']: 0;
           $retweets  += (isset($value['retweets'])) ? $value['retweets']: 0;
           $likes_twitter  += (isset($value['likes_twitter'])) ? $value['likes_twitter']: 0;
           $total  += (isset($value['total'])) ? $value['total']: 0;
         }
-        $dataCount[] = array($product,$shares,$like_post,$likes,$favorite_count,$retweets,$likes_twitter,$total);
+        $dataCount[] = array($product,$shares,$like_post,$likes,$retweets,$likes_twitter,$total);
     }
 
 
