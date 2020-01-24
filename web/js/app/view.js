@@ -129,7 +129,6 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 		this.response = [this.dataTable];
 		// Load the Visualization API and the corechart package.
      	google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(this.drawColumnChart);	
         this.fetchResourceCount();
 		setInterval(function () {
 			if(this.loaded){
@@ -252,7 +251,6 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 		this.response = [this.dataTable];
 		// Load the Visualization API and the corechart package.
      	google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(this.drawColumnChart);	
         this.fetchResourceCount();
 		setInterval(function () {
 		   google.charts.setOnLoadCallback(this.drawColumnChart);	
@@ -376,7 +374,6 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 		this.response = [this.dataTable];
 		// Load the Visualization API and the corechart package.
      	google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(this.drawColumnChart);	
         this.fetchResourceCount();
 		setInterval(function () {
 		   google.charts.setOnLoadCallback(this.drawColumnChart);	
@@ -754,7 +751,7 @@ const sweetAlert = Vue.component('modal-alert',{
 	async mounted(){
 
 	    while(!this.isShowModal){
-	    	await sleep(2000);
+	    	await sleep(refreshSweetAlert);
 	    	this.fetchStatus();
 	    }
 		

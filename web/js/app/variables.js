@@ -7,6 +7,7 @@ const baseUrlView      = `${origin}/monitor-beta/web/monitor/alert/`;
 
 // 1000 = 1 seg
 let refreshTime = 20000;
+let refreshSweetAlert = 30000;
 let refreshTimeTable = 40000;
 
 let data_chart = new Object();

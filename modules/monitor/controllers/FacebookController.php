@@ -62,7 +62,8 @@ class FacebookController extends \yii\web\Controller
             }
            
             
-            return $this->goHome();
+            //return $this->goHome();
+            return $this->redirect(['//monitor/alert']);
 
 
         } elseif ($helper->getError()) {
@@ -96,8 +97,8 @@ class FacebookController extends \yii\web\Controller
     {
       $user_facebook = \app\models\CredencialsApi::find() ->where( [ 
         'userId' => $userId, 
-        'resourceId' =>  \app\models\CredencialsApi::FACEBOOK,
-        'name_app' =>  \app\models\CredencialsApi::NAME_APP_FACEBOOK,
+        'resourceId' =>  5,
+        'name_app' =>  'monitor-facebook',
       ] )->one();
 
       $user_facebook->status = 0;

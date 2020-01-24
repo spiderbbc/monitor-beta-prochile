@@ -93,7 +93,6 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
             <total-mentions :count="count">
         </div>
         <div class="row">
-            <!-- <total-resources> -->
             <div class="col-md-12">
                 <total-resources-chart>
             </div>
@@ -103,7 +102,6 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
                 <post-interation-chart>
             </div>
         </div>
-
         <div class="row">
             <div class="col-md-12">
                 <products-interations-chart>

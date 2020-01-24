@@ -42,12 +42,10 @@ class DaemonController extends Controller
         $alert = new Alerts();
         $alertsConfig = $alert->getBringAllAlertsToRun();
         
-        $this->stdout("runnig getBringAllAlertsToRun funtction.. \n", Console::BOLD);
         
         if(!empty($alertsConfig)){
            $baseApi = new BaseApi();
            $api = $baseApi->callResourcesApi($alertsConfig);
-           $this->stdout("runnig callResourcesApi funtction baseApi.. \n", Console::BOLD);
         }
         
         return ExitCode::OK;
@@ -64,7 +62,6 @@ class DaemonController extends Controller
             $baseApi = new BaseApi();
             $api = $baseApi->readDataResource($alertsConfig);
         }
-        $this->stdout("runnig actionDataSearch funtction.. \n", Console::BOLD);
     }
     /**
      * [actionSyncProducts sync products to drive documents]
@@ -79,10 +76,8 @@ class DaemonController extends Controller
     public function actionVerifyAlertsFinish(){
         $alert = new Alerts();
         $alertsConfig = $alert->getBringAllAlertsToFinish();
-        var_dump($alertsConfig);
         
 
-        $this->stdout("runnig verify that alerts are finished.. \n", Console::BOLD);
 
 
         return ExitCode::OK;
