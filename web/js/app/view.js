@@ -56,7 +56,7 @@ const report_button = Vue.component('button-report',{
  * @return {[component]}           [component]
  */
 const count_mentions = Vue.component('total-mentions',{
-	props: ['count'],
+	props: ['count','shares','likes','coments'],
 	data: function () {
 	    return {
 	    }
@@ -129,8 +129,6 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 		this.response = [this.dataTable];
 		// Load the Visualization API and the corechart package.
      	google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(this.drawColumnChart);	
-        this.fetchResourceCount();
 		setInterval(function () {
 			if(this.loaded){
 				google.charts.setOnLoadCallback(this.drawColumnChart);	
@@ -171,7 +169,7 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 		    var options = {
 		        title: 'Gráfico de número de interacciones por red social',
 		        vAxis: {format: 'decimal'},
-		        width: 1000,
+		        width: 1200,
             	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
 		        animation: {
@@ -201,6 +199,7 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 	    	alertId:id,
 	    	response: [],
 	    	loaded: false,
+	    	render: false,
 	    	dataTable: ['Post Titulo', 'Share', 'Like Post','Likes Comments','Total','link'],
 	    	view:null,
 	    	column: [0,
@@ -238,8 +237,8 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 
             options: {
 	          chart: {
-	            title: 'Company Performance',
-	            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+	            title: '',
+	            subtitle: '',
 	          },
 	          theme: 'material',
 	          bars: 'vertical',
@@ -252,11 +251,13 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 		this.response = [this.dataTable];
 		// Load the Visualization API and the corechart package.
      	google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(this.drawColumnChart);	
-        this.fetchResourceCount();
+        
 		setInterval(function () {
-		   google.charts.setOnLoadCallback(this.drawColumnChart);	
 	      this.fetchResourceCount();
+		   if(this.loaded){
+		   	google.charts.setOnLoadCallback(this.drawColumnChart);
+		   }
+		   this.fetchResourceCount();	
 	    }.bind(this), refreshTime);
 		
 	},
@@ -266,12 +267,14 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 		      .get(baseUrlApi + 'top-post-interation' + '?alertId=' +this.alertId)
 		      .then(response => {
 		      	if(typeof this.response === 'object'){
-
-		      		this.response.splice(1,response.data.data.length);
-			      	for(let index in response.data.data){
-			      		this.response.push(response.data.data[index]);
-			      	}
-		      		this.loaded = true;
+					if(response.data.status){
+						this.response.splice(1,response.data.data.length);
+				      	for(let index in response.data.data){
+				      		this.response.push(response.data.data[index]);
+				      	}
+			      		this.render = true;
+			      		this.loaded = true;
+					}		      		
 		      	}
 
 		      })
@@ -291,7 +294,7 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 		    var options = {
 		        title: 'Gráfico Post con mas interaciones',
 		        vAxis: {format: 'decimal'},
-		        width: 1000,
+		        width: 1200,
             	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
 		    }
@@ -369,7 +372,6 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 		this.response = [this.dataTable];
 		// Load the Visualization API and the corechart package.
      	google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(this.drawColumnChart);	
         this.fetchResourceCount();
 		setInterval(function () {
 		   google.charts.setOnLoadCallback(this.drawColumnChart);	
@@ -408,7 +410,7 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 		    var options = {
 		        title: 'Gráfico de número de interacciones por productos',
 		        vAxis: {format: 'decimal'},
-		        width: 1000,
+		        width: 1200,
             	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
 		        animation: {
@@ -448,10 +450,14 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 	mounted(){
 		// Load the Visualization API and the corechart package.
 	    google.charts.load('current', {'packages':['corechart','line']});
-	    this.fetchResourceCount();
+	    
 		setInterval(function () {
 	      this.fetchResourceCount();
-		   google.charts.setOnLoadCallback(this.drawColumnChart);	
+		  if(this.loaded){
+		  	google.charts.setOnLoadCallback(this.drawColumnChart);
+		  }
+		  
+
 	    }.bind(this), refreshTime);	
 	},
 	methods: {
@@ -499,8 +505,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 
 			view.setColumns(column);
 			var options = {
-				title: 'Cantidad de Comentarios por Red Social',
-				width: 1000,
+				width: 1200,
             	height: 400,
 		        vAxis:{title:'Cantidad',textStyle:{color: '#005500',fontSize: '12', paddingRight: '100',marginRight: '100'}},
    				hAxis: { title: 'Fechas', textStyle: { color: '#005500', fontSize: '12', paddingRight: '100', marginRight: '100'} },
@@ -847,6 +852,9 @@ const vm = new Vue({
 		alertId:id,
 		isData: false,
 		count: 0,
+		shares: 0,
+		likes: 0,
+		coments: 0,
 		resourcescount:[],
 	},
 	mounted(){
@@ -861,7 +869,13 @@ const vm = new Vue({
 		fetchIsData(){
 			axios
 		      .get(baseUrlApi + 'count-mentions' + '?alertId=' +this.alertId)
-		      .then(response => (this.count = response.data.count))
+		      .then(response => {
+		      	console.log(response.data);
+		      	this.count = response.data.count;
+		      	this.shares = response.data.shares;
+		      	this.likes = response.data.likes;
+		      	this.coments = response.data.coments;
+		      })
 		      .catch(error => console.log(error))
 		    if(this.count > 0){
 		    	this.isData = true; 
@@ -890,7 +904,6 @@ const vm = new Vue({
 
 	}	
 });
-
 
 
 

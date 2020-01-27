@@ -29,17 +29,37 @@ class MentionsController extends \yii\web\Controller
   public function actionCountMentions($alertId){
 
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
-    
-    if($this->findModel($alertId)){
-      // cuenta si la alerta tiene menciones
-      $rows = (new \yii\db\Query())
+    $model = $this->findModel($alertId);
+    // valores por default
+    $count = 0;
+    $shares = 0;
+    $coments = 0;
+    $likes = 0;
+    if($model){
+      // cuenta si la alerta tiene entradas
+      $count = (new \yii\db\Query())
       ->from('alerts_mencions')
       ->join('JOIN', 'mentions', 'mentions.alert_mentionId = alerts_mencions.id')
       ->where(['alertId' => $alertId])
       ->count();
-      return array('status'=>true,'count'=>$rows);
+      // contar los shares de la alerta
+      foreach ($model->alertsMentions as $alertMention) {
+        if($alertMention->mentionsCount){
+          if(!is_null($alertMention->mention_data)){
+            if(\yii\helpers\ArrayHelper::keyExists('shares',$alertMention->mention_data)){
+              $shares += $alertMention->mention_data['shares'];
+              $coments += $alertMention->mentionsCount;
+            }
+            if(\yii\helpers\ArrayHelper::keyExists('like_count',$alertMention->mention_data)){
+              $likes += $alertMention->mention_data['like_count'];
+              $coments += $alertMention->mentionsCount;
+            }
+          }
+        }
+      }
 
     }
+    return array('status'=>true,'count'=>$count,'shares' => $shares,'likes' => $likes,'coments' => $coments);
   }
   /**
    * [actionCountSourcesMentions count by sources / call component vue: total-resources-chart]
@@ -87,6 +107,7 @@ class MentionsController extends \yii\web\Controller
   public function actionTopPostInteration($alertId)
   {
     \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    $status = true;
     $model = \app\models\Alerts::findOne($alertId);
     $data = [];
     foreach ($model->config->sources as $sources){
@@ -109,9 +130,10 @@ class MentionsController extends \yii\web\Controller
 
     if(empty($model)){
       $model[] = ['not found',0,0,0,0,0];
+      $status = false;
     }
 
-    return array('status'=>true,'data'=>$model);
+    return array('status'=>$status,'data'=>$model);
 
   }
 
@@ -130,9 +152,9 @@ class MentionsController extends \yii\web\Controller
     $products = [];
     foreach ($alerts_mentions as $alerts_mention) {
       if($alerts_mention->mentionsCount){
-        $model =  \app\helpers\AlertMentionsHelper::getProductByTermSearch($alerts_mention->term_searched);
-        if(!is_null($model)){
-          $products[$model->name][$alerts_mention->resources->name][] = $alerts_mention->id;
+        $product_model =  \app\helpers\AlertMentionsHelper::getProductByTermSearch($alerts_mention->term_searched);
+        if(!is_null($product_model)){
+          $products[$product_model->name][$alerts_mention->resources->name][] = $alerts_mention->id;
         }//
       }// end if
     }// end foreach
@@ -146,7 +168,6 @@ class MentionsController extends \yii\web\Controller
     }
 
     //reorder data
-    $properties = ['shares','likes','total','like_post','retweets','likes_twitter'];
     $dataCount = [];
     foreach ($data as $product => $values) {
         $total = 0;
@@ -166,7 +187,9 @@ class MentionsController extends \yii\web\Controller
         $dataCount[] = array($product,$shares,$like_post,$likes,$retweets,$likes_twitter,$total);
     }
 
-
+    if(!count($dataCount)){
+      $dataCount[] = array('Not Found',0,0,0,0,0,0);
+    }
 
 
 

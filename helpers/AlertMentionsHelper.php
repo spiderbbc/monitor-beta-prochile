@@ -2,6 +2,7 @@
 namespace app\helpers;
 
 use yii;
+use yii\db\Expression;
 
 /**
  *
@@ -126,20 +127,33 @@ class AlertMentionsHelper
             
                 break;
             case 'Live Chat':
-                $model = new \app\models\AlertsMencions();
-                $model->alertId = $alertId;
-                $model->resourcesId = $resource_id;
+                $models = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => $resource_id])->all();
+                $expression = new Expression("`mention_data`->'$.id' AS ticketId");
+                $total = 0;
 
-                return array($resource_name,'0','0','0',$model->total);
+                foreach ($models as $model) {
+                    $rows = (new \yii\db\Query())
+                      ->select($expression)
+                      ->from('mentions')
+                      ->where(['alert_mentionId' => $model->id])
+                      ->groupBy('ticketId')
+                      ->count();
+                    $total += intval($rows);  
+                }
+
+
+                return array($resource_name,'0','0','0',$total);
 
                 break;
 
             case 'Live Chat Conversations':
-                $model = new \app\models\AlertsMencions();
-                $model->alertId = $alertId;
-                $model->resourcesId = $resource_id;
+                $models = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => $resource_id])->all();
+                $total = 0;
+                foreach ($models as $model) {
+                    $total += $model['mention_data']['count'];
+                }
 
-                return array($resource_name,'0','0','0',$model->total);
+                return array($resource_name,'0','0','0',$total);
 
                 break;  
             case 'Excel Document':
@@ -279,10 +293,16 @@ class AlertMentionsHelper
                 break;
             case 'Live Chat':
                 $total = 0;
+                $expression = new Expression("`mention_data`->'$.id' AS ticketId");
                 foreach ($models as $model) {
-                    if ($model->mentionsCount) {
-                        $total += $model->mentionsCount;
-                    }
+                    $rows = (new \yii\db\Query())
+                      ->select($expression)
+                      ->from('mentions')
+                      ->where(['alert_mentionId' => $model->id])
+                      ->groupBy('ticketId')
+                      ->count();
+                    $total += intval($rows);  
+                    
                 }
                 // set
                 $data['total'] = $total;
@@ -292,9 +312,7 @@ class AlertMentionsHelper
             case 'Live Chat Conversations':
                 $total = 0;
                 foreach ($models as $model) {
-                    if ($model->mentionsCount) {
-                        $total += $model->mentionsCount;
-                    }
+                    $total += $model->mention_data['count'];
                 }
                 // set
                 $data['total'] = $total;
@@ -315,6 +333,7 @@ class AlertMentionsHelper
 
             default:
                 # code...
+                return '1';
                 break;
         }
     }
