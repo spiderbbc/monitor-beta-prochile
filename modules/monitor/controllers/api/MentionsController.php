@@ -44,16 +44,14 @@ class MentionsController extends \yii\web\Controller
       ->count();
       // contar los shares de la alerta
       foreach ($model->alertsMentions as $alertMention) {
-        if($alertMention->mentionsCount){
-          if(!is_null($alertMention->mention_data)){
-            if(\yii\helpers\ArrayHelper::keyExists('shares',$alertMention->mention_data)){
-              $shares += $alertMention->mention_data['shares'];
-              $coments += $alertMention->mentionsCount;
-            }
-            if(\yii\helpers\ArrayHelper::keyExists('like_count',$alertMention->mention_data)){
-              $likes += $alertMention->mention_data['like_count'];
-              $coments += $alertMention->mentionsCount;
-            }
+        if(!is_null($alertMention->mention_data)){
+          if(\yii\helpers\ArrayHelper::keyExists('shares',$alertMention->mention_data)){
+            $shares += $alertMention->mention_data['shares'];
+            $coments += $alertMention->mentionsCount;
+          }
+          if(\yii\helpers\ArrayHelper::keyExists('like_count',$alertMention->mention_data)){
+            $likes += $alertMention->mention_data['like_count'];
+            $coments += $alertMention->mentionsCount;
           }
         }
       }
