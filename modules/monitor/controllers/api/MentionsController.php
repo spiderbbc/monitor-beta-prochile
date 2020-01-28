@@ -59,6 +59,40 @@ class MentionsController extends \yii\web\Controller
     }
     return array('status'=>true,'count'=>$count,'shares' => $shares,'likes' => $likes,'coments' => $coments);
   }
+
+  /**
+   * [actionBoxSourcesCount description]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
+  public function actionBoxSourcesCount($alertId)
+  {
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    $model = $this->findModel($alertId);
+    $modelDataCount = [];
+    
+    foreach ($model->config->sources as $sources){
+      if(!\app\helpers\StringHelper::in_array_r($sources->name,$modelDataCount)){
+          $modelDataCount[] = \app\helpers\AlertMentionsHelper::getSocialNetworkInteractions($sources->name,$sources->id,$model->id);
+      }
+    }
+    $data = [];
+
+    for($d = 0; $d < sizeof($modelDataCount); $d++){
+      if(!is_null($modelDataCount[$d])){
+        $name = $modelDataCount[$d][0];
+        if(strlen($name) > 12){
+          $name = \app\helpers\StringHelper::ensureRightPoints(\app\helpers\StringHelper::substring($name,0,11));
+        }
+        $data[] = array($name,$modelDataCount[$d][4]);
+      }
+    }
+
+
+
+    return array('status' => true,'data' => $data,'modelDataCount' => $modelDataCount);
+  }
+
   /**
    * [actionCountSourcesMentions count by sources / call component vue: total-resources-chart]
    * @param  [type] $alertId [description]

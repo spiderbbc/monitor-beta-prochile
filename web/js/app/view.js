@@ -64,6 +64,44 @@ const count_mentions = Vue.component('total-mentions',{
 	template: '#view-total-mentions',
 });
 
+const box_sources = Vue.component('box-sources',{
+	template: '#view-box-sources',
+	data: function(){
+		return {
+			loaded: false,
+			response: null,
+			counts: 0,
+			isseven: false,
+			column: null,
+		}
+	},
+	mounted(){
+		setInterval(function () {
+			this.fetchStatus();
+	    }.bind(this), refreshTime);
+		
+	},
+	methods:{
+		fetchStatus(){
+			axios.get(baseUrlApi + 'box-sources-count' + '?alertId=' + id )
+		      .then((response) => {
+		        this.response = response.data.data;
+		        this.counts = this.response.length;
+		        this.loaded = true;
+		    })
+		},
+		calcColumns(){
+			if(this.counts == 7){
+				this.isseven = true;
+			}
+			return columnsName[this.counts - 1];
+
+		},
+		getIcon(resourceName){
+			return resourceIcons[resourceName];
+		}
+	}
+});
 
 
 /**
@@ -870,7 +908,6 @@ const vm = new Vue({
 			axios
 		      .get(baseUrlApi + 'count-mentions' + '?alertId=' +this.alertId)
 		      .then(response => {
-		      	console.log(response.data);
 		      	this.count = response.data.count;
 		      	this.shares = response.data.shares;
 		      	this.likes = response.data.likes;
@@ -891,6 +928,7 @@ const vm = new Vue({
 	components:{
 		report_button,
 		count_mentions,
+		box_sources,
 		count_resources_chat,
 		post_interations_chart,
 		products_interations_chart,
