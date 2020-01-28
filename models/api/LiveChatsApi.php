@@ -153,8 +153,8 @@ class LiveChatsApi extends Model {
 			$params['page'] = $page;
 			
 			$response = $client->chats->get($params);
-			echo "searching start date". $params['date_from']. " to  ". $params['date_to']. " in productName: ".$params['query']. "\n";
-			echo "Count result: {$response->total} ". "\n";
+		//	echo "searching start date". $params['date_from']. " to  ". $params['date_to']. " in productName: ".$params['query']. "\n";
+		//	echo "Count result: {$response->total} ". "\n";
 
 			if(count($response->chats)){
 				// get the data

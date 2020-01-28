@@ -70,7 +70,7 @@ class FacebookSearch
     {   
         // if doesnt dictionaries and doesnt boolean
         if(!$this->isDictionaries && !$this->isBoolean){
-             echo "no dictionaries .. \n";
+            // echo "no dictionaries .. \n";
             // save all data
             $mentions = $this->data;
             $search = $this->saveMentions($mentions);
@@ -87,7 +87,7 @@ class FacebookSearch
         // if  dictionaries and  !boolean
         if($this->isDictionaries && !$this->isBoolean){
             // init search
-            echo "only dictionaries \n";
+          //  echo "only dictionaries \n";
             $mentions = $this->data;
             $data = $this->searchDataByDictionary($mentions);
             $search = $this->saveMentions($data);

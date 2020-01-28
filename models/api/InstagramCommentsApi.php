@@ -302,7 +302,6 @@ class InstagramCommentsApi extends Model {
 				if(isset($params)){
 					if (ArrayHelper::keyExists($id_feed, $params['feeds'], false)) {
 						if($params['feeds'][$id_feed]['next'] != ''){
-							echo "using next ...";
 							$next = $params['feeds'][$id_feed]['next'];
 							// clean next in the database
 							$where['publication_id'] = $id_feed;

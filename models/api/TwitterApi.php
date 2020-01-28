@@ -192,7 +192,6 @@ class TwitterApi extends Model {
 		$until_date = null;
 		$max_id = null;
 
-		var_dump($params);
       
       	$product = ArrayHelper::remove($params, 'product');
       	$since_date = ArrayHelper::remove($params, 'since');
@@ -209,7 +208,7 @@ class TwitterApi extends Model {
         	
         	// get data twitter api
         	$data[$index] = $this->search_tweets($params);
-        	echo $data[$index]['rate']['remaining']."\n";
+        //	echo $data[$index]['rate']['remaining']."\n";
         	if($data[$index]['rate']['remaining'] < $this->minimum){
         		break;
         	}
@@ -253,9 +252,9 @@ class TwitterApi extends Model {
 		            }
 		            
         			
-        			echo "====================". "\n";
+        			/*echo "====================". "\n";
 	        		Console::stdout(" get in array {$this->limit} con params: {$params['q']} \n", Console::BOLD);
-	        		echo "====================". "\n";
+	        		echo "====================". "\n";*/
         		// empty status	
         		}else{
         			$properties['max_id'] = '';

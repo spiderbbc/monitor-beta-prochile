@@ -61,7 +61,6 @@ class BaseApi extends Model {
 
 	public function twitterApi($alerts = []){
 		
-		Console::stdout("calling twitter api class\n", Console::BOLD);
 		$products_count = $this->countAllTerms($alerts);
 		$tweets = new \app\models\api\TwitterApi($products_count);
 
@@ -85,7 +84,6 @@ class BaseApi extends Model {
 
 	public function facebookCommentsApi($alerts = []){
 		
-		Console::stdout("calling facebookCommentsApi api class\n ", Console::BOLD);
 		
 		$facebookCommentsApi = new \app\models\api\FacebookCommentsApi();
 
@@ -101,7 +99,6 @@ class BaseApi extends Model {
 
 	public function facebookMessagesApi($alerts = []){
 
-		Console::stdout("calling facebookMessagesApi api class\n ", Console::BOLD);
 		
 		$facebookMessagesApi = new \app\models\api\FacebookMessagesApi();
 
@@ -117,7 +114,6 @@ class BaseApi extends Model {
 
 	public function InstagramCommentsApi($alerts = []){
 		
-		Console::stdout("calling InstagramCommentsApi api class\n ", Console::BOLD);
 		
 		$InstagramCommentsApi = new \app\models\api\InstagramCommentsApi();
 
@@ -132,7 +128,6 @@ class BaseApi extends Model {
 	}
 
 	public function liveChat($alerts = []){
-		echo "liveChat". "\n";
 		$LivechatTicketApi = new \app\models\api\LiveTicketApi();
 
 		foreach ($alerts as $alert){
@@ -148,7 +143,6 @@ class BaseApi extends Model {
 	}
 
 	public function liveChatConversations($alerts = []){
-		echo "liveChat Conversation". "\n";
 		$LiveChatApi = new \app\models\api\LiveChatsApi();
 
 		foreach ($alerts as $alert){
@@ -222,7 +216,6 @@ class BaseApi extends Model {
 
 
 	public function readDataTwitterApi($alertId,$data){
-		echo "calling readDataTwitterApi \n";
 		$searchTwitterApi = new \app\models\search\TwitterSearch();
 		$params = [$alertId,$data];
 		if(!$searchTwitterApi->load($params)){
@@ -237,7 +230,6 @@ class BaseApi extends Model {
 
 
 	public function readDataFacebookCommentsApi($alertId,$data){
-		echo "calling readDataFacebookCommentsApi \n";
 		$searchFacebookApi = new \app\models\search\FacebookSearch();
 		$params = [$alertId,$data];
 
@@ -262,7 +254,6 @@ class BaseApi extends Model {
 	}
 
 	public function readDataInstagramCommentsApi($alertId,$data){
-		echo "calling readDataInstagramCommentsApi \n";
 		$searchInstagramApi = new \app\models\search\InstagramSearch();
 		$params = [$alertId,$data];
 
@@ -270,7 +261,6 @@ class BaseApi extends Model {
 
 
 		if($searchInstagramApi->search()){
-			echo "moved file";
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Instagram Comments');
 
 		}
@@ -278,7 +268,6 @@ class BaseApi extends Model {
 	}
 
 	public function readDataExcelDocumentApi($alertId,$data){
-		echo "calling readDataExcelDocumentApi \n";
 		$searchExcel = new \app\models\search\ExcelSearch();
 		$params = [$alertId,$data];
 
@@ -293,26 +282,22 @@ class BaseApi extends Model {
 	}
 
 	public function readDataLiveChatApi($alertId,$data){ 
-		echo "calling readDataLiveChatApi \n"; 
 		$searchLiveApi = new \app\models\search\LiveTicketSearch(); 
 		$params = [$alertId,$data]; 
  
 		$searchLiveApi->load($params); 
 		if($searchLiveApi->search()){ 
-			echo "moved file"; 
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat'); 
 		} 
  
 	} 
 
 	public function readDataliveChatConversationsApi($alertId,$data){ 
-		echo "calling readDataLiveChatApi \n"; 
 		$searchLiveChatApi = new \app\models\search\LiveChatSearch(); 
 		$params = [$alertId,$data]; 
  
 		$searchLiveChatApi->load($params); 
 		if($searchLiveChatApi->search()){ 
-			echo "moved file"; 
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat Conversations'); 
 		} 
  
