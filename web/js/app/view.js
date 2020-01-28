@@ -115,8 +115,8 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 
             options: {
 	          chart: {
-	            title: 'Company Performance',
-	            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+	            title: '',
+	            subtitle: '',
 	          },
 	          theme: 'material',
 	          bars: 'vertical',
