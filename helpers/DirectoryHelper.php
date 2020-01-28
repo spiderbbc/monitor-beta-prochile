@@ -24,7 +24,7 @@ class DirectoryHelper{
      * @return $path string or boolean
      * create or return the  valid path for save images
      */
-    public function setFolderPath($folderOptions)
+    public static function setFolderPath($folderOptions)
     {
     	// path to folder flat archives
 		$s = DIRECTORY_SEPARATOR;

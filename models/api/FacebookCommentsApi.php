@@ -119,6 +119,7 @@ class FacebookCommentsApi extends Model {
 		$feeds_comments = $this->_getComments($feedsCandidate);
 		$feeds_reviews = $this->_getSubComments($feeds_comments);
 		$model = $this->_orderFeedsComments($feeds_reviews);
+
 		
 		return $model;
 
@@ -299,6 +300,7 @@ class FacebookCommentsApi extends Model {
 			}
 			
 		}
+
 		// coment because get likes
 		/*if(isset($params)){
 			$feeds = $this->_isLastComments($feeds,$params);
@@ -642,14 +644,10 @@ class FacebookCommentsApi extends Model {
 						// if not value
 						if(!in_array($data[$d],$model[$this->products[$p]])){
 
-							if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExistsByProperties(['title' => $sentence])){
-
-								$where['publication_id'] = $id_feed;
+							$where['publication_id'] = $id_feed;
 							
-								\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date,'title' => $sentence, 'url' => $url,'mention_data' => $share_feed]);
-								$model[$this->products[$p]][] = $data[$d];
-
-							}
+							\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $date,'title' => $sentence, 'url' => $url,'mention_data' => $share_feed]);
+							$model[$this->products[$p]][] = $data[$d];
 							
 							$feed_count --;
 							break;
@@ -659,7 +657,6 @@ class FacebookCommentsApi extends Model {
 			}
 
 		}
-		//var_dump($model);
 
 		return $model;
 

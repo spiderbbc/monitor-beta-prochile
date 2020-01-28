@@ -87,10 +87,11 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         ],
     ]) ?>
 
+
     <div v-if="isData">
         <modal-alert></modal-alert>
         <div class="row">
-            <total-mentions :count="count">
+            <total-mentions :count="count" :shares="shares" :likes="likes" :coments="coments">
         </div>
         <div class="row">
             <div class="col-md-12">

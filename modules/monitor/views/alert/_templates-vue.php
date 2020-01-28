@@ -8,9 +8,68 @@ use yii\helpers\Html;
 
 <!-- template que muestra el total de todas las menciones -->
 <script type="text/x-template" id="view-total-mentions">
-    <div id="menciones" class="col-md-12 well">
-        <h2>Total de Menciones: {{count}}</h2>
-    </div>
+     <div class="row">
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3>{{count}}</h3>
+
+              <p>Total de Entradas</p>
+            </div>
+            <div class="icon">
+              <i class="glyphicon glyphicon-hdd"></i>
+            </div>
+            <a href="#" class="small-box-footer">More info <i class="glyphicon glyphicon-chevron-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3>{{shares}}<sup style="font-size: 20px"></sup></h3>
+
+              <p>Shares</p>
+            </div>
+            <div class="icon">
+              <i class="glyphicon glyphicon-share"></i>
+            </div>
+            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-warning">
+            <div class="inner">
+              <h3>{{coments}}</h3>
+
+              <p>Comentarios</p>
+            </div>
+            <div class="icon">
+              <i class="glyphicon glyphicon-comment"></i>
+            </div>
+            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-danger">
+            <div class="inner">
+              <h3>{{likes}}</h3>
+
+              <p>likes</p>
+            </div>
+            <div class="icon">
+              <i class="glyphicon glyphicon-thumbs-up"></i>
+            </div>
+            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+      </div>
 </script>
 <!-- template chart google -->
 <script type="tex/x-template" id="view-total-resources-chart">
@@ -26,15 +85,17 @@ use yii\helpers\Html;
 </script>
 
 <script type="text/x-template" id="view-post-mentions-chart">
-  <div v-if="loaded">
-    <div id="post_mentions"></div>
-    <hr>
-  </div>
-  <div v-else>
-        <div class="loader">
-          <div class="spinner"></div>
-        </div>
-    </div>  
+  <div v-if="render">
+    <div v-if="loaded">
+      <div id="post_mentions"></div>
+      <hr>
+    </div>
+    <div v-else>
+      <div class="loader">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>  
 </script>
 
 <!-- chart products interations -->

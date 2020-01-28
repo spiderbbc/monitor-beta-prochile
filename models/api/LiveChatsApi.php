@@ -231,6 +231,7 @@ class LiveChatsApi extends Model {
 		
 		foreach($data as $productName => $groupChats){
 			if(count($data[$productName])){
+				$this->_setAlertMentionsCount($productName,$data[$productName]);
 				foreach($groupChats as $group => $chats){
 					for($c = 0 ; $c < sizeof($chats); $c++){
 						if(property_exists($chats[$c],'messages')){
@@ -251,8 +252,33 @@ class LiveChatsApi extends Model {
 				}// end foreach group chats
 			} // if count
 		}// end foreach data
+
 		return $model;
 		
+	}
+	/**
+	 * [_setAlertMentionsCount save count of chat in alertsmencions table]
+	 * @param [type] $productName [description]
+	 * @param [type] $data        [description]
+	 */
+	private function _setAlertMentionsCount($productName,$data)
+	{
+		$model = \app\models\AlertsMencions::find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId,'term_searched' => $productName])->one();
+
+		$count = 0;
+		foreach ($data as $group => $chats) {
+			$count += count($chats);
+		}
+
+		if(!is_null($model)){
+			$oldCount = 0;
+			if($model->mention_data){
+				$oldCount = $model->mention_data['count'];
+			}
+			$count += $oldCount;
+			$model->mention_data = array('count' => $count);
+			$model->save();
+		}
 	}
 
 	/**
