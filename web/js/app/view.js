@@ -100,6 +100,17 @@ const box_sources = Vue.component('box-sources',{
 		getIcon(resourceName){
 			return resourceIcons[resourceName];
 		}
+	},
+	filters:{
+		ensureRightPoints: function(value) {
+			 if (!value) return '';
+			 value = value.toString();
+			 if(value.length > 12){
+			 	value = value.slice(0,11);
+			 	value = value.concat('...');
+			 }
+			 return value;
+		}
 	}
 });
 
@@ -559,7 +570,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 		    
 		    
 
-		    var chart = new google.visualization.LineChart(document.getElementById('date-resources-chart'));
+		    var chart = new google.visualization.ScatterChart(document.getElementById('date-resources-chart'));
 
 		    google.visualization.events.addListener(chart, 'ready', function () {
 	          data_chart['date_resources'] = chart.getImageURI();

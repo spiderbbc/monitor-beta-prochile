@@ -81,10 +81,9 @@ class MentionsController extends \yii\web\Controller
     for($d = 0; $d < sizeof($modelDataCount); $d++){
       if(!is_null($modelDataCount[$d])){
         $name = $modelDataCount[$d][0];
-        if(strlen($name) > 12){
-          $name = \app\helpers\StringHelper::ensureRightPoints(\app\helpers\StringHelper::substring($name,0,11));
-        }
-        $data[] = array($name,$modelDataCount[$d][4]);
+        $total = $modelDataCount[$d][4];
+        
+        $data[] = array($name,$total);
       }
     }
 
@@ -488,13 +487,13 @@ class MentionsController extends \yii\web\Controller
       $model[$i] = array($date);
       $b = 1;
       foreach ($resourceNames as $index => $resourceName) {
-        $model[$i][$b] = 0;
+        $model[$i][$b] = null;
         for ($v=0; $v <sizeof($values) ; $v++) { 
           if ($resourceName == $values[$v]['resourceName']) {
               if(!empty($model[$i][$b])){
                 $model[$i][$b] += $values[$v]['total'];
               }else{
-                $model[$i][$b] = (int) $values[$v]['total'];
+                $model[$i][$b] =  (int) $values[$v]['total'];
               }
               
           }
