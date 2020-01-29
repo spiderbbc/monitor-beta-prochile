@@ -109,7 +109,6 @@ const box_sources = Vue.component('box-sources',{
 			 	value = value.slice(0,11);
 			 	value = value.concat('...');
 			 }
-			 console.log(value);
 			 return value;
 		}
 	}
@@ -571,7 +570,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 		    
 		    
 
-		    var chart = new google.visualization.LineChart(document.getElementById('date-resources-chart'));
+		    var chart = new google.visualization.ScatterChart(document.getElementById('date-resources-chart'));
 
 		    google.visualization.events.addListener(chart, 'ready', function () {
 	          data_chart['date_resources'] = chart.getImageURI();

@@ -487,13 +487,13 @@ class MentionsController extends \yii\web\Controller
       $model[$i] = array($date);
       $b = 1;
       foreach ($resourceNames as $index => $resourceName) {
-        $model[$i][$b] = 0;
+        $model[$i][$b] = null;
         for ($v=0; $v <sizeof($values) ; $v++) { 
           if ($resourceName == $values[$v]['resourceName']) {
               if(!empty($model[$i][$b])){
                 $model[$i][$b] += $values[$v]['total'];
               }else{
-                $model[$i][$b] = (int) $values[$v]['total'];
+                $model[$i][$b] =  (int) $values[$v]['total'];
               }
               
           }
