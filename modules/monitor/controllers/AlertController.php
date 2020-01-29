@@ -29,7 +29,7 @@ class AlertController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index','create'],
+                'only' => ['index','create','view'],
                 'rules' => [
                     [
                        // 'actions' => ['create'],
