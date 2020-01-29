@@ -81,10 +81,9 @@ class MentionsController extends \yii\web\Controller
     for($d = 0; $d < sizeof($modelDataCount); $d++){
       if(!is_null($modelDataCount[$d])){
         $name = $modelDataCount[$d][0];
-        if(strlen($name) > 12){
-          $name = \app\helpers\StringHelper::ensureRightPoints(\app\helpers\StringHelper::substring($name,0,11));
-        }
-        $data[] = array($name,$modelDataCount[$d][4]);
+        $total = $modelDataCount[$d][4];
+        
+        $data[] = array($name,$total);
       }
     }
 

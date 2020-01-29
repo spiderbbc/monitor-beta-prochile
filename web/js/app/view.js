@@ -100,6 +100,18 @@ const box_sources = Vue.component('box-sources',{
 		getIcon(resourceName){
 			return resourceIcons[resourceName];
 		}
+	},
+	filters:{
+		ensureRightPoints: function(value) {
+			 if (!value) return '';
+			 value = value.toString();
+			 if(value.length > 12){
+			 	value = value.slice(0,11);
+			 	value = value.concat('...');
+			 }
+			 console.log(value);
+			 return value;
+		}
 	}
 });
 
