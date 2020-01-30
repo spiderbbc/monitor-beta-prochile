@@ -89,6 +89,9 @@ let resourceIcons = {
 }
 
 // messages sweet alert
-
 let message_with_data = 'Usted puede pulsar en <b>continuar</b>, para mantenerse en esta vista <hr> Puede pulsar en <b> Generar Informe </b> para recibir el documento pdf <hr> Puede pulsar en <b>actualizar la alerta</b> para buscar bajo otros parametros';
 let message_not_data = 'Opps no se encontraron resultados. <hr> Puede pulsar en <b>actualizar la alerta</b> para buscar bajo otros parametros';
+
+// message sweealert delete button
+let title_delete = 'Usted desea eliminar esta Alerta?'
+let text_delete = 'Se procedera a <b>borar</b> los datos obtenidos por la alerta <hr> el sistema <b>guardara</b> los datos en un archivo fisico'

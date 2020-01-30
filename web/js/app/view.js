@@ -1,5 +1,39 @@
 // flag to chart line
 let loadedChart = false;
+
+/**
+ * Override the default yii confirm dialog. This function is 
+ * called by yii when a confirmation is requested.
+ *
+ * @param string message the message to display
+ * @param string ok callback triggered when confirmation is true
+ * @param string cancelCallback callback triggered when cancelled
+ */
+yii.confirm = function (message, okCallback, cancelCallback) {
+    
+	Swal.fire({
+	  title: title_delete,
+	  html: text_delete,
+	  icon: 'warning',
+	  showCancelButton: true,
+	  confirmButtonColor: '#3085d6',
+	  cancelButtonColor: '#d33',
+	  confirmButtonText: 'Si, eliminar la Alerta!'
+	}).then((result) => {
+	  if (result.value) {
+	    Swal.fire(
+	      'Eliminada!',
+	      'los datos obtenidos por alerta se mantendran en el servidor.',
+	      'success'
+	    )
+	    setTimeout(() => {  okCallback(); }, 4000);
+	    
+	  }
+	})
+	//console.log(okCallback);
+};
+
+
 /**
  * [componente que muestra el button report]
  * @param  {[count]} )   
