@@ -64,6 +64,11 @@ const count_mentions = Vue.component('total-mentions',{
 	template: '#view-total-mentions',
 });
 
+/**
+ * [componente que muestra las cajas de cada red social]
+ * template: '#view-box-sources' [description]
+ * @return {[component]}           [component]
+ */
 const box_sources = Vue.component('box-sources',{
 	template: '#view-box-sources',
 	data: function(){
@@ -554,6 +559,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 
 			view.setColumns(column);
 			var options = {
+				title: 'Grafico total de registros por fecha y recurso'
 				width: 1200,
             	height: 400,
 		        vAxis:{title:'Cantidad',textStyle:{color: '#005500',fontSize: '12', paddingRight: '100',marginRight: '100'}},
