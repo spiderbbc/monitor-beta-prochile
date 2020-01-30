@@ -50,6 +50,57 @@ const report_button = Vue.component('button-report',{
 });
 
 /**
+ * [indicador de status por cada red social]
+ * template: '#status-alert' [description]
+ * @return {[component]}           [component]
+ */
+const statusAlert = Vue.component('status-alert',{
+	'template' : '#status-alert',
+	'props': ['resourceids'],
+	data: function () {
+	    return {
+	    	response:null,
+	    	status: null,
+	    	resourceId: this.resourceids,
+	    	classColor:'status-indicator',
+	    }
+	},
+	mounted(){
+		setInterval(function () {
+	      this.fetchStatus();
+	    }.bind(this), refreshTime);
+	},
+	methods:{
+		fetchStatus(){
+			axios.get(baseUrlApi + 'status-alert' + '?alertId=' + id )
+		      .then((response) => {
+		        this.response = response.data.data;
+		    })
+		},
+	},
+	computed:{
+		colorClass(){
+			var valueClass = 'status-indicator--yellow';
+			if(this.response != undefined || this.response != null){
+				var search_data_response = this.response.search_data;
+				for(let propeties in search_data_response){
+					var span = document.getElementById(search_data_response[propeties].resourceId);
+					if(search_data_response[propeties].status == 'Finish'){
+						span.className = 'status-indicator status-indicator--red';
+					}else{
+						span.className = 'status-indicator status-indicator--green';
+					}
+				}
+
+			}
+			
+			return valueClass;
+		}
+	}
+
+});
+
+/**
  * [componente que muestra el total de menciones]
  * @param  {[count]} )   
  * template: '#view-total-mentions' [description]
@@ -559,7 +610,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 
 			view.setColumns(column);
 			var options = {
-				title: 'Grafico total de registros por fecha y recurso'
+				title: 'Grafico total de registros por fecha y recurso',
 				width: 1200,
             	height: 400,
 		        vAxis:{title:'Cantidad',textStyle:{color: '#005500',fontSize: '12', paddingRight: '100',marginRight: '100'}},
@@ -743,62 +794,13 @@ const listEmojis = Vue.component('list-emojis',{
 });
 
 /**
- * [indicador de status por cada red social]
- * template: '#status-alert' [description]
- * @return {[component]}           [component]
- */
-const statusAlert = Vue.component('status-alert',{
-	'template' : '#status-alert',
-	'props': ['resourceids'],
-	data: function () {
-	    return {
-	    	response:null,
-	    	status: null,
-	    	resourceId: this.resourceids,
-	    	classColor:'status-indicator',
-	    }
-	},
-	mounted(){
-		setInterval(function () {
-	      this.fetchStatus();
-	    }.bind(this), refreshTime);
-	},
-	methods:{
-		fetchStatus(){
-			axios.get(baseUrlApi + 'status-alert' + '?alertId=' + id )
-		      .then((response) => {
-		        this.response = response.data.data;
-		    })
-		},
-	},
-	computed:{
-		colorClass(){
-			var valueClass = 'status-indicator--yellow';
-			if(this.response != undefined || this.response != null){
-				var search_data_response = this.response.search_data;
-				for(let propeties in search_data_response){
-					var span = document.getElementById(search_data_response[propeties].resourceId);
-					if(search_data_response[propeties].status == 'Finish'){
-						span.className = 'status-indicator status-indicator--red';
-					}else{
-						span.className = 'status-indicator status-indicator--green';
-					}
-				}
-
-			}
-			
-			return valueClass;
-		}
-	}
-
-});
-/**
  * [modal de sweetalert]
  * template: '#modal-alert' [description]
  * @return {[component]}           [component]
  */
 const sweetAlert = Vue.component('modal-alert',{
 	'template' : '#modal-alert',
+	'props': ['count'],
 	data: function () {
 	    return {
 	    	response:null,
@@ -808,7 +810,7 @@ const sweetAlert = Vue.component('modal-alert',{
 	async mounted(){
 
 	    while(!this.isShowModal){
-	    	await sleep(2000);
+	    	await sleep(4000);
 	    	this.fetchStatus();
 	    }
 		
@@ -855,12 +857,16 @@ const sweetAlert = Vue.component('modal-alert',{
 		      buttonsStyling: true
 		    })
 
+		    var msg = (parseInt(this.count)) ? message_with_data : message_not_data; 
+		    var icon = (parseInt(this.count)) ? 'success' : 'warning'; 
+		    var is_continue = (parseInt(this.count)) ? true : false; 
+
 		    swalWithBootstrapButtons.fire({
 		      title: '<strong>Alerta Finalizada</strong>',
-		      icon: 'info',
-		      html:
-		        'Usted puede pulsar en <b>continuar</b>, para mantenerse en esta vista <hr> Puede pulsar en <b> Generar Informe </b> para recibir el documento pdf <hr> Puede pulsar en <b>actualizar la alerta</b> para buscar bajo otros parametros',
-		      showCancelButton: true,
+		      icon: icon,
+		      html: msg,
+		      showCancelButton: is_continue,
+		      showConfirmButton: is_continue,
 		      confirmButtonText: 'Generar Informe!',
 		      cancelButtonText: 'Continuar!',
 		      reverseButtons: true,
