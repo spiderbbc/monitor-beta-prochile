@@ -126,9 +126,9 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
             <cloud-words></cloud-words>
         </div>
         
-        <div class="row">
+        <!-- <div class="row">
             <resource-date-mentions></resource-date-mentions>
-        </div>
+        </div> -->
 
         <div class="row">
             <list-emojis></list-emojis>

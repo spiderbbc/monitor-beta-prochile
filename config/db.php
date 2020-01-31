@@ -1,6 +1,6 @@
 <?php
 
-return [
+/*return [
     'class' => 'yii\db\Connection',
     'dsn' => 'mysql:host=localhost;dbname=monitor',
     'username' => 'phpmyadmin',
@@ -12,10 +12,10 @@ return [
     //'enableSchemaCache' => true,
     //'schemaCacheDuration' => 60,
     //'schemaCache' => 'cache',
-];
+];*/
 
 
-/*return [
+return [
     'class' => 'yii\db\Connection',
     'dsn' => 'mysql:host=localhost;dbname=lgmontan_monitor',
     'username' => 'lgmontan_root',
@@ -29,4 +29,3 @@ return [
     //'schemaCache' => 'cache',
 ];
 
-*/
