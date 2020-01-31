@@ -141,7 +141,7 @@ const statusAlert = Vue.component('status-alert',{
  * @return {[component]}           [component]
  */
 const count_mentions = Vue.component('total-mentions',{
-	props: ['count','shares','likes','coments'],
+	props: ['count','shares','likes','coments','likes_comments'],
 	data: function () {
 	    return {
 	    }
@@ -549,6 +549,7 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 		    var options = {
 		        title: 'Gráfico de número de interacciones por productos',
 		        vAxis: {format: 'decimal'},
+		        //hAxis: {minValue: 50},
 		        width: 1200,
             	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
@@ -661,7 +662,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 		    
 		    
 
-		    var chart = new google.visualization.ScatterChart(document.getElementById('date-resources-chart'));
+		    var chart = new google.visualization.AreaChart(document.getElementById('date-resources-chart'));
 
 		    google.visualization.events.addListener(chart, 'ready', function () {
 	          data_chart['date_resources'] = chart.getImageURI();
@@ -950,6 +951,7 @@ const vm = new Vue({
 		shares: 0,
 		likes: 0,
 		coments: 0,
+		likes_comments: 0,
 		resourcescount:[],
 	},
 	mounted(){
@@ -969,6 +971,7 @@ const vm = new Vue({
 		      	this.shares = response.data.shares;
 		      	this.likes = response.data.likes;
 		      	this.coments = response.data.coments;
+		      	this.likes_comments = response.data.likes_comments;
 		      })
 		      .catch(error => console.log(error))
 		    if(this.count > 0){
