@@ -35,6 +35,7 @@ class MentionsController extends \yii\web\Controller
     $shares = 0;
     $coments = 0;
     $likes = 0;
+    $likes_comments = 0;
     if($model){
       // cuenta si la alerta tiene entradas
       $count = (new \yii\db\Query())
@@ -53,12 +54,53 @@ class MentionsController extends \yii\web\Controller
             $likes += $alertMention->mention_data['like_count'];
             $coments += $alertMention->mentionsCount;
           }
+          if($alertMention->mentionsCount){
+            foreach ($alertMention->mentions as $mentions => $mention) {
+              if(\yii\helpers\ArrayHelper::keyExists('like_count',$mention->mention_data)){
+                $likes_comments += $mention->mention_data['like_count'];
+              }
+            }
+          }
+
         }
       }
 
     }
-    return array('status'=>true,'count'=>$count,'shares' => $shares,'likes' => $likes,'coments' => $coments);
+    return array('status'=>true,'count'=>$count,'shares' => $shares,'likes' => $likes,'coments' => $coments,'likes_comments' => $likes_comments);
   }
+
+  /**
+   * [actionBoxSourcesCount description]
+   * @param  [type] $alertId [description]
+   * @return [type]          [description]
+   */
+  public function actionBoxSourcesCount($alertId)
+  {
+    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+    $model = $this->findModel($alertId);
+    $modelDataCount = [];
+    
+    foreach ($model->config->sources as $sources){
+      if(!\app\helpers\StringHelper::in_array_r($sources->name,$modelDataCount)){
+          $modelDataCount[] = \app\helpers\AlertMentionsHelper::getSocialNetworkInteractions($sources->name,$sources->id,$model->id);
+      }
+    }
+    $data = [];
+
+    for($d = 0; $d < sizeof($modelDataCount); $d++){
+      if(!is_null($modelDataCount[$d])){
+        $name = $modelDataCount[$d][0];
+        $total = $modelDataCount[$d][4];
+        
+        $data[] = array($name,$total);
+      }
+    }
+
+
+
+    return array('status' => true,'data' => $data,'modelDataCount' => $modelDataCount);
+  }
+
   /**
    * [actionCountSourcesMentions count by sources / call component vue: total-resources-chart]
    * @param  [type] $alertId [description]
@@ -169,13 +211,18 @@ class MentionsController extends \yii\web\Controller
     $dataCount = [];
     foreach ($data as $product => $values) {
         $total = 0;
-        $shares = 0;
+        $shares = null;
         $likes = 0;
         $like_post = 0;
         $retweets = 0;
         $likes_twitter = 0;
         foreach ($values as $value) {
           $shares += (isset($value['shares'])) ? $value['shares']: 0;
+          /*if(isset($value['shares'])){
+            if(intval($value['shares'])){
+              $shares += $value['shares'];
+            }
+          }*/
           $likes  += (isset($value['likes'])) ? $value['likes']: 0;
           $like_post  += (isset($value['like_post'])) ? $value['like_post']: 0;
           $retweets  += (isset($value['retweets'])) ? $value['retweets']: 0;
@@ -454,13 +501,13 @@ class MentionsController extends \yii\web\Controller
       $model[$i] = array($date);
       $b = 1;
       foreach ($resourceNames as $index => $resourceName) {
-        $model[$i][$b] = 0;
+        $model[$i][$b] = null;
         for ($v=0; $v <sizeof($values) ; $v++) { 
           if ($resourceName == $values[$v]['resourceName']) {
               if(!empty($model[$i][$b])){
                 $model[$i][$b] += $values[$v]['total'];
               }else{
-                $model[$i][$b] = (int) $values[$v]['total'];
+                $model[$i][$b] =  (int) $values[$v]['total'];
               }
               
           }

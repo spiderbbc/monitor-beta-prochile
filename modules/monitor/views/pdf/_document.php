@@ -58,7 +58,9 @@ use yii\helpers\Url;
         <!-- end top belt -->
         <div class="row">
             <div class="col-md-12">
-                <?= Html::img($post_mentions,['width'=>550,'height'=>180]) ?>
+                <?php if ($post_mentions): ?>
+                    <?= Html::img($post_mentions,['width'=>550,'height'=>180]) ?>
+                <?php endif ?>
             </div>
         </div>
         <div class="row">

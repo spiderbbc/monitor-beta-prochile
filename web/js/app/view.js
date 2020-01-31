@@ -1,5 +1,39 @@
 // flag to chart line
 let loadedChart = false;
+
+/**
+ * Override the default yii confirm dialog. This function is 
+ * called by yii when a confirmation is requested.
+ *
+ * @param string message the message to display
+ * @param string ok callback triggered when confirmation is true
+ * @param string cancelCallback callback triggered when cancelled
+ */
+yii.confirm = function (message, okCallback, cancelCallback) {
+    
+	Swal.fire({
+	  title: title_delete,
+	  html: text_delete,
+	  icon: 'warning',
+	  showCancelButton: true,
+	  confirmButtonColor: '#3085d6',
+	  cancelButtonColor: '#d33',
+	  confirmButtonText: 'Si, eliminar la Alerta!'
+	}).then((result) => {
+	  if (result.value) {
+	    Swal.fire(
+	      'Eliminada!',
+	      '',
+	      'success'
+	    )
+	    setTimeout(() => {  okCallback(); }, 4000);
+	    
+	  }
+	})
+	//console.log(okCallback);
+};
+
+
 /**
  * [componente que muestra el button report]
  * @param  {[count]} )   
@@ -50,13 +84,64 @@ const report_button = Vue.component('button-report',{
 });
 
 /**
+ * [indicador de status por cada red social]
+ * template: '#status-alert' [description]
+ * @return {[component]}           [component]
+ */
+const statusAlert = Vue.component('status-alert',{
+	'template' : '#status-alert',
+	'props': ['resourceids'],
+	data: function () {
+	    return {
+	    	response:null,
+	    	status: null,
+	    	resourceId: this.resourceids,
+	    	classColor:'status-indicator',
+	    }
+	},
+	mounted(){
+		setInterval(function () {
+	      this.fetchStatus();
+	    }.bind(this), refreshTime);
+	},
+	methods:{
+		fetchStatus(){
+			axios.get(baseUrlApi + 'status-alert' + '?alertId=' + id )
+		      .then((response) => {
+		        this.response = response.data.data;
+		    })
+		},
+	},
+	computed:{
+		colorClass(){
+			var valueClass = 'status-indicator--yellow';
+			if(this.response != undefined || this.response != null){
+				var search_data_response = this.response.search_data;
+				for(let propeties in search_data_response){
+					var span = document.getElementById(search_data_response[propeties].resourceId);
+					if(search_data_response[propeties].status == 'Finish'){
+						span.className = 'status-indicator status-indicator--red';
+					}else{
+						span.className = 'status-indicator status-indicator--green';
+					}
+				}
+
+			}
+			
+			return valueClass;
+		}
+	}
+
+});
+
+/**
  * [componente que muestra el total de menciones]
  * @param  {[count]} )   
  * template: '#view-total-mentions' [description]
  * @return {[component]}           [component]
  */
 const count_mentions = Vue.component('total-mentions',{
-	props: ['count','shares','likes','coments'],
+	props: ['count','shares','likes','coments','likes_comments'],
 	data: function () {
 	    return {
 	    }
@@ -64,6 +149,60 @@ const count_mentions = Vue.component('total-mentions',{
 	template: '#view-total-mentions',
 });
 
+/**
+ * [componente que muestra las cajas de cada red social]
+ * template: '#view-box-sources' [description]
+ * @return {[component]}           [component]
+ */
+const box_sources = Vue.component('box-sources',{
+	template: '#view-box-sources',
+	data: function(){
+		return {
+			loaded: false,
+			response: null,
+			counts: 0,
+			isseven: false,
+			column: null,
+		}
+	},
+	mounted(){
+		setInterval(function () {
+			this.fetchStatus();
+	    }.bind(this), refreshTime);
+		
+	},
+	methods:{
+		fetchStatus(){
+			axios.get(baseUrlApi + 'box-sources-count' + '?alertId=' + id )
+		      .then((response) => {
+		        this.response = response.data.data;
+		        this.counts = this.response.length;
+		        this.loaded = true;
+		    })
+		},
+		calcColumns(){
+			if(this.counts == 7){
+				this.isseven = true;
+			}
+			return columnsName[this.counts - 1];
+
+		},
+		getIcon(resourceName){
+			return resourceIcons[resourceName];
+		}
+	},
+	filters:{
+		ensureRightPoints: function(value) {
+			 if (!value) return '';
+			 value = value.toString();
+			 if(value.length > 12){
+			 	value = value.slice(0,11);
+			 	value = value.concat('...');
+			 }
+			 return value;
+		}
+	}
+});
 
 
 /**
@@ -115,8 +254,8 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 
             options: {
 	          chart: {
-	            title: 'Company Performance',
-	            subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+	            title: '',
+	            subtitle: '',
 	          },
 	          theme: 'material',
 	          bars: 'vertical',
@@ -410,6 +549,7 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 		    var options = {
 		        title: 'Gráfico de número de interacciones por productos',
 		        vAxis: {format: 'decimal'},
+		        //hAxis: {minValue: 50},
 		        width: 1200,
             	height: 400,
 		        colors: ['#1b9e77', '#d95f02', '#7570b3','#2f1bad','#bf16ab'],
@@ -505,6 +645,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 
 			view.setColumns(column);
 			var options = {
+				title: 'Grafico total de registros por fecha y recurso',
 				width: 1200,
             	height: 400,
 		        vAxis:{title:'Cantidad',textStyle:{color: '#005500',fontSize: '12', paddingRight: '100',marginRight: '100'}},
@@ -521,7 +662,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 		    
 		    
 
-		    var chart = new google.visualization.LineChart(document.getElementById('date-resources-chart'));
+		    var chart = new google.visualization.AreaChart(document.getElementById('date-resources-chart'));
 
 		    google.visualization.events.addListener(chart, 'ready', function () {
 	          data_chart['date_resources'] = chart.getImageURI();
@@ -688,62 +829,13 @@ const listEmojis = Vue.component('list-emojis',{
 });
 
 /**
- * [indicador de status por cada red social]
- * template: '#status-alert' [description]
- * @return {[component]}           [component]
- */
-const statusAlert = Vue.component('status-alert',{
-	'template' : '#status-alert',
-	'props': ['resourceids'],
-	data: function () {
-	    return {
-	    	response:null,
-	    	status: null,
-	    	resourceId: this.resourceids,
-	    	classColor:'status-indicator',
-	    }
-	},
-	mounted(){
-		setInterval(function () {
-	      this.fetchStatus();
-	    }.bind(this), refreshTime);
-	},
-	methods:{
-		fetchStatus(){
-			axios.get(baseUrlApi + 'status-alert' + '?alertId=' + id )
-		      .then((response) => {
-		        this.response = response.data.data;
-		    })
-		},
-	},
-	computed:{
-		colorClass(){
-			var valueClass = 'status-indicator--yellow';
-			if(this.response != undefined || this.response != null){
-				var search_data_response = this.response.search_data;
-				for(let propeties in search_data_response){
-					var span = document.getElementById(search_data_response[propeties].resourceId);
-					if(search_data_response[propeties].status == 'Finish'){
-						span.className = 'status-indicator status-indicator--red';
-					}else{
-						span.className = 'status-indicator status-indicator--green';
-					}
-				}
-
-			}
-			
-			return valueClass;
-		}
-	}
-
-});
-/**
  * [modal de sweetalert]
  * template: '#modal-alert' [description]
  * @return {[component]}           [component]
  */
 const sweetAlert = Vue.component('modal-alert',{
 	'template' : '#modal-alert',
+	'props': ['count'],
 	data: function () {
 	    return {
 	    	response:null,
@@ -753,7 +845,7 @@ const sweetAlert = Vue.component('modal-alert',{
 	async mounted(){
 
 	    while(!this.isShowModal){
-	    	await sleep(2000);
+	    	await sleep(50000);
 	    	this.fetchStatus();
 	    }
 		
@@ -800,12 +892,16 @@ const sweetAlert = Vue.component('modal-alert',{
 		      buttonsStyling: true
 		    })
 
+		    var msg = (parseInt(this.count)) ? message_with_data : message_not_data; 
+		    var icon = (parseInt(this.count)) ? 'success' : 'warning'; 
+		    var is_continue = (parseInt(this.count)) ? true : false; 
+
 		    swalWithBootstrapButtons.fire({
 		      title: '<strong>Alerta Finalizada</strong>',
-		      icon: 'info',
-		      html:
-		        'Usted puede pulsar en <b>continuar</b>, para mantenerse en esta vista <hr> Puede pulsar en <b> Generar Informe </b> para recibir el documento pdf <hr> Puede pulsar en <b>actualizar la alerta</b> para buscar bajo otros parametros',
-		      showCancelButton: true,
+		      icon: icon,
+		      html: msg,
+		      showCancelButton: is_continue,
+		      showConfirmButton: is_continue,
 		      confirmButtonText: 'Generar Informe!',
 		      cancelButtonText: 'Continuar!',
 		      reverseButtons: true,
@@ -855,6 +951,7 @@ const vm = new Vue({
 		shares: 0,
 		likes: 0,
 		coments: 0,
+		likes_comments: 0,
 		resourcescount:[],
 	},
 	mounted(){
@@ -870,11 +967,11 @@ const vm = new Vue({
 			axios
 		      .get(baseUrlApi + 'count-mentions' + '?alertId=' +this.alertId)
 		      .then(response => {
-		      	console.log(response.data);
 		      	this.count = response.data.count;
 		      	this.shares = response.data.shares;
 		      	this.likes = response.data.likes;
 		      	this.coments = response.data.coments;
+		      	this.likes_comments = response.data.likes_comments;
 		      })
 		      .catch(error => console.log(error))
 		    if(this.count > 0){
@@ -891,6 +988,7 @@ const vm = new Vue({
 	components:{
 		report_button,
 		count_mentions,
+		box_sources,
 		count_resources_chat,
 		post_interations_chart,
 		products_interations_chart,

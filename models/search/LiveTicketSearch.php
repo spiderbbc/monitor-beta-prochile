@@ -63,7 +63,7 @@ class LiveTicketSearch {
     {   
         // if doesnt dictionaries and doesnt boolean
         if(!$this->isDictionaries && !$this->isBoolean){
-             echo "save data .. \n";
+             //echo "save data .. \n";
             // save all data
             $tickets = $this->data;
             $search = $this->saveTickets($tickets);
@@ -80,7 +80,7 @@ class LiveTicketSearch {
         // if  dictionaries and  !boolean
         if($this->isDictionaries && !$this->isBoolean){
             // init search
-            echo "only dictionaries \n";
+            //echo "only dictionaries \n";
             $data = $this->data;
             $filter_data = $this->searchDataByDictionary($data);
             $search = $this->saveTickets($filter_data);

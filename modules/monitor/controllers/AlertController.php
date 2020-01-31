@@ -29,7 +29,7 @@ class AlertController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index','create'],
+                'only' => ['index','create','view'],
                 'rules' => [
                     [
                        // 'actions' => ['create'],
@@ -245,6 +245,10 @@ class AlertController extends Controller
         // reset alerts_mentions
         if (Yii::$app->getRequest()->getQueryParam('fresh') == 'true') {
           $alerts_mentions = \app\models\AlertsMencions::deleteAll('alertId = :alertId', [':alertId' => $id]);
+          $history_search = \app\models\HistorySearch::findOne(['alertId' => $id]);
+          if ($history_search) {
+            $history_search->delete();
+          }
         }
 
         

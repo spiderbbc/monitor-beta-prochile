@@ -61,6 +61,9 @@ class AlertConfig extends \yii\db\ActiveRecord
             [['start_date','end_date'], 'filter', 'filter' => [$this, 'normalizeDate']],
             // normalize "phone" using the function "normalizeTags"
             [['product_description','competitors'], 'filter', 'filter' => [$this, 'normalizeTags']],
+            // start_date not greater than end date
+            //[['start_date','end_date'], 'validateDates'],
+            ['end_date', 'compare', 'compareAttribute'=> 'start_date', 'operator' => '>=', 'enableClientValidation' =>true],
             
             [['start_date','end_date'], 'date','format' => 'php:U'],
             
@@ -77,6 +80,13 @@ class AlertConfig extends \yii\db\ActiveRecord
             return false;
         }
         return true;
+    }
+
+    public function validateDates(){
+        if(strtotime($this->end_date) <= strtotime($this->start_date)){
+            $this->addError('start_date','Please give correct Start and End dates');
+            $this->addError('end_date','Please give correct Start and End dates');
+        }
     }
 
     public function normalizeDate($value){
@@ -101,8 +111,8 @@ class AlertConfig extends \yii\db\ActiveRecord
             'competitors' => Yii::t('app', 'Competitors'),
             'country' => Yii::t('app', 'url Drive'),
             'country' => Yii::t('app', 'country'),
-            'start_date' => Yii::t('app', 'Start Date'),
-            'end_date' => Yii::t('app', 'End Date'),
+            'start_date' => Yii::t('app', 'Fecha Inicio'),
+            'end_date' => Yii::t('app', 'Fecha Final'),
             'createdAt' => Yii::t('app', 'Created At'),
             'updatedAt' => Yii::t('app', 'Updated At'),
             'createdBy' => Yii::t('app', 'Created By'),

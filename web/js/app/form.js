@@ -48,3 +48,5 @@ var vm = new Vue({
 		reloadButton
 	}	
 });
+
+

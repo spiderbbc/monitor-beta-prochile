@@ -111,9 +111,7 @@ class FacebookCommentsApi extends Model {
 
 	private function _getDataApi($query_params){
 
-		echo "in Post.."."\n";
 		$feeds = $this->_getPostsComments($query_params);
-		echo "out Post.."."\n";
 		$feedsCandidate = $this->_setCandidate($feeds);
 
 		$feeds_comments = $this->_getComments($feedsCandidate);
@@ -230,7 +228,6 @@ class FacebookCommentsApi extends Model {
 							if(isset($params)){
 								if (ArrayHelper::keyExists($id_feed, $params['feeds'], false)) {
 									if($params['feeds'][$id_feed]['next'] != ''){
-										echo "using next ...";
 										$next = $params['feeds'][$id_feed]['next'];
 										// clean next in the database
 										$where['publication_id'] = $id_feed;
@@ -269,7 +266,7 @@ class FacebookCommentsApi extends Model {
 									// save the next 
 									if($next){
 										$where['publication_id'] = $id_feed;
-								        Console::stdout("save one time {$next}.. \n", Console::BOLD);
+								       // Console::stdout("save one time {$next}.. \n", Console::BOLD);
 								        $model_alert = \app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => $next]);
 									}
 								}
@@ -707,46 +704,22 @@ class FacebookCommentsApi extends Model {
 
 	private function searchFinish()
 	{
-		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
-		->where([
-			'alertId'       => $this->alertId,
-			'resourcesId'   => $this->resourcesId,
-			'type'          => 'comments',
-		    ])
-		->andWhere(['not', ['date_searched' => null]])
-		->all();
-
 		$model = [
             'Facebook Comments' => [
                 'resourceId' => $this->resourcesId,
-                'status' => 'Finish'
+                'status' => 'Pending'
             ]
         ];
-      //  $is_date_searched = \yii\helpers\ArrayHelper::getColumn($dates_searched,'date_searched')[0]; 
-      
+
+        $today = \app\helpers\DateHelper::getToday();
+        $end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+
+        if($today >= $end_date){
+        	$model['Facebook Comments']['status'] = 'Finish'; 
+        }
+
+        \app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
 		
-		if(count($dates_searched)){
-			$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
-
-			$count = 0;
-			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
-				$date_searched = $dates_searched[$i]['date_searched'];
-				$since = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
-
-				if($date_searched >= $date_searched_flag || !\app\helpers\DateHelper::isToday($since)){
-	    			$count++;
-	    		}
-			}
-
-			if($count >= count($dates_searched)){
-				$model['Facebook Comments']['status'] = 'Finish'; 
-			}else{
-				$model['Facebook Comments']['status'] = 'Pending'; 
-			}
-
-		}
-		
-		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
 
 	}
 

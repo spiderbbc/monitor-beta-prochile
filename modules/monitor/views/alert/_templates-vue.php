@@ -3,13 +3,13 @@ use yii\helpers\Html;
 ?>
 <!-- template que muestra el boton para solicitar el pdf -->
 <script type="text/x-template" id="view-button-report">
-  <button class="btn btn-info" v-on:click.prevent="send" v-bind:class="{ disabled: isdisabled}">Report</button>
+  <button class="btn btn-info" v-on:click.prevent="send" v-bind:class="{ disabled: isdisabled}">Reporte</button>
 </script>
 
 <!-- template que muestra el total de todas las menciones -->
 <script type="text/x-template" id="view-total-mentions">
-     <div class="row">
-        <div class="col-lg-3 col-6">
+     <div class="">
+        <div class="col-md-5">
           <!-- small box -->
           <div class="small-box bg-info">
             <div class="inner">
@@ -24,7 +24,7 @@ use yii\helpers\Html;
           </div>
         </div>
         <!-- ./col -->
-        <div class="col-lg-3 col-6">
+        <div class="col-md-5">
           <!-- small box -->
           <div class="small-box bg-success">
             <div class="inner">
@@ -39,7 +39,7 @@ use yii\helpers\Html;
           </div>
         </div>
         <!-- ./col -->
-        <div class="col-lg-3 col-6">
+        <div class="col-md-5">
           <!-- small box -->
           <div class="small-box bg-warning">
             <div class="inner">
@@ -54,9 +54,9 @@ use yii\helpers\Html;
           </div>
         </div>
         <!-- ./col -->
-        <div class="col-lg-3 col-6">
+        <div class="col-md-5">
           <!-- small box -->
-          <div class="small-box bg-danger">
+          <div class="small-box bg-light">
             <div class="inner">
               <h3>{{likes}}</h3>
 
@@ -69,8 +69,48 @@ use yii\helpers\Html;
           </div>
         </div>
         <!-- ./col -->
+        <!-- ./col -->
+        <div class="col-md-5">
+          <!-- small box -->
+          <div class="small-box bg-danger">
+            <div class="inner">
+              <h3>{{likes_comments}}</h3>
+
+              <p>likes comments</p>
+            </div>
+            <div class="icon">
+              <i class="glyphicon glyphicon-heart"></i>
+            </div>
+            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
       </div>
 </script>
+
+<!-- box sources -->
+<script type="text/x-template" id="view-box-sources">
+  <div v-if="loaded" class="row" v-bind:class="{seven: isseven}">
+    <div v-for="index in counts">
+      <div :class="calcColumns()">
+        <div class="info-box">
+          <span class="info-box-icon bg-info elevation-1"><i :class="getIcon(response[index -1][0])"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text"><small>{{response[index -1][0]  | ensureRightPoints }}</small></span>
+            <span class="info-box-number">
+              {{response[index -1][1]}}
+              <small></small>
+            </span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+    </div> 
+  </div> 
+</script>
+
 <!-- template chart google -->
 <script type="tex/x-template" id="view-total-resources-chart">
   <div v-if="loaded">

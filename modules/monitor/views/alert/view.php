@@ -24,6 +24,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 
 \yii\web\YiiAsset::register($this);
 ?>
+<link rel="stylesheet" href="https://d1azc1qln24ryf.cloudfront.net/114779/Socicon/style-cf.css?u8vidh">
 <div id="alerts-view" class="alerts-view" style="padding-top: 10px">
     <h1><?= Html::encode($this->title) ?></h1>
     <?= Html::hiddenInput('alertId', $model->id,['id' => 'alertId']); ?>
@@ -31,8 +32,8 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     <p>
       
 
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+        <?= Html::a('Actualizar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Eliminar', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -88,10 +89,14 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     ]) ?>
 
 
+    <modal-alert :count="count"></modal-alert>
+    
     <div v-if="isData">
-        <modal-alert></modal-alert>
         <div class="row">
-            <total-mentions :count="count" :shares="shares" :likes="likes" :coments="coments">
+            <total-mentions :count="count" :shares="shares" :likes="likes" :coments="coments" :likes_comments="likes_comments">
+        </div>
+        <div class="">
+            <box-sources></box-sources>
         </div>
         <div class="row">
             <div class="col-md-12">

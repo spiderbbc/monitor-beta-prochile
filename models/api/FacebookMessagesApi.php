@@ -421,41 +421,22 @@ class FacebookMessagesApi extends Model {
 
 	private function searchFinish()
 	{
-		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
-		    ->where([
-				'alertId'       => $this->alertId,
-				'resourcesId'   => $this->resourcesId,
-				'type'          => 'messages Facebook',
-		    ])
-		->all();
 
 		$model = [
             'Facebook' => [
                 'resourceId' => $this->resourcesId,
-                'status' => 'Finish'
+                'status' => 'Pending'
             ]
         ];
 
-		if(count($dates_searched)){
-			$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+		$today = \app\helpers\DateHelper::getToday();
+        $end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+        
 
-			$count = 0;
-			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
-				$date_searched = $dates_searched[$i]['date_searched'];
-				$since = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
+        if($today >= $end_date){
+        	$model['Facebook']['status'] = 'Finish'; 
+        }
 
-				if($date_searched >= $date_searched_flag || !\app\helpers\DateHelper::isToday($since)){
-	    			$count++;
-	    		}
-			}
-
-			if($count >= count($dates_searched)){
-				$model['Facebook']['status'] = 'Finish'; 
-			}else{
-				$model['Facebook']['status'] = 'Pending'; 
-			}
-
-		}
 		
 		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
 
