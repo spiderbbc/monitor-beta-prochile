@@ -91,6 +91,17 @@ class DateHelper
         $date = new Date($date);
         return $date->isToday();
     }
+    /**
+     * [getToday get today date as unix with timezone santiago]
+     * @return [type] [description]
+     */
+    public static function getToday()
+    {
+        date_default_timezone_set('America/Santiago');
+
+        $now = new \DateTime();
+        return $now->getTimestamp();
+    }
 
     /**
      * [isBetweenDate chekcs if date is between two date ]

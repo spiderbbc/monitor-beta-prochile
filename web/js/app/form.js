@@ -1,6 +1,8 @@
 'use strict'
 //var element = $("#productsIds");
-const baseUrl = 'http://localhost/monitor-beta/web/monitor/alert/';
+const origin           = location.origin;
+const baseUrl  = `${origin}/monitor-beta/web/monitor/alert/`;
+
 
 const reloadButton = Vue.component('sync-product',{
 	template: '#sync-product-id',
@@ -46,3 +48,7 @@ var vm = new Vue({
 		reloadButton
 	}	
 });
+
+function sayHello() {
+	console.log('helloooooo');
+}

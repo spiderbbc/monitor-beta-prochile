@@ -4,7 +4,7 @@ const baseUrlApi = `${origin}/monitor-beta/web/monitor/api/mentions/`;
 const baseUrlDocument = `${origin}/monitor-beta/web/monitor/pdf/`;
 const baseUrlView = `${origin}/monitor-beta/web/monitor/alert/`;
 // 1000 = 1 seg
-let refreshTime = 10000;
+let refreshTime = 15000;
 let refreshTimeTable = 40000;
 let data_chart = new Object();
 let controllerName = {
@@ -87,3 +87,11 @@ let resourceIcons = {
     'Excel Document': 'socicon-windows',
     'Web page': ''
 }
+
+// messages sweet alert
+let message_with_data = 'Usted puede pulsar en <b>continuar</b>, para mantenerse en esta vista <hr> Puede pulsar en <b> Generar Informe </b> para recibir el documento pdf <hr> Puede pulsar en <b>actualizar la alerta</b> para buscar bajo otros parametros';
+let message_not_data = 'Opps no se encontraron resultados. <hr> Puede pulsar en <b>actualizar la alerta</b> para buscar bajo otros parametros';
+
+// message sweealert delete button
+let title_delete = 'Usted desea eliminar esta Alerta?'
+let text_delete = 'Se procedera a <b>borar</b> los datos obtenidos por la alerta.'

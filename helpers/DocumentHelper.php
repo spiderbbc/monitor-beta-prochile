@@ -48,6 +48,8 @@ class DocumentHelper
 
 
 	public static function excelToArray($model,$attribute){
+        // https://es.stackoverflow.com/questions/69486/phpexcel-genera-error-allowed-memory-size-of-bytes-exhausted
+        ini_set('memory_limit', '2G');
 		// is instance of document
 		$file = UploadedFile::getInstance($model, $attribute);
 		// get extension by the name

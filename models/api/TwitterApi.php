@@ -466,45 +466,44 @@ class TwitterApi extends Model {
 		return $entities;
 	}
 
-	private function searchFinish()
-	{
-		$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
-		    ->where([
-				'alertId'       => $this->alertId,
-				'resourcesId'   => $this->resourcesId,
-				'type'          => 'tweet',
-		    ])
-		->all();
+	private function searchFinish(){
+    
+    	$dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
+	        ->where([
+	          'alertId'       => $this->alertId,
+	          'resourcesId'   => $this->resourcesId,
+	          'type'          => 'tweet',
+	        ])
+	      ->all();
 
-		$model = [
-            'Twitter' => [
-                'resourceId' => $this->resourcesId,
-                'status' => 'Pending'
-            ]
-        ];
+	    $model = [
+	        'Twitter' => [
+	            'resourceId' => $this->resourcesId,
+	            'status' => 'Pending'
+	        ]
+	    ];
 
-		if(count($dates_searched)){
-			$date_searched_flag   = $this->end_date;
-			//echo $date_searched_flag."\n";
+      if(count($dates_searched)){
+        $date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
 
-			$count = 0;
-			for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
-				$date_searched = $dates_searched[$i]['date_searched'];
-				//echo $date_searched."\n";
-				if($date_searched >= $date_searched_flag){
-	    			$count++;
-	    		}
-			}
+        $count = 0;
+        for ($i=0; $i < sizeOf($dates_searched) ; $i++) { 
+          $date_searched = $dates_searched[$i]['date_searched'];
+          //echo $date_searched."\n";
+          if($date_searched >= $date_searched_flag){
+              $count++;
+            }
+        }
 
-			if($count >= count($dates_searched)){
-				$model['Twitter']['status'] = 'Finish'; 
-			}
+        if($count >= count($dates_searched)){
+          $model['Twitter']['status'] = 'Finish'; 
+        }
 
-		}
+      }
 
-		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
+      \app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
 
-	}
+    }
 
 
 	private function _setCountry($country){

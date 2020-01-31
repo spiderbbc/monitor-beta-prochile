@@ -35,6 +35,7 @@ class MentionsController extends \yii\web\Controller
     $shares = 0;
     $coments = 0;
     $likes = 0;
+    $likes_comments = 0;
     if($model){
       // cuenta si la alerta tiene entradas
       $count = (new \yii\db\Query())
@@ -53,11 +54,19 @@ class MentionsController extends \yii\web\Controller
             $likes += $alertMention->mention_data['like_count'];
             $coments += $alertMention->mentionsCount;
           }
+          if($alertMention->mentionsCount){
+            foreach ($alertMention->mentions as $mentions => $mention) {
+              if(\yii\helpers\ArrayHelper::keyExists('like_count',$mention->mention_data)){
+                $likes_comments += $mention->mention_data['like_count'];
+              }
+            }
+          }
+
         }
       }
 
     }
-    return array('status'=>true,'count'=>$count,'shares' => $shares,'likes' => $likes,'coments' => $coments);
+    return array('status'=>true,'count'=>$count,'shares' => $shares,'likes' => $likes,'coments' => $coments,'likes_comments' => $likes_comments);
   }
 
   /**
@@ -202,13 +211,18 @@ class MentionsController extends \yii\web\Controller
     $dataCount = [];
     foreach ($data as $product => $values) {
         $total = 0;
-        $shares = 0;
+        $shares = null;
         $likes = 0;
         $like_post = 0;
         $retweets = 0;
         $likes_twitter = 0;
         foreach ($values as $value) {
           $shares += (isset($value['shares'])) ? $value['shares']: 0;
+          /*if(isset($value['shares'])){
+            if(intval($value['shares'])){
+              $shares += $value['shares'];
+            }
+          }*/
           $likes  += (isset($value['likes'])) ? $value['likes']: 0;
           $like_post  += (isset($value['like_post'])) ? $value['like_post']: 0;
           $retweets  += (isset($value['retweets'])) ? $value['retweets']: 0;

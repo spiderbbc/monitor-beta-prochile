@@ -32,8 +32,8 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     <p>
       
 
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+        <?= Html::a('Actualizar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Eliminar', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -89,10 +89,11 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     ]) ?>
 
 
+    <modal-alert :count="count"></modal-alert>
+    
     <div v-if="isData">
-        <modal-alert></modal-alert>
         <div class="row">
-            <total-mentions :count="count" :shares="shares" :likes="likes" :coments="coments">
+            <total-mentions :count="count" :shares="shares" :likes="likes" :coments="coments" :likes_comments="likes_comments">
         </div>
         <div class="">
             <box-sources></box-sources>
