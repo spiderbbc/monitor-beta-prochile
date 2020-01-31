@@ -845,7 +845,7 @@ const sweetAlert = Vue.component('modal-alert',{
 	async mounted(){
 
 	    while(!this.isShowModal){
-	    	await sleep(4000);
+	    	await sleep(50000);
 	    	this.fetchStatus();
 	    }
 		

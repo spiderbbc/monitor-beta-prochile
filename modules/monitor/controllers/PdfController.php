@@ -19,7 +19,7 @@ class PdfController extends \yii\web\Controller
     	// asign data
     	$aletId = $data_post->alertId;
     	$chart_bar_resources_count = $data_post->chart_bar_resources_count;
-        $post_mentions = $data_post->post_mentions;
+        $post_mentions = (isset($data_post->post_mentions)) ? $data_post->post_mentions : false;
         $products_interations = $data_post->products_interations;
         $date_resources = $data_post->date_resources;
     	// load images
