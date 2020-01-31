@@ -23,7 +23,7 @@ yii.confirm = function (message, okCallback, cancelCallback) {
 	  if (result.value) {
 	    Swal.fire(
 	      'Eliminada!',
-	      'los datos obtenidos por alerta se mantendran en el servidor.',
+	      '',
 	      'success'
 	    )
 	    setTimeout(() => {  okCallback(); }, 4000);

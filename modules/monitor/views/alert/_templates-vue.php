@@ -3,7 +3,7 @@ use yii\helpers\Html;
 ?>
 <!-- template que muestra el boton para solicitar el pdf -->
 <script type="text/x-template" id="view-button-report">
-  <button class="btn btn-info" v-on:click.prevent="send" v-bind:class="{ disabled: isdisabled}">Report</button>
+  <button class="btn btn-info" v-on:click.prevent="send" v-bind:class="{ disabled: isdisabled}">Reporte</button>
 </script>
 
 <!-- template que muestra el total de todas las menciones -->

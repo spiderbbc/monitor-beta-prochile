@@ -4,7 +4,7 @@ const baseUrlApi = `${origin}/monitor-beta/web/monitor/api/mentions/`;
 const baseUrlDocument = `${origin}/monitor-beta/web/monitor/pdf/`;
 const baseUrlView = `${origin}/monitor-beta/web/monitor/alert/`;
 // 1000 = 1 seg
-let refreshTime = 10000;
+let refreshTime = 15000;
 let refreshTimeTable = 40000;
 let data_chart = new Object();
 let controllerName = {
@@ -94,4 +94,4 @@ let message_not_data = 'Opps no se encontraron resultados. <hr> Puede pulsar en 
 
 // message sweealert delete button
 let title_delete = 'Usted desea eliminar esta Alerta?'
-let text_delete = 'Se procedera a <b>borar</b> los datos obtenidos por la alerta <hr> el sistema <b>guardara</b> los datos en un archivo fisico'
+let text_delete = 'Se procedera a <b>borar</b> los datos obtenidos por la alerta.'
