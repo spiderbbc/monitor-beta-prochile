@@ -127,7 +127,7 @@ class LiveTicketApi extends Model {
 	public function call($products_params = []){
 
 		foreach($products_params as $productName => $params){
-			\yii\helpers\Console::stdout("loop in call method {$productName}.. \n", Console::BOLD);
+			//\yii\helpers\Console::stdout("loop in call method {$productName}.. \n", Console::BOLD);
 			$this->data[$productName] =  $this->_getTickets($params);
 		}
 		$tickets = $this->_orderTickets($this->data);

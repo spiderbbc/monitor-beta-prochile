@@ -167,7 +167,7 @@ class TwitterApi extends Model {
 
 		for($p = 0; $p < sizeOf($products_params); $p ++){
 			$product = $products_params[$p]['product'];
-			Console::stdout("loop in call method {$product}.. \n", Console::BOLD);
+			//Console::stdout("loop in call method {$product}.. \n", Console::BOLD);
 			$this->data[$product] = $this->_getTweets($products_params[$p]);
 		}
 		
@@ -214,24 +214,24 @@ class TwitterApi extends Model {
         	}
         	// if there 200 status
         	if($data[$index]['httpstatus'] == 200){
-        		Console::stdout(" is 200 \n", Console::FG_GREEN);
+        	///	Console::stdout(" is 200 \n", Console::FG_GREEN);
         		// if statuses not empty
         		if(!empty($data[$index]['statuses'])){
         			$statusCount = count($data[$index]['statuses']);
-        			Console::stdout(" total result {$statusCount} \n", Console::BOLD);
+        			/*Console::stdout(" total result {$statusCount} \n", Console::BOLD);
         			Console::stdout(" there is statuses limit in {$this->limit} \n", Console::BOLD);
-        			Console::stdout(" index in: {$index} \n", Console::BOLD);
+        			Console::stdout(" index in: {$index} \n", Console::BOLD);*/
         			// check limits
         			if(!$this->limit){
         				// set limit
         				$remaining = $data[$index]['rate']['remaining'];
 	        			$this->limit = $this->_setLimits($remaining);
-	        			Console::stdout(" limits is: {$this->limit} \n", Console::BOLD);
+	        			//Console::stdout(" limits is: {$this->limit} \n", Console::BOLD);
         			}
         			// if there sinceId
         			if(is_null($sinceId)){
 		              $sinceId = $data[$index]['statuses'][0]['id'] + 1;
-		              Console::stdout("save one time {$sinceId}.. \n", Console::BOLD);
+		              //Console::stdout("save one time {$sinceId}.. \n", Console::BOLD);
 		            }
 		            // if there next result
 		            if(ArrayHelper::keyExists('next_results', $data[$index]['search_metadata'], true)){
@@ -239,14 +239,14 @@ class TwitterApi extends Model {
 	        			parse_str($data[$index]['search_metadata']['next_results'], $output);
 	        			$params['max_id'] = $output['?max_id']  - 1;
 						$lastId = $output['?max_id'];
-						Console::stdout(" is next_results with lastId: {$lastId} \n", Console::BOLD);
+						//Console::stdout(" is next_results with lastId: {$lastId} \n", Console::BOLD);
 
 						// we are over the limit
 			            if($this->limit <= $this->minimum){
 			            	$properties['max_id'] = $lastId;
 			        		$date_searched = $since_date;
 			        		$properties['date_searched'] = Yii::$app->formatter->asTimestamp($date_searched);
-			        		Console::stdout(" limit en minimum: {$this->limit} save properties \n", Console::BOLD);
+			        		//Console::stdout(" limit en minimum: {$this->limit} save properties \n", Console::BOLD);
 			              	$this->_saveAlertsMencions($properties);
 			            }
 		            }
@@ -275,7 +275,7 @@ class TwitterApi extends Model {
 		        if($this->limit <= $this->minimum){break;}
         	// is not 200 httpstatus	
         	}else{
-        		Console::stdout("fail status {$data[$index]['httpstatus']}.. \n", Console::BOLD);
+        		//Console::stdout("fail status {$data[$index]['httpstatus']}.. \n", Console::BOLD);
         		// lets go
         		break;
         	}
@@ -285,7 +285,7 @@ class TwitterApi extends Model {
         	$this->limit --;
 
         }while($this->limit);
-        Console::stdout("return	 data.. \n", Console::FG_RED);	
+       // Console::stdout("return	 data.. \n", Console::FG_RED);	
 
         return $data;
 

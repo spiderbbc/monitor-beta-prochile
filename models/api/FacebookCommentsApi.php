@@ -266,7 +266,7 @@ class FacebookCommentsApi extends Model {
 									// save the next 
 									if($next){
 										$where['publication_id'] = $id_feed;
-								        Console::stdout("save one time {$next}.. \n", Console::BOLD);
+								       // Console::stdout("save one time {$next}.. \n", Console::BOLD);
 								        $model_alert = \app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => $next]);
 									}
 								}

@@ -38,7 +38,6 @@ class BaseApi extends Model {
 
 
 	public function callResourcesApi($alerts = []){
-		Console::stdout("Running: ".__METHOD__."\n", Console::BOLD);
 
 		if(!empty($alerts)){
 			$resources = [];
@@ -79,7 +78,6 @@ class BaseApi extends Model {
 			}
 			
 		}
-		echo "twitterApi". "\n";
 	}
 
 	public function facebookCommentsApi($alerts = []){
@@ -222,7 +220,6 @@ class BaseApi extends Model {
 			// send email params in twitterApi no load with alertId and count($params)
 		}
 		if($searchTwitterApi->search()){
-			echo "moved file";
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Twitter');
 		}
 		
@@ -236,14 +233,12 @@ class BaseApi extends Model {
 		$searchFacebookApi->load($params);
 
 		if($searchFacebookApi->search()){
-			echo "moved file";
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Facebook Comments');
 
 		}
 	}
 
 	public function readDataFacebookMessagesApi($alertId,$data){
-		echo "calling readDataFacebookMessagesApi \n";
 		$searchFacebookMessagesApi = new \app\models\search\FacebookMessagesSearch();
 		$params = [$alertId,$data];
 
@@ -274,7 +269,6 @@ class BaseApi extends Model {
 		$searchExcel->load($params);
 
 		if($searchExcel->search()){
-			echo "moved file";
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Excel Document');
 
 		}
