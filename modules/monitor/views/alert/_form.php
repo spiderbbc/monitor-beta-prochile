@@ -32,7 +32,7 @@ use mludvik\tagsinput\TagsInputWidget;
             <div class="row">
                 <div class="col-md-6">
                     <?= $form->field($config, 'start_date')->widget(DatePicker::classname(), [
-                            'options' => ['placeholder' => 'Enter start date ...'],
+                            'options' => ['id' => 'start_date','placeholder' => 'Enter start date ...'],
                             'pluginOptions' => [
                                 'orientation' => 'down left',
                                 'format' => 'dd/mm/yyyy',
@@ -73,7 +73,7 @@ use mludvik\tagsinput\TagsInputWidget;
                             ],
                             'pluginEvents' => [
                                "select2:select" => "function(e) { 
-                                    return null;
+                                    return modalTwitter(e);
                                }",
                             ]
                         ]);
@@ -241,7 +241,12 @@ use mludvik\tagsinput\TagsInputWidget;
 <?php 
 $this->registerJsFile(
     '@web/js/app/form.js',
-    ['depends' => [\app\assets\VueAsset::className()]]
+    ['depends' => [
+        \app\assets\VueAsset::className(),
+        \app\assets\SweetAlertAsset::className(),
+        \app\assets\MomentAsset::className()
+        ]
+    ]
 );
 
 ?>

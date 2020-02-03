@@ -44,7 +44,8 @@
         "npm-asset/datatables": "dev-master",
         "npm-asset/highcharts": "dev-master",
         "bower-asset/jqcloud2": "dev-master",
-        "p3k/emoji-detector": "^0.2.1"
+        "p3k/emoji-detector": "^0.2.1",
+        "bower-asset/moment": "^2.24"
 
     },
     "require-dev": {

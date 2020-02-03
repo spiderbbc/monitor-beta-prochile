@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7074e55196183d9337276489424f7576",
+    "content-hash": "4b5b530484e960e7a44e89ed06dd0849",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -106,7 +106,7 @@
             "version": "3.3.11",
             "source": {
                 "type": "git",
-                "url": "https://github.com/RobinHerbots/Inputmask.git",
+                "url": "git@github.com:RobinHerbots/Inputmask.git",
                 "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
             },
             "dist": {
@@ -151,7 +151,7 @@
             "version": "3.4.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jquery/jquery-dist.git",
+                "url": "git@github.com:jquery/jquery-dist.git",
                 "reference": "15bc73803f76bc53b654b9fdbbbc096f56d7c03d"
             },
             "dist": {
@@ -202,6 +202,25 @@
                 "shasum": null
             },
             "type": "bower-asset"
+        },
+        {
+            "name": "bower-asset/moment",
+            "version": "2.24.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:moment/moment.git",
+                "reference": "96d0d6791ab495859d09a868803d31a55c917de1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/moment/moment/zipball/96d0d6791ab495859d09a868803d31a55c917de1",
+                "reference": "96d0d6791ab495859d09a868803d31a55c917de1",
+                "shasum": null
+            },
+            "type": "bower-asset",
+            "license": [
+                "MIT"
+            ]
         },
         {
             "name": "bower-asset/punycode",
@@ -1689,8 +1708,8 @@
             "authors": [
                 {
                     "name": "Christoph Erdmann",
-                    "homepage": "https://www.matero.de",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "homepage": "https://www.matero.de"
                 }
             ],
             "description": "Materialize CSS implementation for Yii2",
@@ -2177,6 +2196,20 @@
             ]
         },
         {
+            "name": "npm-asset/moment",
+            "version": "2.24.0",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/moment/-/moment-2.24.0.tgz",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "npm-asset",
+            "license": [
+                "MIT"
+            ]
+        },
+        {
             "name": "npm-asset/ms",
             "version": "2.0.0",
             "dist": {
@@ -2195,7 +2228,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:vuejs/vue.git",
+                "url": "https://github.com/vuejs/vue.git",
                 "reference": "0948d999f2fddf9f90991956493f976273c5da1f"
             },
             "dist": {
