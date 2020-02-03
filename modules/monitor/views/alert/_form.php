@@ -43,7 +43,7 @@ use mludvik\tagsinput\TagsInputWidget;
                 </div>
                 <div class="col-md-6">
                     <?= $form->field($config, 'end_date')->widget(DatePicker::classname(), [
-                            'options' => ['id' => 'end_date','placeholder' => 'Enter end date ...'],
+                            'options' => ['placeholder' => 'Enter end date ...'],
                             'pluginOptions' => [
                                 'orientation' => 'down left',
                                 'format' => 'dd/mm/yyyy',
@@ -75,13 +75,7 @@ use mludvik\tagsinput\TagsInputWidget;
                                "select2:select" => "function(e) { 
                                     return modalTwitter(e);
                                }",
-                            ],
-                            'toggleAllSettings' => [
-                               'selectLabel' => '',
-                               'unselectLabel' => '',
-                               'selectOptions' => ['class' => 'text-success'],
-                               'unselectOptions' => ['class' => 'text-danger'],
-                            ],
+                            ]
                         ]);
                     ?>
                 </div>
