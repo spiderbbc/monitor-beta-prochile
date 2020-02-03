@@ -96,9 +96,7 @@ function modalTwitter(event) {
 					})
 					
                     var current_values = social.val();
-                    console.log(current_values);
                     var index = current_values.indexOf("1");
-                    console.log(index);
                    
                     social.val(index).trigger('change');
 
