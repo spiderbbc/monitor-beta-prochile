@@ -85,3 +85,54 @@ function initSearchTable(){
 
     return table;
 }
+
+
+function modalFinish(count, baseUrlView,id){
+
+  const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'btn btn-info',
+        cancelButton: 'btn btn-success'
+      },
+      buttonsStyling: true
+    })
+
+    var msg = (parseInt(count)) ? message_with_data : message_not_data; 
+    var icon = (parseInt(count)) ? 'success' : 'warning'; 
+    var is_continue = (parseInt(count)) ? true : false; 
+
+    swalWithBootstrapButtons.fire({
+      title: '<strong>Alerta Finalizada</strong>',
+      icon: icon,
+      html: msg,
+      showCancelButton: is_continue,
+      showConfirmButton: is_continue,
+      confirmButtonText: 'Generar Informe!',
+      cancelButtonText: 'Continuar!',
+      reverseButtons: true,
+      footer: '<a class="btn btn-dark" href= '+ baseUrlView + 'update?id='+ id + '&fresh=true' +'>update the alert?</a>'
+    }).then(function(result){
+        if(result.value){
+          axios.post(baseUrlDocument + 'document' , {
+              chart_bar_resources_count: data_chart['chart_bar_resources_count'],
+              post_mentions: data_chart['post_mentions'],
+              products_interations: data_chart['products_interations'],
+              date_resources: data_chart['date_resources'],
+              alertId: id,
+          })
+          .then(function (response) {
+            var link = document.createElement('a');
+            link.href = origin + response.data.data;
+            link.download = response.data.filename;
+            link.dispatchEvent(new MouseEvent('click'));
+            
+              
+          })
+          .catch(function (error) {
+             console.log(error);
+          });
+        }
+       // console.log(result)
+    });
+
+}
