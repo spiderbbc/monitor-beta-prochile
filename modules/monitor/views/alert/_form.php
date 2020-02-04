@@ -36,8 +36,12 @@ use mludvik\tagsinput\TagsInputWidget;
                             'pluginOptions' => [
                                 'orientation' => 'down left',
                                 'format' => 'dd/mm/yyyy',
+                                'todayHighlight' => true,
                                 'autoclose' => true,
-                            ]
+                            ],
+                            'pluginEvents' => [
+                               // "changeDate" => "function(e) {  # `e` here contains the extra attributes }",
+                            ],
                         ]); 
                     ?>
                 </div>
@@ -47,6 +51,7 @@ use mludvik\tagsinput\TagsInputWidget;
                             'pluginOptions' => [
                                 'orientation' => 'down left',
                                 'format' => 'dd/mm/yyyy',
+                                'todayHighlight' => true,
                                 'autoclose' => true,
                             ]
                         ]); 

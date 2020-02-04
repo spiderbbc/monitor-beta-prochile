@@ -142,6 +142,7 @@ class AlertController extends Controller
 
 
           if(!$alert->save()){ 
+            $messages = $alert->errors;
             $error = true;
           }
           // config model
@@ -152,7 +153,10 @@ class AlertController extends Controller
             if(!$is_save_socialIds){
               $error = true;
             }
-          }else{ $error = true;}
+          }else{ 
+            $messages = $config->errors;
+            $error = true;
+          }
           // keywords/ dictionaryIds model
           $dictionaryIds = Yii::$app->request->post('Alerts')['dictionaryIds'];
           if($dictionaryIds){
@@ -197,7 +201,8 @@ class AlertController extends Controller
             $alert->delete();
             return $this->render('error',[
               'name' => 'alert',
-              'message' => 'Alers not created.'
+              'message' => $message,
+
             ]);
           }
            
@@ -385,10 +390,6 @@ class AlertController extends Controller
           // error to page view
           if($error){
             $alert->delete();
-            $msg = [];
-            foreach ($messages as $title => $message){
-              $msg[$title] = $message;
-            }
             return $this->render('error',[
                 'name' => 'alert',
                 'message' => $msg,

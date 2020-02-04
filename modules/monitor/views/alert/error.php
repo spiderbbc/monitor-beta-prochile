@@ -14,9 +14,9 @@ $this->title = $name;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <div class="alert alert-danger">
-        <?php foreach($message as $title => $msg): ?>
-            <?= nl2br(Html::encode($title)) ?>
-            <?= nl2br(Html::encode($msg)) ?>
+        <?php foreach($message as $values): ?>
+           
+            <?= nl2br(Html::encode($values)) ?><br>
         <?php endforeach; ?>
     </div>
 

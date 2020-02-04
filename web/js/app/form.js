@@ -72,48 +72,67 @@ function modalTwitter(event) {
 	  		var afterTime = moment(end_date, format);
 			
 			
-			var days_ago = moment().subtract(7, 'days').calendar();
+			var days_ago = moment().subtract(7, 'days').format(format);
 
-			if(now.isBetween(beforeTime, afterTime)){
+
+			if(moment().isBetween(beforeTime, afterTime)){
 				var days = now.diff(beforeTime, "days");
 				if(Math.sign(days) && days > 7){
-					Swal.fire({
-					  icon: 'warning',
-					  title: 'Oops...',
-					  html: "<b>Twitter API</b> realiza una búsqueda en una muestra de Tweets recientes publicados en los últimos "+ days_twitter +" días.  como parte del conjunto 'público' de API. <hr> La alerta comenzara a recabar data a partir " + days_ago + " para Twitter",
-					  footer: ''
-					})
-
+					swal_modal_info(days_twitter,days_ago);
 				}
 			}else{
 				var diff_end_date = now.diff(afterTime, "days");
 				if (diff_end_date > 7) {
-					Swal.fire({
-					  icon: 'error',
-					  title: 'Twitter API',
-					  html: "<b>Twitter API</b> no estara disponible para este rango de fechas",
-					  footer: ''
-					})
+					
+					swal_modal_error(days_ago);
 					
                     var current_values = social.val();
                     var index = current_values.indexOf("1");
                    
                     social.val(index).trigger('change');
 
-				} 
+				}else{
+					swal_modal_info(days_twitter,days_ago);
+				}
 
 			}
-		}else{
-			Swal.fire({
-			  icon: 'warning',
-			  title: 'Oops...',
-			  html: "Fecha de Inicio y Fecha Final son requeridos",
-			  footer: ''
-			})
-			social.val(null).trigger('change');
 		}
 	}	
 }
 
+
+function swal_modal_info(days_twitter,days_ago) {
+	Swal.fire({
+	  icon: 'warning',
+	  title: 'Oops...',
+	  html: "<b>Twitter API</b> realiza una búsqueda en una muestra de Tweets recientes publicados en los últimos "+ days_twitter +" días.  como parte del conjunto 'público' de API. <hr> La alerta comenzara a recabar data a partir " + days_ago + " para Twitter",
+	  showCancelButton: true,
+	  confirmButtonColor: '#3085d6',
+	  cancelButtonColor: '#d33',
+	  confirmButtonText: 'Si, Deseo cambiar la fecha!',
+	  cancelButtonText: 'Quitar Twitter de los recursos!'
+	}).then((result) => {
+		if(result.value){
+			//if yes
+			$('#start_date').kvDatepicker.defaults.format = 'dd/mm/yyyy';
+			$('#start_date').kvDatepicker('update', days_ago);
+			
+		}else{
+			var social = $('#social_resourcesId');
+            var current_values = social.val();
+            console.log(current_values);
+            current_values.splice( current_values.indexOf('1'), 1 );
+            social.val(current_values).trigger('change');
+		}
+	});
+}
+
+function swal_modal_error(days_ago) {
+	Swal.fire({
+	  icon: 'error',
+	  title: 'Opps',
+	  html: "<b>Twitter API</b> no estara disponible para este rango de fechas <hr> realiza una búsqueda a partir de: <b>"+ days_ago +"</b>",
+	})
+}
 
 
