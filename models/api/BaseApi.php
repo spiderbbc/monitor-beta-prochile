@@ -155,6 +155,7 @@ class BaseApi extends Model {
 
 	public function excelDocument($alerts = []){
 		//echo "excelDocument". "\n";
+		
 	}
 
 	public function webpage($alerts = []){

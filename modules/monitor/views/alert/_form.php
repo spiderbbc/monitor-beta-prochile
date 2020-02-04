@@ -32,6 +32,7 @@ use mludvik\tagsinput\TagsInputWidget;
             <div class="row">
                 <div class="col-md-6">
                     <?= $form->field($config, 'start_date')->widget(DatePicker::classname(), [
+                            'type' => DatePicker::TYPE_INPUT,
                             'options' => ['id' => 'start_date','placeholder' => 'Enter start date ...'],
                             'pluginOptions' => [
                                 'orientation' => 'down left',
@@ -47,6 +48,7 @@ use mludvik\tagsinput\TagsInputWidget;
                 </div>
                 <div class="col-md-6">
                     <?= $form->field($config, 'end_date')->widget(DatePicker::classname(), [
+                        'type' => DatePicker::TYPE_INPUT,
                             'options' => ['id' => 'end_date','placeholder' => 'Enter end date ...'],
                             'pluginOptions' => [
                                 'orientation' => 'down left',
