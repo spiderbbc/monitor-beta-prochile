@@ -127,7 +127,7 @@ class LiveTicketApi extends Model {
 	public function call($products_params = []){
 
 		foreach($products_params as $productName => $params){
-			\yii\helpers\Console::stdout("loop in call method {$productName}.. \n", Console::BOLD);
+			//\yii\helpers\Console::stdout("loop in call method {$productName}.. \n", Console::BOLD);
 			$this->data[$productName] =  $this->_getTickets($params);
 		}
 		$tickets = $this->_orderTickets($this->data);
@@ -149,8 +149,8 @@ class LiveTicketApi extends Model {
 			$params['page'] = $page;
 			
 			$response = $client->tickets->get($params);
-			echo "searching start date". $params['date_from']. " to  ". $params['date_to']. " in productName: ".$params['query']. "\n";
-			echo "Count result: {$response->total} ". "\n";
+		//	echo "searching start date". $params['date_from']. " to  ". $params['date_to']. " in productName: ".$params['query']. "\n";
+		//	echo "Count result: {$response->total} ". "\n";
 
 			if(count($response->tickets)){
 				// get the data

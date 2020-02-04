@@ -11,7 +11,6 @@ use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 
 use app\widgets\AlertFacebook;
-
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -39,7 +38,7 @@ use app\widgets\AlertFacebook;
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
+           // ['label' => 'Home', 'url' => ['/site/index']],
             ['label' => 'Monitor', 'url' => ['/monitor/alert/index']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
@@ -61,6 +60,7 @@ use app\widgets\AlertFacebook;
     <div class="container">
         <?= Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+            'homeLink' => false
         ]) ?>
         <?= Alert::widget() ?>
             <?= AlertFacebook::widget() ?>

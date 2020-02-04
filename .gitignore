@@ -40,4 +40,6 @@ credentials/*
 
 processed/
 
-config/
+config/*
+web/index.php
+.htaccess

@@ -302,7 +302,6 @@ class InstagramCommentsApi extends Model {
 				if(isset($params)){
 					if (ArrayHelper::keyExists($id_feed, $params['feeds'], false)) {
 						if($params['feeds'][$id_feed]['next'] != ''){
-							echo "using next ...";
 							$next = $params['feeds'][$id_feed]['next'];
 							// clean next in the database
 							$where['publication_id'] = $id_feed;
@@ -363,7 +362,7 @@ class InstagramCommentsApi extends Model {
 						// save the next 
 						if($next){
 							$where['publication_id'] = $id_feed;
-					        Console::stdout("save one time {$next}.. \n", Console::BOLD);
+					      //  Console::stdout("save one time {$next}.. \n", Console::BOLD);
 					        $model_alert = \app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => $next]);
 						}
 					}

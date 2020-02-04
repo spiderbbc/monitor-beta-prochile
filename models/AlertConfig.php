@@ -63,7 +63,7 @@ class AlertConfig extends \yii\db\ActiveRecord
             [['product_description','competitors'], 'filter', 'filter' => [$this, 'normalizeTags']],
             // start_date not greater than end date
             //[['start_date','end_date'], 'validateDates'],
-            ['end_date', 'compare', 'compareAttribute'=> 'start_date', 'operator' => '>=', 'enableClientValidation' =>true],
+           // ['end_date', 'compare', 'compareAttribute'=> 'start_date', 'operator' => '>=', 'enableClientValidation' =>true],
             
             [['start_date','end_date'], 'date','format' => 'php:U'],
             

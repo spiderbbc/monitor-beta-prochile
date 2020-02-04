@@ -111,9 +111,7 @@ class FacebookCommentsApi extends Model {
 
 	private function _getDataApi($query_params){
 
-		echo "in Post.."."\n";
 		$feeds = $this->_getPostsComments($query_params);
-		echo "out Post.."."\n";
 		$feedsCandidate = $this->_setCandidate($feeds);
 
 		$feeds_comments = $this->_getComments($feedsCandidate);
@@ -230,7 +228,6 @@ class FacebookCommentsApi extends Model {
 							if(isset($params)){
 								if (ArrayHelper::keyExists($id_feed, $params['feeds'], false)) {
 									if($params['feeds'][$id_feed]['next'] != ''){
-										echo "using next ...";
 										$next = $params['feeds'][$id_feed]['next'];
 										// clean next in the database
 										$where['publication_id'] = $id_feed;
@@ -269,7 +266,7 @@ class FacebookCommentsApi extends Model {
 									// save the next 
 									if($next){
 										$where['publication_id'] = $id_feed;
-								        Console::stdout("save one time {$next}.. \n", Console::BOLD);
+								       // Console::stdout("save one time {$next}.. \n", Console::BOLD);
 								        $model_alert = \app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['next' => $next]);
 									}
 								}
