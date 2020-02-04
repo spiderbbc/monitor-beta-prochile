@@ -201,7 +201,7 @@ class AlertController extends Controller
             $alert->delete();
             return $this->render('error',[
               'name' => 'alert',
-              'message' => $message,
+              'message' => $messages,
 
             ]);
           }
@@ -392,7 +392,7 @@ class AlertController extends Controller
             $alert->delete();
             return $this->render('error',[
                 'name' => 'alert',
-                'message' => $msg,
+                'message' => $messages,
             ]);
           }
           // return view

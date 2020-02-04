@@ -62,7 +62,7 @@ class AlertConfig extends \yii\db\ActiveRecord
             // normalize "phone" using the function "normalizeTags"
             [['product_description','competitors'], 'filter', 'filter' => [$this, 'normalizeTags']],
             // start_date not greater than end date
-            //[['start_date','end_date'], 'validateDates'],
+             [['end_date'], 'validateDates'],
            // ['end_date', 'compare', 'compareAttribute'=> 'start_date', 'operator' => '>=', 'enableClientValidation' =>true],
             
             [['start_date','end_date'], 'date','format' => 'php:U'],
@@ -84,8 +84,7 @@ class AlertConfig extends \yii\db\ActiveRecord
 
     public function validateDates(){
         if(strtotime($this->end_date) <= strtotime($this->start_date)){
-            $this->addError('start_date','Please give correct Start and End dates');
-            $this->addError('end_date','Please give correct Start and End dates');
+            $this->addError('end_date','Fecha Final no puede ser menor a fecha de Inicio');
         }
     }
 

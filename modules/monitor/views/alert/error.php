@@ -15,8 +15,10 @@ $this->title = $name;
 
     <div class="alert alert-danger">
         <?php foreach($message as $values): ?>
-           
-            <?= nl2br(Html::encode($values)) ?><br>
+           <?php foreach ($values as $value): ?>
+               <?= nl2br(Html::encode($value)) ?><br>
+           <?php endforeach ?>
+            
         <?php endforeach; ?>
     </div>
 
