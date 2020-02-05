@@ -273,6 +273,7 @@ class InstagramSearch
                     $name = (\app\helpers\StringHelper::isEmpty($name)) ? $username : $name;
                     
                     $message = $user_response['graphql']['user']['biography'];
+                    $short_message = \app\helpers\StringHelper::ensureRightPoints(\app\helpers\StringHelper::substring($message,0,385));
                     $origin = \app\helpers\MentionsHelper::saveUserMencions(
                         [
                             'user_uuid' => $id
@@ -281,7 +282,7 @@ class InstagramSearch
                             'name'              => \app\helpers\StringHelper::remove_emoji($name),
                             'screen_name'       => $screen_name,
                             'user_data'         => $user_data,
-                            'message'           => \app\helpers\StringHelper::remove_emoji($message),
+                            'message'           => \app\helpers\StringHelper::remove_emoji($short_message),
                             'profile_image_url' => $permalink,
                         ]
                     );
