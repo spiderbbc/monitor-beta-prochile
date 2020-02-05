@@ -282,7 +282,7 @@ class AlertMentionsHelper
                 $alertMentionsDocuments = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'type' => 'document'])->all();
                 foreach ($alertMentionsDocuments as $alertMentionsDocument) {
                     if($alertMentionsDocument->mentionsCount){
-                        $total += $alertsMencions->countDocumentByResource('TWITTER',$alertMentionsDocument->id);
+                        $total += $alertsMencions->getCountDocumentByResource('TWITTER',$alertMentionsDocument->id);
                     }
                 }
                 // set
