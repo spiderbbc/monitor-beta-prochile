@@ -49,7 +49,10 @@ var vm = new Vue({
 });
 
 
-// alertResourceId select2 with alert when user click in twitter
+/**
+ * [modalTwitter show modal alert when user click twitter in box resource indicating if range date is optimal]
+ * @param  {[type]} event 
+ */
 function modalTwitter(event) {
 	var resource = event.params.data.text;
 
@@ -100,7 +103,11 @@ function modalTwitter(event) {
 	}	
 }
 
-
+/**
+ * [swal_modal_info show modal info indicating range date for twitter]
+ * @param  {[type]} days_twitter [days twiiter api]
+ * @param  {[type]} days_ago     [days ago for call twitter api]
+ */
 function swal_modal_info(days_twitter,days_ago) {
 	Swal.fire({
 	  icon: 'warning',
@@ -127,6 +134,10 @@ function swal_modal_info(days_twitter,days_ago) {
 	});
 }
 
+/**
+ * [swal_modal_error show error modal indicating to user not range date for twitter]
+ * @param  {[type]} days_ago [days ago for call twitter api]
+ */
 function swal_modal_error(days_ago) {
 	Swal.fire({
 	  icon: 'error',
@@ -135,4 +146,14 @@ function swal_modal_error(days_ago) {
 	})
 }
 
+/**
+ * [validator_date change the end date based on the start date ]
+ * @param  {[type]} event
+ */
+function validator_date(event) {
+	
+	$('#end_date').kvDatepicker('clearDates');
+	$('#end_date').kvDatepicker('setStartDate',event.date);
+
+}
 

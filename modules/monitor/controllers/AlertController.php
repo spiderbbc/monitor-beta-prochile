@@ -130,6 +130,7 @@ class AlertController extends Controller
         $drive   = new \app\models\api\DriveApi();
 
         $alert->scenario = 'saveOrUpdate';
+        
 
 
         if (Yii::$app->request->post() && $alert->load(Yii::$app->request->post()) && $config->load(Yii::$app->request->post())) {
@@ -147,6 +148,9 @@ class AlertController extends Controller
           }
           // config model
           $config->alertId = $alert->id;
+          $config->start_date = Yii::$app->request->post('start_date');
+          $config->end_date = Yii::$app->request->post('end_date');
+
           if($config->save()){
             //sources model
             $is_save_socialIds = $config->saveAlertconfigSources($alert->alertResourceId);

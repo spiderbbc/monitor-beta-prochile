@@ -33,15 +33,16 @@ use mludvik\tagsinput\TagsInputWidget;
                 <div class="col-md-6">
                     <?= $form->field($config, 'start_date')->widget(DatePicker::classname(), [
                             'type' => DatePicker::TYPE_INPUT,
-                            'options' => ['id' => 'start_date','placeholder' => 'Enter start date ...'],
+                            'options' => ['id' => 'start_date','name' => 'start_date','placeholder' => 'Enter start date ...'],
                             'pluginOptions' => [
                                 'orientation' => 'down left',
                                 'format' => 'dd/mm/yyyy',
                                 'todayHighlight' => true,
                                 'autoclose' => true,
+                             //   'endDate' => '+28D',
                             ],
                             'pluginEvents' => [
-                               // "changeDate" => "function(e) {  # `e` here contains the extra attributes }",
+                               "changeDate" => "function(e) {  validator_date(e); }",
                             ],
                         ]); 
                     ?>
@@ -49,13 +50,13 @@ use mludvik\tagsinput\TagsInputWidget;
                 <div class="col-md-6">
                     <?= $form->field($config, 'end_date')->widget(DatePicker::classname(), [
                         'type' => DatePicker::TYPE_INPUT,
-                            'options' => ['id' => 'end_date','placeholder' => 'Enter end date ...'],
+                            'options' => ['id' => 'end_date','name' => 'end_date','placeholder' => 'Enter end date ...'],
                             'pluginOptions' => [
                                 'orientation' => 'down left',
                                 'format' => 'dd/mm/yyyy',
                                 'todayHighlight' => true,
                                 'autoclose' => true,
-                            ]
+                            ],
                         ]); 
                     ?>
                 </div>
