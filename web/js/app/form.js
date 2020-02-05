@@ -86,20 +86,20 @@ function modalTwitter(event) {
 			}else{
 				var diff_end_date = now.diff(afterTime, "days");
 				console.log(diff_end_date)
-				if (diff_end_date > 7) {
+				if (diff_end_date > 1) {
 					
-					swal_modal_error(days_ago);
-					
-                    var current_values = social.val();
+					//swal_modal_error(days_ago);
+					swal_modal_info(days_twitter,days_ago);
+                    /*var current_values = social.val();
                     var index = current_values.indexOf("1");
                    
-                    social.val(index).trigger('change');
+                    social.val(index).trigger('change');*/
 
 				}
 
-				if(diff_end_date < 0){
+				/*if(diff_end_date < 0){
 					swal_modal_info(days_twitter,days_ago);
-				}
+				}*/
 
 			}
 		}
