@@ -85,6 +85,7 @@ function modalTwitter(event) {
 				}
 			}else{
 				var diff_end_date = now.diff(afterTime, "days");
+				console.log(diff_end_date)
 				if (diff_end_date > 7) {
 					
 					swal_modal_error(days_ago);
@@ -94,7 +95,9 @@ function modalTwitter(event) {
                    
                     social.val(index).trigger('change');
 
-				}else{
+				}
+
+				if(diff_end_date < 0){
 					swal_modal_info(days_twitter,days_ago);
 				}
 
@@ -127,7 +130,6 @@ function swal_modal_info(days_twitter,days_ago) {
 		}else{
 			var social = $('#social_resourcesId');
             var current_values = social.val();
-            console.log(current_values);
             current_values.splice( current_values.indexOf('1'), 1 );
             social.val(current_values).trigger('change');
 		}
