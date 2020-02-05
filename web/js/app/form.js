@@ -86,7 +86,7 @@ function modalTwitter(event) {
 			}else{
 				var diff_end_date = now.diff(afterTime, "days");
 				console.log(diff_end_date)
-				if (diff_end_date > 1) {
+				if (diff_end_date >= 1) {
 					
 					//swal_modal_error(days_ago);
 					swal_modal_info(days_twitter,days_ago);
