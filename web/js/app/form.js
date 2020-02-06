@@ -96,7 +96,6 @@ function modalTwitter(event) {
 				}
 
 				var diff_start_date = now.diff(beforeTime, "days");
-				console.log(diff_start_date);
 				if (diff_start_date >= 7) {
 					swal_modal_info(days_twitter,days_ago);
 				}
