@@ -56,7 +56,7 @@ class AlertController extends Controller
      * @return string
      * @throws \yii\web\NotFoundHttpException
      */
-    public function actionChangePayStatus($id, $value)
+    public function actionChangeStatus($id, $value)
     {
       $out = [];
       $model = $this->findModel($id);

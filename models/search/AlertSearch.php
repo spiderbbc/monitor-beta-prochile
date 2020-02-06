@@ -54,6 +54,9 @@ class AlertSearch extends Alerts
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            /*'pagination' => [
+                'pageSize' => 2,
+            ],*/
         ]);
 
          $query->joinWith('config');

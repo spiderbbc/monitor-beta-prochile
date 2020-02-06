@@ -30,7 +30,6 @@ yii.confirm = function (message, okCallback, cancelCallback) {
 	    
 	  }
 	})
-	//console.log(okCallback);
 };
 
 
