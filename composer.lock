@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7dae5aeb111fe5d8745f268004f595de",
+    "content-hash": "b7b37063157fc1694e46ae64467edc6b",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -65,7 +65,7 @@
             "version": "v3.4.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:twbs/bootstrap.git",
+                "url": "https://github.com/twbs/bootstrap.git",
                 "reference": "68b0d231a13201eb14acd3dc84e51543d16e5f7e"
             },
             "dist": {
@@ -170,7 +170,7 @@
             "version": "1.12.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/components/jqueryui.git",
+                "url": "git@github.com:components/jqueryui.git",
                 "reference": "44ecf3794cc56b65954cc19737234a3119d036cc"
             },
             "dist": {
@@ -1257,6 +1257,51 @@
             "time": "2019-07-01T23:21:34+00:00"
         },
         {
+            "name": "halaxa/json-machine",
+            "version": "0.3.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/halaxa/json-machine.git",
+                "reference": "6333030d3f5f3673738db30425264ca5d901aac8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/halaxa/json-machine/zipball/6333030d3f5f3673738db30425264ca5d901aac8",
+                "reference": "6333030d3f5f3673738db30425264ca5d901aac8",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "^6",
+                "phpunit/phpunit": "^5.7",
+                "symfony/http-client": "^5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "JsonMachine\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Filip Halaxa",
+                    "email": "filip@halaxa.cz"
+                }
+            ],
+            "description": "Efficient, easy-to-use and fast JSON pull parser",
+            "time": "2019-12-20T18:30:23+00:00"
+        },
+        {
             "name": "jasonlam604/stringizer",
             "version": "2.14.0",
             "source": {
@@ -2232,7 +2277,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:highcharts/highcharts-dist.git",
+                "url": "https://github.com/highcharts/highcharts-dist.git",
                 "reference": "d849ea4aa23ceda198ce6d683c0091962049aca6"
             },
             "dist": {
