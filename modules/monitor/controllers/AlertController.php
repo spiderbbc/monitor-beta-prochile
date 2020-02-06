@@ -275,6 +275,8 @@ class AlertController extends Controller
           }
           // config model
           $config->alertId = $alert->id;
+          $config->start_date = Yii::$app->request->post('start_date');
+          $config->end_date = Yii::$app->request->post('end_date');
           $config->save();
 
           // add resource alert
