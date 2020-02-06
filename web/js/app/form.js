@@ -85,16 +85,19 @@ function modalTwitter(event) {
 				}
 			}else{
 				var diff_end_date = now.diff(afterTime, "days");
-				console.log(diff_end_date)
-				if (diff_end_date > 1) {
-					
+				if (diff_end_date >= 7) {
 					//swal_modal_error(days_ago);
 					swal_modal_info(days_twitter,days_ago);
                     /*var current_values = social.val();
                     var index = current_values.indexOf("1");
-                   
                     social.val(index).trigger('change');*/
 
+				}
+
+				var diff_start_date = now.diff(beforeTime, "days");
+				console.log(diff_start_date);
+				if (diff_start_date >= 7) {
+					swal_modal_info(days_twitter,days_ago);
 				}
 
 				/*if(diff_end_date < 0){
@@ -126,6 +129,7 @@ function swal_modal_info(days_twitter,days_ago) {
 			//if yes
 			$('#start_date').kvDatepicker.defaults.format = 'dd/mm/yyyy';
 			$('#start_date').kvDatepicker('update', days_ago);
+			$('#end_date').kvDatepicker('clearDates');
 			
 		}else{
 			var social = $('#social_resourcesId');
