@@ -146,7 +146,7 @@ class LiveTicketSearch {
                         }// end for events
                     } // if array keyExists
                 }// end for tickets
-            }else{ $error['alertsMencionsModel'][] = 'not found';}// end if ! null
+            }
         } // end for  each data
         
         return (!count($error)) ? true : false;
