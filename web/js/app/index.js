@@ -16,56 +16,70 @@ let confirmButtonText = 'Si, deseo cambiar el estatus';;
 
 $(document).on('ready pjax:success',function () {
 	$(".changeStatus").on('select2:select',function(){
-	  var id = $(this).attr("id");
-	  var value = $(this).val();
-	  
-
-	  Swal.fire({
-		  title: title,
-		  text: (value == 1) ? text_active : text_inactive,
-		  icon: icon,
-		  showCancelButton: true,
-		  confirmButtonColor: '#3085d6',
-		  cancelButtonColor: '#d33',
-		  confirmButtonText: confirmButtonText
-		}).then((result) => {
-		  if (result.value) {
-		    $.ajax({
-		        url: origin + '/monitor-beta/web/monitor/alert/change-status',
-		        data: {"id":id, "value":value},
-		        type: "GET",
-		        dataType: "json",
-		      }).done(function(data) {
-		        if(data.situation != "success"){
-		        	Swal.fire(
-				      'Opss',
-				      'No se pudo realizar la operacion',
-				      'error'
-				    );
-	            }else{
-	            	Swal.fire(
-				      'Status Cambiado',
-				      'La Alerta cambio su estado',
-				      'success'
-				    );
-				   // $(this).val(value).trigger('change');
-	              
-	            }
-		    });
-		  }else{
-		  	if(value == 1){
-		  		value = 0;
-		  	}else{
-		  		value = 1;
-		  	}
-		  	$(this).val(value).trigger('change');
-		  	
-		  }
-		})
-	  
+	  	var $this = $(this);
+	  	modal_status_change($this);
 	});  
 	
 })
+
+
+$(".changeStatus").on('select2:select',function(){
+  	var $this = $(this);
+  	modal_status_change($this);
+});  
+
+
+function modal_status_change($this) {
+
+  var id = $($this).attr("id");
+  var value = $($this).val();
+
+  
+
+  Swal.fire({
+	  title: title,
+	  text: (value == 1) ? text_active : text_inactive,
+	  icon: icon,
+	  showCancelButton: true,
+	  confirmButtonColor: '#3085d6',
+	  cancelButtonColor: '#d33',
+	  confirmButtonText: confirmButtonText
+	}).then((result) => {
+	  if (result.value) {
+	    $.ajax({
+	        url: origin + '/monitor-beta/web/monitor/alert/change-status',
+	        data: {"id":id, "value":value},
+	        type: "GET",
+	        dataType: "json",
+	      }).done(function(data) {
+	        if(data.situation != "success"){
+	        	Swal.fire(
+			      'Opss',
+			      'No se pudo realizar la operacion',
+			      'error'
+			    );
+            }else{
+            	Swal.fire(
+			      'Status Cambiado',
+			      'La Alerta cambio su estado',
+			      'success'
+			    );
+			   // $($this).val(value).trigger('change');
+              
+            }
+	    });
+	  }else{
+	  	if(value == 1){
+	  		value = 0;
+	  	}else{
+	  		value = 1;
+	  	}
+	  	$($this).val(value).trigger('change');
+	  	
+	  }
+	})
+	  
+}
 
 
 // message sweealert delete button

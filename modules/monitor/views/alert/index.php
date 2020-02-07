@@ -27,7 +27,6 @@ function format(data) {
     response += '<i class="fa fa-check mr5"></i>' + data.text;
   else
     response += '<i class="fa fa-times mr5"></i>' + data.text;
-  console.log(response);
   return response;
 }
 JS;
@@ -37,7 +36,7 @@ $this->registerJsFile('@web/js/app/index.js',[
         \app\assets\VueAsset::className(),
         \app\assets\SweetAlertAsset::className(),
         ],
-  'position' => [View::POS_END]      
+  //'position' => [View::POS_END]      
 ]);
 
 $escape = new JsExpression("function(m) { return m; }");
@@ -181,16 +180,16 @@ $escape = new JsExpression("function(m) { return m; }");
                 'class' => 'yii\grid\ActionColumn',
                 'contentOptions' => ['style' => 'width: 10%;min-width: 20px'], 
                 'buttons' => [
-                'delete' => function($url, $model){
-                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', ['delete', 'id' => $model->id], [
-                        'class' => '',
-                        'data' => [
-                            'confirm' => 'Are you absolutely sure ? You will lose all the information about this user with this action.',
-                            'method' => 'post',
-                        ],
-                    ]);
-                }
-            ]
+                    'delete' => function($url, $model){
+                        return Html::a('<span class="glyphicon glyphicon-trash"></span>', ['delete', 'id' => $model->id], [
+                            'class' => '',
+                            'data' => [
+                                'confirm' => 'Are you absolutely sure ? You will lose all the information about this user with this action.',
+                                'method' => 'post',
+                            ],
+                        ]);
+                    }
+                ]
             ],
         ],
     ]); ?>
