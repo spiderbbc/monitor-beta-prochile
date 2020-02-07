@@ -129,8 +129,10 @@ class LiveChatSearch {
                         }// end loop messages
                     }// end fi keyExists messages
                 }// end for chats
-            }else{ $error['alertsMencion'] = $alertsMencionsModel->errors; }//end if is null
+            }
     	}// end foreach data
+
+    
         return (empty($error)) ? true : false;
     }
 
