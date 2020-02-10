@@ -148,9 +148,16 @@ class AlertMentionsHelper
 
             case 'Live Chat Conversations':
                 $models = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => $resource_id])->all();
+                $expression = new \yii\db\Expression("`mention_data`->'$.event_id' AS event_id");
                 $total = 0;
                 foreach ($models as $model) {
-                    $total += $model['mention_data']['count'];
+                    $rows = (new \yii\db\Query())
+                      ->select($expression)
+                      ->from('mentions')
+                      ->where(['alert_mentionId' => $model->id])
+                      ->groupBy('event_id')
+                      ->count();
+                    $total += intval($rows);  
                 }
 
                 return array($resource_name,'0','0','0',$total);
