@@ -82,6 +82,7 @@ class FacebookMessagesApi extends Model {
 
 		// get page token   
 		$this->_page_access_token = $this->_getPageAccessToken($user_credential);
+
 		// loading firts query
 		$params['query'] = $this->_messageSimpleQuery();  
 
@@ -197,7 +198,6 @@ class FacebookMessagesApi extends Model {
 
 
 					}else{
-						echo "is break";
 						break;
 					}
 
@@ -216,6 +216,7 @@ class FacebookMessagesApi extends Model {
 		    	
 
 			}while($is_next && $between);
+
 
 			return $responseData ;
 
@@ -265,7 +266,11 @@ class FacebookMessagesApi extends Model {
 										}
 										if(!ArrayHelper::keyExists($message_id,$data[$this->products[$p]], false)){
 
-											$data[$this->products[$p]][$message_id] = $messages[$m]['data'][$d]['messages']['data'];
+											//$data[$this->products[$p]][$message_id] = $messages[$m]['data'][$d]['messages']['data'];
+											$filter_messages =  $this->_filterByDate($messages[$m]['data'][$d]['messages']['data']);
+											if(!empty($filter_messages)){
+												$data[$this->products[$p]][$message_id] = $filter_messages;
+											}
 											$where['publication_id'] = $message_id;
 											\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p]]);
 											$id_recolect[] = $message_id;
