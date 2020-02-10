@@ -231,8 +231,8 @@ class LiveChatSearch {
         $message   = $chat['text'];
         $timestamp = $chat['timestamp'];
         
-
-        $mention_data['event_id'] = $chat['event_id'];
+        $ticketId = explode('_', $chat['event_id']);
+        $mention_data['event_id'] = $ticketId[0];
 
 
         $message_markup = $chat['message_markup'];
