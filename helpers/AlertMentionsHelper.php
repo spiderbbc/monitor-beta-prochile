@@ -104,11 +104,11 @@ class AlertMentionsHelper
                 break;
 
             case 'Facebook Messages':
-                $model = new \app\models\AlertsMencions();
-                $model->alertId = $alertId;
-                $model->resourcesId = $resource_id;
+                $count = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => $resource_id])->count();
+                /*$model->alertId = $alertId;
+                $model->resourcesId = $resource_id;*/
                 
-                return array($resource_name,'0','0','0',$model->total);
+                return array($resource_name,'0','0','0',$count);
                 break;    
 
             case 'Instagram Comments':
