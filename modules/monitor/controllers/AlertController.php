@@ -275,6 +275,8 @@ class AlertController extends Controller
           }
           // config model
           $config->alertId = $alert->id;
+          $config->start_date = Yii::$app->request->post('start_date');
+          $config->end_date = Yii::$app->request->post('end_date');
           $config->save();
 
           // add resource alert
@@ -422,6 +424,17 @@ class AlertController extends Controller
         $model = $this->findModel($id);
         //if model
         if($model){
+          // delete user
+          foreach ($model->alertsMentions as $alertMention) {
+            if($alertMention->mentionsCount){
+                foreach ($alertMention->mentions as $mentions => $mention) {
+                  $user = \app\models\UsersMentions::findOne($mention->origin_id);
+                  if(!is_null($user)){
+                    $user->delete();
+                  }
+                }
+              }
+          }
           // delete alert
           $model->delete();
           $history_search = \app\models\HistorySearch::findOne(['alertId' => $id]);
@@ -430,12 +443,14 @@ class AlertController extends Controller
             $history_search->delete();
           }
 
+          // delete product models
+          $ProductsModelsAlerts = \app\models\ProductsModelsAlerts::find()->where(['alertId' => $id])->all();
+          foreach ($ProductsModelsAlerts as $productsModel){
+            $productsModel->delete();
+          }
+
         }
-        // delete product models
-        $ProductsModelsAlerts = \app\models\ProductsModelsAlerts::find()->where(['alertId' => $id])->all();
-        foreach ($ProductsModelsAlerts as $productsModel){
-          $productsModel->delete();
-        }
+        
 
         return $this->redirect(['index']);
     }
