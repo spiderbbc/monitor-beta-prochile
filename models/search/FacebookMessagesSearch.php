@@ -278,7 +278,7 @@ class FacebookMessagesSearch {
         $alertsMencions =  \app\models\AlertsMencions::find()->where([
             'alertId'        => $this->alertId,
             'resourcesId'    =>  $this->resourcesId,
-            'condition'      =>  'ACTIVE',
+            //'condition'      =>  'ACTIVE',
             'type'           =>  'messages Facebook',
             'term_searched'  =>  $product,
             'publication_id' =>  $publication_id,
