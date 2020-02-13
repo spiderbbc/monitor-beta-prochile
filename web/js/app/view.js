@@ -903,11 +903,11 @@ const vm = new Vue({
 		resourcescount:[],
 	},
 	mounted(){
-		if (!localStorage.init) {
+		/*if (!localStorage.init) {
 			console.log("runnig init");
 			this.init();
 			localStorage.init = 1;
-		}
+		}*/
 		//this.init();
 		setInterval(function () {
 	      this.fetchIsData();
