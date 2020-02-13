@@ -26,7 +26,7 @@ class m190905_202347_Mentions extends Migration
             'subject'         => $this->text(),
             'message'         => $this->text()->notNull(),
             'message_markup'  => $this->text()->notNull(),
-            'url'             => $this->string(),
+            'url'             => $this->text(),
             'domain_url'      => $this->string(),
             'location'        => $this->string(),
             'social_id'       => $this->bigInteger(64)->defaultValue(0),
