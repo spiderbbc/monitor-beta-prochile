@@ -356,7 +356,7 @@ class ExcelSearch {
         $alertsMencions =  \app\models\AlertsMencions::find()->where([
             'alertId'        => $this->alertId,
             'resourcesId'    =>  $this->resourcesId,
-            'condition'      =>  'ACTIVE',
+            //'condition'      =>  'ACTIVE',
             'type'           =>  'document',
             'term_searched'  =>  $product,
         ])
@@ -490,13 +490,12 @@ class ExcelSearch {
 
     private function searchFinish()
     {
-        $dates_searched = (new \yii\db\Query())->select(['date_searched'])->from('alerts_mencions')
-            ->where([
-                'alertId'       => $this->alertId,
-                'resourcesId'   => $this->resourcesId,
-                'type'          => 'document',
-            ])
-        ->all();
+        $alertsMencions = \app\models\AlertsMencions::find()->where([
+            'alertId'       => $this->alertId,
+            'resourcesId'   => $this->resourcesId,
+            'type'          => 'document',
+            //'condition'       => 'ACTIVE'
+        ])->all(); 
 
         $model = [
             'Excel Document' => [
@@ -505,7 +504,11 @@ class ExcelSearch {
             ]
         ];
 
-        if(count($dates_searched)){
+        if(count($alertsMencions)){
+            foreach ($alertsMencions as $alertsMencion) {
+                $alertsMencion->condition = 'INACTIVE';
+                $alertsMencion->save();
+            }
             $model['Excel Document']['status'] = 'Finish';
 
         }
