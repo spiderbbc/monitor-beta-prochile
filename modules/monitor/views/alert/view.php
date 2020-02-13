@@ -89,7 +89,8 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     ]) ?>
 
 
-    <modal-alert :count="count"></modal-alert>
+    <!-- <modal-alert :count="count"></modal-alert> -->
+    <modal-alert></modal-alert>
     
     <div v-if="isData">
         <div class="row">

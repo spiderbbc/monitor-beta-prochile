@@ -89,6 +89,9 @@ let resourceIcons = {
     'Excel Document': 'socicon-windows',
     'Web page': ''
 }
+// title alert view
+let title_with_data = '<strong>Alerta Activa</strong>';
+let title_not_data = '<strong>Alerta Finalizada</strong>';
 
 // messages sweet alert
 let message_with_data = 'Usted puede pulsar en <b>continuar</b>, para mantenerse en esta vista <hr> Puede pulsar en <b> Generar Informe </b> para recibir el documento pdf y la Alerta pasara a status <b>Finalizada</b> <hr> Puede pulsar en <b>actualizar la alerta</b> para buscar bajo otros parametros';

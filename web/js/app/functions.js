@@ -97,12 +97,13 @@ function modalFinish(count, baseUrlView,id){
       buttonsStyling: true
     })
 
+    var title = '<strong>Alerta Finalizada</strong>';
     var msg = (parseInt(count)) ? message_with_data : message_not_data; 
     var icon = (parseInt(count)) ? 'success' : 'warning'; 
     var is_continue = (parseInt(count)) ? true : false; 
 
     swalWithBootstrapButtons.fire({
-      title: '<strong>Alerta Finalizada</strong>',
+      title: title ,
       icon: icon,
       html: msg,
       showCancelButton: is_continue,

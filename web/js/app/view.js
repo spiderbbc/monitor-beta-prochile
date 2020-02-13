@@ -815,29 +815,38 @@ const listEmojis = Vue.component('list-emojis',{
  * template: '#modal-alert' [description]
  * @return {[component]}           [component]
  */
+
 const sweetAlert = Vue.component('modal-alert',{
 	'template' : '#modal-alert',
-	'props': ['count'],
 	data: function () {
 	    return {
+	    	alertId:id,
 	    	response:null,
-	    	isShowModal:false
+	    	isShowModal:false,
+	    	count:0,
+	    	flag:false
 	    }
 	},
-	async mounted(){
+	mounted(){
 
-	    while(!this.isShowModal){
-	    	await sleep(50000);
-	    	this.fetchStatus();
-	    }
-		
-	    if(this.isShowModal){
-	    	this.modal();
-	    }
-
+		setInterval(function () {
+	      this.fetchCount();
+	      if (this.count) {
+	      	this.fetchStatus();
+	      	if (this.isShowModal && !this.flag) {this.modal();}
+	      }
+	    }.bind(this), refreshTime);
 	   
 	},
 	methods:{
+		fetchCount (){
+			axios.get(baseUrlApi + 'count-mentions' + '?alertId=' +this.alertId)
+		      .then(response => {
+		      	this.count = response.data.count;
+		      })
+		      .catch(error => console.log(error))
+
+		},
 		fetchStatus(){
 			axios.get(baseUrlApi + 'status-alert' + '?alertId=' + id )
 		      .then((response) => {
@@ -850,13 +859,13 @@ const sweetAlert = Vue.component('modal-alert',{
 		},
 		setStatus(){
 			if(this.response != undefined || this.response != null){
-				var resources_count = Object.keys(this.response.search_data).length;
+				var resources = document.getElementsByClassName("label-info");
 				var search_data = this.response.search_data;
 				var statuses = Object.keys(search_data).filter(function(key) {
 				   return search_data[key].status <= "Finish";
 				});
 
-				if(statuses.length == resources_count){
+				if(statuses.length == resources.length){
 					this.isShowModal = true;
 				}else{
 					this.isShowModal = false;
@@ -866,6 +875,7 @@ const sweetAlert = Vue.component('modal-alert',{
 			}
 		},
 		modal(){
+			this.flag = true;
 			modalFinish(this.count,baseUrlView,id);
 
 		}

@@ -254,6 +254,8 @@ class AlertController extends Controller
         // reset alerts_mentions
         if (Yii::$app->getRequest()->getQueryParam('fresh') == 'true') {
           $alerts_mentions = \app\models\AlertsMencions::deleteAll('alertId = :alertId', [':alertId' => $id]);
+          $alert->status = 1;
+          $alert->save();
           // delete history
           \app\helpers\HistorySearchHelper::deleteHistory($alert->id);
         }
