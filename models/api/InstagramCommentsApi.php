@@ -62,11 +62,37 @@ class InstagramCommentsApi extends Model {
 			$this->userId     = $alert['userId'];
 			$this->start_date = $alert['config']['start_date'];
 			$this->end_date   = $alert['config']['end_date'];
+
+			//get from alermentios
+			$alertsMencions = \app\models\AlertsMencions::find()->where([
+	    		'alertId'       => $this->alertId,
+		        'resourcesId'   => $this->resourcesId,
+		        'type'        	=> 'comments Instagram',
+	    	])->all();
+
+	    	if (count($alertsMencions)) {
+	    		$products = [];
+	    		foreach ($alertsMencions as $alertsMencion) {
+	    			if(in_array($alertsMencion->term_searched, $alert['products'])){
+	    				$index = array_search($alertsMencion->term_searched, $alert['products']);
+	    				unset($alert['products'][$index]);
+	    			}
+	    		}
+
+	    		$alert['products'] = array_values($alert['products']);
+
+	    	}
+			////
+			
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
 			
-			return $this->_setParams();
+			if (count($this->products)) {
+				return $this->_setParams();
+			} else {
+				return false;
+			}
 		}
 		return false;
 	}
@@ -615,6 +641,18 @@ class InstagramCommentsApi extends Model {
         $end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
 
         if($today >= $end_date){
+        	$alermentions = \app\models\AlertsMencions::find()->where([
+        		'alertId' => $this->alertId,
+        		'resourcesId' => $this->resourcesId,
+        		'type' => 'comments Instagram'
+        	])->all();
+        	
+        	if (count($alermentions)) {
+        		foreach ($alermentions as $alermention) {
+	        		$alermention->condition = 'INACTIVE';
+	        		$alermention->save();
+	        	}
+        	}
         	$model['Instagram']['status'] = 'Finish'; 
         }
 

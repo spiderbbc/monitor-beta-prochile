@@ -242,7 +242,7 @@ class InstagramSearch
         $alertsMencions =  \app\models\AlertsMencions::find()->where([
             'alertId'        => $this->alertId,
             'resourcesId'    =>  $this->resourcesId,
-            'condition'      =>  'ACTIVE',
+           // 'condition'      =>  'ACTIVE',
             'type'           =>  'comments Instagram',
             'term_searched'  =>  $product,
             'publication_id' =>  $publication_id,

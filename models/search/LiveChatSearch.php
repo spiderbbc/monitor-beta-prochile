@@ -131,7 +131,6 @@ class LiveChatSearch {
                 }// end for chats
             }
     	}// end foreach data
-
     
         return (empty($error)) ? true : false;
     }
@@ -304,7 +303,7 @@ class LiveChatSearch {
         $alertsMencions =  \app\models\AlertsMencions::find()->where([
             'alertId'       => $this->alertId,
             'resourcesId'   =>  $this->resourcesId,
-            'condition'     =>  'ACTIVE',
+            //'condition'     =>  'ACTIVE',
             'type'          =>  'chat',
             'term_searched' =>  $product,
         ])

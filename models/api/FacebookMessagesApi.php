@@ -85,6 +85,7 @@ class FacebookMessagesApi extends Model {
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
+			
 			if (count($this->products)) {
 				return $this->_setParams();
 			} else {

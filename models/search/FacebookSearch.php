@@ -212,7 +212,7 @@ class FacebookSearch
         $alertsMencions =  \app\models\AlertsMencions::find()->where([
             'alertId'        => $this->alertId,
             'resourcesId'    =>  5,
-            'condition'      =>  'ACTIVE',
+            //'condition'      =>  'ACTIVE',
             'type'           =>  'comments',
             'term_searched'  =>  $product,
             'publication_id' =>  $publication_id,

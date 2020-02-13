@@ -217,7 +217,7 @@ class TwitterSearch
         $alertsMencions =  \app\models\AlertsMencions::find()->where([
             'alertId'       => $this->alertId,
             'resourcesId'   =>  1,
-            'condition'    =>  'ACTIVE',
+          //  'condition'    =>  'ACTIVE',
             'type'          =>  'tweet',
             'term_searched' =>  $product,
         ])->select('id')->one();

@@ -317,7 +317,7 @@ class LiveTicketSearch {
         $alertsMencions =  \app\models\AlertsMencions::find()->where([
             'alertId'       => $this->alertId,
             'resourcesId'   =>  $this->resourcesId,
-            'condition'     =>  'ACTIVE',
+           // 'condition'     =>  'ACTIVE',
             'type'          =>  'ticket',
             'term_searched' =>  $product,
         ])
