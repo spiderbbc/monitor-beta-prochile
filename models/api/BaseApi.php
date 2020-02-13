@@ -55,6 +55,8 @@ class BaseApi extends Model {
 			foreach($resources as $method => $alerts){
 				$this->{$method}($alerts);
 			}
+			//change the status if finish
+			\app\helpers\AlertMentionsHelper::checkStatusAndFinishAlerts($alerts);
 		} // if alert
 	}
 

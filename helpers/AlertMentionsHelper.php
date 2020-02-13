@@ -373,4 +373,39 @@ class AlertMentionsHelper
 
     }
 
+    public static function checkStatusAndFinishAlerts($alerts)
+    {
+        $models = \yii\helpers\ArrayHelper::map($alerts,'id','config.configSources');
+
+        foreach ($models as $alertId => $resourceNames) {
+           $alert = \app\models\Alerts::findOne($alertId);
+            $historySearch = \app\models\HistorySearch::findOne(['alertId' => $alertId]);
+            if (!is_null($historySearch)) {
+                if (count($resourceNames) == count($historySearch->search_data)) {
+                    $status = false;
+                    foreach ($historySearch->search_data as $name => $values) {
+                        if ($values['status'] == 'Pending') {
+                            $status = true;
+                            
+                        }
+                    }
+                    if (!$status) {
+                        //SELECT COUNT(*) FROM `alerts_mencions` WHERE `condition` != 'INACTIVE' AND `alertId`=1
+                        $alertsMencions = \app\models\AlertsMencions::find()
+                            ->where(['alertId' => $alertId])
+                            ->andWhere(['!=','condition','INACTIVE'])
+                            ->count();
+                       
+                        if (!intval($alertsMencions)) {
+                            $alert->status = 0;
+                            $alert->save();
+                        }   
+
+                    }
+                }
+            }
+        }
+
+    }
+
 }
