@@ -60,6 +60,17 @@ use app\models\Alerts;
         }
 
     }
+
+    public static function deleteHistory($alertId)
+    {
+      $model = \app\models\Alerts::findOne($alertId);
+      if ($model){
+        $history = \app\models\HistorySearch::findOne(['alertId' => $alertId]);
+        if ($history) {
+          $history->delete();
+        }
+      }
+    }
      
  }
 

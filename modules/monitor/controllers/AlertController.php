@@ -254,10 +254,8 @@ class AlertController extends Controller
         // reset alerts_mentions
         if (Yii::$app->getRequest()->getQueryParam('fresh') == 'true') {
           $alerts_mentions = \app\models\AlertsMencions::deleteAll('alertId = :alertId', [':alertId' => $id]);
-          $history_search = \app\models\HistorySearch::findOne(['alertId' => $id]);
-          if ($history_search) {
-            $history_search->delete();
-          }
+          // delete history
+          \app\helpers\HistorySearchHelper::deleteHistory($alert->id);
         }
 
         
@@ -401,6 +399,8 @@ class AlertController extends Controller
                 'message' => $messages,
             ]);
           }
+          // delete history
+         \app\helpers\HistorySearchHelper::deleteHistory($alert->id);
           // return view
           return $this->redirect(['view', 'id' => $alert->id]);
         }
