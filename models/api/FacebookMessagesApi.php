@@ -173,8 +173,6 @@ class FacebookMessagesApi extends Model {
 			do{
 				
 				try{
-
-
 					// lets loop if next in post or comments and there limit facebook
 					$messagesResponse = $client->get($query_params['query'],[
 						'after' => $after,
@@ -185,10 +183,14 @@ class FacebookMessagesApi extends Model {
 			    	])->send();
 
 			    	$responseHeaders = $messagesResponse->headers->get('x-business-use-case-usage'); // get headers
-
 			    	// if get error data
 					if(\yii\helpers\ArrayHelper::getValue($messagesResponse->getData(),'error' ,false)){
 						// send email with data $responseData[$index]['error']['message']
+						break;
+					}
+
+					// is over the limit
+					if(\app\helpers\FacebookHelper::isCaseUsage($messagesResponse)){
 						break;
 					}
 
@@ -228,11 +230,7 @@ class FacebookMessagesApi extends Model {
 						break;
 					}
 
-					
-					// is over the limit
-					if(\app\helpers\FacebookHelper::isCaseUsage($messagesResponse)){
-						break;
-					}
+
 
 				}catch(\yii\httpclient\Exception $e){
 					// send a email with no internet connection

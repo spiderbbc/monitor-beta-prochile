@@ -175,6 +175,10 @@ class FacebookCommentsApi extends Model {
 					
 					
 					$responseHeaders = $posts->headers->get('x-business-use-case-usage'); // get headers
+					// is over the limit
+					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders)){
+						break;
+					}
 
 					// if get error data
 					if(\yii\helpers\ArrayHelper::getValue($posts->getData(),'error' ,false)){
@@ -197,13 +201,6 @@ class FacebookCommentsApi extends Model {
 						$responseData[$index] = $data;
 						$index++;
 					}
-					
-					// is over the limit
-					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders)){
-						break;
-					}
-					
-
 					
 
 				}catch(\yii\httpclient\Exception $e){

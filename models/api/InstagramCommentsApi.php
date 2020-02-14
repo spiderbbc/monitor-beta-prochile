@@ -174,6 +174,11 @@ class InstagramCommentsApi extends Model {
 						// send email with data $responseData[$index]['error']['message']
 						break;
 					}
+
+					// is over the limit
+					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders,$this->_business_account_id)){
+						break;
+					}
 					
 					// get the after
 					if(\yii\helpers\ArrayHelper::getValue($posts->getData(),'paging.next' ,false)){ // if next
@@ -214,10 +219,7 @@ class InstagramCommentsApi extends Model {
 						$index++;
 					}
 					
-					// is over the limit
-					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders,$this->_business_account_id)){
-						break;
-					}
+					
 					
 
 				}catch(\yii\httpclient\Exception $e){
