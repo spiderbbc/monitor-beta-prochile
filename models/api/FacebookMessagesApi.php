@@ -81,10 +81,12 @@ class FacebookMessagesApi extends Model {
 
 	    	}
 			////
-
+	    	
+		
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
+			
 			
 			if (count($this->products)) {
 				return $this->_setParams();
@@ -125,7 +127,6 @@ class FacebookMessagesApi extends Model {
 	public function call($query_params = []){
 
 		
-		//$this->data[] = $this->_getDataApi($query_params);
 		$data = $this->_getDataApi($query_params);
 
 		if($data){
@@ -148,10 +149,10 @@ class FacebookMessagesApi extends Model {
 			$filter_messages = $this->_filterFeedsbyProducts($messages);
 			$filter_last_messages = $this->_filterByLastMessage($filter_messages);
 			$model = $this->_addingMessagesMarkup($filter_last_messages);
-			$this->searchFinish();
 			return $model;
 
 		}
+		$this->searchFinish();
 	}
 
 	/**
