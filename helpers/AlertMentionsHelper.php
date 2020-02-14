@@ -375,11 +375,13 @@ class AlertMentionsHelper
 
     public static function checkStatusAndFinishAlerts($alerts)
     {
-        $models = \yii\helpers\ArrayHelper::map($alerts,'id','config.configSources');
+        //$models = \yii\helpers\ArrayHelper::map($alerts,'id','config.configSources');
+        $models = $alerts;
 
         foreach ($models as $alertId => $resourceNames) {
            $alert = \app\models\Alerts::findOne($alertId);
             $historySearch = \app\models\HistorySearch::findOne(['alertId' => $alertId]);
+
             if (!is_null($historySearch)) {
                 if (count($resourceNames) == count($historySearch->search_data)) {
                     $status = false;

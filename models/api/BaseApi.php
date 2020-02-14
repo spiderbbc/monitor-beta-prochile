@@ -55,8 +55,7 @@ class BaseApi extends Model {
 			foreach($resources as $method => $alerts){
 				$this->{$method}($alerts);
 			}
-			//change the status if finish
-			\app\helpers\AlertMentionsHelper::checkStatusAndFinishAlerts($alerts);
+			
 		} // if alert
 	}
 
@@ -196,12 +195,12 @@ class BaseApi extends Model {
                 $jsonFile= new JsonFile($alertid,$source);
                 if(!empty($jsonFile->findAll())){
                     $data[$alertid][$source] = $jsonFile->findAll();
-                    //\app\helpers\DocumentHelper::moveFilesToProcessed($alertid,$source);
                 }
                     
             }
                
         }
+        	
         // no empty
         if(!empty($data)){
         	foreach ($data as $alertId => $resources){
@@ -210,8 +209,10 @@ class BaseApi extends Model {
         			$this->{"readData{$resourceName}Api"}($alertId,$values);
         		}
         	}
+        	
         }
-       
+       	//change the status if finish
+		\app\helpers\AlertMentionsHelper::checkStatusAndFinishAlerts($alerts);
 
 	}
 
@@ -247,7 +248,10 @@ class BaseApi extends Model {
 
 		$searchFacebookMessagesApi->load($params);
 		$searchFacebookMessagesApi->search();
-		\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Facebook Messages');
+		if ($searchFacebookMessagesApi->search()) {
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Facebook Messages');
+		}
+		
 		
 	}
 

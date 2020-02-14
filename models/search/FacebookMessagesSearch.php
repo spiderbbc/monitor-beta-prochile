@@ -82,7 +82,7 @@ class FacebookMessagesSearch {
     {   
         // if doesnt dictionaries and doesnt boolean
         if(!$this->isDictionaries && !$this->isBoolean){
-            // echo "no dictionaries .. \n";
+             //echo "no dictionaries .. \n";
             // save all data
             $mentions = $this->data;
             $search = $this->saveMentions($mentions);
@@ -103,7 +103,7 @@ class FacebookMessagesSearch {
             $model = $this->data;
             $data = $this->searchDataByDictionary($model);
             $search = $this->saveMentions($data);
-            //return $search;
+            return $search;
         }
 
         // if  !dictionaries and  boolean
@@ -130,24 +130,26 @@ class FacebookMessagesSearch {
                     foreach ($data as $index => $messages){
                         if(!is_null($alertsMencionsModel) && !empty($messages)){
                             for($m = 0; $m < sizeof($messages); $m++){
-                                $user = $this->saveUserMencions($messages[$m]['from']);
-                                if($user->errors){
-                                    $error['user'][] = $user->errors;
-                                    //break;
-                                }
-                                $mention = $this->saveMessage($messages[$m],$alertsMencionsModel->id,$user->id);
-                                if($mention->errors){
-                                    $error['mention'][] = ['error' => $mention->errors,'alerts:mention_id' => $alertsMencionsModel->id,'userId' => $user->id ];
-                                    //break;
-                                }
-                                if(ArrayHelper::keyExists('wordsId', $messages[$m], false)){
-                                    $wordIds = $messages[$m]['wordsId'];
-                                    // save Keywords Mentions 
-                                    $this->saveKeywordsMentions($wordIds,$mention->id);
-                                }else{
-                                   // in case update in alert
-                                    if(\app\models\KeywordsMentions::find()->where(['mentionId' => $mention->id])->exists()){
-                                        \app\models\KeywordsMentions::deleteAll('mentionId = '.$mention->id);
+                                if(!empty($messages[$m]['message'])){
+                                    $user = $this->saveUserMencions($messages[$m]['from']);
+                                    if($user->errors){
+                                        $error['user'][] = $user->errors;
+                                        //break;
+                                    }
+                                    $mention = $this->saveMessage($messages[$m],$alertsMencionsModel->id,$user->id);
+                                    if($mention->errors){
+                                        $error['mention'][] = ['error' => $mention->errors,'alerts:mention_id' => $alertsMencionsModel->id,'userId' => $user->id ,'messages' => $messages[$m]['message']];
+                                        //break;
+                                    }
+                                    if(ArrayHelper::keyExists('wordsId', $messages[$m], false)){
+                                        $wordIds = $messages[$m]['wordsId'];
+                                        // save Keywords Mentions 
+                                        $this->saveKeywordsMentions($wordIds,$mention->id);
+                                    }else{
+                                       // in case update in alert
+                                        if(\app\models\KeywordsMentions::find()->where(['mentionId' => $mention->id])->exists()){
+                                            \app\models\KeywordsMentions::deleteAll('mentionId = '.$mention->id);
+                                        }
                                     }
                                 }
 
@@ -158,7 +160,8 @@ class FacebookMessagesSearch {
                 }
             }
         }
-        //return (empty($error)) ? true : false;
+
+       return (empty($error)) ? true : false;
     }
 
     private function searchDataByDictionary($model){
