@@ -149,10 +149,10 @@ class FacebookMessagesApi extends Model {
 			$filter_messages = $this->_filterFeedsbyProducts($messages);
 			$filter_last_messages = $this->_filterByLastMessage($filter_messages);
 			$model = $this->_addingMessagesMarkup($filter_last_messages);
+			$this->searchFinish();
 			return $model;
 
 		}
-		$this->searchFinish();
 	}
 
 	/**
