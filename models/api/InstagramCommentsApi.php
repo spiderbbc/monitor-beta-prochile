@@ -107,6 +107,8 @@ class InstagramCommentsApi extends Model {
 		
 		//$this->data[] = $this->_getDataApi($query_params);
 		$data = $this->_getDataApi($query_params);
+		// set if search finish
+		$this->searchFinish();
 
 		if($data){
 			$this->data[] = $data;
@@ -130,9 +132,7 @@ class InstagramCommentsApi extends Model {
 			$feeds_comments = $this->_getComments($filter_feeds);
 			$feeds_comments_replies = $this->_getReplies($feeds_comments);
 			$model = $this->_orderFeedsComments($feeds_comments_replies);
-
-			// set if search finish
-			$this->searchFinish();
+			
 			return $model;
 
 		}
