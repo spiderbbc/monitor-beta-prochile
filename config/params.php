@@ -11,7 +11,8 @@ return [
 	'adminEmail'  => 'eduardo@montana-studio.com',
 	'senderEmail' => 'eduardo@montana-studio.com',
 	'senderName'  => 'monitor-beta',
-	'facebook'    => [   
+	'facebook'    => [ 
+		'time_min_sleep'  => 5,  
 		'business_id' => '169441517247',
 		'app_id'      => '446684435912359',
 		'name_app'    => 'monitor-facebook',

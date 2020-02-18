@@ -453,7 +453,7 @@ class FacebookMessagesApi extends Model {
 	{
 
 		$model = [
-            'Facebook' => [
+            'Facebook Messages' => [
                 'resourceId' => $this->resourcesId,
                 'status' => 'Pending'
             ]
@@ -476,7 +476,7 @@ class FacebookMessagesApi extends Model {
 	        		$alermention->save();
 	        	}
         	}
-        	$model['Facebook']['status'] = 'Finish'; 
+        	$model['Facebook Messages']['status'] = 'Finish'; 
         }
 
 		

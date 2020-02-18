@@ -40,7 +40,7 @@ class DaemonController extends Controller
      */
     public function actionAlertsRun(){
         $alert = new Alerts();
-        $alertsConfig = $alert->getBringAllAlertsToRun();
+        $alertsConfig = $alert->getBringAllAlertsToRun(true);
         
         
         if(!empty($alertsConfig)){

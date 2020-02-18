@@ -87,7 +87,7 @@ class InstagramCommentsApi extends Model {
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
-			
+
 			if (count($this->products)) {
 				return $this->_setParams();
 			} else {
@@ -633,7 +633,7 @@ class InstagramCommentsApi extends Model {
 	private function searchFinish()
 	{
 		$model = [
-            'Instagram' => [
+            'Instagram Comments' => [
                 'resourceId' => $this->resourcesId,
                 'status' => 'Pending'
             ]
@@ -655,7 +655,7 @@ class InstagramCommentsApi extends Model {
 	        		$alermention->save();
 	        	}
         	}
-        	$model['Instagram']['status'] = 'Finish'; 
+        	$model['Instagram Comments']['status'] = 'Finish'; 
         }
 
         \app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);

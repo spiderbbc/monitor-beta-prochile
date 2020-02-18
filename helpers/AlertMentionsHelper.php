@@ -372,7 +372,11 @@ class AlertMentionsHelper
         return $model;
 
     }
-
+    /**
+     * [checkStatusAndFinishAlerts change status in alert if his products is Inactive]
+     * @param  [type] $alerts [all alerts running]
+     * @return [null]         [description]
+     */
     public static function checkStatusAndFinishAlerts($alerts)
     {
         //$models = \yii\helpers\ArrayHelper::map($alerts,'id','config.configSources');
@@ -408,6 +412,55 @@ class AlertMentionsHelper
             }
         }
 
+    }
+    /**
+     * [checksSourcesCall check if the alert have resource like facebook if his last call is older than param sleep then call to api]
+     * @param  [array] $alerts [all runnig alerts]
+     * @return [array] $alerts [all runnig alerts]
+     */
+    public static function checksSourcesCall($alerts)
+    {
+        $now = new \DateTime('NOW');
+        $minutes_to_call = \Yii::$app->params['facebook']['time_min_sleep']; 
+
+
+        $sourcesTargest = ['Instagram Comments','Facebook Comments','Facebook Messages'];
+        // loop alerts config
+        for ($a=0; $a < sizeof($alerts) ; $a++) { 
+            foreach ($alerts[$a]['config']['configSources'] as $resourceName) {
+                $index = null;
+                if(in_array($resourceName, $sourcesTargest)){
+                    $resouces_model = \app\models\Resources::findOne(['name' => $resourceName]);
+
+                    $is_mentions = \app\helpers\AlertMentionsHelper::isAlertsMencionsExistsByProperties([
+                        'alertId' => $alerts[$a]['id'],
+                        'resourcesId' => $resouces_model->id
+                    ]);
+                    if ($is_mentions) {
+                        $alertMention = \app\models\AlertsMencions::find()->where([
+                            'alertId' => $alerts[$a]['id'],
+                            'resourcesId' => $resouces_model->id
+                        ])->orderBy([
+                            'updatedAt' => SORT_DESC
+                        ])
+                        ->one();
+                        // dates logic
+                        $fecha = new \DateTime();
+                        $updatedAt_diff = $now->diff($fecha->setTimestamp($alertMention->updatedAt));
+                       
+                        
+                        if($updatedAt_diff->i <= $minutes_to_call){
+                            $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
+                        } // end if diff
+                    }// end if mentions
+                } // end !in_array
+                if (!is_null($index)) {
+                    unset($alerts[$a]['config']['configSources'][$index]);
+                    $alerts[$a]['config']['configSources'] = array_values($alerts[$a]['config']['configSources']);
+                }// end if !is_null
+            }// end foreach config  config.sources
+        } // end llop alerts
+        return $alerts;
     }
 
 }

@@ -93,7 +93,7 @@ class Alerts extends \yii\db\ActiveRecord
      * [getBringAllAlertsToRun get all the alerts with resources,products only use to console actions]
      * @return [array] [if not alerts with condition return a empty array]
      */
-    public function getBringAllAlertsToRun(){
+    public function getBringAllAlertsToRun($read = false){
 
         // get time
         $expression = new \yii\db\Expression('NOW()');
@@ -126,6 +126,12 @@ class Alerts extends \yii\db\ActiveRecord
                     array_push($alertsConfig, $alerts[$a]);
                 } // end if not empty
             } // end loop alerts config
+            
+            if ($read) {
+                $alertsConfig = \app\helpers\AlertMentionsHelper::checksSourcesCall($alertsConfig);
+            }
+            
+
             //get family/products/models
             for($c = 0; $c < sizeOf($alertsConfig); $c++){
                 $products_models_alerts = ProductsModelsAlerts::findAll(['alertId' => $alertsConfig[$c]['id']]);
