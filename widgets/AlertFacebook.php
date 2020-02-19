@@ -11,8 +11,6 @@ class AlertFacebook extends \yii\bootstrap\Widget
 {
     public $resourceId;
     
-    public $name_app = 'monitor-facebook';
-    
     public $logout = true;
 
     public $logoutCallback;
@@ -44,13 +42,14 @@ class AlertFacebook extends \yii\bootstrap\Widget
     {
         // get userId
         $userId = Yii::$app->user->id;
+        $name_app = Yii::$app->params['facebook']['name_app'];
         $this->resourceId = $this->_setResourceId();
         
         // if there register with facebook
         $user_facebook = \app\models\CredencialsApi::find()->where([
             'userId' => $userId,
             'resourceId' => $this->resourceId,
-            'name_app' => $this->name_app
+            'name_app' => $name_app
         ])->one();
 
         $appendClass = isset($this->options['class']) ? ' ' . $this->options['class'] : '';
