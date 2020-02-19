@@ -160,7 +160,7 @@ class BaseApi extends Model {
 	}
 
 	public function webpage($alerts = []){
-		echo "webpage". "\n";
+		$newsApi = new \app\models\api\NewsApi();
 	}
 
 	public function countAllTerms($alerts = []){
