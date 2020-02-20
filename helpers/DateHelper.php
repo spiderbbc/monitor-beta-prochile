@@ -57,6 +57,20 @@ class DateHelper
     	
     	return round($diff);
     }
+
+     /**
+     * [diffInDays get diffInMonths between two date]
+     * @param  [string] $date_1   [date ej unix date]
+     * @return [string] $date_21  [date ej "Sat Aug 24 14:29:51 +0000 2019"]
+     */
+    public static function diffInMonths($date_1,$date_2){
+        
+        $date_format_1 = Yii::$app->formatter->asDatetime($date_1,'yyyy-MM-dd');
+        $date_format_2 = Yii::$app->formatter->asDatetime($date_2,'yyyy-MM-dd');
+        $diff = Date::parse($date_format_1)->floatDiffInMonths($date_format_2);
+        
+        return round($diff);
+    }
     /**
      * [diffForHumans get difference between two date formatter as human read_only]
      * @param  [string / int] $date_1 [unix date format]
@@ -69,6 +83,7 @@ class DateHelper
         $diff = Date::parse($date_1)->diffForHumans($date_2);
         return $diff;
     }
+
     /**
      * [asTimestamp get time in unix date]
      * @param  [type] $date [11 julio de 2019 or 11/07/2019 yes is my birthday]
