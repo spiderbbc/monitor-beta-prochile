@@ -71,7 +71,7 @@ use mludvik\tagsinput\TagsInputWidget;
                                 'placeholder' => 'Select a resources...',
                                 'multiple' => true,
                                 'theme' => 'krajee',
-                                'debug' => true,
+                                'debug' => false,
                                 'value' => (isset($alert->config->configSourcesByAlertResource)) 
                                             ? $alert->config->configSourcesByAlertResource : [],
                                
@@ -119,8 +119,9 @@ use mludvik\tagsinput\TagsInputWidget;
                 <div class="col-md-4">
                     <?= $form->field($alert, 'productsIds')->widget(Select2::classname(), [
                             'data' => Products::getProducts(),
+                            'changeOnReset' => true,
                             'options' => [
-                               // 'id' => 'productsIds',
+                                'id' => 'productsIds',
                                 'placeholder' => 'Select a products...',
                                 'multiple' => true,
                                 'theme' => 'krajee',
@@ -146,6 +147,7 @@ use mludvik\tagsinput\TagsInputWidget;
                 <div class="col-md-4">
                     <?= $form->field($alert, 'free_words')->widget(Select2::classname(), [
                    // 'data' => $alert->freeKeywords,
+                    'changeOnReset' => false,
                     'options' => [
                             'placeholder' => 'write a tags free words ...', 
                             'multiple' => true,
