@@ -142,6 +142,7 @@ class BaseApi extends Model {
 	}
 
 	public function liveChatConversations($alerts = []){
+		
 		$LiveChatApi = new \app\models\api\LiveChatsApi();
 
 		foreach ($alerts as $alert){
@@ -160,7 +161,17 @@ class BaseApi extends Model {
 	}
 
 	public function webpage($alerts = []){
+
 		$newsApi = new \app\models\api\NewsApi();
+		$newsApi->setNumberCallsByAlert($alerts);
+		foreach ($alerts as $alert){
+			$query_params = $newsApi->prepare($alert);
+			if($query_params){
+				$news = $newsApi->call($query_params);
+				//$newsApi->saveJsonFile($chats);
+			}
+		}
+		
 	}
 
 	public function countAllTerms($alerts = []){
