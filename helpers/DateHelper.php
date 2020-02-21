@@ -68,8 +68,7 @@ class DateHelper
         $date_format_1 = Yii::$app->formatter->asDatetime($date_1,'yyyy-MM-dd');
         $date_format_2 = Yii::$app->formatter->asDatetime($date_2,'yyyy-MM-dd');
         $diff = Date::parse($date_format_1)->floatDiffInMonths($date_format_2);
-        
-        return round($diff);
+        return round($diff, 0, PHP_ROUND_HALF_DOWN);
     }
     /**
      * [diffForHumans get difference between two date formatter as human read_only]

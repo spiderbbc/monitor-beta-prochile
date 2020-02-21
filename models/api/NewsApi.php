@@ -5,6 +5,8 @@ namespace app\models\api;
 use Yii;
 use yii\base\Model;
 use yii\httpclient\Client;
+use app\models\file\JsonFile;
+use app\models\AlertsMencions;
 
 /**
  * class wrapper the calls to newsapi.org/
@@ -24,23 +26,26 @@ class NewsApi extends Model
 	public $paginator;
 
 	const LIMIT_CALLS = 166;
+	const NUMBER_DATA_BY_REQUEST = 20;
 	const TYPE_MENTIONS = 'web';
 
 
 	public function prepare($alert)
 	{
 		if(!empty($alert)){
+		
 			
 			$this->alertId        = $alert['id'];
 			$this->start_date     = $alert['config']['start_date'];
 			$this->end_date       = $alert['config']['end_date'];
 
 			// validate there is one month old
-			$today = \app\helpers\DateHelper::getToday();
+			/*$today = \app\helpers\DateHelper::getToday();
 			if (\app\helpers\DateHelper::diffInMonths($today,$this->start_date)) {
+				var_dump(\app\helpers\DateHelper::diffInMonths($today,$this->start_date));
 				return false;
 			}
-
+*/
 			
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
@@ -50,7 +55,6 @@ class NewsApi extends Model
 			// set if search finish
 			
 			//$this->searchFinish();
-			
 			
 			// set products
 			$products_params = $this->setProductsParams();
@@ -98,14 +102,19 @@ class NewsApi extends Model
 				$params[$this->products[$p]] = [
 					'q'         => $productName,
 					'qInTitle'  => $productName,
-					'domains'   => $sources,
-					'date_from' => $date_from,
-					'date_to'   => $date_to,
+				//	'domains'   => $sources,
+					'from' => $date_from,
+					'to'   => $date_to,
+					'sortBy' => 'publishedAt',
 					'page'      => 1
 				];
+				// set apikey
+				$params[$this->products[$p]]['apikey'] = Yii::$app->params['newsApi']['apiKey'];
 			}
 
+			
 		}// end loop
+
 		return $params;
 	}
 
@@ -115,34 +124,134 @@ class NewsApi extends Model
 			//\yii\helpers\Console::stdout("loop in call method {$productName}.. \n", Console::BOLD);
 			$this->data[$productName] =  $this->_getNews($params);
 		}
-
-		var_dump($this->data);
+		$this->_orderNews();
 	}
 
 	private function _getNews($params)
 	{
 		$data = [];
-		$page = 1;
+		$page = 0;
+		$flag = true;
 
 		$client = new Client();
-		$params['apiKey'] = Yii::$app->params['newsApi']['apiKey'];
 
-		//var_dump($params);
-		$response = $client->createRequest()
-				    ->setMethod('GET')
-				    ->setUrl('http://newsapi.org/v2/everything')
-				    ->setData($params)
-				    ->send();
+		do {
+			
+			$response = $client->createRequest()
+				->setMethod('GET')
+				->setUrl('http://newsapi.org/v2/everything')
+				->setData($params)
+				->send();
 
-		if ($response->isOk) {
-			if ($response->data['status'] == 'ok') {
-				$data = $response->data['totalResults'];
+			if ($response->isOk) {
+				
+				if ($response->data['status'] == 'ok') {
+					// set paginator in based result
+					if ($flag) {
+						$totalResults = $response->data['totalResults'];
+						if ($totalResults < self::NUMBER_DATA_BY_REQUEST) {
+							$this->paginator = 1;
+						}else{
+							$total = round($totalResults / self::NUMBER_DATA_BY_REQUEST,0,PHP_ROUND_HALF_UP);
+							$this->paginator = ($total > $this->paginator) ? $this->paginator : $total;
+						}
+						$flag = false;
+					}
+					// if is ok
+					if ($response->data['status'] == 'ok') {
+						$data[] = $response->data['articles'];
+
+					}
+
+				}else{
+					break;
+					// error happen send email
+				}
+
+
+			} else {
+				break;
+				// error happen send email
 			}
-		    
-		}
+			
+
+
+			$params['page'] += 1;
+			echo $this->paginator."\n";
+			$this->paginator --;
+		} while ($this->paginator > 0);
 		return $data;
 	}
 
+	private function _orderNews()
+	{
+		$properties = [];
+		$model = [];
+		if (!empty($this->data)) {
+			foreach ($this->data as $productName => $data) {
+				if (!empty($this->data[$productName])) {
+					
+					$properties['term_searched'] = $productName;
+					$properties['condition'] = 'ACTIVE';
+					$properties['type'] = self::TYPE_MENTIONS;
+					$this->_saveAlertsMencions($properties);
+
+					for ($d=0; $d <sizeof($data) ; $d++) { 
+						for ($i=0; $i <sizeof($data[$d]) ; $i++) { 
+							$model[$productName][] = $data[$d][$i];
+						}
+					}
+				}
+			}
+		}
+
+		$this->data = $model;
+	}
+
+	/**
+	 * [_saveAlertsMencions save in alerts_mencions model]
+	 * @param  array  $properties [description]
+	 * @return [type]             [description]
+	 */
+	private function _saveAlertsMencions($properties = []){
+		
+		$model =  AlertsMencions::find()->where([
+			'alertId'       => $this->alertId,
+			'resourcesId'   => $this->resourcesId,
+			'type'          => self::TYPE_MENTIONS,
+			'term_searched' => $properties['term_searched']
+		])
+		->one();
+
+		if(is_null($model)){
+			$model = new AlertsMencions();
+			$model->alertId = $this->alertId;
+			$model->resourcesId = $this->resourcesId;
+		}
+		foreach($properties as $property => $values){
+    		$model->$property = $values;
+    	}
+    	if(!$model->save()){
+    		var_dump($model->errors);
+    	}
+
+	}
+
+	/**
+	 * [saveJsonFile save a json file]
+	 * @return [none] [description]
+	 */
+	public function saveJsonFile(){
+
+		$source = 'web';
+
+		if(!empty($this->data)){
+			$jsonfile = new JsonFile($this->alertId,$source);
+			$jsonfile->load($this->data);
+			$jsonfile->save();
+		}
+
+	}
 	/**
 	 * [_getAlertsMencionsByProduct get model by product name]
 	 * @param  [type] $productName [name product]
@@ -189,8 +298,8 @@ class NewsApi extends Model
 	private function _setPaginator()
 	{
 		$total = $this->total_call / count($this->products);
-		if ($total >= 4) {
-			$this->paginator = 4;
+		if ($total >= 5) {
+			$this->paginator = 5;
 		}else{
 			$this->paginator = $total;	
 		}

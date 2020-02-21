@@ -23,13 +23,13 @@ return [
 			'Miami Herald' => 'miamiherald.com',
 			'Los Angeles Times' => 'latimes.com',
 			'The Wall Street Journal' => 'wsj.com'*/
-			'lun' => 'lun.com',
+			/*'lun' => 'lun.com',
 			'lgblog' => 'lgblog.cl',
 			'eldinamo' => 'eldinamo.cl',
 			'soychile' => 'soychile.cl',
 			'transmedia' => 'transmedia.cl',
 			'fayerwayer' => 'fayerwayer.com',
-			'cooperativa' => 'cooperativa.cl',
+			'cooperativa' => 'cooperativa.cl',*/
 		],
 	],
 	'facebook'    => [ 
