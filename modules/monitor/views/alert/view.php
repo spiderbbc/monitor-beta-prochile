@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 //use yii\widgets\DetailView;
 use macgyer\yii2materializecss\widgets\data\DetailView;
+use kartik\select2\Select2;
 
 \app\assets\SweetAlertAsset::register($this);
 \app\assets\AxiosAsset::register($this);
@@ -47,13 +48,21 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         'model' => $model,
         'attributes' => [
             [
+                'label' => Yii::t('app','Estado'),
+                'format'    => 'raw',
+                'attribute' => 'status',
+                'value' => function($model) {
+                    return ($model->status) ? 'Active' : 'Inactive';
+                }
+            ],
+            /*[
                 'label' => Yii::t('app','Usuario'),
                 'attribute' => 'userId',
                 'format' => 'raw',
                 'value' => function($model){
                     return $model->user->username;
                 }
-            ],
+            ],*/
             [
                 'label' => Yii::t('app','Nombre de la Alerta'),
                 'attribute' => 'name',
@@ -62,14 +71,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
                   return $model->name;
                 }
             ],
-            [
-                'label' => Yii::t('app','Estado'),
-                'format'    => 'raw',
-                'attribute' => 'status',
-                'value' => function($model) {
-                    return ($model->status) ? 'Active' : 'Inactive';
-                }
-            ],
+            
             [
                 'label' => Yii::t('app','Recursos Sociales'),
                 'format'    => 'raw',
@@ -83,6 +85,23 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
                 },
 
             ],
+            [
+                'label' => Yii::t('app','Terminos a Buscar'),
+                'format'    => 'raw',
+                //'attribute' => 'alertResourceId',
+                'value' => Select2::widget([
+                    'name' => 'products',
+                    'size' => Select2::SMALL,
+                    'hideSearch' => false,
+                    'data' => $model->products,
+                    'options' => ['placeholder' => 'Terminos...'],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]),
+
+            ],
+            
             'config.start_date:datetime',
             'config.end_date:datetime',
         ],

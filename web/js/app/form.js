@@ -21,8 +21,9 @@ const reloadButton = Vue.component('sync-product',{
 			  .then(data => {
 			    // Work with JSON data here
 			    if(data.status){
-			    	$("#alerts-productsids").trigger('change');
+			    	$("#productsIds").trigger('change');
 			    	location.reload();
+			    	this.msg = 'Reload';
 			    }
 			  })
 			  .catch(err => {
