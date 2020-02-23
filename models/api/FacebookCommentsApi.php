@@ -82,7 +82,6 @@ class FacebookCommentsApi extends Model {
 
 	    	}
 			////
-			
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];

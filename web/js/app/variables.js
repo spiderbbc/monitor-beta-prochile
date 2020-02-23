@@ -1,5 +1,9 @@
 let id = document.getElementById('alertId').value;
 const origin = location.origin;
+
+
+const apiUrl = `${origin}/monitor-beta/api/v1/mentions/`;
+
 const baseUrlApi = `${origin}/monitor-beta/web/monitor/api/mentions/`;
 const baseUrlDocument = `${origin}/monitor-beta/web/monitor/pdf/`;
 const baseUrlView = `${origin}/monitor-beta/web/monitor/alert/`;
@@ -21,7 +25,7 @@ let tableConfig = {
     'scrollCollapse': true,
     "processing": true,
     "ajax": {
-        'url': baseUrlApi + 'list-mentions?alertId=' + id,
+        'url': apiUrl + 'list-mentions?alertId=' + id,
         //"dataSrc": "mentions"
     },
     "fixedColumns": true,

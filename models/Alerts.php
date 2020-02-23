@@ -130,7 +130,6 @@ class Alerts extends \yii\db\ActiveRecord
             if ($read) {
                 $alertsConfig = \app\helpers\AlertMentionsHelper::checksSourcesCall($alertsConfig);
             }
-            
 
             //get family/products/models
             for($c = 0; $c < sizeOf($alertsConfig); $c++){
