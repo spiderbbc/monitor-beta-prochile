@@ -88,7 +88,7 @@ const statusAlert = Vue.component('status-alert',{
 	},
 	methods:{
 		fetchStatus(){
-			axios.get(apiUrl + 'status-alert' + '?alertId=' + id )
+			axios.get(baseUrlApi + 'status-alert' + '?alertId=' + id )
 		      .then((response) => {
 		        this.response = response.data.data;
 		    })
@@ -155,7 +155,7 @@ const box_sources = Vue.component('box-sources',{
 	},
 	methods:{
 		fetchStatus(){
-			axios.get(apiUrl + 'box-sources-count' + '?alertId=' + id )
+			axios.get(baseUrlApi + 'box-sources-count' + '?alertId=' + id )
 		      .then((response) => {
 		        this.response = response.data.data;
 		        this.counts = this.response.length;
@@ -262,7 +262,7 @@ const count_resources_chat = Vue.component('total-resources-chart',{
 	methods: {
 		fetchResourceCount(){
 			axios
-		      .get(apiUrl + 'count-sources-mentions' + '?alertId=' +this.alertId)
+		      .get(baseUrlApi + 'count-sources-mentions' + '?alertId=' +this.alertId)
 		      .then(response => {
 		      	if(typeof this.response === 'object'){
 
@@ -385,7 +385,7 @@ const post_interations_chart = Vue.component('post-interation-chart',{
 	methods: {
 		fetchResourceCount(){
 			axios
-		      .get(apiUrl + 'top-post-interation' + '?alertId=' +this.alertId)
+		      .get(baseUrlApi + 'top-post-interation' + '?alertId=' +this.alertId)
 		      .then(response => {
 		      	if(typeof this.response === 'object'){
 					if(response.data.status){
@@ -503,7 +503,7 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 	methods:{
 		fetchResourceCount(){
 			axios
-		      .get(apiUrl + 'product-interation' + '?alertId=' +this.alertId)
+		      .get(baseUrlApi + 'product-interation' + '?alertId=' +this.alertId)
 		      .then(response => {
 		      	if(typeof this.response === 'object'){
 		      		this.response.splice(1,response.data.data.length);
@@ -585,7 +585,7 @@ const count_resources_date_chat = Vue.component('count-date-resources-chart',{
 	methods: {
 		fetchResourceCount(){
 			axios
-		      .get(apiUrl + 'mention-on-date' + '?alertId=' +this.alertId)
+		      .get(baseUrlApi + 'mention-on-date' + '?alertId=' +this.alertId)
 		      .then(response => {
 		      	if(typeof this.response === 'object'){
 		      		this.response = response.data.model;
@@ -799,7 +799,7 @@ const listEmojis = Vue.component('list-emojis',{
 	},
 	methods:{
 		fetchEmojis(){
-			axios.get(apiUrl + 'list-emojis' + '?alertId=' + id )
+			axios.get(baseUrlApi + 'list-emojis' + '?alertId=' + id )
 		      .then((response) => {
 		        if(typeof response.data.data.length === 'undefined'){
 		        	this.response = response.data.data;
@@ -918,7 +918,7 @@ const vm = new Vue({
 	methods: {
 		fetchIsData(){
 			axios
-		      .get(apiUrl + 'count-mentions' + '?alertId=' +this.alertId)
+		      .get(baseUrlApi + 'count-mentions' + '?alertId=' +this.alertId)
 		      .then(response => {
 		      	this.count = response.data.count;
 		      	this.shares = response.data.shares;

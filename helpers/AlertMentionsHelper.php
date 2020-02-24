@@ -440,6 +440,13 @@ class AlertMentionsHelper
                             $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
                         } // end if diff
                     }// end if mentions
+
+                    // if finish on history search table unset for array
+                    $alertId = $alerts[$a]['id'];
+                    if(\app\helpers\HistorySearchHelper::checkResourceByStatus($alertId,$resourceName,'Finish')){
+                        $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
+                    }
+
                 } // end !in_array
                 if (!is_null($index)) {
                     unset($alerts[$a]['config']['configSources'][$index]);

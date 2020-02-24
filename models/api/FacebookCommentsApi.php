@@ -138,6 +138,8 @@ class FacebookCommentsApi extends Model {
 	private function _getDataApi($query_params){
 
 		$feeds = $this->_getPostsComments($query_params);
+		var_dump($feeds);
+		die();
 		$feedsCandidate = $this->_setCandidate($feeds);
 
 		$feeds_comments = $this->_getComments($feedsCandidate);
