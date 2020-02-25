@@ -246,7 +246,7 @@ class InstagramCommentsApi extends Model {
 
 		// params to save in AlertMentionsHelper and get
 		$where = [
-			'condition'   => 'ACTIVE',
+			//'condition'   => 'ACTIVE',
 			'type'        => 'comments Instagram',
 			'alertId'     => $this->alertId,
 			'resourcesId' => $this->resourcesId,
@@ -257,9 +257,9 @@ class InstagramCommentsApi extends Model {
 			if(isset($feeds[$f]['data'])){
 				for($d = 0; $d < count($feeds[$f]['data']); $d++){
 					
-					$feedId    = $feeds[$f]['data'][$d]['id'];
-					$caption   = $feeds[$f]['data'][$d]['caption'];
-					$url   = $feeds[$f]['data'][$d]['permalink'];
+					$feedId       = $feeds[$f]['data'][$d]['id'];
+					$caption      = $feeds[$f]['data'][$d]['caption'];
+					$url          = $feeds[$f]['data'][$d]['permalink'];
 					$like_count   = $feeds[$f]['data'][$d]['like_count'];
 
 
@@ -281,13 +281,17 @@ class InstagramCommentsApi extends Model {
 								// if not value
 								if(!in_array($feeds[$f]['data'][$d],$posts[$this->products[$p]])){
 									$where['publication_id'] = $feedId;
-									$mention_data['like_count'] = $like_count;
+									if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($feedId,$this->alertId)){
+
+										$mention_data['like_count'] = $like_count;
 									
-									\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $timestamp,'title' => $caption,'url' => $url,'mention_data' => $mention_data]);
-									
-									$posts[$this->products[$p]][] = $feeds[$f]['data'][$d];
-									$feed_count--;
-									break;
+										\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $timestamp,'title' => $caption,'url' => $url,'mention_data' => $mention_data]);
+
+										$posts[$this->products[$p]][] = $feeds[$f]['data'][$d];
+										$feed_count--;
+										break;
+
+									}
 								} // end if !in_array
 							} // end feed_count
 						}// end if is_contains

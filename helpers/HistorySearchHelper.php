@@ -71,6 +71,22 @@ use app\models\Alerts;
         }
       }
     }
+
+    public static function checkResourceByStatus($alertId,$resource,$status)
+    {
+      $model = \app\models\Alerts::findOne($alertId);
+      if ($model) {
+        $history = \app\models\HistorySearch::findOne(['alertId' => $alertId]);
+        if ($history) {
+          $search_data = $history->search_data;
+          if (isset($search_data[$resource]['status'])) {
+            $resource_status = $search_data[$resource]['status'];
+            return ($status == $resource_status) ? true : false; 
+          }
+        }
+      }
+      return false;
+    }
      
  }
 

@@ -108,7 +108,6 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     ]) ?>
 
 
-    <!-- <modal-alert :count="count"></modal-alert> -->
     <modal-alert></modal-alert>
     
     <div v-if="isData">
@@ -116,9 +115,9 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
             <total-mentions :count="count" :shares="shares" :likes="likes" :coments="coments" :likes_comments="likes_comments">
         </div>
         <div class="">
-            <box-sources></box-sources>
-        </div>
-        <div class="row">
+          <box-sources></box-sources>
+       </div>
+       <div class="row">
             <div class="col-md-12">
                 <total-resources-chart>
             </div>
@@ -141,18 +140,18 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         <div class="row">
             <list-mentions></list-mentions>
         </div>
-
         <div class="row">
             <cloud-words></cloud-words>
         </div>
+        <div class="row">
+            <list-emojis></list-emojis>
+        </div>
+            
         
         <!-- <div class="row">
             <resource-date-mentions></resource-date-mentions>
         </div> -->
 
-        <div class="row">
-            <list-emojis></list-emojis>
-        </div>
         
     </div>
     <div v-else>

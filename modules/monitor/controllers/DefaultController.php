@@ -15,6 +15,9 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
+    	$data = \app\helpers\HistorySearchHelper::checkResourceByStatus(89,'LiveChat','Pending');
+    	print_r($data);
+    	die();
         return $this->render('index');
     }
 }

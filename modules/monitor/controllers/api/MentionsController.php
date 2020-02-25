@@ -1,19 +1,51 @@
 <?php
 
 namespace app\modules\monitor\controllers\api;
+
+use yii\rest\Controller;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
+use yii\web\Response;
 use yii\web\NotFoundHttpException;
 
-class MentionsController extends \yii\web\Controller
+class MentionsController extends Controller
 {
+
+  public function behaviors(){
+    return [
+        [
+            'class' => 'yii\filters\ContentNegotiator',
+            'only' => [
+              'status-alert',
+              'count-mentions',
+              'box-sources-count',
+              'count-sources-mentions',
+              'top-post-interation',
+              'product-interation',
+              'mention-on-date',
+              'list-mentions',
+              'list-words',
+              'list-emojis'
+            ],  // in a controller
+            // if in a module, use the following IDs for user actions
+            // 'only' => ['user/view', 'user/index']
+            'formats' => [
+                'application/json' => Response::FORMAT_JSON,
+            ],
+            'languages' => [
+                'en',
+                'de',
+            ],
+        ],
+    ];
+  }
   /**
    * [actionIndex action to the index view]
    * @param  [type] $alertId [description]
    * @return [type]          [description]
    */
   public function actionIndex(){
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     $basePath = \yii::$app->basePath;
     shell_exec("php {$basePath}/yii daemon/alerts-run 2>&1");
     shell_exec("php {$basePath}/yii daemon/data-search 2>&1");
@@ -28,7 +60,7 @@ class MentionsController extends \yii\web\Controller
    */
   public function actionCountMentions($alertId){
 
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     $model = $this->findModel($alertId);
     // valores por default
     $count = 0;
@@ -76,7 +108,7 @@ class MentionsController extends \yii\web\Controller
    */
   public function actionBoxSourcesCount($alertId)
   {
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     $model = $this->findModel($alertId);
     $modelDataCount = [];
     
@@ -109,7 +141,7 @@ class MentionsController extends \yii\web\Controller
   public function actionCountSourcesMentions($alertId){
 
     
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     // cuenta por menciones
     $model = \app\models\Alerts::findOne($alertId);
     $data = [];
@@ -146,7 +178,7 @@ class MentionsController extends \yii\web\Controller
    */
   public function actionTopPostInteration($alertId)
   {
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     $status = true;
     $model = \app\models\Alerts::findOne($alertId);
     $data = [];
@@ -184,7 +216,7 @@ class MentionsController extends \yii\web\Controller
    */
   public function actionProductInteration($alertId)
   {
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     $model = \app\models\Alerts::findOne($alertId);
     $alerts_mentions = \app\models\AlertsMencions::find()->where(['alertId' => $model->id])->all();
 
@@ -244,7 +276,7 @@ class MentionsController extends \yii\web\Controller
 
   public function actionResourceOnDateChart($alertId)
   {
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     $model = \app\models\Alerts::findOne($alertId);
     $alerts_mentions = \app\models\AlertsMencions::find()->where(['alertId' => $model->id])->all();
 
@@ -270,7 +302,7 @@ class MentionsController extends \yii\web\Controller
    */
   public function actionListMentions($alertId){
 
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
 
     // list mentions: resource - products - author - mentions
     $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
@@ -294,7 +326,7 @@ class MentionsController extends \yii\web\Controller
    * @return [type]          [description]
    */
   public function actionListWords($alertId){
-   \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+  
 
     $keywords = \app\models\Keywords::find()->where(['alertId' => $alertId])->all();
 
@@ -317,7 +349,7 @@ class MentionsController extends \yii\web\Controller
    * @return [type]          [description]
    */
   public function actionResourceOnDate($alertId){
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     //menciones por recurso y fecha
     $expression = new Expression("DATE(FROM_UNIXTIME(created_time)) AS date,COUNT(*) AS total");
     $expressionGroup = new Expression("DATE(FROM_UNIXTIME(created_time))");
@@ -359,7 +391,7 @@ class MentionsController extends \yii\web\Controller
    */
   public function actionListEmojis($alertId){
 
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
 
     // list mentions: mentions
     $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
@@ -399,7 +431,7 @@ class MentionsController extends \yii\web\Controller
    */
   public function actionStatusAlert($alertId)
   {
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     $model =  \app\models\HistorySearch::findOne(['alertId' => $alertId]);
 
     return array('data' => $model);  
@@ -414,7 +446,7 @@ class MentionsController extends \yii\web\Controller
    */
   public function actionCountByProducts($alertId){
 
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     // cuenta por resource and producto
     $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
     $resourceCount = [];
@@ -436,7 +468,7 @@ class MentionsController extends \yii\web\Controller
    */
   public function actionGetResourceId($resourceName){
     
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
      $model = \app\models\Resources::find()->where(['name' => $resourceName])->one(); 
 
     return array('status'=>true,'resourceId'=>$model->id);
@@ -446,7 +478,7 @@ class MentionsController extends \yii\web\Controller
 
 
   public function actionMentionOnDate($alertId){
-    \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+   
     //menciones por recurso y fecha
     $expression = new Expression("created_time,DATE(FROM_UNIXTIME(created_time)) AS date,COUNT(*) AS total");
     $expressionGroup = new Expression("DATE(FROM_UNIXTIME(created_time))");

@@ -23,7 +23,8 @@ class AlertMentionsHelper
      */
     public static function saveAlertsMencions($where = [], $properties = []){
 
-        $is_model = \app\models\AlertsMencions::find()->where($where)->one();
+        //$is_model = \app\models\AlertsMencions::find()->where($where)->one();
+        $is_model = \app\models\AlertsMencions::find()->where($where)->exists();
         // if there a record 
         if($is_model){
             $model = \app\models\AlertsMencions::find()->where($where)->one();
@@ -33,7 +34,8 @@ class AlertMentionsHelper
         }
 
         // if not there a record
-        if(is_null($is_model)){
+        //if(is_null($is_model)){
+        if(!$is_model){
             $model = new  \app\models\AlertsMencions();
 
             foreach($where as $property => $value){
@@ -62,7 +64,7 @@ class AlertMentionsHelper
      * @param  [type]  $publication_id [description]
      * @return boolean                 [description]
      */
-    public static function isAlertsMencionsExists($publication_id){
+    public static function isAlertsMencionsExists($publication_id,$alertId){
         if(\app\models\AlertsMencions::find()->where( [ 'publication_id' => $publication_id] )->exists()){
             return true;
         }
@@ -92,15 +94,15 @@ class AlertMentionsHelper
      */
     public static function getSocialNetworkInteractions($resource_name,$resource_id,$alertId)
     {
+        $model = new \app\models\AlertsMencions();
+        $model->alertId = $alertId;
+        $model->resourcesId = $resource_id;
 
         switch ($resource_name) {
             
             case 'Facebook Comments':
-                $model = new \app\models\AlertsMencions();
-                $model->alertId = $alertId;
-                $model->resourcesId = $resource_id;
-                
-                return array($resource_name,$model->shareFaceBookPost,'0',$model->likesFacebookComments,$model->total);
+
+                return [$resource_name,$model->shareFaceBookPost,'0',$model->likesFacebookComments,$model->total];
                 break;
 
             case 'Facebook Messages':
@@ -108,22 +110,15 @@ class AlertMentionsHelper
                 /*$model->alertId = $alertId;
                 $model->resourcesId = $resource_id;*/
                 
-                return array($resource_name,'0','0','0',$count);
+                return [$resource_name,'0','0','0',$count];
                 break;    
 
             case 'Instagram Comments':
-                $model = new \app\models\AlertsMencions();
-                $model->alertId = $alertId;
-                $model->resourcesId = $resource_id;
                 
-                return array($resource_name,'0',$model->likesInstagramPost,$model->likesFacebookComments,$model->total);
+                return [$resource_name,'0',$model->likesInstagramPost,$model->likesFacebookComments,$model->total];
                 break;
             case 'Twitter':
-                $model = new \app\models\AlertsMencions();
-                $model->alertId = $alertId;
-                $model->resourcesId = $resource_id;
-
-                return array($resource_name,$model->twitterRetweets,'0',$model->twitterLikes,$model->twitterTotal);
+                return [$resource_name,$model->twitterRetweets,'0',$model->twitterLikes,$model->twitterTotal];
             
                 break;
             case 'Live Chat':
@@ -142,7 +137,7 @@ class AlertMentionsHelper
                 }
 
 
-                return array($resource_name,'0','0','0',$total);
+                return [$resource_name,'0','0','0',$total];
 
                 break;
 
@@ -160,15 +155,11 @@ class AlertMentionsHelper
                     $total += intval($rows);  
                 }
 
-                return array($resource_name,'0','0','0',$total);
+                return [$resource_name,'0','0','0',$total];
 
                 break;  
             case 'Excel Document':
-                $model = new \app\models\AlertsMencions();
-                $model->alertId = $alertId;
-                $model->resourcesId = $resource_id;
-
-                return array($resource_name,'0','0','0',$model->twitterTotal);
+                return [$resource_name,'0','0','0',$model->twitterTotal];
                 break;                  
 
             
@@ -187,19 +178,15 @@ class AlertMentionsHelper
      */
     public static function getPostInteractions($resource_name,$resource_id,$alertId)
     {
+        $model = new \app\models\AlertsMencions();
+        $model->alertId = $alertId;
+        $model->resourcesId = $resource_id;
+
         switch ($resource_name) {
             case 'Facebook Comments':
-                $model = new \app\models\AlertsMencions();
-                $model->alertId = $alertId;
-                $model->resourcesId = $resource_id;
-                
                 return $model->topPostFacebookInterations;
                 break;
             case 'Instagram Comments':
-                $model = new \app\models\AlertsMencions();
-                $model->alertId = $alertId;
-                $model->resourcesId = $resource_id;
-                
                 return $model->topPostInstagramInterations;
                 break;    
             
@@ -448,11 +435,18 @@ class AlertMentionsHelper
                         $fecha = new \DateTime();
                         $updatedAt_diff = $now->diff($fecha->setTimestamp($alertMention->updatedAt));
                        
-                        
+                       
                         if($updatedAt_diff->i <= $minutes_to_call){
                             $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
                         } // end if diff
                     }// end if mentions
+
+                    // if finish on history search table unset for array
+                    $alertId = $alerts[$a]['id'];
+                    if(\app\helpers\HistorySearchHelper::checkResourceByStatus($alertId,$resourceName,'Finish')){
+                        $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
+                    }
+
                 } // end !in_array
                 if (!is_null($index)) {
                     unset($alerts[$a]['config']['configSources'][$index]);
