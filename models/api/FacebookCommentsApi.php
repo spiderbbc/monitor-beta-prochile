@@ -36,7 +36,7 @@ class FacebookCommentsApi extends Model {
 
 
 
-	private $_baseUrl = 'https://graph.facebook.com';
+	private $_baseUrl = 'https://graph.facebook.com/v4.0';
 	
 	private $_limit_post = 1;
 	private $_limit_commets = 5;
@@ -123,8 +123,8 @@ class FacebookCommentsApi extends Model {
 
 		
 		//$this->data[] = $this->_getDataApi($query_params);
+
 		$data = $this->_getDataApi($query_params);
-		
 
 		if($data){
 			$this->data[] = $this->_orderDataByProducts($data);
@@ -187,15 +187,13 @@ class FacebookCommentsApi extends Model {
 					}
 					
 					// get the after
-					if(\yii\helpers\ArrayHelper::getValue($posts->getData(),'paging.next' ,false)){ // if next
+					if(\yii\helpers\ArrayHelper::getValue($posts->getData(),'paging.cursors.after' ,false)){ // if next
 						$after = \yii\helpers\ArrayHelper::getValue($posts->getData(),'paging.cursors.after' ,false);
-						$is_next = true;
-					}else{
-						$is_next = false;
 					} 
 
 					$data =  $posts->getData(); // get all post and comments
 					
+					$is_next = (empty($data['data'])) ? false : true;
 
 					if(isset($data['data'][0]['comments']['data'])){
 						$responseData[$index] = $data;
@@ -208,10 +206,10 @@ class FacebookCommentsApi extends Model {
 					 echo 'Excepción capturada: ',  $e->getMessage(), "\n";
 					 die();
 				}
-
 			
 			}while($is_next);
 		
+			
 			return $responseData;
 		}
 	}
@@ -382,50 +380,6 @@ class FacebookCommentsApi extends Model {
 		return $feeds;
 	}
 
-	/*private function _isLastComments($feeds,$params,$id_feed){
-		
-		// params to save in AlertMentionsHelper and get
-		$where = [
-			'condition'   => 'ACTIVE',
-			'type'        => 'comments',
-			'alertId'     => $this->alertId,
-			'resourcesId' => $this->resourcesId,
-		];
-
-
-
-
-		for ($p=0; $p < sizeOf($feeds); $p++){
-			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
-				$comments_last = [];
-				for ($c=0;$c < sizeOf($feeds[$p]['data'][$d]['comments']['data']); $c++){
-					
-					$created_time = $feeds[$p]['data'][$d]['comments']['data'][$c]['created_time'];
-					$unix_time = \app\helpers\DateHelper::asTimestamp($created_time);
-					
-					//\app\helpers\FacebookHelper::isPublicationNew($params['feeds'][$id_feed]['max_id'],$unix_time)
-					if($unix_time > $params['feeds'][$id_feed]['max_id']){
-						echo "/////////////////////"."\n";
-						echo $unix_time . "\n";
-						echo $params['feeds'][$id_feed]['max_id'] . "\n";
-						echo "/////////////////////"."\n";
-						$comments_last[] = $feeds[$p]['data'][$d]['comments']['data'][$c];
-						$where['publication_id'] =  $id_feed;
-						
-						// add plus a second to the max_id
-						$unix_time = strtotime("+5 seconds",$unix_time);
-						\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
-					}
-
-				}
-				// check if data
-				$feeds[$p]['data'][$d]['comments']['data'] = $comments_last;
-			}
-		}
-
-
-		return $feeds;
-	}*/
 
 	private function _getSubComments($feeds_comments){
 		$client = $this->_client;
@@ -802,7 +756,7 @@ class FacebookCommentsApi extends Model {
 		$end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'+1 day'));
 		
 
-		$post_comments_query = "{$bussinessId}/posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,is_hidden,like_count,message,permalink_url,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message,permalink_url}}},updated_time&until={$end_date}&since={$this->start_date}&limit={$this->_limit_post}";
+		$post_comments_query = "{$bussinessId}/published_posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,is_hidden,like_count,message,permalink_url,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message,permalink_url}}},updated_time&until={$end_date}&since={$this->start_date}&limit={$this->_limit_post}";
 
 		return $post_comments_query;
 	}
