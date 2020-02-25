@@ -453,7 +453,7 @@ class FacebookCommentsApi extends Model {
 						}
 					}	
 					
-					if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($id_feed)){
+					if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($id_feed,$this->alertId)){
 						$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
 						// add plus a second to the max_id
 						$unix_time = strtotime("+60 seconds",$unix_time);
