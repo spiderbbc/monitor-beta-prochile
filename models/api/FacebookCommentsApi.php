@@ -44,6 +44,7 @@ class FacebookCommentsApi extends Model {
 	//private $_access_secret_token;
 	
 	private $_page_access_token;
+	private $_appsecret_proof;
 
 	private $_client;
 	
@@ -106,6 +107,8 @@ class FacebookCommentsApi extends Model {
 		$user_credential = \app\helpers\FacebookHelper::getCredencials($this->userId);
 		// get page token   
 		$this->_page_access_token = $this->_getPageAccessToken($user_credential);
+		// get appsecret_proof
+		$this->_appsecret_proof = $this->_getAppsecretProof($this->_page_access_token);
 		// loading firts query
 		$params['query'] = $this->_postCommentsSimpleQuery();  
 
@@ -167,6 +170,7 @@ class FacebookCommentsApi extends Model {
 					$posts = $client->get($query_params['query'],[
 						'after' => $after,
 						'access_token' => $this->_page_access_token,
+						'appsecret_proof' => $this->_appsecret_proof
 					])
 					->setOptions([
 			        //'proxy' => 'tcp://proxy.example.com:5100', // use a Proxy
@@ -547,25 +551,27 @@ class FacebookCommentsApi extends Model {
 
 						for($s= 0; $s < sizeOf($comments['data'][$c]['comments']['data']); $s++){
 
-							if(\app\helpers\DateHelper::isBetweenDate($comments['data'][$c]['comments']['data'][$s][0]['created_time'],$this->start_date,$this->end_date)){
+							if (isset($comments['data'][$c]['comments']['data'][$s][0]['created_time'])) {
+								if(\app\helpers\DateHelper::isBetweenDate($comments['data'][$c]['comments']['data'][$s][0]['created_time'],$this->start_date,$this->end_date)){
 
-								$index ++;
-								$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
-								$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
-								if(isset($comments['data'][$c]['comments']['data'][$s][0]['permalink_url'])){
-									$data[$index]['permalink_url'] = $comments['data'][$c]['comments']['data'][$s][0]['permalink_url'];
+									$index ++;
+									$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
+									$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
+									if(isset($comments['data'][$c]['comments']['data'][$s][0]['permalink_url'])){
+										$data[$index]['permalink_url'] = $comments['data'][$c]['comments']['data'][$s][0]['permalink_url'];
+									}
+									if(isset($comments['data'][$c]['comments']['data'][$s][0]['like_count'])){
+										$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
+									}
+									
+									// remove emoji
+									//$coment = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
+									$coment = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['comments']['data'][$s][0]['message']);
+
+									$data[$index]['message'] = $coment;
+									$data[$index]['message_markup'] = $coment;
+
 								}
-								if(isset($comments['data'][$c]['comments']['data'][$s][0]['like_count'])){
-									$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
-								}
-								
-								// remove emoji
-								//$coment = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
-								$coment = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['comments']['data'][$s][0]['message']);
-
-								$data[$index]['message'] = $coment;
-								$data[$index]['message_markup'] = $coment;
-
 							}
 						}
 					}
@@ -720,8 +726,10 @@ class FacebookCommentsApi extends Model {
 	 */
 	private function _getPageAccessToken($user_credential){
 		
+		$appsecret_proof = $this->_getAppsecretProof($user_credential->access_secret_token);
 		$params = [
-            'access_token' => $user_credential->access_secret_token
+            'access_token' => $user_credential->access_secret_token,
+            'appsecret_proof' => $appsecret_proof
         ];
 
         $page_access_token = null;
@@ -745,6 +753,13 @@ class FacebookCommentsApi extends Model {
 
         return (!is_null($page_access_token)) ? $page_access_token : null;
 	}
+
+	public function _getAppsecretProof($access_token)
+	{
+		$app_secret = Yii::$app->params['facebook']['app_secret'];
+		return hash_hmac('sha256', $access_token, $app_secret); 
+	}
+
 	/**
 	 * [_postCommentsSimpleQuery buidl a simple query post and their comments]
 	 * @param  [string] $access_token_page [access_token_page by page]
