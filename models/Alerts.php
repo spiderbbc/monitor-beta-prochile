@@ -127,10 +127,9 @@ class Alerts extends \yii\db\ActiveRecord
                 } // end if not empty
             } // end loop alerts config
             
-            if ($read) {
+            /*if ($read) {
                 $alertsConfig = \app\helpers\AlertMentionsHelper::checksSourcesCall($alertsConfig);
-            }
-           // var_dump($alertsConfig);
+            }*/
 
             //get family/products/models
             for($c = 0; $c < sizeOf($alertsConfig); $c++){
@@ -211,7 +210,7 @@ class Alerts extends \yii\db\ActiveRecord
     
     public function getSocial(){
         $socials = Resources::getDb()->cache(function ($db) {
-            return Resources::find()->where(['resourcesId' => 1])->all();
+            return Resources::find()->where(['resourcesId' => [1,2]])->all();
         },60);
         $socialIds = \yii\helpers\ArrayHelper::map($socials,'id','name');
         return $socialIds;

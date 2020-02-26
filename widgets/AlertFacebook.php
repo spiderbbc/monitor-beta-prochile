@@ -119,7 +119,7 @@ class AlertFacebook extends \yii\bootstrap\Widget
         $resourcesId = (new \yii\db\Query())
             ->select('id')
             ->from('resources')
-            ->where(['name' => 'Facebook Comments','resourcesId' => 1])
+            ->where(['name' => 'Instagram Comments','resourcesId' => 1])
             ->one();
         
 

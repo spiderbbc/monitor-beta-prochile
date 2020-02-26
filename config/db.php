@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=monitor',
+    'dsn' => 'mysql:host=localhost;dbname=monitor-prochile',
     'username' => 'phpmyadmin',
     'password' => 'deathnote',
     //'charset' => 'utf8',
