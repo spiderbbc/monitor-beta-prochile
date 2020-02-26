@@ -124,7 +124,6 @@ class InstagramCommentsApi extends Model {
 
 
 		$feeds = $this->_getPosts($query_params);
-
 		// if there post
 		if(count($feeds)){
 			$filter_feeds = $this->_filterFeedsbyProducts($feeds);
@@ -191,7 +190,6 @@ class InstagramCommentsApi extends Model {
 					} 
 
 					$data =  $posts->getData(); // get all post and comments
-
 
 					if(isset($data['data'][0]['timestamp'])){
 						

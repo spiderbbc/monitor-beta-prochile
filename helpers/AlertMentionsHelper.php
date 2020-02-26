@@ -346,14 +346,31 @@ class AlertMentionsHelper
      */
     public static function getProductByTermSearch($term_searched)
     {
-        $is_model = \app\models\ProductsModels::find()->where(['name' => $term_searched])->exists();
         $model = [];
+        $is_family = \app\models\ProductsFamily::find()->where(['name' => $term_searched])->exists();
+
+        if ($is_family) {
+            $model = \app\models\ProductsFamily::findOne(['name' => $term_searched]);
+
+        }
+
+        $is_category = \app\models\ProductCategories::find()->where(['name' => $term_searched])->exists();
+
+        if ($is_category) {
+            $model = \app\models\ProductCategories::findOne(['name' => $term_searched]);
+        }
+
+        $is_product = \app\models\Products::find()->where(['name' => $term_searched])->exists();
+
+        if ($is_product) {
+            $model = \app\models\Products::findOne(['name' => $term_searched]);
+        }
+
+        $is_model = \app\models\ProductsModels::find()->where(['name' => $term_searched])->exists();
 
         if($is_model){
             $product_model = \app\models\ProductsModels::findOne(['name' => $term_searched]);
             $model = \app\models\Products::findOne($product_model->productId);
-        }else{
-            $model = \app\models\Products::findOne(['name' => $term_searched]);
         }
 
         return $model;
