@@ -127,9 +127,9 @@ class Alerts extends \yii\db\ActiveRecord
                 } // end if not empty
             } // end loop alerts config
             
-            /*if ($read) {
+            if ($read) {
                 $alertsConfig = \app\helpers\AlertMentionsHelper::checksSourcesCall($alertsConfig);
-            }*/
+            }
 
             //get family/products/models
             for($c = 0; $c < sizeOf($alertsConfig); $c++){
@@ -149,7 +149,7 @@ class Alerts extends \yii\db\ActiveRecord
                         if(!in_array($product->productModel->product->category->name,$alertsConfig[$c]['products'])){
                             array_push($alertsConfig[$c]['products'], $product->productModel->product->category->name);
                         }
-                        array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
+                        //array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
                     }
                 }
             }
