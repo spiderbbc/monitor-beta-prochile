@@ -25,6 +25,9 @@ class NewsApi extends Model
 	public $total_call;
 	public $paginator;
 
+	public $condition_alert_mention = 'ACTIVE';
+	public $status_history_search = 'Pending';
+
 	const LIMIT_CALLS = 166;
 	const NUMBER_DATA_BY_REQUEST = 20;
 	const TYPE_MENTIONS = 'web';
@@ -39,22 +42,21 @@ class NewsApi extends Model
 			$this->start_date     = $alert['config']['start_date'];
 			$this->end_date       = $alert['config']['end_date'];
 
-			// validate there is one month old
-			/*$today = \app\helpers\DateHelper::getToday();
-			if (\app\helpers\DateHelper::diffInMonths($today,$this->start_date)) {
-				var_dump(\app\helpers\DateHelper::diffInMonths($today,$this->start_date));
-				return false;
-			}
-*/
+			/**
+			 * validate there is one month old
+			 */
+			
 			
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
 			// set paginator
 			$this->_setPaginator();
-			// set if search finish
 			
-			//$this->searchFinish();
+
+			/**check is go here the methods
+			 * $this->searchFinish(); 
+			 */
 			
 			// set products
 			$products_params = $this->setProductsParams();
@@ -81,47 +83,53 @@ class NewsApi extends Model
 			
 			$productName = $this->products[$p];
 			$productMention = $this->_getAlertsMencionsByProduct($productName);
-
 			// sources 
 			$sources = implode(',', array_values(Yii::$app->params['newsApi']['targets']));
 			
-
-			if(!$productMention){
-				
-				$now = \app\helpers\DateHelper::getToday();
-				$date_from = Yii::$app->formatter->asDate($this->start_date,'yyyy-MM-dd');
-				$date_to = Yii::$app->formatter->asDate($this->end_date,'yyyy-MM-dd');
-				
-				if(\app\helpers\DateHelper::isToday($date_to)){
-					$date_to = \app\helpers\DateHelper::add($this->end_date,'-1 day');
+			if ($productMention) {
+				if ($productMention->date_searched) {
+					$this->start_date = $this->end_date = $productMention->date_searched;  
 				}
-
-				$productName  = urlencode($productName);
-
-
-				$params[$this->products[$p]] = [
-					'q'         => $productName,
-					'qInTitle'  => $productName,
-				//	'domains'   => $sources,
-					'from' => $date_from,
-					'to'   => $date_to,
-					'sortBy' => 'publishedAt',
-					'page'      => 1
-				];
-				// set apikey
-				$params[$this->products[$p]]['apikey'] = Yii::$app->params['newsApi']['apiKey'];
 			}
 
-			
-		}// end loop
+			// if start date and end date is today
+			if (\app\helpers\DateHelper::isToday($this->start_date) && \app\helpers\DateHelper::isToday($this->end_date)) {
+				$from = $to = \app\helpers\DateHelper::getToday();
+			}else{
+				// if on range start and end date
+				$today =  Yii::$app->formatter->asDatetime(\app\helpers\DateHelper::getToday(),'yyyy-MM-dd');
+				if (\app\helpers\DateHelper::isBetweenDate($today,$this->start_date,$this->end_date)) {
+					$from = $this->start_date;
+					$to = (string) strtotime(\app\helpers\DateHelper::sub(\app\helpers\DateHelper::getToday(),'1 day'));
+					$this->condition_alert_mention = 'ACTIVE';
+					$this->status_history_search = 'Pending';
+				}else{
+					$from = $this->start_date;
+					$to = $this->end_date;
+					$this->condition_alert_mention = 'INACTIVE';
+					$this->status_history_search = 'Finish';
+				}
 
+			}
+
+			$params[$this->products[$p]] = [
+				'q' => urlencode($this->products[$p]),
+				'qInTitle' => urlencode($this->products[$p]),
+				'from' => $from,
+				'to' => $to,
+				'sortBy' => 'relevancy',
+				'page' => 1,
+				'apikey' => Yii::$app->params['newsApi']['apiKey']
+				//'domains' =>  $domains,
+				
+			];
+		}// end loop
 		return $params;
 	}
 
 	public function call($products_params)
 	{
 		foreach($products_params as $productName => $params){
-			//\yii\helpers\Console::stdout("loop in call method {$productName}.. \n", Console::BOLD);
 			$this->data[$productName] =  $this->_getNews($params);
 		}
 		$this->_orderNews();
@@ -132,11 +140,13 @@ class NewsApi extends Model
 		$data = [];
 		$page = 0;
 		$flag = true;
+		$paginator = $this->paginator;
 
 		$client = new Client();
 
 		do {
 			
+
 			$response = $client->createRequest()
 				->setMethod('GET')
 				->setUrl('http://newsapi.org/v2/everything')
@@ -150,10 +160,16 @@ class NewsApi extends Model
 					if ($flag) {
 						$totalResults = $response->data['totalResults'];
 						if ($totalResults < self::NUMBER_DATA_BY_REQUEST) {
-							$this->paginator = 1;
+							$paginator = 1;
 						}else{
 							$total = round($totalResults / self::NUMBER_DATA_BY_REQUEST,0,PHP_ROUND_HALF_UP);
-							$this->paginator = ($total > $this->paginator) ? $this->paginator : $total;
+							$paginator = ($total > $this->paginator) ? $this->paginator : $total;
+							
+							/*echo "---------------------\n";
+							echo " totalResults: ".$totalResults."\n";
+							echo " total: ".$total."\n";
+							echo " paginator: ".$paginator."\n";
+							echo "---------------------\n";*/
 						}
 						$flag = false;
 					}
@@ -164,12 +180,14 @@ class NewsApi extends Model
 					}
 
 				}else{
+					var_dump($response->data['status']);
 					break;
 					// error happen send email
 				}
 
 
 			} else {
+				var_dump($response);
 				break;
 				// error happen send email
 			}
@@ -177,9 +195,9 @@ class NewsApi extends Model
 
 
 			$params['page'] += 1;
-			echo $this->paginator."\n";
-			$this->paginator --;
-		} while ($this->paginator > 0);
+			$paginator --;
+		} while ($paginator > 0);
+
 		return $data;
 	}
 
@@ -192,8 +210,9 @@ class NewsApi extends Model
 				if (!empty($this->data[$productName])) {
 					
 					$properties['term_searched'] = $productName;
-					$properties['condition'] = 'ACTIVE';
+					$properties['condition'] = $this->condition_alert_mention;
 					$properties['type'] = self::TYPE_MENTIONS;
+
 					$this->_saveAlertsMencions($properties);
 
 					for ($d=0; $d <sizeof($data) ; $d++) { 
@@ -244,7 +263,6 @@ class NewsApi extends Model
 	public function saveJsonFile(){
 
 		$source = 'web';
-
 		if(!empty($this->data)){
 			$jsonfile = new JsonFile($this->alertId,$source);
 			$jsonfile->load($this->data);
@@ -252,6 +270,50 @@ class NewsApi extends Model
 		}
 
 	}
+
+	private function searchFinish()
+	{
+		$alertsMencions = \app\models\AlertsMencions::find()->where([
+    		'alertId'       => $this->alertId,
+	        'resourcesId'   => $this->resourcesId,
+	        'type'          => 'web',
+	        //'condition'		=> 'ACTIVE'
+    	])->all(); 
+
+
+		$model = [
+            'Web page' => [
+                'resourceId' => $this->resourcesId,
+                'status' => $this->status_history_search
+            ]
+        ];
+
+		if(count($alertsMencions)){
+			$count = 0;
+			$date_searched_flag   = intval($this->end_date);
+
+			foreach ($alertsMencions as $alert_mention) {
+				if (!\app\helpers\DateHelper::isToday($date_searched_flag)) {
+					if($alert_mention->date_searched >= $date_searched_flag){
+	      				if(!$alert_mention->since_id){
+		      				$alert_mention->condition = 'INACTIVE';
+		      				$alert_mention->save();
+	      					$count++;
+	      				}
+	      			}
+				}
+	      	}
+
+			if($count >= count($alertsMencions)){
+				$model['Web page']['status'] = $this->status_history_search; 
+			}
+
+		}
+		
+		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
+
+	}
+
 	/**
 	 * [_getAlertsMencionsByProduct get model by product name]
 	 * @param  [type] $productName [name product]

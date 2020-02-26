@@ -168,7 +168,7 @@ class BaseApi extends Model {
 			$query_params = $newsApi->prepare($alert);
 			if($query_params){
 				$news = $newsApi->call($query_params);
-				//$newsApi->saveJsonFile($chats);
+				$newsApi->saveJsonFile();
 			}
 		}
 		

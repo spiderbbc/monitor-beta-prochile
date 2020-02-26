@@ -102,7 +102,7 @@ class DateHelper
      * @return boolean       [description]
      */
     public static function isToday($date){
-        $date = new Date($date);
+        $date = new Date((int)$date);
         return $date->isToday();
     }
     /**
