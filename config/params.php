@@ -13,10 +13,10 @@ return [
 	'senderName'  => 'monitor-beta',
 	'facebook'    => [ 
 		'time_min_sleep'  => 5,  
-		'business_id' => '169441517247',
-		'app_id'      => '446684435912359',
-		'name_app'    => 'monitor-facebook',
-		'app_secret'  => '541f2431cc1ad60c9d5bb4836eed1356'
+		'business_id' => '101330848134001',
+		'app_id'      => '227526951746847',
+		'name_app'    => 'pro_chile_monitor',
+		'app_secret'  => '6fad2007ef6412fcf59a5581ac6c764b'
 
 	],
 ];

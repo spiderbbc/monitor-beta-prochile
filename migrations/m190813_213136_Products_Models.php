@@ -32,7 +32,7 @@ class m190813_213136_Products_Models extends Migration
 
         $this->insert('{{%products_models}}', [
             'productId'            => 1,
-            'name'                  => 'LG G7 ThinQ (G710 / New Aurora Black',
+            'name'                  => 'Chile exports',
             'status'                => 1,
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -42,7 +42,7 @@ class m190813_213136_Products_Models extends Migration
 
         $this->insert('{{%products_models}}', [
             'productId'             => 2,
-            'name'                  => 'LG 32LK540BPSA',
+            'name'                  => 'Export Chile',
             'status'                => 1,
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',

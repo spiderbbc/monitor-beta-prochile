@@ -32,7 +32,7 @@ class m190813_211708_Products_Family extends Migration
 
         $this->insert('{{%products_family}}', [
             'seriesId'              => 1,
-            'name'                  => 'Smartphones',
+            'name'                  => 'Chile',
             'status'                => 1,
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -40,15 +40,6 @@ class m190813_211708_Products_Family extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%products_family}}', [
-            'seriesId'              => 2,
-            'name'                  => 'Televisores',
-            'status'                => 1,
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
-        ]);
 
          // creates index for column `seriesId`
         $this->createIndex(

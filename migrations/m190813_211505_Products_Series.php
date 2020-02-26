@@ -31,8 +31,8 @@ class m190813_211505_Products_Series extends Migration
         ], $tableOptions);
 
         $this->insert('{{%products_series}}', [
-            'name'                  => 'Mobile Connect',
-            'abbreviation_name'     => 'MC',
+            'name'                  => 'Pro Chile',
+            'abbreviation_name'     => 'PCH',
             'status'                => 1,
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -40,15 +40,6 @@ class m190813_211505_Products_Series extends Migration
             'updatedBy'             => '1',
         ]);
 
-        $this->insert('{{%products_series}}', [
-            'name'                  => 'Home Entretaiment',
-            'abbreviation_name'     => 'HE',
-            'status'                => 1,
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
-        ]);
     }
 
     /**
