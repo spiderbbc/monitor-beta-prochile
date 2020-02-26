@@ -130,7 +130,6 @@ class Alerts extends \yii\db\ActiveRecord
             if ($read) {
                 $alertsConfig = \app\helpers\AlertMentionsHelper::checksSourcesCall($alertsConfig);
             }
-            
 
             //get family/products/models
             for($c = 0; $c < sizeOf($alertsConfig); $c++){
@@ -147,10 +146,10 @@ class Alerts extends \yii\db\ActiveRecord
                             array_push($alertsConfig[$c]['products'], $product->productModel->product->name);
                         }
                         // category
-                        /*if(!in_array($product->productModel->product->category->name,$alertsConfig[$c]['products'])){
+                        if(!in_array($product->productModel->product->category->name,$alertsConfig[$c]['products'])){
                             array_push($alertsConfig[$c]['products'], $product->productModel->product->category->name);
-                        }*/
-                       // array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
+                        }
+                        //array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
                     }
                 }
             }

@@ -32,7 +32,7 @@ class m190813_213045_Product_Categories extends Migration
 
         $this->insert('{{%product_categories}}', [
             'products_familyId'     => 1,
-            'name'                  => 'FullVision',
+            'name'                  => 'Productos',
             'status'                => 1,
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',
@@ -41,8 +41,8 @@ class m190813_213045_Product_Categories extends Migration
         ]);
 
         $this->insert('{{%product_categories}}', [
-            'products_familyId'     => 2,
-            'name'                  => 'HD',
+            'products_familyId'     => 1,
+            'name'                  => 'exportacion',
             'status'                => 1,
             'createdAt'             => '1488153462',
             'updatedAt'             => '1488153462',

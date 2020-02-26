@@ -255,6 +255,7 @@ use mludvik\tagsinput\TagsInputWidget;
 </script>
 
 <?php 
+Yii::$app->view->registerJs('var appId = "'. Yii::$app->id.'"',  \yii\web\View::POS_HEAD);
 $this->registerJsFile(
     '@web/js/app/form.js',
     ['depends' => [

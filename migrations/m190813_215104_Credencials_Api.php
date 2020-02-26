@@ -36,7 +36,7 @@ class m190813_215104_Credencials_Api extends Migration
 
         ],$tableOptions);
 
-        $this->insert('{{%credencials_api}}', [
+        /*$this->insert('{{%credencials_api}}', [
             'userId'              => 1,
             'resourceId'          => 1,
             'name_app'            => 'monitor-twitter',
@@ -50,9 +50,9 @@ class m190813_215104_Credencials_Api extends Migration
             'updatedAt'           => '1488153462',
             'createdBy'           => '1',
             'updatedBy'           => '1',
-        ]);
+        ]);*/
 
-        $this->insert('{{%credencials_api}}', [
+        /*$this->insert('{{%credencials_api}}', [
             'userId'              => 1,
             'resourceId'          => 2,
             'name_app'            => 'monitor-livechat',
@@ -66,7 +66,7 @@ class m190813_215104_Credencials_Api extends Migration
             'updatedAt'           => '1488153462',
             'createdBy'           => '1',
             'updatedBy'           => '1',
-        ]);
+        ]);*/
 
         
 /*
@@ -88,8 +88,8 @@ class m190813_215104_Credencials_Api extends Migration
 
         $this->insert('{{%credencials_api}}', [
             'userId'              => 1,
-            'resourceId'          => 5,
-            'name_app'            => 'monitor-facebook',
+            'resourceId'          => 2,
+            'name_app'            => 'pro_chile_monitor',
             'api_key'             => 'encrycpt here',
             'api_secret_key'      => 'encrycpt here',
             'access_secret_token' => 'encrycpt here',
@@ -120,10 +120,10 @@ class m190813_215104_Credencials_Api extends Migration
 
         $this->insert('{{%credencials_api}}', [
             'userId'              => 1,
-            'resourceId'          => 9,
+            'resourceId'          => 4,
             'name_app'            => 'monitor-drive',
             'api_key'             => 'monitor-beta-lg',
-            'api_secret_key'      => '1LBf9kTwPswIQuvNx0xH8RiMBZiXNZeBGi_QjTrHVwAc',
+            'api_secret_key'      => '1s29IoJn76zzqUWCFIy2vfjFv9BWVR548Bpl-mBSNHfE',
             'access_secret_token' => 'encrycpt here',
             'bearer_token'        => 'encrycpt here',
             'apiLogin'            => 'encrycpt here',

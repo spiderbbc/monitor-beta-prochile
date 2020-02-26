@@ -20,7 +20,7 @@ use app\models\CredencialsApi;
 class FacebookHelper
 {
 
-	private static $_resource_id = 5;
+	private static $_resource_id = 2;
 
 	/**
      * return facebook object.

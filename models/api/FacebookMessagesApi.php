@@ -34,13 +34,14 @@ class FacebookMessagesApi extends Model {
 
 
 
-	private $_baseUrl = 'https://graph.facebook.com';
+	private $_baseUrl = 'https://graph.facebook.com/v4.0';
 	
 	private $_limit_message = 1;
 	
 	
 	private $_page_access_token;
 	private $_business_account_id;
+	private $_appsecret_proof;
 
 	private $_client;
 
@@ -110,7 +111,8 @@ class FacebookMessagesApi extends Model {
 
 		// get page token   
 		$this->_page_access_token = $this->_getPageAccessToken($user_credential);
-
+		// get appsecret_proof
+		$this->_appsecret_proof = $this->_getAppsecretProof($this->_page_access_token);
 		// loading firts query
 		$params['query'] = $this->_messageSimpleQuery();  
 
@@ -177,6 +179,7 @@ class FacebookMessagesApi extends Model {
 					$messagesResponse = $client->get($query_params['query'],[
 						'after' => $after,
 						'access_token' => $this->_page_access_token,
+						'appsecret_proof' => $this->_appsecret_proof
 					])
 					->setOptions([
 			        'timeout' => 10, // set timeout to 10 seconds for the case server is not responding
@@ -404,9 +407,10 @@ class FacebookMessagesApi extends Model {
 	 * @return [string] [PageAccessToken]
 	 */
 	private function _getPageAccessToken($user_credential){
-		
+		$appsecret_proof = $this->_getAppsecretProof($user_credential->access_secret_token);
 		$params = [
-            'access_token' => $user_credential->access_secret_token
+            'access_token' => $user_credential->access_secret_token,
+            'appsecret_proof' => $appsecret_proof
         ];
 
         $page_access_token = null;
@@ -431,6 +435,11 @@ class FacebookMessagesApi extends Model {
         return (!is_null($page_access_token)) ? $page_access_token : null;
 	}
 
+	public function _getAppsecretProof($access_token)
+	{
+		$app_secret = Yii::$app->params['facebook']['app_secret'];
+		return hash_hmac('sha256', $access_token, $app_secret); 
+	}
 
 	/**
 	 * [saveJsonFile save a json file]

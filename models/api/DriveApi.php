@@ -30,7 +30,7 @@ class DriveApi extends Model{
     {
         $service = $this->_getServices();
 
-        $spreadsheetId = $this->_getSpreadSheetId();;
+        $spreadsheetId = $this->_getSpreadSheetId();
         $response = $this->_get($spreadsheetId);
 
         $values = [];
@@ -235,7 +235,7 @@ class DriveApi extends Model{
 
     private function _getTitleDocument($typeDocument){
         
-        $spreadsheetId = $this->_getSpreadSheetId();;
+        $spreadsheetId = $this->_getSpreadSheetId();
         $response = $this->_get($spreadsheetId);
 
         $sheetName     = [];

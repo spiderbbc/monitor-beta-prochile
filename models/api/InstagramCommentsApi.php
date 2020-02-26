@@ -5,7 +5,6 @@ use Yii;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
-
 use yii\httpclient\Client;
 
 use app\models\file\JsonFile;
@@ -34,7 +33,7 @@ class InstagramCommentsApi extends Model {
 
 
 
-	private $_baseUrl = 'https://graph.facebook.com';
+	private $_baseUrl = 'https://graph.facebook.com/v4.0';
 	
 	private $_limit_post = 1;
 	private $_limit_commets = 25;
@@ -43,6 +42,7 @@ class InstagramCommentsApi extends Model {
 	
 	private $_page_access_token;
 	private $_business_account_id;
+	private $_appsecret_proof;
 
 	private $_client;
 
@@ -124,7 +124,6 @@ class InstagramCommentsApi extends Model {
 
 
 		$feeds = $this->_getPosts($query_params);
-
 		// if there post
 		if(count($feeds)){
 			$filter_feeds = $this->_filterFeedsbyProducts($feeds);
@@ -160,6 +159,7 @@ class InstagramCommentsApi extends Model {
 					$posts = $client->get($query_params['query'],[
 						'after' => $after,
 						'access_token' => $this->_page_access_token,
+						'appsecret_proof' => $this->_appsecret_proof
 					])
 					->setOptions([
 			        'timeout' => 5, // set timeout to 5 seconds for the case server is not responding
@@ -172,6 +172,7 @@ class InstagramCommentsApi extends Model {
 					// if get error data
 					if(\yii\helpers\ArrayHelper::getValue($posts->getData(),'error' ,false)){
 						// send email with data $responseData[$index]['error']['message']
+						var_dump(\yii\helpers\ArrayHelper::getValue($posts->getData(),'error' ,false));
 						break;
 					}
 
@@ -189,7 +190,6 @@ class InstagramCommentsApi extends Model {
 					} 
 
 					$data =  $posts->getData(); // get all post and comments
-
 
 					if(isset($data['data'][0]['timestamp'])){
 						
@@ -246,7 +246,7 @@ class InstagramCommentsApi extends Model {
 
 		// params to save in AlertMentionsHelper and get
 		$where = [
-			'condition'   => 'ACTIVE',
+			//'condition'   => 'ACTIVE',
 			'type'        => 'comments Instagram',
 			'alertId'     => $this->alertId,
 			'resourcesId' => $this->resourcesId,
@@ -257,9 +257,9 @@ class InstagramCommentsApi extends Model {
 			if(isset($feeds[$f]['data'])){
 				for($d = 0; $d < count($feeds[$f]['data']); $d++){
 					
-					$feedId    = $feeds[$f]['data'][$d]['id'];
-					$caption   = $feeds[$f]['data'][$d]['caption'];
-					$url   = $feeds[$f]['data'][$d]['permalink'];
+					$feedId       = $feeds[$f]['data'][$d]['id'];
+					$caption      = $feeds[$f]['data'][$d]['caption'];
+					$url          = $feeds[$f]['data'][$d]['permalink'];
 					$like_count   = $feeds[$f]['data'][$d]['like_count'];
 
 
@@ -281,13 +281,17 @@ class InstagramCommentsApi extends Model {
 								// if not value
 								if(!in_array($feeds[$f]['data'][$d],$posts[$this->products[$p]])){
 									$where['publication_id'] = $feedId;
-									$mention_data['like_count'] = $like_count;
+									if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($feedId,$this->alertId)){
+
+										$mention_data['like_count'] = $like_count;
 									
-									\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $timestamp,'title' => $caption,'url' => $url,'mention_data' => $mention_data]);
-									
-									$posts[$this->products[$p]][] = $feeds[$f]['data'][$d];
-									$feed_count--;
-									break;
+										\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['term_searched' => $this->products[$p],'date_searched' => $timestamp,'title' => $caption,'url' => $url,'mention_data' => $mention_data]);
+
+										$posts[$this->products[$p]][] = $feeds[$f]['data'][$d];
+										$feed_count--;
+										break;
+
+									}
 								} // end if !in_array
 							} // end feed_count
 						}// end if is_contains
@@ -400,7 +404,6 @@ class InstagramCommentsApi extends Model {
 
 				// looking new comments
 				if(\yii\helpers\ArrayHelper::keyExists($id_feed,$params['feeds'])){
-					//var_dump($params['feeds'][$id_feed]);
 
 					$model = \app\models\AlertsMencions::findOne(['publication_id' => $id_feed]);
 					if(!$params['feeds'][$id_feed]['max_id']){
@@ -539,8 +542,10 @@ class InstagramCommentsApi extends Model {
 		$user_credential = \app\helpers\FacebookHelper::getCredencials($this->userId);
 		// get page token   
 		$this->_page_access_token = $this->_getPageAccessToken($user_credential);
-		
+		// get busines id
 		$this->_business_account_id = $this->_getBusinessAccountId($user_credential);
+		// get app_proof
+		$this->_appsecret_proof = $this->_getAppsecretProof($this->_page_access_token);
 		// loading firts query
 		$params['query'] = $this->_postSimpleQuery();  
 
@@ -587,8 +592,10 @@ class InstagramCommentsApi extends Model {
 	 */
 	private function _getPageAccessToken($user_credential){
 		
+		$appsecret_proof = $this->_getAppsecretProof($user_credential->access_secret_token);
 		$params = [
-            'access_token' => $user_credential->access_secret_token
+            'access_token' => $user_credential->access_secret_token,
+            'appsecret_proof' => $appsecret_proof
         ];
 
         $page_access_token = null;
@@ -611,6 +618,12 @@ class InstagramCommentsApi extends Model {
         
 
         return (!is_null($page_access_token)) ? $page_access_token : null;
+	}
+
+	public function _getAppsecretProof($access_token)
+	{
+		$app_secret = Yii::$app->params['facebook']['app_secret'];
+		return hash_hmac('sha256', $access_token, $app_secret); 
 	}
 	/**
 	 * [saveJsonFile save a json file]
@@ -670,9 +683,11 @@ class InstagramCommentsApi extends Model {
 	private function _getBusinessAccountId($user_credential){
 		
 		$bussinessId = Yii::$app->params['facebook']['business_id'];
+		$appsecret_proof = $this->_getAppsecretProof($user_credential->access_secret_token);
 
 		$params = [
-            'access_token' => $user_credential->access_secret_token
+            'access_token' => $user_credential->access_secret_token,
+            'appsecret_proof' => $appsecret_proof
         ];
 
         $BusinessAccountId = null;

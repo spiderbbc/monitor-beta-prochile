@@ -36,7 +36,7 @@ class FacebookCommentsApi extends Model {
 
 
 
-	private $_baseUrl = 'https://graph.facebook.com';
+	private $_baseUrl = 'https://graph.facebook.com/v4.0';
 	
 	private $_limit_post = 1;
 	private $_limit_commets = 5;
@@ -44,6 +44,7 @@ class FacebookCommentsApi extends Model {
 	//private $_access_secret_token;
 	
 	private $_page_access_token;
+	private $_appsecret_proof;
 
 	private $_client;
 	
@@ -82,7 +83,6 @@ class FacebookCommentsApi extends Model {
 
 	    	}
 			////
-			
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
@@ -106,6 +106,8 @@ class FacebookCommentsApi extends Model {
 		$user_credential = \app\helpers\FacebookHelper::getCredencials($this->userId);
 		// get page token   
 		$this->_page_access_token = $this->_getPageAccessToken($user_credential);
+		// get appsecret_proof
+		$this->_appsecret_proof = $this->_getAppsecretProof($this->_page_access_token);
 		// loading firts query
 		$params['query'] = $this->_postCommentsSimpleQuery();  
 
@@ -123,8 +125,8 @@ class FacebookCommentsApi extends Model {
 
 		
 		//$this->data[] = $this->_getDataApi($query_params);
+
 		$data = $this->_getDataApi($query_params);
-		
 
 		if($data){
 			$this->data[] = $this->_orderDataByProducts($data);
@@ -139,6 +141,7 @@ class FacebookCommentsApi extends Model {
 	private function _getDataApi($query_params){
 
 		$feeds = $this->_getPostsComments($query_params);
+		
 		$feedsCandidate = $this->_setCandidate($feeds);
 
 		$feeds_comments = $this->_getComments($feedsCandidate);
@@ -167,6 +170,7 @@ class FacebookCommentsApi extends Model {
 					$posts = $client->get($query_params['query'],[
 						'after' => $after,
 						'access_token' => $this->_page_access_token,
+						'appsecret_proof' => $this->_appsecret_proof
 					])
 					->setOptions([
 			        //'proxy' => 'tcp://proxy.example.com:5100', // use a Proxy
@@ -187,15 +191,13 @@ class FacebookCommentsApi extends Model {
 					}
 					
 					// get the after
-					if(\yii\helpers\ArrayHelper::getValue($posts->getData(),'paging.next' ,false)){ // if next
+					if(\yii\helpers\ArrayHelper::getValue($posts->getData(),'paging.cursors.after' ,false)){ // if next
 						$after = \yii\helpers\ArrayHelper::getValue($posts->getData(),'paging.cursors.after' ,false);
-						$is_next = true;
-					}else{
-						$is_next = false;
 					} 
 
 					$data =  $posts->getData(); // get all post and comments
 					
+					$is_next = (empty($data['data'])) ? false : true;
 
 					if(isset($data['data'][0]['comments']['data'])){
 						$responseData[$index] = $data;
@@ -208,10 +210,10 @@ class FacebookCommentsApi extends Model {
 					 echo 'Excepción capturada: ',  $e->getMessage(), "\n";
 					 die();
 				}
-
 			
 			}while($is_next);
 		
+			
 			return $responseData;
 		}
 	}
@@ -382,50 +384,6 @@ class FacebookCommentsApi extends Model {
 		return $feeds;
 	}
 
-	/*private function _isLastComments($feeds,$params,$id_feed){
-		
-		// params to save in AlertMentionsHelper and get
-		$where = [
-			'condition'   => 'ACTIVE',
-			'type'        => 'comments',
-			'alertId'     => $this->alertId,
-			'resourcesId' => $this->resourcesId,
-		];
-
-
-
-
-		for ($p=0; $p < sizeOf($feeds); $p++){
-			for($d=0; $d < sizeOf($feeds[$p]['data']); $d++){
-				$comments_last = [];
-				for ($c=0;$c < sizeOf($feeds[$p]['data'][$d]['comments']['data']); $c++){
-					
-					$created_time = $feeds[$p]['data'][$d]['comments']['data'][$c]['created_time'];
-					$unix_time = \app\helpers\DateHelper::asTimestamp($created_time);
-					
-					//\app\helpers\FacebookHelper::isPublicationNew($params['feeds'][$id_feed]['max_id'],$unix_time)
-					if($unix_time > $params['feeds'][$id_feed]['max_id']){
-						echo "/////////////////////"."\n";
-						echo $unix_time . "\n";
-						echo $params['feeds'][$id_feed]['max_id'] . "\n";
-						echo "/////////////////////"."\n";
-						$comments_last[] = $feeds[$p]['data'][$d]['comments']['data'][$c];
-						$where['publication_id'] =  $id_feed;
-						
-						// add plus a second to the max_id
-						$unix_time = strtotime("+5 seconds",$unix_time);
-						\app\helpers\AlertMentionsHelper::saveAlertsMencions($where,['max_id' => $unix_time,'publication_id' => $id_feed]);
-					}
-
-				}
-				// check if data
-				$feeds[$p]['data'][$d]['comments']['data'] = $comments_last;
-			}
-		}
-
-
-		return $feeds;
-	}*/
 
 	private function _getSubComments($feeds_comments){
 		$client = $this->_client;
@@ -495,7 +453,7 @@ class FacebookCommentsApi extends Model {
 						}
 					}	
 					
-					if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($id_feed)){
+					if(!\app\helpers\AlertMentionsHelper::isAlertsMencionsExists($id_feed,$this->alertId)){
 						$unix_time = \app\helpers\DateHelper::asTimestamp($lasted_update);
 						// add plus a second to the max_id
 						$unix_time = strtotime("+60 seconds",$unix_time);
@@ -593,25 +551,27 @@ class FacebookCommentsApi extends Model {
 
 						for($s= 0; $s < sizeOf($comments['data'][$c]['comments']['data']); $s++){
 
-							if(\app\helpers\DateHelper::isBetweenDate($comments['data'][$c]['comments']['data'][$s][0]['created_time'],$this->start_date,$this->end_date)){
+							if (isset($comments['data'][$c]['comments']['data'][$s][0]['created_time'])) {
+								if(\app\helpers\DateHelper::isBetweenDate($comments['data'][$c]['comments']['data'][$s][0]['created_time'],$this->start_date,$this->end_date)){
 
-								$index ++;
-								$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
-								$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
-								if(isset($comments['data'][$c]['comments']['data'][$s][0]['permalink_url'])){
-									$data[$index]['permalink_url'] = $comments['data'][$c]['comments']['data'][$s][0]['permalink_url'];
+									$index ++;
+									$data[$index]['id'] = $comments['data'][$c]['comments']['data'][$s][0]['id'];
+									$data[$index]['created_time'] = $comments['data'][$c]['comments']['data'][$s][0]['created_time'];
+									if(isset($comments['data'][$c]['comments']['data'][$s][0]['permalink_url'])){
+										$data[$index]['permalink_url'] = $comments['data'][$c]['comments']['data'][$s][0]['permalink_url'];
+									}
+									if(isset($comments['data'][$c]['comments']['data'][$s][0]['like_count'])){
+										$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
+									}
+									
+									// remove emoji
+									//$coment = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
+									$coment = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['comments']['data'][$s][0]['message']);
+
+									$data[$index]['message'] = $coment;
+									$data[$index]['message_markup'] = $coment;
+
 								}
-								if(isset($comments['data'][$c]['comments']['data'][$s][0]['like_count'])){
-									$data[$index]['like_count'] = $comments['data'][$c]['comments']['data'][$s][0]['like_count'];	
-								}
-								
-								// remove emoji
-								//$coment = \app\helpers\StringHelper::remove_emoji($comments['data'][$c]['comments']['data'][$s][0]['message']);
-								$coment = \app\helpers\StringHelper::replaceAccents($comments['data'][$c]['comments']['data'][$s][0]['message']);
-
-								$data[$index]['message'] = $coment;
-								$data[$index]['message_markup'] = $coment;
-
 							}
 						}
 					}
@@ -766,8 +726,10 @@ class FacebookCommentsApi extends Model {
 	 */
 	private function _getPageAccessToken($user_credential){
 		
+		$appsecret_proof = $this->_getAppsecretProof($user_credential->access_secret_token);
 		$params = [
-            'access_token' => $user_credential->access_secret_token
+            'access_token' => $user_credential->access_secret_token,
+            'appsecret_proof' => $appsecret_proof
         ];
 
         $page_access_token = null;
@@ -791,6 +753,13 @@ class FacebookCommentsApi extends Model {
 
         return (!is_null($page_access_token)) ? $page_access_token : null;
 	}
+
+	public function _getAppsecretProof($access_token)
+	{
+		$app_secret = Yii::$app->params['facebook']['app_secret'];
+		return hash_hmac('sha256', $access_token, $app_secret); 
+	}
+
 	/**
 	 * [_postCommentsSimpleQuery buidl a simple query post and their comments]
 	 * @param  [string] $access_token_page [access_token_page by page]
@@ -802,7 +771,7 @@ class FacebookCommentsApi extends Model {
 		$end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'+1 day'));
 		
 
-		$post_comments_query = "{$bussinessId}/posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,is_hidden,like_count,message,permalink_url,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message,permalink_url}}},updated_time&until={$end_date}&since={$this->start_date}&limit={$this->_limit_post}";
+		$post_comments_query = "{$bussinessId}/published_posts?fields=from,full_picture,icon,is_popular,message,attachments{unshimmed_url},shares,created_time,comments{from,created_time,is_hidden,like_count,message,permalink_url,parent,comment_count,attachment,comments.limit($this->_limit_commets){likes.limit(10),comments{message,permalink_url}}},updated_time&until={$end_date}&since={$this->start_date}&limit={$this->_limit_post}";
 
 		return $post_comments_query;
 	}
