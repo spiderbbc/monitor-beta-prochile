@@ -32,7 +32,7 @@ class BaseApi extends Model {
 		'Instagram Comments'      => 'InstagramCommentsApi',
 		'Live Chat'               => 'liveChat',
 		'Live Chat Conversations' => 'liveChatConversations',
-		'Web page'                => 'webpage',
+		'Web page'                => 'webPage',
 		'Excel Document'          => 'excelDocument',
 	];
 
@@ -211,7 +211,6 @@ class BaseApi extends Model {
             }
                
         }
-        	
         // no empty
         if(!empty($data)){
         	foreach ($data as $alertId => $resources){
@@ -311,6 +310,17 @@ class BaseApi extends Model {
 		$searchLiveChatApi->load($params); 
 		if($searchLiveChatApi->search()){ 
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Live Chat Conversations'); 
+		} 
+ 
+	} 
+
+	public function readDataWebPageApi($alertId,$data){ 
+		$searchNewsApi = new \app\models\search\NewsSearch();
+		$params = [$alertId,$data];
+
+		$searchNewsApi->load($params); 
+		if($searchNewsApi->search()){ 
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Web page'); 
 		} 
  
 	} 

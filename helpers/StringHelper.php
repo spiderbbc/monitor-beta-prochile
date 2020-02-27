@@ -135,7 +135,8 @@ class StringHelper
 
     public static function substring($sentence,$start,$end){
         $s = new Stringizer($sentence);
-        return $s->subString($start,$end);
+        $s->subString($start,$end);
+        return $s->getString();
     }
 
     public static function ensureRightPoints($sentence){

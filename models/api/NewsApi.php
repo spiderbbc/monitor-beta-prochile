@@ -18,6 +18,7 @@ class NewsApi extends Model
 	public $end_date;
 	public $products;
 	public $resourcesId;
+	public $resourceName;
 	
 	public $data;
 
@@ -226,6 +227,8 @@ class NewsApi extends Model
 
 					for ($d=0; $d <sizeof($data) ; $d++) { 
 						for ($i=0; $i <sizeof($data[$d]) ; $i++) { 
+							$message_markup = $data[$d][$i]['content'];
+							$data[$d][$i]['message_markup'] = $message_markup;
 							$model[$productName][] = $data[$d][$i];
 						}
 					}
@@ -269,9 +272,8 @@ class NewsApi extends Model
 	 */
 	public function saveJsonFile(){
 
-		$source = 'web';
 		if(!empty($this->data)){
-			$jsonfile = new JsonFile($this->alertId,$source);
+			$jsonfile = new JsonFile($this->alertId,$this->resourceName);
 			$jsonfile->load($this->data);
 			$jsonfile->save();
 		}
@@ -360,13 +362,14 @@ class NewsApi extends Model
 		
 		
 		$resourcesId = (new \yii\db\Query())
-		    ->select('id')
+		    ->select('id,name')
 		    ->from('resources')
 		    ->where(['name' => 'Web page','resourcesId' => $socialId['id']])
 		    ->all();
 		
 
 		$this->resourcesId = yii\helpers\ArrayHelper::getColumn($resourcesId,'id')[0];    
+		$this->resourceName = yii\helpers\ArrayHelper::getColumn($resourcesId,'name')[0];    
 	}
 	
 	function __construct(){
