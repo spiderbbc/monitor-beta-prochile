@@ -13,30 +13,28 @@ use app\models\AlertsMencions;
  */
 class NewsApi extends Model
 {
-	public $userId;
 	public $alertId;
-	public $end_date;
 	public $start_date;
-	public $resourcesId;
+	public $end_date;
 	public $products;
+	public $resourcesId;
 	
 	public $data;
 
 	public $total_call;
 	public $paginator;
 
-	public $condition_alert_mention = 'ACTIVE';
 	public $status_history_search = 'Pending';
+	public $condition_alert_mention = 'ACTIVE';
 
 	const LIMIT_CALLS = 166;
-	const NUMBER_DATA_BY_REQUEST = 20;
 	const TYPE_MENTIONS = 'web';
+	const NUMBER_DATA_BY_REQUEST = 20;
 
 
 	public function prepare($alert)
 	{
 		if(!empty($alert)){
-		
 			
 			$this->alertId        = $alert['id'];
 			$this->start_date     = $alert['config']['start_date'];
@@ -46,18 +44,11 @@ class NewsApi extends Model
 			 * validate there is one month old
 			 */
 			
-			
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
 			// set paginator
 			$this->_setPaginator();
-			
-
-			/**check is go here the methods
-			 * $this->searchFinish(); 
-			 */
-			
 			// set products
 			$products_params = $this->setProductsParams();
 
@@ -100,7 +91,7 @@ class NewsApi extends Model
 				$today =  Yii::$app->formatter->asDatetime(\app\helpers\DateHelper::getToday(),'yyyy-MM-dd');
 				if (\app\helpers\DateHelper::isBetweenDate($today,$this->start_date,$this->end_date)) {
 					$from = $this->start_date;
-					$to = (string) strtotime(\app\helpers\DateHelper::sub(\app\helpers\DateHelper::getToday(),'1 day'));
+					$to = (string) \app\helpers\DateHelper::getToday();
 					$this->condition_alert_mention = 'ACTIVE';
 					$this->status_history_search = 'Pending';
 				}else{
@@ -115,8 +106,8 @@ class NewsApi extends Model
 			$params[$this->products[$p]] = [
 				'q' => urlencode($this->products[$p]),
 				'qInTitle' => urlencode($this->products[$p]),
-				'from' => $from,
-				'to' => $to,
+				'from' => Yii::$app->formatter->asDatetime($from,'yyyy-MM-dd'),
+				'to' => Yii::$app->formatter->asDatetime($to,'yyyy-MM-dd'),
 				'sortBy' => 'relevancy',
 				'page' => 1,
 				'apikey' => Yii::$app->params['newsApi']['apiKey']
@@ -126,27 +117,36 @@ class NewsApi extends Model
 		}// end loop
 		return $params;
 	}
-
+	/**
+	 * [call to api for each products or word]
+	 * @param  [type] $products_params [params to call api]
+	 * @return [type]                  [null]
+	 */
 	public function call($products_params)
 	{
 		foreach($products_params as $productName => $params){
 			$this->data[$productName] =  $this->_getNews($params);
 		}
 		$this->_orderNews();
+		$this->searchFinish(); 
 	}
-
+	/**
+	 * [_getNews call to api]
+	 * @param  [type] $params [params to call api]
+	 * @return [type]         [array data]
+	 */
 	private function _getNews($params)
 	{
 		$data = [];
 		$page = 0;
 		$flag = true;
-		$paginator = $this->paginator;
+		/*$paginator = $this->paginator;*/
+		$paginator = 1;
 
 		$client = new Client();
 
 		do {
 			
-
 			$response = $client->createRequest()
 				->setMethod('GET')
 				->setUrl('http://newsapi.org/v2/everything')
@@ -163,7 +163,7 @@ class NewsApi extends Model
 							$paginator = 1;
 						}else{
 							$total = round($totalResults / self::NUMBER_DATA_BY_REQUEST,0,PHP_ROUND_HALF_UP);
-							$paginator = ($total > $this->paginator) ? $this->paginator : $total;
+							$paginator = ($total > $paginator) ? $paginator : $total;
 							
 							/*echo "---------------------\n";
 							echo " totalResults: ".$totalResults."\n";
@@ -200,11 +200,19 @@ class NewsApi extends Model
 
 		return $data;
 	}
-
+	/**
+	 * [_orderNews order array data to save in method jsonsave]
+	 * @return [type] [null]
+	 */
 	private function _orderNews()
 	{
 		$properties = [];
 		$model = [];
+		// check if save date searched
+		if ($this->status_history_search == 'Pending' && $this->condition_alert_mention == 'ACTIVE') {
+			$today = \app\helpers\DateHelper::getToday();
+		}
+
 		if (!empty($this->data)) {
 			foreach ($this->data as $productName => $data) {
 				if (!empty($this->data[$productName])) {
@@ -212,6 +220,7 @@ class NewsApi extends Model
 					$properties['term_searched'] = $productName;
 					$properties['condition'] = $this->condition_alert_mention;
 					$properties['type'] = self::TYPE_MENTIONS;
+					$properties['date_searched'] = (isset($today)) ? $today : null;
 
 					$this->_saveAlertsMencions($properties);
 
@@ -226,7 +235,6 @@ class NewsApi extends Model
 
 		$this->data = $model;
 	}
-
 	/**
 	 * [_saveAlertsMencions save in alerts_mencions model]
 	 * @param  array  $properties [description]
@@ -255,7 +263,6 @@ class NewsApi extends Model
     	}
 
 	}
-
 	/**
 	 * [saveJsonFile save a json file]
 	 * @return [none] [description]
@@ -270,16 +277,12 @@ class NewsApi extends Model
 		}
 
 	}
-
+	/**
+	 * [searchFinish save his status in HistorySearch]
+	 * @return [type] [description]
+	 */
 	private function searchFinish()
 	{
-		$alertsMencions = \app\models\AlertsMencions::find()->where([
-    		'alertId'       => $this->alertId,
-	        'resourcesId'   => $this->resourcesId,
-	        'type'          => 'web',
-	        //'condition'		=> 'ACTIVE'
-    	])->all(); 
-
 
 		$model = [
             'Web page' => [
@@ -287,33 +290,10 @@ class NewsApi extends Model
                 'status' => $this->status_history_search
             ]
         ];
-
-		if(count($alertsMencions)){
-			$count = 0;
-			$date_searched_flag   = intval($this->end_date);
-
-			foreach ($alertsMencions as $alert_mention) {
-				if (!\app\helpers\DateHelper::isToday($date_searched_flag)) {
-					if($alert_mention->date_searched >= $date_searched_flag){
-	      				if(!$alert_mention->since_id){
-		      				$alert_mention->condition = 'INACTIVE';
-		      				$alert_mention->save();
-	      					$count++;
-	      				}
-	      			}
-				}
-	      	}
-
-			if($count >= count($alertsMencions)){
-				$model['Web page']['status'] = $this->status_history_search; 
-			}
-
-		}
 		
 		\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $model);
 
 	}
-
 	/**
 	 * [_getAlertsMencionsByProduct get model by product name]
 	 * @param  [type] $productName [name product]
