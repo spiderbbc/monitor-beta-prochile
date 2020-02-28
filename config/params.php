@@ -17,14 +17,14 @@ return [
 		'time_hours_sleep' => 8,
 		'apiKey' => 'ca5709f738c146a0b5f86fad213c9316',
 		'targets' => [
-			/*'Forbes' => 'forbes.com',
+			'Forbes' => 'forbes.com',
 			'Techcrunch' => 'techcrunch.com',
 			'New York Times' => 'nytimes.com',
 			'Houston Chronicle' => 'chron.com',
 			'The Economist' => 'economist.com',
 			'Miami Herald' => 'miamiherald.com',
 			'Los Angeles Times' => 'latimes.com',
-			'The Wall Street Journal' => 'wsj.com'*/
+			'The Wall Street Journal' => 'wsj.com'
 			/*'lun' => 'lun.com',
 			'lgblog' => 'lgblog.cl',
 			'eldinamo' => 'eldinamo.cl',

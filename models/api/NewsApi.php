@@ -52,8 +52,12 @@ class NewsApi extends Model
 			$this->_setPaginator();
 			// set products
 			$products_params = $this->setProductsParams();
-
-			return $products_params;
+			if (empty($products_params)) {
+				$this->changeStatusAlertMentions();
+			}else{
+				return $products_params;
+			}
+			
 		}
 		return false;
 	}
@@ -76,38 +80,39 @@ class NewsApi extends Model
 			$productName = $this->products[$p];
 			$productMention = $this->_getAlertsMencionsByProduct($productName);
 			// sources 
-			$sources = implode(',', array_values(Yii::$app->params['newsApi']['targets']));
-			
-			if ($productMention) {
-				if ($productMention->date_searched) {
-					$this->start_date = $this->end_date = $productMention->date_searched;
-					$from = $this->start_date;
-					$to = $this->end_date; 
-					$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day')); 
-					if ($productMention->date_searched < $date_searched_flag) {
-						$this->condition_alert_mention = 'ACTIVE';
-						$this->status_history_search = 'Pending';
-					} else {
+			$domains = implode(',', array_values(Yii::$app->params['newsApi']['targets']));
+
+			if (!$productMention) {
+				# start date and end date is today
+				if (\app\helpers\DateHelper::isToday($this->start_date) && \app\helpers\DateHelper::isToday($this->end_date)) {
+					$from = $to = \app\helpers\DateHelper::getToday();
+				}else{
+					// is between
+					$today =  Yii::$app->formatter->asDatetime(\app\helpers\DateHelper::getToday(),'yyyy-MM-dd');
+					if (\app\helpers\DateHelper::isBetweenDate($today,$this->start_date,$this->end_date)) {
+						$from = $this->start_date;
+						$to = (string) \app\helpers\DateHelper::getToday();
+					}else{
+						$from = $this->start_date;
+						$to = $this->end_date;
 						$this->condition_alert_mention = 'INACTIVE';
 						$this->status_history_search = 'Finish';
-					}
-					
-				}
-			}
+					}// end between
 
-			// if start date and end date is today
-			if (\app\helpers\DateHelper::isToday($this->start_date) && \app\helpers\DateHelper::isToday($this->end_date)) {
-				$from = $to = \app\helpers\DateHelper::getToday();
-			}else{
-				// if on range start and end date
-				$today =  Yii::$app->formatter->asDatetime(\app\helpers\DateHelper::getToday(),'yyyy-MM-dd');
-				if (\app\helpers\DateHelper::isBetweenDate($today,$this->start_date,$this->end_date)) {
-					$from = $this->start_date;
-					$to = (string) \app\helpers\DateHelper::getToday();
-					$this->condition_alert_mention = 'ACTIVE';
-					$this->status_history_search = 'Pending';
+				}// end if is today
+			} else {
+				$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+				if ($productMention->date_searched < $date_searched_flag) {
+					$from = $productMention->date_searched;
+					$to = $productMention->date_searched;
+				}else{
+					$this->condition_alert_mention = 'INACTIVE';
+					$this->status_history_search = 'Finish';
+					continue;
 				}
 			}
+			
+			
 
 			$params[$this->products[$p]] = [
 				'q' => urlencode($this->products[$p]),
@@ -116,11 +121,15 @@ class NewsApi extends Model
 				'to' => Yii::$app->formatter->asDatetime($to,'yyyy-MM-dd'),
 				'sortBy' => 'relevancy',
 				'page' => 1,
-				'apikey' => Yii::$app->params['newsApi']['apiKey']
-				//'domains' =>  $domains,
+				'apikey' => Yii::$app->params['newsApi']['apiKey'],
+				'domains' =>  $domains,
 				
 			];
 		}// end loop
+		var_dump($params);
+		echo $this->status_history_search."\n";
+		echo $this->condition_alert_mention."\n";
+		//die();
 		return $params;
 	}
 	/**
@@ -133,8 +142,11 @@ class NewsApi extends Model
 		foreach($products_params as $productName => $params){
 			$this->data[$productName] =  $this->_getNews($params);
 		}
+		
 		$this->_orderNews();
+		// search finish
 		$this->searchFinish(); 
+		
 	}
 	/**
 	 * [_getNews call to api]
@@ -171,11 +183,11 @@ class NewsApi extends Model
 							$total = round($totalResults / self::NUMBER_DATA_BY_REQUEST,0,PHP_ROUND_HALF_UP);
 							$paginator = ($total > $paginator) ? $paginator : $total;
 							
-							/*echo "---------------------\n";
+							echo "---------------------\n";
 							echo " totalResults: ".$totalResults."\n";
 							echo " total: ".$total."\n";
 							echo " paginator: ".$paginator."\n";
-							echo "---------------------\n";*/
+							echo "---------------------\n";
 						}
 						$flag = false;
 					}
@@ -203,7 +215,6 @@ class NewsApi extends Model
 			$params['page'] += 1;
 			$paginator --;
 		} while ($paginator > 0);
-
 		return $data;
 	}
 	/**
@@ -217,6 +228,8 @@ class NewsApi extends Model
 		// check if save date searched
 		if ($this->status_history_search == 'Pending' && $this->condition_alert_mention == 'ACTIVE') {
 			$today = \app\helpers\DateHelper::getToday();
+			//$date_searched = $today;
+			$date_searched = \app\helpers\DateHelper::addHours($today,Yii::$app->params['newsApi']['time_hours_sleep']);
 		}
 
 		if (!empty($this->data)) {
@@ -226,14 +239,14 @@ class NewsApi extends Model
 					$properties['term_searched'] = $productName;
 					$properties['condition'] = $this->condition_alert_mention;
 					$properties['type'] = self::TYPE_MENTIONS;
-					$properties['date_searched'] = (isset($today)) ? $today : null;
+					$properties['date_searched'] = (isset($date_searched)) ? $date_searched : null;
 
 					$this->_saveAlertsMencions($properties);
 
 					for ($d=0; $d <sizeof($data) ; $d++) { 
 						for ($i=0; $i <sizeof($data[$d]) ; $i++) { 
-							$message_markup = $data[$d][$i]['content'];
-							$data[$d][$i]['message_markup'] = $message_markup;
+							$content = $data[$d][$i]['content'];
+							$data[$d][$i]['message_markup'] = \app\helpers\StringHelper::collapseWhitespace($content);
 							$model[$productName][] = $data[$d][$i];
 						}
 					}
@@ -325,6 +338,19 @@ class NewsApi extends Model
 
 		return $model;
 	
+	}
+
+	private function changeStatusAlertMentions()
+	{
+		// check if save date searched
+		if ($this->status_history_search == 'Finish' && $this->condition_alert_mention == 'INACTIVE') {
+			$alerts_mencions = \app\models\AlertsMencions::find()->where(['alertId' => $this->alertId])->all();
+			foreach ($alerts_mencions as $alerts_mencion) {
+				$alerts_mencion->condition = $this->condition_alert_mention;
+				$alerts_mencion->save();
+			}
+
+		}
 	}
 
 	/**

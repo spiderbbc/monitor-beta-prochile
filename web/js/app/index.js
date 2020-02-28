@@ -1,5 +1,6 @@
 'use strict'
 const origin = location.origin;
+const appId = location.pathname.split('/')[1];
 
 let title = 'Atención';
 let text_inactive = 'Será cambiado el estado de la alerta y no recabara mas informacion';
@@ -47,7 +48,7 @@ function modal_status_change($this) {
 	}).then((result) => {
 	  if (result.value) {
 	    $.ajax({
-	        url: origin + '/monitor-beta/web/monitor/alert/change-status',
+	        url: origin + `/${appId}/web/monitor/alert/change-status`,
 	        data: {"id":id, "value":value},
 	        type: "GET",
 	        dataType: "json",

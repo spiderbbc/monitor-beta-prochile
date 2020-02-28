@@ -103,24 +103,26 @@ class NewsSearch
       if(!is_null($alertsMencionsModel)){
         for ($n=0; $n <sizeof($news) ; $n++) { 
           $authorName = $news[$n]['author'];
-          $author = $this->saveUserMentions($authorName);
+          if(!is_null($authorName)){
+            $author = $this->saveUserMentions($authorName);
 
-          if (empty($author->errors)) {
-            $new = $news[$n];
-            $mention = $this->saveMencions($new,$alertsMencionsModel->id,$author->id);
-            if (empty($mention->errors)) {
-              if($this->isDictionaries && ArrayHelper::keyExists('wordsId', $news[$n], false)){
-                $wordIds = $news[$n]['wordsId'];
-                // save Keywords Mentions 
-                $this->saveKeywordsMentions($wordIds,$mention->id);
-              }// end if isDictionaries
+            if (empty($author->errors)) {
+              $new = $news[$n];
+              $mention = $this->saveMencions($new,$alertsMencionsModel->id,$author->id);
+              if (empty($mention->errors)) {
+                if($this->isDictionaries && ArrayHelper::keyExists('wordsId', $news[$n], false)){
+                  $wordIds = $news[$n]['wordsId'];
+                  // save Keywords Mentions 
+                  $this->saveKeywordsMentions($wordIds,$mention->id);
+                }// end if isDictionaries
+              }else{
+                $author->delete();
+                $error['mention'] = $mention->errors;
+              }// end mention error
             }else{
-              $author->delete();
-              $error['mention'] = $mention->errors;
-            }// end mention error
-          }else{
-            $error['user'] = $author->errors;
-          }// end error mention// end if author
+              $error['user'] = $author->errors;
+            }// end error mention// end if author
+          }// end if is_null author name
         } // end loop news
       }// end if !null
     }// end foreach $data
