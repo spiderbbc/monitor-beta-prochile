@@ -31,6 +31,19 @@ class DateHelper
     }
 
     /**
+     * [add plus hours to date depending in number]
+     * @param  [string] $date   [date unix]
+     * @param  [string] $number   [int 1]
+     * @return [string] $number []
+     */
+    public static function addHours($date, $number)
+    {
+        //$date_format = Yii::$app->formatter->asDatetime($date,'yyyy-MM-dd');
+        $date_future = Date::parse($date)->addHours($number);
+        return $date_future->getTimestamp();
+    }
+
+    /**
      * [sub plus a date depending in number]
      * @param  [string] $date   [date]
      * @return [string] $number [ej +1 day]

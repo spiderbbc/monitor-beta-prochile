@@ -80,7 +80,18 @@ class NewsApi extends Model
 			
 			if ($productMention) {
 				if ($productMention->date_searched) {
-					$this->start_date = $this->end_date = $productMention->date_searched;  
+					$this->start_date = $this->end_date = $productMention->date_searched;
+					$from = $this->start_date;
+					$to = $this->end_date; 
+					$date_searched_flag   = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day')); 
+					if ($productMention->date_searched < $date_searched_flag) {
+						$this->condition_alert_mention = 'ACTIVE';
+						$this->status_history_search = 'Pending';
+					} else {
+						$this->condition_alert_mention = 'INACTIVE';
+						$this->status_history_search = 'Finish';
+					}
+					
 				}
 			}
 
@@ -95,13 +106,7 @@ class NewsApi extends Model
 					$to = (string) \app\helpers\DateHelper::getToday();
 					$this->condition_alert_mention = 'ACTIVE';
 					$this->status_history_search = 'Pending';
-				}else{
-					$from = $this->start_date;
-					$to = $this->end_date;
-					$this->condition_alert_mention = 'INACTIVE';
-					$this->status_history_search = 'Finish';
 				}
-
 			}
 
 			$params[$this->products[$p]] = [
