@@ -160,7 +160,11 @@ class AlertMentionsHelper
                 break;  
             case 'Excel Document':
                 return [$resource_name,'0','0','0',$model->twitterTotal];
-                break;                  
+                break;
+
+            case 'Web page':
+                return [$resource_name,'0','0','0',$model->total];                      
+                break;
 
             
             default:
@@ -330,7 +334,20 @@ class AlertMentionsHelper
                 // set
                 $data['total'] = $total;
                 return $data; 
-                break;         
+                break;
+            case 'Web page':
+                $total = 0;
+                foreach ($models as $model) {
+                    if ($model->mentionsCount) {
+                        $total += $model->mentionsCount;
+                    }
+                }
+                // set
+                
+                $data['total'] = $total;
+                return $data; 
+                break;
+                         
 
             default:
                 # code...
