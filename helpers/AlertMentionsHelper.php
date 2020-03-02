@@ -443,9 +443,10 @@ class AlertMentionsHelper
     {
         $now = new \DateTime('NOW');
         $minutes_to_call = \Yii::$app->params['facebook']['time_min_sleep']; 
+        $hour_news_api = 8; 
 
 
-        $sourcesTargest = ['Instagram Comments','Facebook Comments','Facebook Messages'];
+        $sourcesTargest = ['Instagram Comments','Facebook Comments','Facebook Messages','Web page'];
         // loop alerts config
         for ($a=0; $a < sizeof($alerts) ; $a++) { 
             foreach ($alerts[$a]['config']['configSources'] as $resourceName) {
@@ -469,10 +470,18 @@ class AlertMentionsHelper
                         $fecha = new \DateTime();
                         $updatedAt_diff = $now->diff($fecha->setTimestamp($alertMention->updatedAt));
                        
-                       
-                        if($updatedAt_diff->i <= $minutes_to_call){
-                            $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
-                        } // end if diff
+                        if ($resourceName != 'Web page') {
+                            if($updatedAt_diff->i <= $minutes_to_call){
+                                $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
+                            } // end if diff
+                        }else{
+                            // diff between 8 hours
+                            echo $updatedAt_diff->h."\n";
+                            if($updatedAt_diff->h <= $hour_news_api){
+                                $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
+                            } // end if diff
+                        }
+                        
                     }// end if mentions
 
                     // if finish on history search table unset for array
