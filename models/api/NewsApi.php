@@ -126,9 +126,6 @@ class NewsApi extends Model
 				
 			];
 		}// end loop
-		var_dump($params);
-		echo $this->status_history_search."\n";
-		echo $this->condition_alert_mention."\n";
 		//die();
 		return $params;
 	}
@@ -158,8 +155,8 @@ class NewsApi extends Model
 		$data = [];
 		$page = 0;
 		$flag = true;
-		/*$paginator = $this->paginator;*/
-		$paginator = 1;
+		$paginator = $this->paginator;
+		//$paginator = 1;
 
 		$client = new Client();
 
@@ -183,11 +180,11 @@ class NewsApi extends Model
 							$total = round($totalResults / self::NUMBER_DATA_BY_REQUEST,0,PHP_ROUND_HALF_UP);
 							$paginator = ($total > $paginator) ? $paginator : $total;
 							
-							echo "---------------------\n";
+							/*echo "---------------------\n";
 							echo " totalResults: ".$totalResults."\n";
 							echo " total: ".$total."\n";
 							echo " paginator: ".$paginator."\n";
-							echo "---------------------\n";
+							echo "---------------------\n";*/
 						}
 						$flag = false;
 					}

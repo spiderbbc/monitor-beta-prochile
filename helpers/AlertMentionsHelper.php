@@ -476,7 +476,7 @@ class AlertMentionsHelper
                             } // end if diff
                         }else{
                             // diff between 8 hours
-                            echo $updatedAt_diff->h."\n";
+                            //echo $updatedAt_diff->h."\n";
                             if($updatedAt_diff->h <= $hour_news_api){
                                 $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
                             } // end if diff
