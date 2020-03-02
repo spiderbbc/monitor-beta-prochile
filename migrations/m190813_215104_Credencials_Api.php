@@ -36,6 +36,133 @@ class m190813_215104_Credencials_Api extends Migration
 
         ],$tableOptions);
 
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 1,
+            'resourceId'          => 2,
+            'name_app'            => 'pro_chile_monitor',
+            'api_key'             => 'encrycpt here',
+            'api_secret_key'      => 'encrycpt here',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'expiration_date'     => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 1,
+            'resourceId'          => 4,
+            'name_app'            => 'monitor-drive',
+            'api_key'             => 'monitor-beta-lg',
+            'api_secret_key'      => '1s29IoJn76zzqUWCFIy2vfjFv9BWVR548Bpl-mBSNHfE',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+
+        // user mauro
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 2,
+            'resourceId'          => 2,
+            'name_app'            => 'pro_chile_monitor',
+            'api_key'             => 'encrycpt here',
+            'api_secret_key'      => 'encrycpt here',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'expiration_date'     => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 2,
+            'resourceId'          => 4,
+            'name_app'            => 'monitor-drive',
+            'api_key'             => 'monitor-beta-lg',
+            'api_secret_key'      => '1s29IoJn76zzqUWCFIy2vfjFv9BWVR548Bpl-mBSNHfE',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+        // user mario 
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 3,
+            'resourceId'          => 2,
+            'name_app'            => 'pro_chile_monitor',
+            'api_key'             => 'encrycpt here',
+            'api_secret_key'      => 'encrycpt here',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'expiration_date'     => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 3,
+            'resourceId'          => 4,
+            'name_app'            => 'monitor-drive',
+            'api_key'             => 'monitor-beta-lg',
+            'api_secret_key'      => '1s29IoJn76zzqUWCFIy2vfjFv9BWVR548Bpl-mBSNHfE',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+        // usuario amalia
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 4,
+            'resourceId'          => 2,
+            'name_app'            => 'pro_chile_monitor',
+            'api_key'             => 'encrycpt here',
+            'api_secret_key'      => 'encrycpt here',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'expiration_date'     => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 4,
+            'resourceId'          => 4,
+            'name_app'            => 'monitor-drive',
+            'api_key'             => 'monitor-beta-lg',
+            'api_secret_key'      => '1s29IoJn76zzqUWCFIy2vfjFv9BWVR548Bpl-mBSNHfE',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
         /*$this->insert('{{%credencials_api}}', [
             'userId'              => 1,
             'resourceId'          => 1,
@@ -86,21 +213,7 @@ class m190813_215104_Credencials_Api extends Migration
             'updatedBy'           => '1',
         ]);*/
 
-        $this->insert('{{%credencials_api}}', [
-            'userId'              => 1,
-            'resourceId'          => 2,
-            'name_app'            => 'pro_chile_monitor',
-            'api_key'             => 'encrycpt here',
-            'api_secret_key'      => 'encrycpt here',
-            'access_secret_token' => 'encrycpt here',
-            'bearer_token'        => 'encrycpt here',
-            'apiLogin'            => 'encrycpt here',
-            'expiration_date'     => 'encrycpt here',
-            'createdAt'           => '1488153462',
-            'updatedAt'           => '1488153462',
-            'createdBy'           => '1',
-            'updatedBy'           => '1',
-        ]);
+        
 
         /*$this->insert('{{%credencials_api}}', [
             'userId'              => 1,
@@ -118,20 +231,7 @@ class m190813_215104_Credencials_Api extends Migration
             'updatedBy'           => '1',
         ]);*/
 
-        $this->insert('{{%credencials_api}}', [
-            'userId'              => 1,
-            'resourceId'          => 4,
-            'name_app'            => 'monitor-drive',
-            'api_key'             => 'monitor-beta-lg',
-            'api_secret_key'      => '1s29IoJn76zzqUWCFIy2vfjFv9BWVR548Bpl-mBSNHfE',
-            'access_secret_token' => 'encrycpt here',
-            'bearer_token'        => 'encrycpt here',
-            'apiLogin'            => 'encrycpt here',
-            'createdAt'           => '1488153462',
-            'updatedAt'           => '1488153462',
-            'createdBy'           => '1',
-            'updatedBy'           => '1',
-        ]);
+        
 
          // creates index for column `userId`
         $this->createIndex(

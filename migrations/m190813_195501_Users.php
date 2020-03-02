@@ -35,18 +35,40 @@ class m190813_195501_Users extends Migration
             'auth_key'      => 'tPwo4kDpN7JAz8Rrm9EwNAQ7q8F1p7FN',
             // deathnote
             'password_hash' => '$2y$13$Xv3tYWezdvWV9GRUUv1/8.NEC8CX4fp2MRntK5L0EBJXgwy49IF.K',
-            'email'         => 'spiderbbc@gmail.com',
+            'email'         => 'eduardo@montana-studio.com',
             'status'        => 10,
             'created_at'    => 0,
             'updated_at'    => 0,
         ]);
 
         $this->insert('{{%users}}', [
-            'username'      => 'user',
+            'username'      => 'mauro',
             'auth_key'      => 'tPwo4kDpN7JAz8Rrm9EwNAQ7q8F1p7FN',
-            // lgdafne
-            'password_hash' => '$2y$13$Xv3tYWezdvWV9GRUUv1/8.NEC8CX4fp2MRntK5L0EBJXgwy49IF.K',
-            'email'         => 'user@gmail.com',
+            // mauro123
+            'password_hash' => '$2y$13$J2tWG5KBTCC0aCx3EbT5XOjn2nGZ2qF/xCQNJ3UeIcHwHdfdV4QM6',
+            'email'         => 'user1@gmail.com',
+            'status'        => 10,
+            'created_at'    => 0,
+            'updated_at'    => 0,
+        ]);
+
+        $this->insert('{{%users}}', [
+            'username'      => 'mario',
+            'auth_key'      => 'tPwo4kDpN7JAz8Rrm9EwNAQ7q8F1p7FN',
+            // mario123
+            'password_hash' => '$2y$13$AeVG233.JrEE9yW0Kc5Ozu.FsZ0LVSRzmuHnyzpAkkfBpv/zAslJ6',
+            'email'         => 'user2@gmail.com',
+            'status'        => 10,
+            'created_at'    => 0,
+            'updated_at'    => 0,
+        ]);
+
+        $this->insert('{{%users}}', [
+            'username'      => 'amalia',
+            'auth_key'      => 'tPwo4kDpN7JAz8Rrm9EwNAQ7q8F1p7FN',
+            // amalia123
+            'password_hash' => '$2y$13$QkKg9OuIcYJO34Y7JSYoNeyEFLQqM/MufnkIkGbfQWff9/83Hreoq',
+            'email'         => 'user3@gmail.com',
             'status'        => 10,
             'created_at'    => 0,
             'updated_at'    => 0,
