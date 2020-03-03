@@ -504,7 +504,8 @@ class MentionsController extends Controller
           }
 
           foreach ($rows as $row){
-            $date = $row['date'];
+
+            $date = gmdate("Y-m-d", $row['created_time']);
             $row['created_time'] = $date;
             $row['product_searched'] = $alertMention->term_searched;
             $row['resourceName'] = $alertMention->resources->name;
@@ -522,10 +523,9 @@ class MentionsController extends Controller
 
     $data = [];
     for ($r=0; $r < sizeof($resourceDateCount) ; $r++) { 
-      $data[$resourceDateCount[$r]['date']][] = $resourceDateCount[$r];
+      $data[$resourceDateCount[$r]['created_time']][] = $resourceDateCount[$r];
     }
-
-
+   
 
     $model = array();
     $i = 0;
