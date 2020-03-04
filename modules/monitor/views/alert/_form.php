@@ -80,8 +80,8 @@ use mludvik\tagsinput\TagsInputWidget;
                                 'allowClear' => true,
                             ],
                             'pluginEvents' => [
-                               "select2:select" => "function(e) { 
-                                    return modalReosurces(e);
+                               "select2:select" => "function(event) { 
+                                    return modalReosurces(event);
                                }",
                             ],
                             'toggleAllSettings' => [
