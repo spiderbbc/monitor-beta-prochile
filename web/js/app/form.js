@@ -54,7 +54,10 @@ let message_more_than_one_month= "Consultar las paginas web tiene que ser un ran
 
 
 
-
+/**
+ * [modalReosurces method that validates according to the time and the social network chosen the type of message to show the user]
+ * @param  {[type]} event [event calendar]
+ */
 function modalReosurces(event) {
 	
 	var format = 'DD/MM/YYYY';
@@ -65,7 +68,6 @@ function modalReosurces(event) {
 
 	
 	var resource = event.params.data.text;
-	console.log(resource);
 
 	switch (resource){
 		case "Web page":
@@ -92,12 +94,46 @@ function modalReosurces(event) {
 			
 		}
 		break;
+
+		case "Twitter":
+		const days_twitter = 7;
+		if(start_date.length && end_date.length){
+			var now = moment();
+
+			var beforeTime = moment(start_date, format);
+	  		var afterTime = moment(end_date, format);
+			
+			
+			var days_ago = moment().subtract(days_twitter, 'days').format(format);
+
+
+			if(moment().isBetween(beforeTime, afterTime)){
+				var days = now.diff(beforeTime, "days");
+				if(Math.sign(days) && days > days_twitter){
+					swal_modal_info(days_twitter,days_ago);
+				}
+			}else{
+				var diff_end_date = now.diff(afterTime, "days");
+
+				if (diff_end_date >= days_twitter) {
+					swal_modal_info(resource,days_twitter,days_ago);
+
+				}
+
+				var diff_start_date = now.diff(beforeTime, "days");
+				if (diff_start_date >= days_twitter) {
+					swal_modal_info(resource,days_twitter,days_ago);
+				}
+
+			}
+		}else{
+			swal_modal('error','Opps',message_error_no_dates);
+			clean_select2(social);
+		}
+
+		break;
 	}
-	
-	
 }
-
-
 
 
 /**
@@ -143,13 +179,22 @@ function validator_date(event) {
 
 }
 
-
+/**
+ * [clean_select2 clean select2 select option]
+ * @param  {[type]} social [element select2]
+ */
 function clean_select2(social) {
 	var current_values = social.val();
     current_values.splice( current_values.indexOf('1'), 1 );
     social.val(current_values).trigger('change');
 }
-
+/**
+ * [swal_modal_info informs the user of the days on which he should initiate an alert if a date is exceeded]
+ * @param  {[type]} resource [resource name]
+ * @param  {[type]} days     [total days]
+ * @param  {[type]} days_ago [days ago]
+ * @return {[type]}          [description]
+ */
 function swal_modal_info(resource,days,days_ago) {
 	Swal.fire({
 	  icon: 'warning',
@@ -165,7 +210,7 @@ function swal_modal_info(resource,days,days_ago) {
 			//if yes
 			$('#start_date').kvDatepicker.defaults.format = 'dd/mm/yyyy';
 			$('#start_date').kvDatepicker('update', days_ago);
-			$('#end_date').kvDatepicker('clearDates');
+			//$('#end_date').kvDatepicker('clearDates');
 			
 		}else{
 			var social = $('#social_resourcesId');
