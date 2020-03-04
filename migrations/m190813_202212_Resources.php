@@ -29,14 +29,23 @@ class m190813_202212_Resources extends Migration
 
         ], $tableOptions);
         // 1
-        /*$this->insert('{{%resources}}', [
+        $this->insert('{{%resources}}', [
             'name'        => 'Twitter',
             'resourcesId' => '1',
             'createdAt'   => '1488153462',
             'updatedAt'   => '1488153462',
             'createdBy'   => '1',
             'updatedBy'   => '1',
-        ]);*/
+        ]);
+
+        $this->insert('{{%resources}}', [
+            'name'        => 'Instagram Comments',
+            'resourcesId' => '1',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
+        ]);
 
         // 2
         /*$this->insert('{{%resources}}', [
@@ -76,14 +85,7 @@ class m190813_202212_Resources extends Migration
             'updatedBy'   => '1',
         ]);*/
         // 6
-        $this->insert('{{%resources}}', [
-            'name'        => 'Instagram Comments',
-            'resourcesId' => '1',
-            'createdAt'   => '1488153462',
-            'updatedAt'   => '1488153462',
-            'createdBy'   => '1',
-            'updatedBy'   => '1',
-        ]);
+        
         // 7
         /*$this->insert('{{%resources}}', [
             'name'        => 'Facebook Messages',
