@@ -81,7 +81,7 @@ use mludvik\tagsinput\TagsInputWidget;
                             ],
                             'pluginEvents' => [
                                "select2:select" => "function(e) { 
-                                    return modalTwitter(e);
+                                    return modalReosurces(e);
                                }",
                             ],
                             'toggleAllSettings' => [
