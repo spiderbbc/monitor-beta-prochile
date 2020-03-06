@@ -36,7 +36,7 @@ class TwitterSearch
                 foreach($products as $product => $datos){
                    // for each tweets 
                    for($d = 0; $d < sizeof($datos); $d++){
-                        if(!ArrayHelper::keyExists($product, $this->data, false)){
+                        if(!ArrayHelper::keyExists($product, $this->data)){
                             $this->data[$product] = [];
                         }
                         if(!in_array($datos[$d], $this->data[$product])){
