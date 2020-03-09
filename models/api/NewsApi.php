@@ -243,7 +243,10 @@ class NewsApi extends Model
 					for ($d=0; $d <sizeof($data) ; $d++) { 
 						for ($i=0; $i <sizeof($data[$d]) ; $i++) { 
 							$content = $data[$d][$i]['content'];
-							$data[$d][$i]['message_markup'] = \app\helpers\StringHelper::collapseWhitespace($content);
+							if(!is_null($content)){
+								$content = \app\helpers\StringHelper::collapseWhitespace($content);
+							}
+							$data[$d][$i]['message_markup'] = $content;
 							$model[$productName][] = $data[$d][$i];
 						}
 					}
