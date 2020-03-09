@@ -274,7 +274,7 @@ class InstagramCommentsApi extends Model {
 						if($is_contains){
 							if($feed_count){
 								// if a not key
-								if(!ArrayHelper::keyExists($this->products[$p], $posts, false)){
+								if(!ArrayHelper::keyExists($this->products[$p], $posts)){
 									$posts [$this->products[$p]] = [] ;
 
 								}
