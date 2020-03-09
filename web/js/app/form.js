@@ -58,39 +58,33 @@ let message_more_than_one_month= "Consultar las paginas web tiene que ser un ran
  * [modalReosurces method that validates according to the time and the social network chosen the type of message to show the user]
  * @param  {[type]} event [event calendar]
  */
-function modalReosurces(event) {
+function modalReosurces(resourceName) {
 	
 	var format = 'DD/MM/YYYY';
 	
 	var start_date = $('#start_date')[0].value;
 	var end_date = $('#end_date')[0].value;
-	var social = $('#social_resourcesId');
+	var social = $('#social_resourcesId').select2('data');
 
 	
-	var resource = event.params.data.text;
+	var resource = resourceName;
 
 	switch (resource){
 		case "Web page":
 		const days_web = 29;
 		var start_date = $('#start_date')[0].value;
 		var end_date = $('#end_date')[0].value;
-		var afterTime = moment(start_date, format);
-
-	
 
 		if(start_date.length && end_date.length){
-			var now = moment();
-			var diff_start_date = now.diff(afterTime, "days");
-			if (diff_start_date >= days_web) {
-				var days_ago = moment().subtract(days_web, 'days').format(format);
-				
+			
+			var days_ago = check_if_it_exceeds_the_limit(start_date,days_web,'days');
+			if (days_ago) {
 				swal_modal_info(resource,days_web,days_ago);
-				
 			}
 			
 		}else{
 			swal_modal('error','Opps',message_error_no_dates);
-			clean_select2(social);
+			clean_select2(social,resource);
 			
 		}
 		break;
@@ -98,43 +92,43 @@ function modalReosurces(event) {
 		case "Twitter":
 		const days_twitter = 7;
 		if(start_date.length && end_date.length){
-			var now = moment();
 
-			var beforeTime = moment(start_date, format);
-	  		var afterTime = moment(end_date, format);
-			
-			
-			var days_ago = moment().subtract(days_twitter, 'days').format(format);
-
-
-			if(moment().isBetween(beforeTime, afterTime)){
-				var days = now.diff(beforeTime, "days");
-				if(Math.sign(days) && days > days_twitter){
-					swal_modal_info(days_twitter,days_ago);
-				}
-			}else{
-				var diff_end_date = now.diff(afterTime, "days");
-
-				if (diff_end_date >= days_twitter) {
-					swal_modal_info(resource,days_twitter,days_ago);
-
-				}
-
-				var diff_start_date = now.diff(beforeTime, "days");
-				if (diff_start_date >= days_twitter) {
-					swal_modal_info(resource,days_twitter,days_ago);
-				}
-
+			var days_ago = check_if_it_exceeds_the_limit(start_date,days_twitter,'days');
+			if (days_ago) {
+				swal_modal_info(resource,days_twitter,days_ago);
 			}
+			
 		}else{
 			swal_modal('error','Opps',message_error_no_dates);
-			clean_select2(social);
+			clean_select2(social,resource);
 		}
 
 		break;
 	}
 }
 
+/**
+ * [check_if_it_exceeds_the_limit if the date exceeds the limit returns the day in which it is within the range of the limit]
+ * @param  {[type]} start_date [start date alert]
+ * @param  {[type]} limit      [number of day or month]
+ * @param  {[type]} period     [ej: 'days' or 'month']
+ * @return {[type]}            [the optimal day to start the alert]
+ */
+function check_if_it_exceeds_the_limit(start_date,limit,period){
+
+	var now = moment();
+	var format = 'DD/MM/YYYY';
+	var days_ago = null;
+
+	var afterTime = moment(start_date, format);
+	var diff_start_date = now.diff(afterTime, period);
+
+	if (diff_start_date > limit) {
+		days_ago = moment().subtract(limit, period).format(format);
+	}
+
+	return days_ago;
+}
 
 /**
  * [swal_modal_error fire up a simple swal modal]
@@ -155,10 +149,18 @@ function swal_modal(icon,title,message) {
  * [validator_date change the end date based on the start date ]
  * @param  {[type]} event
  */
-function validator_date(event) {
+async function validator_date(event) {
 	
 	var start_date = $('#start_date').val().split("/").reverse().join("-");
 	var end_date = $('#end_date').val().split("/").reverse().join("-");
+
+	// check if have resource clicked
+	var resources = $('#social_resourcesId').select2('data');
+	for (var i = 0; i < resources.length; i++) {
+		var resourceName = resources[i].text;
+		modalReosurces(resourceName);
+		await new Promise(r => setTimeout(r, 4000));
+	}
 
 
 	if (end_date != '') {
@@ -174,19 +176,30 @@ function validator_date(event) {
 	}
 	$('#end_date').kvDatepicker('setStartDate',event.date);
 
-	/*$('#end_date').kvDatepicker('clearDates');
-	$('#end_date').kvDatepicker('setStartDate',event.date);*/
-
 }
 
 /**
  * [clean_select2 clean select2 select option]
  * @param  {[type]} social [element select2]
  */
-function clean_select2(social) {
-	var current_values = social.val();
+function clean_select2(social,resource_to_delete = null) {
+
+	if(Array.isArray(social)){
+		var new_values = [];
+		for (var i = 0; i < social.length; i++) {
+			if (resource_to_delete != social[i].text) {
+				new_values.push(social[i].id);
+			}
+		}
+		var social = $('#social_resourcesId');
+		social.val(new_values).trigger('change');
+	}
+
+	/*var current_values = social.val();
+    console.log(current_values);
     current_values.splice( current_values.indexOf('1'), 1 );
-    social.val(current_values).trigger('change');
+    console.log(current_values);
+    social.val(current_values).trigger('change');*/
 }
 /**
  * [swal_modal_info informs the user of the days on which he should initiate an alert if a date is exceeded]
@@ -213,8 +226,9 @@ function swal_modal_info(resource,days,days_ago) {
 			//$('#end_date').kvDatepicker('clearDates');
 			
 		}else{
-			var social = $('#social_resourcesId');
-            clean_select2(social);
+			var social = $('#social_resourcesId').select2('data');
+			//var social = $('#social_resourcesId');
+            clean_select2(social,resource);
 		}
 	});
 }
