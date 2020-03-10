@@ -13,8 +13,6 @@ use kartik\date\DatePicker;
 use kartik\file\FileInput;
 use mludvik\tagsinput\TagsInputWidget;
 
-
-
 /* @var $this yii\web\View */
 /* @var $model app\models\form\AlertForm */
 /* @var $form ActiveForm */
@@ -77,7 +75,7 @@ use mludvik\tagsinput\TagsInputWidget;
                                
                             ],
                             'pluginOptions' => [
-                                'allowClear' => true,
+                                'allowClear' => false,
                             ],
                             'pluginEvents' => [
                                "select2:select" => "function(e) {
@@ -126,18 +124,11 @@ use mludvik\tagsinput\TagsInputWidget;
                                 'placeholder' => 'Select a products...',
                                 'multiple' => true,
                                 'theme' => 'krajee',
-                               // 'debug' => true,
-                                //'value' => [1 => 'LG G7 ThinQ (G710 / New Aurora Black'],
                             ],
                             'pluginOptions' => [
                                 'allowClear' => false,
                                 'tags' => false,
                             ],
-                            /*'pluginEvents' => [
-                               "select2:select" => "function(e) { 
-                                    return null;
-                               }",
-                            ]*/
                         ]);
                     ?>
                 </div>
@@ -145,7 +136,7 @@ use mludvik\tagsinput\TagsInputWidget;
             </div>
             <!-- config properties-->
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <?= $form->field($alert, 'free_words')->widget(Select2::classname(), [
                    // 'data' => $alert->freeKeywords,
                     'changeOnReset' => false,
@@ -162,22 +153,7 @@ use mludvik\tagsinput\TagsInputWidget;
                     ])->label('Tag free words'); 
                     ?>   
                 </div>
-                <div class="col-md-4">
-                    <?= $form->field($config, 'product_description')->widget(Select2::classname(), [
-                    //'data' => $data,
-                    'options' => ['placeholder' => 'write a tags product description ...', 
-                                   'multiple' => true,
-                                  // 'value' => [$config->product_description]
-                               ],
-                        'pluginOptions' => [
-                            'tags' => true,
-                            'tokenSeparators' => [',', ' '],
-                            'minimumInputLength' => 2
-                        ],
-                    ])->label('Tag product description'); 
-                    ?>   
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <?= $form->field($config, 'competitors')->widget(Select2::classname(), [
                     //'data' => $data,
                     'options' => ['placeholder' => 'write a tags competitors ...', 'multiple' => true],
@@ -266,5 +242,16 @@ $this->registerJsFile(
         ]
     ]
 );
+
+if (!$alert->isNewRecord) {
+    Yii::$app->view->registerJs('var alertId = "'. $alert->id.'"',  \yii\web\View::POS_HEAD);
+    $this->registerJsFile(
+    '@web/js/app/update.js',
+    ['depends' => [
+        \app\assets\SweetAlertAsset::className(),
+        ]
+    ]
+);
+}
 
 ?>
