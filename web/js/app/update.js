@@ -1,15 +1,24 @@
 
 
-//const origin   = location.origin;
-//const baseUrl  = `${origin}/${appId}/web/monitor/alert/`;
-
-
+/**
+ * [description] event unselecting of select2 reourceId when is fire delete resource from alert and his results
+ * @param  {[type]} e) [even when is click on delete resource]
+ */
 $('#social_resourcesId').on('select2:unselecting', function (e) {
-
     var resource = e.params.args.data;
-    swal_modal_info(resource);
+    swal_modal_info_resource(resource);
 });
 
+$('#social_dictionaryId, #free_words, #competitors').on('select2:unselecting', function (e) {
+    var resource = e.params.args.data;
+    console.log(resource);
+});
+
+
+$('#social_dictionaryId, #free_words, #competitors').on('select2:select', function (e) {
+    var resource = e.params.data;
+    console.log(resource);
+});
 
 /**
  * [swal_modal_info informs the user of the days on which he should initiate an alert if a date is exceeded]
@@ -18,7 +27,7 @@ $('#social_resourcesId').on('select2:unselecting', function (e) {
  * @param  {[type]} days_ago [days ago]
  * @return {[type]}          [description]
  */
-function swal_modal_info(resource) {
+function swal_modal_info_resource(resource) {
 	Swal.fire({
 	  icon: 'warning',
 	  title: 'Oops...',

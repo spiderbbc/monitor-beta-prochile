@@ -141,6 +141,7 @@ use mludvik\tagsinput\TagsInputWidget;
                    // 'data' => $alert->freeKeywords,
                     'changeOnReset' => false,
                     'options' => [
+                            'id' => 'free_words',
                             'placeholder' => 'write a tags free words ...', 
                             'multiple' => true,
                           //  'value' => (isset($alert->freeKeywords)) ? $alert->freeKeywords : [],
@@ -155,8 +156,7 @@ use mludvik\tagsinput\TagsInputWidget;
                 </div>
                 <div class="col-md-6">
                     <?= $form->field($config, 'competitors')->widget(Select2::classname(), [
-                    //'data' => $data,
-                    'options' => ['placeholder' => 'write a tags competitors ...', 'multiple' => true],
+                    'options' => ['id' => 'competitors','placeholder' => 'write a tags competitors ...', 'multiple' => true],
                         'pluginOptions' => [
                             'tags' => true,
                             'tokenSeparators' => [',', ' '],
