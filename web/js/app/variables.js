@@ -12,7 +12,7 @@ const baseUrlDocument = `${origin}/${appId}/web/monitor/pdf/`;
 const baseUrlView = `${origin}/${appId}/web/monitor/alert/`;
 // 1000 = 1 seg
 
-let refreshTime = 15000;
+let refreshTime = 60000;
 let refreshSweetAlert = 30000;
 let refreshTimeTable = 40000;
 let data_chart = new Object();
@@ -26,7 +26,8 @@ let controllerName = {
 let tableConfig = {
     'scrollY': '400px',
     'scrollCollapse': true,
-    "processing": true,
+    'serverSide': true,
+   // "processing": true,
     "ajax": {
         'url': baseUrlApi + 'list-mentions?alertId=' + id,
         //"dataSrc": "mentions"
