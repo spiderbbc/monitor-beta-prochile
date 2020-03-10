@@ -26,8 +26,8 @@ let controllerName = {
 let tableConfig = {
     'scrollY': '400px',
     'scrollCollapse': true,
-    'serverSide': true,
-   // "processing": true,
+    //'serverSide': true,
+    "processing": true,
     "ajax": {
         'url': baseUrlApi + 'list-mentions?alertId=' + id,
         //"dataSrc": "mentions"

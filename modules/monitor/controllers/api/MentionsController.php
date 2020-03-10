@@ -316,7 +316,7 @@ class MentionsController extends Controller
     $mentions = \app\models\Mentions::getDb()->cache(function ($db) use($alertsId) {
             return \app\models\Mentions::find()->where(['alert_mentionId' => $alertsId])->with(['alertMention','alertMention.resources','origin'])->asArray()->all();
         },60);
-    //$mentions = \app\models\Mentions::find()->where(['alert_mentionId' => $alertsId])->with(['alertMention','alertMention.resources','origin'])->asArray()->all();
+    
 
 
     return array('data' => $mentions);
