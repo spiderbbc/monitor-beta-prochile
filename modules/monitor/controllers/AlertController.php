@@ -450,6 +450,7 @@ class AlertController extends Controller
           foreach ($ProductsModelsAlerts as $productsModel){
             $productsModel->delete();
           }
+          \app\helpers\DirectoryHelper::removeDirectory($id);
 
         }
         
