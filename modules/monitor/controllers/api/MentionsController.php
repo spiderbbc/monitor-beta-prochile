@@ -224,10 +224,11 @@ class MentionsController extends Controller
     $products = [];
     foreach ($alerts_mentions as $alerts_mention) {
       if($alerts_mention->mentionsCount){
-        $product_model =  \app\helpers\AlertMentionsHelper::getProductByTermSearch($alerts_mention->term_searched);
+        /*$product_model =  \app\helpers\AlertMentionsHelper::getProductByTermSearch($alerts_mention->term_searched);
         if(!is_null($product_model)){
           $products[$product_model->name][$alerts_mention->resources->name][] = $alerts_mention->id;
-        }//
+        }//*/
+        $products[$alerts_mention->term_searched][$alerts_mention->resources->name][] = $alerts_mention->id;
       }// end if
     }// end foreach
     $data = [];

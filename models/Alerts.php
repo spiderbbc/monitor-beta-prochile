@@ -131,8 +131,19 @@ class Alerts extends \yii\db\ActiveRecord
                 $alertsConfig = \app\helpers\AlertMentionsHelper::checksSourcesCall($alertsConfig);
             }
 
+            for($c = 0; $c < sizeOf($alertsConfig); $c++) {
+                $terms_search = \app\models\TermsSearch::findAll(['alertId' => $alertsConfig[$c]['id']]);
+                if(!empty($terms_search)){
+                    $alertsConfig[$c]['products'] = [];
+                    foreach ($terms_search as $term) {
+                        array_push($alertsConfig[$c]['products'], $term->name);
+                    }
+                }
+            }
+            
+
             //get family/products/models
-            for($c = 0; $c < sizeOf($alertsConfig); $c++){
+            /*for($c = 0; $c < sizeOf($alertsConfig); $c++){
                 $products_models_alerts = ProductsModelsAlerts::findAll(['alertId' => $alertsConfig[$c]['id']]);
                 if(!empty($products_models_alerts)){
                     $alertsConfig[$c]['products'] = [];
@@ -152,7 +163,7 @@ class Alerts extends \yii\db\ActiveRecord
                         //array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
                     }
                 }
-            }
+            }*/
         }
        return $alertsConfig;
     }
