@@ -93,7 +93,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
                     'name' => 'products',
                     'size' => Select2::SMALL,
                     'hideSearch' => false,
-                    'data' => $model->products,
+                    'data' => \yii\helpers\ArrayHelper::map(\app\models\TermsSearch::findAll(['alertId' => $model->id]),'id','name'),
                     'options' => ['placeholder' => 'Terminos...'],
                     'pluginOptions' => [
                         'allowClear' => true
