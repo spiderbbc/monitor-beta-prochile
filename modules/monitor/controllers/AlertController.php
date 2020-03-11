@@ -187,7 +187,14 @@ class AlertController extends Controller
           // set product/models
           $products_models = Yii::$app->request->post('Alerts')['productsIds'];
           if($products_models){
-            \app\models\Products::saveProductsModelAlerts($products_models,$alert->id);
+            //\app\models\Products::saveProductsModelAlerts($products_models,$alert->id);
+
+            foreach ($products_models as $key => $term) {
+              $model_term = new \app\models\TermsSearch();
+              $model_term->alertId = $alert->id;
+              $model_term->name = $term;
+              $model_term->save();
+            }
           }
           // files
           if(\yii\web\UploadedFile::getInstance($alert, 'files')){
@@ -242,7 +249,11 @@ class AlertController extends Controller
         $alert->free_words = $alert->freeKeywords;
 
         // set productIds
-        $alert->productsIds  = $alert->products;
+        //$alert->productsIds  = $alert->products;
+       
+        $alert->productsIds  = \yii\helpers\ArrayHelper::map(\app\models\TermsSearch::find()->where(['alertId' => $alert->id])->all(),'id','name');
+       
+
         // set tag 
         $config->product_description = explode(",",$config->product_description);
         $config->competitors = explode(",",$config->competitors);
@@ -388,10 +399,16 @@ class AlertController extends Controller
           // set product/models
           $products_models = Yii::$app->request->post('Alerts')['productsIds'];
           if($products_models){
-            \app\models\ProductsModelsAlerts::deleteAll([
+            \app\models\TermsSearch::deleteAll([
                 'alertId' => $alert->id,
             ]);
-            \app\models\Products::saveProductsModelAlerts($products_models,$alert->id);
+            //\app\models\Products::saveProductsModelAlerts($products_models,$alert->id);
+            foreach ($products_models as $key => $term) {
+              $model_term = new \app\models\TermsSearch();
+              $model_term->alertId = $alert->id;
+              $model_term->name = $term;
+              $model_term->save();
+            }
           }
           // error to page view
           if($error){
