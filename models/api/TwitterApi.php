@@ -119,8 +119,8 @@ class TwitterApi extends Model {
 		    		
 		    		$since_date   = Yii::$app->formatter->asDatetime($date_searched,'yyyy-MM-dd');
 					$until_date   = DateHelper::add($date_searched,'1 day');
-					//$query_search = "".$product." since:{$since_date} until:{$until_date}";
-					$query_search = '"'.$product.'" since:'.$since_date.' until:'.$until_date.'';
+					//$query_search = '"'.$product.'" since:'.$since_date.' until:'.$until_date.'';
+					$query_search = "{$product} since:{$since_date} until:{$until_date}";
 					
 
 		    		if($since_id && ($max_id == '')){
@@ -142,8 +142,8 @@ class TwitterApi extends Model {
 		    }else{
 				$since_date = Yii::$app->formatter->asDatetime($this->start_date,'yyyy-MM-dd');
 				$until_date = DateHelper::add($this->start_date,'1 day');
-		    	//$query_search = "".$product." since:{$since_date} until:{$until_date}";
-		    	$query_search = '"'.$product.'" since:'.$since_date.' until:'.$until_date.'';
+		    	//$query_search = '"'.$product.'" since:'.$since_date.' until:'.$until_date.'';
+		    	$query_search = "{$product} since:{$since_date} until:{$until_date}";
 		    	
 		    	
 		    	$params['q'] = $query_search;
@@ -155,6 +155,7 @@ class TwitterApi extends Model {
 		    }
 
 		}
+		var_dump($products_to_searched);
 		return $products_to_searched;
 		
 	}	
