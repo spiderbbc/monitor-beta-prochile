@@ -226,6 +226,55 @@ class m190813_215104_Credencials_Api extends Migration
             'createdBy'           => '1',
             'updatedBy'           => '1',
         ]);
+
+        // ignacio
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 5,
+            'resourceId'          => 1,
+            'name_app'            => 'monitor-twitter',
+            'api_key'             => 'oxmyn1WmBKihhfdcQGCTXlgQh',
+            'api_secret_key'      => 'msPakDIfXECOe6NrgGrAVwkHdCtbDHzeaHMgVqO4R0ioDyPWlh',
+            'access_secret_token' => 'TTdlPqtbByToHaReoou7LBSOAYPa4uS7WQKqn3xx',
+            'bearer_token'        => '',
+            'expiration_date'     => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 5,
+            'resourceId'          => 2,
+            'name_app'            => 'pro_chile_monitor',
+            'api_key'             => 'encrycpt here',
+            'api_secret_key'      => 'encrycpt here',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'expiration_date'     => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+
+        $this->insert('{{%credencials_api}}', [
+            'userId'              => 5,
+            'resourceId'          => 5,
+            'name_app'            => 'monitor-drive',
+            'api_key'             => 'monitor-beta-lg',
+            'api_secret_key'      => '1s29IoJn76zzqUWCFIy2vfjFv9BWVR548Bpl-mBSNHfE',
+            'access_secret_token' => 'encrycpt here',
+            'bearer_token'        => 'encrycpt here',
+            'apiLogin'            => 'encrycpt here',
+            'createdAt'           => '1488153462',
+            'updatedAt'           => '1488153462',
+            'createdBy'           => '1',
+            'updatedBy'           => '1',
+        ]);
+        
         /*$this->insert('{{%credencials_api}}', [
             'userId'              => 1,
             'resourceId'          => 1,

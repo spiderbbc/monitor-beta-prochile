@@ -73,6 +73,17 @@ class m190813_195501_Users extends Migration
             'created_at'    => 0,
             'updated_at'    => 0,
         ]);
+
+        $this->insert('{{%users}}', [
+            'username'      => 'ignacio',
+            'auth_key'      => 'tPwo4kDpN7JAz8Rrm9EwNAQ7q8F1p7FN',
+            // ignacio
+            'password_hash' => '$2y$13$HCB7rbz/TdIJKJlNtk9cC.h7EWK2jHSse5kSiSv7IZgfnGECO4AMK',
+            'email'         => 'ignacio@social-mediatrends.com',
+            'status'        => 10,
+            'created_at'    => 0,
+            'updated_at'    => 0,
+        ]);
     }
 
     /**
