@@ -13,8 +13,6 @@ use kartik\date\DatePicker;
 use kartik\file\FileInput;
 use mludvik\tagsinput\TagsInputWidget;
 
-
-
 /* @var $this yii\web\View */
 /* @var $model app\models\form\AlertForm */
 /* @var $form ActiveForm */
@@ -77,7 +75,7 @@ use mludvik\tagsinput\TagsInputWidget;
                                
                             ],
                             'pluginOptions' => [
-                                'allowClear' => true,
+                                'allowClear' => false,
                             ],
                             'pluginEvents' => [
                                "select2:select" => "function(e) {
@@ -140,6 +138,7 @@ use mludvik\tagsinput\TagsInputWidget;
                     <?= $form->field($alert, 'free_words')->widget(Select2::classname(), [
                     'changeOnReset' => false,
                     'options' => [
+                            'id' => 'free_words',
                             'placeholder' => 'write a tags free words ...', 
                             'multiple' => true,
                         ],
@@ -239,5 +238,16 @@ $this->registerJsFile(
         ]
     ]
 );
+
+if (!$alert->isNewRecord) {
+    Yii::$app->view->registerJs('var alertId = "'. $alert->id.'"',  \yii\web\View::POS_HEAD);
+    $this->registerJsFile(
+    '@web/js/app/update.js',
+    ['depends' => [
+        \app\assets\SweetAlertAsset::className(),
+        ]
+    ]
+);
+}
 
 ?>

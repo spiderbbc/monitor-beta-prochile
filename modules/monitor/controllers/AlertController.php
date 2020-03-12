@@ -89,6 +89,34 @@ class AlertController extends Controller
       return array('status'=>true);
     }
 
+    public function actionDeleteResourceAlert($alertId,$resourceId)
+    {
+      \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+      $alert = $this->findModel($alertId);
+      // delete resource in config-resource
+      $configSource = \app\models\AlertconfigSources::findOne(['alertconfigId' => $alertId,'alertResourceId' => $resourceId]);
+      if($configSource){
+        $configSource->delete();
+      }
+      // delete mentions
+      $alertsMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => $resourceId])->all();
+      foreach ($alertsMentions as $alertMention) {
+        if($alertMention->mentionsCount){
+          foreach ($alertMention->mentions as $mentions => $mention) {
+            $user = \app\models\UsersMentions::findOne($mention->origin_id);
+            if(!is_null($user)){
+              $user->delete();
+            }
+          }
+        }
+        $alertMention->delete();
+      }
+        
+
+
+      return array('status'=>true,'alertId' => $alertId,'resourceId' => $resourceId);
+    }
+
     /**
      * Lists all Alerts models.
      * @return mixed

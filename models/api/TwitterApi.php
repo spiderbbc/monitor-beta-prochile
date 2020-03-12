@@ -155,7 +155,6 @@ class TwitterApi extends Model {
 		    }
 
 		}
-		var_dump($products_to_searched);
 		return $products_to_searched;
 		
 	}	
