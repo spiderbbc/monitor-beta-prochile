@@ -529,7 +529,7 @@ const products_interations_chart = Vue.component('products-interations-chart',{
 	        });
 
 		    var options = {
-		        title: 'Gráfico de número de interacciones por productos',
+		        title: 'Gráfico de número de interacciones por terminos',
 		        vAxis: {format: 'decimal'},
 		        //hAxis: {minValue: 50},
 		        width: 1200,

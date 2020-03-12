@@ -126,8 +126,9 @@ use mludvik\tagsinput\TagsInputWidget;
                         ],
                         'pluginOptions' => [
                             'tags' => true,
-                            'tokenSeparators' => [',', ' '],
-                            'minimumInputLength' => 2
+                            'tokenSeparators' => [','],
+                            'minimumInputLength' => 2,
+                            'maximumSelectionLength' => 20
                         ],
                     ])->label('Terminos a buscar');
                     ?>

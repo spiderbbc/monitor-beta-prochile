@@ -34,10 +34,10 @@ let tableConfig = {
     },
     "fixedColumns": true,
     "columns": [{
-        "data": "alertMention.resources.name",
+        "data": "recurso",
         "width": "200px"
     }, {
-        "data": "alertMention.term_searched",
+        "data": "term_searched",
         "width": "200px"
     }, {
         "data": "created_time",
@@ -56,10 +56,10 @@ let tableConfig = {
         },
         "width": "200px"
     }, {
-        "data": "origin.name",
+        "data": "name",
         "width": "200px"
     }, {
-        "data": "origin.screen_name",
+        "data": "screen_name",
         "width": "200px"
     }, {
         "data": "subject",

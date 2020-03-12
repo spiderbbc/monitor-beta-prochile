@@ -302,9 +302,6 @@ class MentionsController extends Controller
    * @return [type]          [description]
    */
   public function actionListMentions($alertId){
-
-   
-
     // list mentions: resource - products - author - mentions
     $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
     $alertsId = [];
@@ -314,13 +311,30 @@ class MentionsController extends Controller
       }
     }
 
-    $mentions = \app\models\Mentions::getDb()->cache(function ($db) use($alertsId) {
-            return \app\models\Mentions::find()->where(['alert_mentionId' => $alertsId])->with(['alertMention','alertMention.resources','origin'])->asArray()->all();
-        },60);
-    
+    $db = \Yii::$app->db;
+    $rows = $db->cache(function ($db) use ($alertsId) {
 
+        return (new \yii\db\Query())
+                ->select([
+                  'recurso' => 'r.name',
+                  'term_searched' => 'a.term_searched',
+                  'created_time' => 'm.created_time',
+                  'name' => 'u.name',
+                  'screen_name' => 'u.screen_name',
+                  'subject' => 'm.subject',
+                  'message_markup' => 'm.message_markup',
+                  'url' => 'm.url',
+                ])
+                ->from('mentions m')
+                ->where(['alert_mentionId' => $alertsId])
+                ->join('JOIN','alerts_mencions a', 'm.alert_mentionId = a.id')
+                ->join('JOIN','resources r', 'r.id = a.resourcesId')
+                ->join('JOIN','users_mentions u', 'u.id = m.origin_id')
+                ->all();
 
-    return array('data' => $mentions);
+    });
+
+    return array('data' => $rows);
 
   }
 
