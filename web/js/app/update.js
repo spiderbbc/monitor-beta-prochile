@@ -6,25 +6,42 @@
  */
 $('#social_resourcesId').on('select2:unselecting', function (e) {
     var resource = e.params.args.data;
-    swal_modal_info_resource(resource);
+    var id = $(this).attr('id');
+    swal_modal_info_resource(resource,id);
 });
-
+/**
+ * [description] event unselecting of select2 productsIds AKA terms to search, when is fire delete terms from alert and his results
+ * @param  {[type]} e) [even when is click on delete resource]
+ */
 $('#productsIds').on('select2:unselecting', function (e) {
     var term = e.params.args.data;
-    swal_modal_info_term(term);
+    var id = $(this).attr('id');
+    swal_modal_info_term(term,id);
+});
+
+$('#social_dictionaryId,#free_words, #competitors').on('select2:select', function (e) {
+    //var filter = e.params.args.data;
+    var id = $(this).attr('id');
+    var data = $('#'+id).select2('data');
+    var last_term = data[data.length -1].text;
+    console.log(id);
+    swal_modal_restore_search(last_term,id);
+   
 });
 
 
-$('#social_dictionaryId, #free_words, #competitors').on('select2:unselecting', function (e) {
-    var resource = e.params.args.data;
-    console.log(resource);
+$('#social_dictionaryId,#free_words, #competitors').on('select2:unselecting', function (e) {
+    var filter = e.params.args.data;
+    var id = $(this).attr('id');
+
+    var dictionaryName = ($(this).attr('resourceName') == "dictionaries") ? filter.text : $(this).attr('resourceName');
+    swal_modal_filter_dictionaries(filter,id,dictionaryName);
 });
 
 
-$('#social_dictionaryId, #free_words, #competitors').on('select2:select', function (e) {
-    var resource = e.params.data;
-    console.log(resource);
-});
+
+
+
 
 /**
  * [swal_modal_info informs the user of the days on which he should initiate an alert if a date is exceeded]
@@ -33,7 +50,7 @@ $('#social_dictionaryId, #free_words, #competitors').on('select2:select', functi
  * @param  {[type]} days_ago [days ago]
  * @return {[type]}          [description]
  */
-function swal_modal_info_resource(resource) {
+function swal_modal_info_resource(resource,id) {
 	Swal.fire({
 	  icon: 'warning',
 	  title: 'Oops...',
@@ -46,13 +63,13 @@ function swal_modal_info_resource(resource) {
 	}).then((result) => {
 		if ('value' in result) {
 			if(result.value){
-				reset_selector('#social_resourcesId',resource.id);
+				add_selector(id,resource.id);
 			}
 		}
 		if('dismiss' in result){
 			// if user click out box modal
 			if(result.dismiss == "backdrop"){
-				reset_selector('#social_resourcesId',resource.id);
+				add_selector(id,resource.id);
 			}
 			// delete term button danger
 			if (result.dismiss == "cancel") {
@@ -85,8 +102,12 @@ function swal_modal_info_resource(resource) {
 	});
 }
 
-
-function swal_modal_info_term(term) {
+/**
+ * [swal_modal_info_term modal info to delete terms to search]
+ * @param  {[type]} term [description]
+ * @return {[type]}      [description]
+ */
+function swal_modal_info_term(term,id) {
 	Swal.fire({
 	  icon: 'warning',
 	  title: 'Oops...',
@@ -101,14 +122,14 @@ function swal_modal_info_term(term) {
 		if ('value' in result) {
 			// click button info 
 			if(result.value){
-				reset_selector('#productsIds',term.id);	
+				add_selector(id,term.id);	
 			}
 
 		}
 		if('dismiss' in result){
 			// if user click out box modal
 			if (result.dismiss == "backdrop") {
-				reset_selector('#productsIds',term.id);
+				add_selector(id,term.id);
 			}
 			// delete term button danger
 			if(result.dismiss == "cancel"){
@@ -142,14 +163,151 @@ function swal_modal_info_term(term) {
 }
 
 
-function reset_selector(selectId,termId) {
+
+function swal_modal_filter_dictionaries(filter,id,dictionaryName) {
+	Swal.fire({
+	  icon: 'warning',
+	  title: 'Oops...',
+	  html: ` ¿ Desea eliminar <b>${filter.text}</b> ? <hr> Se procedera a <b>eliminar</b> los resultados recabados por este filtro`,
+	  showCancelButton: true,
+	  confirmButtonColor: '#3085d6',
+	  cancelButtonColor: '#d33',
+	  confirmButtonText: `No, Deseo conservar "${filter.text}"!`,
+	  cancelButtonText: `Quitar "${filter.text}" como filtro!`
+	}).then((result) => {
+		// checks if a action user
+		if ('value' in result) {
+			// click button info 
+			if(result.value){
+				add_selector(id,filter.id);	
+			}
+
+		}
+		if('dismiss' in result){
+			// if user click out box modal
+			if (result.dismiss == "backdrop") {
+				add_selector(id,filter.id);
+			}
+			// delete filter button danger
+			if(result.dismiss == "cancel"){
+				// delete result
+				var data = {alertId: alertId,dictionaryName:dictionaryName,filterName: filter.text};
+				console.log(data);
+				
+				$.ajax({
+			        url: origin + `/${appId}/web/monitor/alert/delete-filter-alert`,
+			        data: data,
+			        type: "GET",
+			        dataType: "json",
+			      }).done(function(data) {
+			        if(data.status){
+					    Swal.fire(
+					      `Eliminado`,
+					      `La Alerta elimino el filtro <b>${filter.text} </b>`,
+					      'success'
+					    );
+		            }else{
+		            	Swal.fire(
+					      'Opss',
+					      'No se pudo realizar la operacion',
+					      'error'
+					    );
+		              
+		            }
+			    });
+			}
+		}
+		
+	});
+}
+
+
+function swal_modal_restore_search(last_term,id) {
+	Swal.fire({
+	  icon: 'warning',
+	  title: 'Oops...',
+	  html: ` ¿ Desea agregar <b>${last_term}</b> ? <hr> Se procedera a <b>agregar</b> los resultados recabados por este filtro`,
+	  showCancelButton: true,
+	  confirmButtonColor: '#3085d6',
+	  cancelButtonColor: '#d33',
+	  confirmButtonText: `Si, Deseo conservar "${last_term}"!`,
+	  cancelButtonText: `Quitar "${last_term}" como filtro!`
+	}).then((result) => {
+		console.log(result);
+		// checks if a action user
+		if ('value' in result) {
+			// click button info 
+			if(result.value){
+
+				var data = {alertId: alertId,dictionaryName:dictionaryName,filterName: filter.text};
+				console.log(data);
+				
+				$.ajax({
+			        url: origin + `/${appId}/web/monitor/alert/restore-filter-alert`,
+			        data: data,
+			        type: "GET",
+			        dataType: "json",
+			      }).done(function(data) {
+			        if(data.status){
+					    Swal.fire(
+					      `Eliminado`,
+					      `La Alerta elimino el filtro <b>${last_term} </b>`,
+					      'success'
+					    );
+		            }else{
+		            	Swal.fire(
+					      'Opss',
+					      'No se pudo realizar la operacion',
+					      'error'
+					    );
+		              
+		            }
+			    });
+					
+			}
+
+		}
+		if('dismiss' in result){
+			// if user click out box modal
+			if (result.dismiss == "backdrop") {
+				remove_value_selector(id,last_term);
+			}
+			// delete filter button danger
+			if(result.dismiss == "cancel"){
+				// delete result
+				remove_value_selector(id,last_term);
+			}
+		}
+		
+	});
+}
+/**
+ * [add_selector when the user cancel or click outside of modal]
+ * @param  {[type]} selectId [description]
+ * @param  {[type]} termId   [description]
+ * @return {[type]}          [description]
+ */
+function add_selector(selectId,termId) {
 	
+	var selectId = `#${selectId}`;
 	var terms = $(selectId).select2('data');
 	var value = [];
 	for (var s = 0; s < terms.length; s++) {
 		value.push(terms[s].id);
 	}
 	value.push(termId);
+	$(selectId).val(value).trigger('change');
+}
 
+
+function remove_value_selector(selectId,termId) {
+	var selectId = `#${selectId}`;
+	var terms = $(selectId).select2('data');
+	var value = [];
+	for (var s = 0; s < terms.length; s++) {
+		if(terms[s].id != termId){
+			value.push(terms[s].id);
+		}
+	}
 	$(selectId).val(value).trigger('change');
 }

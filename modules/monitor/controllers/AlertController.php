@@ -89,7 +89,7 @@ class AlertController extends Controller
       $drive = new \app\models\api\DriveApi();
       $drive->getContentDocument();
 
-      return array('status'=>true);
+      return ['status'=>true];
     }
     /**
      * [actionDeleteResourceAlert delete resource for alert]
@@ -105,6 +105,8 @@ class AlertController extends Controller
       $configSource = \app\models\AlertconfigSources::findOne(['alertconfigId' => $alertId,'alertResourceId' => $resourceId]);
       if($configSource){
         $configSource->delete();
+        // delete folder resourceName  
+        \app\helpers\DirectoryHelper::removeDirectory($alert->id,$configSource->alertResource->name);
       }
       // delete mentions
       $alertsMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => $resourceId])->all();
@@ -119,10 +121,9 @@ class AlertController extends Controller
         }
         $alertMention->delete();
       }
-        
+      
 
-
-      return array('status'=>true,'alertId' => $alertId,'resourceId' => $resourceId);
+      return ['status'=>true];
     }
     /**
      * [actionDeleteTermAlert delete term search form alert]
@@ -150,6 +151,47 @@ class AlertController extends Controller
       }
 
       return ['status'=>true];
+    }
+
+    public function actionDeleteFilterAlert($alertId,$dictionaryName,$filterName)
+    {
+      \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+      $alert = $this->findModel($alertId);
+      $isDictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->exists();
+      // if dictionaryName is equal filterName is there a dictionary
+      if ($dictionaryName == $filterName) {
+        
+        if ($isDictionary) {
+          $dictionary = \app\models\Dictionaries::findOne(['name' => $dictionaryName]);
+         \app\models\Keywords::deleteAll('alertId = :alertId AND dictionaryId = :dictionaryId', [':alertId' => $alert->id,':dictionaryId' => $dictionary->id]);
+        }
+      }else{
+
+        if ($isDictionary) {
+           $dictionary = \app\models\Dictionaries::findOne(['name' => $dictionaryName]);
+           \app\models\Keywords::deleteAll('alertId = :alertId AND dictionaryId = :dictionaryId AND name = :name', [':alertId' => $alert->id,':dictionaryId' => $dictionary->id,':name' => $filterName]);
+        }
+
+      }
+
+      //move json file and delete mentions
+      foreach ($alert->alertsMentions as $alertMention) {
+        // move json file
+        \app\helpers\DocumentHelper::moveFilesToRoot($alert->id,$alertMention->resources->name);
+        if ($alertMention->mentionsCount) {
+          foreach ($alertMention->mentions as $mentions => $mention) {
+            $user = \app\models\UsersMentions::findOne($mention->origin_id);
+            if(!is_null($user)){
+              $user->delete();
+            }
+            $mention->delete();
+          }
+        }
+      }
+     
+      
+      $status = ($isDictionary) ? true: false;
+      return ['status'=>$status];
     }
 
     /**

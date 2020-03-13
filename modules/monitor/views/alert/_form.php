@@ -97,10 +97,10 @@ use mludvik\tagsinput\TagsInputWidget;
                             'data' => $drive->dictionaries,
                             'options' => [
                                 'id' => 'social_dictionaryId',
+                                'resourceName' => 'dictionaries',
                                 'placeholder' => 'Select a dictionaries...',
                                 'multiple' => true,
                                 'theme' => 'krajee',
-                                'debug' => true,
                                 'value' => (isset($alert->dictionariesName)) ? $alert->dictionariesName : [],
                             ],
                             'pluginOptions' => [
@@ -111,7 +111,13 @@ use mludvik\tagsinput\TagsInputWidget;
                                "select2:select" => "function(e) { 
                                     return null;
                                }",
-                            ]
+                            ],
+                            'toggleAllSettings' => [
+                               'selectLabel' => '',
+                               'unselectLabel' => '',
+                               'selectOptions' => ['class' => 'text-success'],
+                               'unselectOptions' => ['class' => 'text-danger'],
+                            ],
                         ]);
                     ?>
                 </div>
@@ -140,6 +146,7 @@ use mludvik\tagsinput\TagsInputWidget;
                     'changeOnReset' => false,
                     'options' => [
                             'id' => 'free_words',
+                            'resourceName' => 'Free Words',
                             'placeholder' => 'write a tags free words ...', 
                             'multiple' => true,
                         ],
@@ -153,7 +160,12 @@ use mludvik\tagsinput\TagsInputWidget;
                 </div>
                 <div class="col-md-6">
                     <?= $form->field($config, 'competitors')->widget(Select2::classname(), [
-                    'options' => ['placeholder' => 'write a tags competitors ...', 'multiple' => true],
+                    'options' => [
+                        'id' => 'competitors',
+                        'resourceName' => 'Product Competition',
+                        'placeholder' => 'write a tags competitors ...', 
+                        'multiple' => true
+                    ],
                         'pluginOptions' => [
                             'tags' => true,
                             'tokenSeparators' => [',', ' '],

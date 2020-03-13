@@ -193,9 +193,10 @@ class NewsSearch
 
     $mention = \app\helpers\MentionsHelper::saveMencions(
         [
-            'alert_mentionId' => $alertsMencionsId,
-            'origin_id'        => $originId ,
-            'created_time'    => $created_time
+            'alert_mentionId'     => $alertsMencionsId,
+            'origin_id'           => $originId ,
+            //'created_time'        => $created_time,
+            'subject'             => $subject,
         ],
         [
             'created_time'   => $created_time,
@@ -221,13 +222,15 @@ class NewsSearch
    */
   private function searchDataByDictionary($data){
     $words = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->select(['name','id'])->asArray()->all();
-      
+    
+    $model = [];  
+    
     foreach($data as $product => $news){
         for($n = 0; $n < sizeOf($news); $n ++){
           $wordsId = [];
           for ($w=0; $w <sizeof($words) ; $w++) { 
             $sentence = $data[$product][$n]['message_markup'];
-            $word = "{$words[$w]['name']}";
+            $word = " {$words[$w]['name']} ";
             $containsCount = \app\helpers\StringHelper::containsCount($sentence, $word);
             if ($containsCount) {
               $wordsId[$words[$w]['id']] = $containsCount;
@@ -235,11 +238,18 @@ class NewsSearch
             }
           }// end loop words
           if(!empty($wordsId)){
-              $data[$product][$n]['wordsId'] = $wordsId;
+            if(!ArrayHelper::keyExists($product, $model)){
+                  $model[$product] = [];
+              }
+              if(!in_array($news[$n], $model[$product])){
+                  $news[$n]['wordsId'] = $wordsId;
+                  $model[$product][] =  $news[$n];
+              }
+              //$data[$product][$n]['wordsId'] = $wordsId;
           }
         } // end loop news
     }// end foreach
-    return $data;
+    return $model;
   }
  
   /**

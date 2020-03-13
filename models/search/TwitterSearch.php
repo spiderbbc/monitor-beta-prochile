@@ -85,9 +85,10 @@ class TwitterSearch
         // if  dictionaries and  !boolean
         if($this->isDictionaries && !$this->isBoolean){
             // init search
-            //echo "only dictionaries \n";
+            echo "only dictionaries \n";
             $mentions = $this->data;
             $data = $this->searchDataByDictionary($mentions);
+
             $search = $this->saveMentions($data);
             return $search;
         }
@@ -192,7 +193,7 @@ class TwitterSearch
                 }
                 if(!empty($wordsId)){
                     if(!ArrayHelper::keyExists($product, $data, false)){
-                    $data[$product] = [];
+                        $data[$product] = [];
                     }
                     if(!in_array($tweets[$t], $data[$product])){
                         $tweets[$t]['wordsId'] = $wordsId;
@@ -290,27 +291,11 @@ class TwitterSearch
 
         }else{
             $model = \app\models\Mentions::find()->where(['alert_mentionId' => $alertsMencionsId,'origin_id' => $originId,'social_id' => $social_id])->one();
+            
+            $model->message_markup  = $message_markup;
+            $model->save();
         }
 
-        /*$mention = \app\helpers\MentionsHelper::saveMencions(
-            [
-                'alert_mentionId' => $alertsMencionsId,
-                'origin_id'       => $originId
-            ],
-            [
-                'created_time'   => $created_time,
-                'mention_data'   => $mention_data,
-                'subject'        => '',
-                'message'        => $message,
-                'message_markup' => $message_markup,
-                'url'            => $url ,
-                'domain_url'     => $url ,
-                'location'       => '-' ,
-                'social_id'      => $social_id ,
-            ]
-        );*/
-        
-       // return (isset($model->id)) ? $model : $model->errors;
         return $model;
 
     }
