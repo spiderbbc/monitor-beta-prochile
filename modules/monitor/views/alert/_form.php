@@ -119,6 +119,7 @@ use mludvik\tagsinput\TagsInputWidget;
                     <?= $form->field($alert, 'productsIds')->widget(Select2::classname(), [
                     'changeOnReset' => false,
                     'options' => [
+                            'id' => 'productsIds',
                             'placeholder' => 'write a tags free words ...', 
                             'multiple' => true,
                         ],

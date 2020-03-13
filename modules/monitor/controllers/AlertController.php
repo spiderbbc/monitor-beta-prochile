@@ -79,7 +79,10 @@ class AlertController extends Controller
       return $out;
 
     }
-
+    /**
+     * [actionReloadProducts reload products to table products]
+     * @return [type] [description]
+     */
     public function actionReloadProducts(){
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
       
@@ -88,7 +91,12 @@ class AlertController extends Controller
 
       return array('status'=>true);
     }
-
+    /**
+     * [actionDeleteResourceAlert delete resource for alert]
+     * @param  [type] $alertId    [alertId from aler]
+     * @param  [type] $resourceId [reosurce id]
+     * @return [type]             [description]
+     */
     public function actionDeleteResourceAlert($alertId,$resourceId)
     {
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
@@ -115,6 +123,33 @@ class AlertController extends Controller
 
 
       return array('status'=>true,'alertId' => $alertId,'resourceId' => $resourceId);
+    }
+    /**
+     * [actionDeleteTermAlert delete term search form alert]
+     * @param  [type] $alertId  [description]
+     * @param  [type] $termName [description]
+     * @return [type]           [description]
+     */
+    public function actionDeleteTermAlert($alertId,$termName)
+    {
+      \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+      $alert = $this->findModel($alertId);
+      \app\models\TermsSearch::deleteAll('alertId = :alertId AND name = :name', [':alertId' => $alert->id,':name' => $termName]);
+
+      $alertsMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alert->id,'term_searched' => $termName])->all();
+      foreach ($alertsMentions as $alertMention) {
+        if($alertMention->mentionsCount){
+          foreach ($alertMention->mentions as $mentions => $mention) {
+            $user = \app\models\UsersMentions::findOne($mention->origin_id);
+            if(!is_null($user)){
+              $user->delete();
+            }
+          }
+        }
+        $alertMention->delete();
+      }
+
+      return ['status'=>true];
     }
 
     /**

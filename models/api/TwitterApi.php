@@ -78,7 +78,7 @@ class TwitterApi extends Model {
 		$products_to_searched = [];
 		// forming the array params
 		$params = [
-			'lang' => 'es',
+			'lang' => 'en',
 			'result_type' => 'mixed',
 			'count' => 100,
 		];
