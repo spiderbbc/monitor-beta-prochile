@@ -231,7 +231,7 @@ class NewsSearch
           for ($w=0; $w <sizeof($words) ; $w++) { 
             $sentence = $data[$product][$n]['message_markup'];
             $word = " {$words[$w]['name']} ";
-            $containsCount = \app\helpers\StringHelper::containsCount($sentence, $word);
+            $containsCount = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence, $word);
             if ($containsCount) {
               $wordsId[$words[$w]['id']] = $containsCount;
               $data[$product][$n]['message_markup']  = \app\helpers\StringHelper::replaceIncaseSensitive($sentence,$word,"<strong>{$word}</strong>");

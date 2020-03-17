@@ -179,7 +179,7 @@ class InstagramSearch
                         for($w = 0; $w < sizeof($words); $w++){
                             $sentence = $mentions[$product][$f]['comments'][$c]['message_markup'];
                             $word = " {$words[$w]['name']} ";
-                            $containsCount = \app\helpers\StringHelper::containsCount($sentence, $word);
+                            $containsCount = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence, $word);
                             if($containsCount){
                                 $wordsId[$words[$w]['id']] = $containsCount;
                                 $mentions[$product][$f]['comments'][$c]['message_markup']  = \app\helpers\StringHelper::replaceIncaseSensitive($sentence,$word,"<strong>{$word}</strong>");
@@ -193,7 +193,7 @@ class InstagramSearch
                                     for($w = 0; $w < sizeof($words); $w++){
                                         if(isset($mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup'])){
                                             $sentence_replies = $mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup'];
-                                            $containsCount = \app\helpers\StringHelper::containsCount($sentence_replies, $word);
+                                            $containsCount = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence_replies, $word);
                                             if($containsCount){
                                                 $wordsIdReplies[$words[$w]['id']] = $containsCount;
                                                 $word_replies = $words[$w]['name'];

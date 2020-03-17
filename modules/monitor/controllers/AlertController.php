@@ -152,7 +152,13 @@ class AlertController extends Controller
 
       return ['status'=>true];
     }
-
+    /**
+     * [actionDeleteFilterAlert delete a type dictionary from query related with alert an restore file json]
+     * @param  [type] $alertId        [id alert]
+     * @param  [type] $dictionaryName [name dictionary]
+     * @param  [type] $filterName     [type of word]
+     * @return [type]                 [description]
+     */
     public function actionDeleteFilterAlert($alertId,$dictionaryName,$filterName)
     {
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
@@ -163,13 +169,19 @@ class AlertController extends Controller
         
         if ($isDictionary) {
           $dictionary = \app\models\Dictionaries::findOne(['name' => $dictionaryName]);
-         \app\models\Keywords::deleteAll('alertId = :alertId AND dictionaryId = :dictionaryId', [':alertId' => $alert->id,':dictionaryId' => $dictionary->id]);
+          $keywordsAlertExits = \app\models\Keywords::find()->where(['alertId' => $alertId,'dictionaryId'=> $dictionary->id])->exists();
+          if ($keywordsAlertExits) {
+            \app\models\Keywords::deleteAll('alertId = :alertId AND dictionaryId = :dictionaryId', [':alertId' => $alert->id,':dictionaryId' => $dictionary->id]);
+          }
         }
       }else{
 
         if ($isDictionary) {
            $dictionary = \app\models\Dictionaries::findOne(['name' => $dictionaryName]);
-           \app\models\Keywords::deleteAll('alertId = :alertId AND dictionaryId = :dictionaryId AND name = :name', [':alertId' => $alert->id,':dictionaryId' => $dictionary->id,':name' => $filterName]);
+           $keywordsAlertExits = \app\models\Keywords::find()->where(['alertId' => $alertId,'dictionaryId'=> $dictionary->id,'name' => $filterName])->exists();
+           if ($keywordsAlertExits) {
+             \app\models\Keywords::deleteAll('alertId = :alertId AND dictionaryId = :dictionaryId AND name = :name', [':alertId' => $alert->id,':dictionaryId' => $dictionary->id,':name' => $filterName]);
+           }
         }
 
       }
@@ -192,6 +204,27 @@ class AlertController extends Controller
       
       $status = ($isDictionary) ? true: false;
       return ['status'=>$status];
+    }
+
+    public function actionAddFilterAlert($alertId,$dictionaryName,$filterName)
+    {
+      \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+      $alert = $this->findModel($alertId);
+      //move json file and delete mentions
+      foreach ($alert->alertsMentions as $alertMention) {
+        if ($alertMention->mentionsCount) {
+          foreach ($alertMention->mentions as $mentions => $mention) {
+            $user = \app\models\UsersMentions::findOne($mention->origin_id);
+            if(!is_null($user)){
+              $user->delete();
+            }
+            $mention->delete();
+          }
+        }
+      }
+      
+      
+      return ['status' => $data];
     }
 
     /**
@@ -217,9 +250,10 @@ class AlertController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        
+      return $this->render('view', [
+        'model' => $this->findModel($id),
+      ]);
     }
 
     /**
@@ -525,6 +559,13 @@ class AlertController extends Controller
           }
           // delete history
          \app\helpers\HistorySearchHelper::deleteHistory($alert->id);
+         //restore file json
+         //move json file and delete mentions
+         foreach ($alert->alertsMentions as $alertMention) {
+            // move json file
+            \app\helpers\DocumentHelper::moveFilesToRoot($alert->id,$alertMention->resources->name);
+          }
+         
           // return view
           return $this->redirect(['view', 'id' => $alert->id]);
         }

@@ -242,7 +242,7 @@ class NewsApi extends Model
 
 					for ($d=0; $d <sizeof($data) ; $d++) { 
 						for ($i=0; $i <sizeof($data[$d]) ; $i++) { 
-							$content = $data[$d][$i]['content'];
+							$content = (isset($data[$d][$i]['content'])) ? $data[$d][$i]['content'] : null;
 							if(!is_null($content)){
 								$content = \app\helpers\StringHelper::collapseWhitespace($content);
 							}

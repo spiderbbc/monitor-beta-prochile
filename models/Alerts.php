@@ -194,18 +194,21 @@ class Alerts extends \yii\db\ActiveRecord
      */
     public function getFreeKeywords()
     {
+        $words = [];
         $dictionary = \app\models\Dictionaries::find()->where(['name' => \app\models\Dictionaries::FREE_WORDS_NAME])->one();
         
-        $keywords =  $this->hasMany(Keywords::className(), ['alertId' => 'id'])
-            ->where(['dictionaryId' => $dictionary->id])
-             ->select('name')
-             ->orderBy('id')
-             ->all();
-        $words = [];     
-        if($keywords){
-          foreach ($keywords as $keyword){
-            $words[] = $keyword->name;
-          }
+        if ($dictionary) {
+            $keywords =  $this->hasMany(Keywords::className(), ['alertId' => 'id'])
+                ->where(['dictionaryId' => $dictionary->id])
+                 ->select('name')
+                 ->orderBy('id')
+                 ->all();
+            $words = [];     
+            if($keywords){
+              foreach ($keywords as $keyword){
+                $words[] = $keyword->name;
+              }
+            }
         }
         return $words;     
     }

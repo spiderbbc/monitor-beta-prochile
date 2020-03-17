@@ -16,7 +16,10 @@ use mludvik\tagsinput\TagsInputWidget;
 /* @var $this yii\web\View */
 /* @var $model app\models\form\AlertForm */
 /* @var $form ActiveForm */
-
+$pluginOptions = [ 'allowClear' =>  true];
+if (!$alert->isNewRecord) {
+    $pluginOptions = [ 'allowClear' =>  false];
+}
 ?>
 <div id="views-alert" class="modules-monitor-views-alert">
     <?php $form = ActiveForm::begin(); ?>
@@ -74,9 +77,7 @@ use mludvik\tagsinput\TagsInputWidget;
                                             ? $alert->config->configSourcesByAlertResource : [],
                                
                             ],
-                            'pluginOptions' => [
-                                'allowClear' => false,
-                            ],
+                            'pluginOptions' => $pluginOptions,
                             'pluginEvents' => [
                                "select2:select" => "function(e) {
                                     var resourceName = e.params.data.text; 
@@ -104,8 +105,7 @@ use mludvik\tagsinput\TagsInputWidget;
                                 'value' => (isset($alert->dictionariesName)) ? $alert->dictionariesName : [],
                             ],
                             'pluginOptions' => [
-                                'depends'=>['drive-title'],
-                                'allowClear' => true,
+                                'allowClear' => false,
                             ],
                             'pluginEvents' => [
                                "select2:select" => "function(e) { 
