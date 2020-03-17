@@ -224,7 +224,7 @@ class AlertController extends Controller
       }
       
       
-      return ['status' => $data];
+      return ['status' => true];
     }
 
     /**
@@ -417,7 +417,8 @@ class AlertController extends Controller
           $error = false;
           $messages;
           
-          $alert->userId = 1;
+          $alert->userId = Yii::$app->user->getId();
+          $alert->status = 1;
           
           if(!$alert->save()){ 
             $messages = $alert->errors;

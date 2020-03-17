@@ -201,7 +201,6 @@ function swal_modal_filter_delete(filter,id,dictionaryName) {
 			if(result.dismiss == "cancel"){
 				// delete result
 				var data = {alertId: alertId,dictionaryName:dictionaryName,filterName: filter.text};
-				console.log(data);
 				
 				$.ajax({
 			        url: origin + `/${appId}/web/monitor/alert/delete-filter-alert`,
