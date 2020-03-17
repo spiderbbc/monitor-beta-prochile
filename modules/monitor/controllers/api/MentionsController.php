@@ -312,8 +312,8 @@ class MentionsController extends Controller
     }
 
     $db = \Yii::$app->db;
+    $duration = 60;
     $rows = $db->cache(function ($db) use ($alertsId) {
-
         return (new \yii\db\Query())
                 ->select([
                   'recurso' => 'r.name',
@@ -332,7 +332,7 @@ class MentionsController extends Controller
                 ->join('JOIN','users_mentions u', 'u.id = m.origin_id')
                 ->all();
 
-    });
+    },$duration);
 
     return array('data' => $rows);
 
