@@ -43,6 +43,7 @@ class TwitterApi extends Model {
 	
 	private $codebird;
 	private $data = [];
+	private $lang = ['es','en'];
 
 	/**
 	 * [prepare set the property the alert for TwitterApi]
@@ -62,8 +63,10 @@ class TwitterApi extends Model {
 			$products   = $alert['products'];
 			// set if search finish
 			$this->searchFinish();
-			// set products
-			$products_params = $this->setProductsParams($products);
+			// set products and his languaje search
+			$lang = (!is_null($alert['config']['uuid'])) ? $this->lang[$alert['config']['uuid']]: 'en' ;
+			
+			$products_params = $this->setProductsParams($products,$lang);
 
 			return $products_params;
 		}
@@ -73,12 +76,12 @@ class TwitterApi extends Model {
 	 * [setProductsParams set the params for each products in the alert]
 	 * @param array $products [params for call api twitter]
 	 */
-	public function setProductsParams($products = []){
+	public function setProductsParams($products = [],$lang){
 		
 		$products_to_searched = [];
 		// forming the array params
 		$params = [
-			'lang' => 'en',
+			'lang' => $lang,
 			'result_type' => 'mixed',
 			'count' => 100,
 		];

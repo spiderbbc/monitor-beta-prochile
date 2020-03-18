@@ -24,6 +24,7 @@ class NewsApi extends Model
 
 	public $total_call;
 	public $paginator;
+	private $lang = ['es','en'];
 
 	public $status_history_search = 'Pending';
 	public $condition_alert_mention = 'ACTIVE';
@@ -50,8 +51,9 @@ class NewsApi extends Model
 			$this->products   = $alert['products'];
 			// set paginator
 			$this->_setPaginator();
-			// set products
-			$products_params = $this->setProductsParams();
+			// set products and his languaje search
+			$lang = (!is_null($alert['config']['uuid'])) ? $this->lang[$alert['config']['uuid']]: 'en' ;
+			$products_params = $this->setProductsParams($lang);
 			if (empty($products_params)) {
 				$this->changeStatusAlertMentions();
 			}else{
@@ -64,7 +66,7 @@ class NewsApi extends Model
 	/**
 	 * [setProductsParams set params with the products to call at api]
 	 */
-	public function setProductsParams()
+	public function setProductsParams($lang)
 	{
 		// if there old call and number products is higher than number calls
 		if (count($this->products) > $this->total_call){
@@ -119,6 +121,7 @@ class NewsApi extends Model
 				'qInTitle' => urlencode($this->products[$p]),
 				'from' => Yii::$app->formatter->asDatetime($from,'yyyy-MM-dd'),
 				'to' => Yii::$app->formatter->asDatetime($to,'yyyy-MM-dd'),
+				'language' => $lang,
 				'sortBy' => 'relevancy',
 				'page' => 1,
 				'apikey' => Yii::$app->params['newsApi']['apiKey'],
@@ -126,7 +129,7 @@ class NewsApi extends Model
 				
 			];
 		}// end loop
-		//die();
+		
 		return $params;
 	}
 	/**

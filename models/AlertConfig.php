@@ -29,6 +29,7 @@ use app\helpers\DateHelper;
 class AlertConfig extends \yii\db\ActiveRecord
 {
     public $country = 'Chile';
+    public $lang = ['Español','Ingles'];
     /**
      * {@inheritdoc}
      */

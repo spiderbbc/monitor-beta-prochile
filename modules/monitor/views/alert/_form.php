@@ -141,7 +141,7 @@ if (!$alert->isNewRecord) {
             </div>
             <!-- config properties-->
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <?= $form->field($alert, 'free_words')->widget(Select2::classname(), [
                     'changeOnReset' => false,
                     'options' => [
@@ -158,7 +158,7 @@ if (!$alert->isNewRecord) {
                     ])->label('Tag free words'); 
                     ?>   
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <?= $form->field($config, 'competitors')->widget(Select2::classname(), [
                     'options' => [
                         'id' => 'competitors',
@@ -172,6 +172,19 @@ if (!$alert->isNewRecord) {
                             'minimumInputLength' => 2
                         ],
                     ])->label('Tag competitors'); 
+                    ?> 
+                </div>
+                <div class="col-md-4">
+                    <?= $form->field($config, 'lang')->widget(Select2::classname(), [
+                    'data' => $config->lang,
+                    'options' => [
+                        'id' => 'languaje',
+                        'placeholder' => 'Seleciona el Lenguaje', 
+                        'value' => $config->uuid
+                    ],
+                        'pluginOptions' => [
+                        ],
+                    ])->label('Lenguaje'); 
                     ?> 
                 </div>
             </div>

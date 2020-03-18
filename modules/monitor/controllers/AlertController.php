@@ -248,7 +248,6 @@ class AlertController extends Controller
           $alert->status = 1;
 
 
-
           if(!$alert->save()){ 
             $messages = $alert->errors;
             $error = true;
@@ -257,6 +256,8 @@ class AlertController extends Controller
           $config->alertId = $alert->id;
           $config->start_date = Yii::$app->request->post('start_date');
           $config->end_date = Yii::$app->request->post('end_date');
+          //languaje
+          $config->uuid = Yii::$app->request->post('AlertConfig')['lang'];
 
           if($config->save()){
             //sources model
@@ -396,6 +397,8 @@ class AlertController extends Controller
           $config->alertId = $alert->id;
           $config->start_date = Yii::$app->request->post('start_date');
           $config->end_date = Yii::$app->request->post('end_date');
+          //languaje
+          $config->uuid = Yii::$app->request->post('AlertConfig')['lang'];
           $config->save();
 
           // add resource alert
