@@ -109,18 +109,7 @@ class AlertController extends Controller
         \app\helpers\DirectoryHelper::removeDirectory($alert->id,$configSource->alertResource->name);
       }
       // delete mentions
-      $alertsMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => $resourceId])->all();
-      foreach ($alertsMentions as $alertMention) {
-        if($alertMention->mentionsCount){
-          foreach ($alertMention->mentions as $mentions => $mention) {
-            $user = \app\models\UsersMentions::findOne($mention->origin_id);
-            if(!is_null($user)){
-              $user->delete();
-            }
-          }
-        }
-        $alertMention->delete();
-      }
+      \app\models\AlertsMencions::deleteAll('alertId = :alertId AND resourcesId = :resourcesId', [':alertId' => $alertId, ':resourcesId' => $resourceId]);
       
 
       return ['status'=>true];
@@ -136,19 +125,8 @@ class AlertController extends Controller
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
       $alert = $this->findModel($alertId);
       \app\models\TermsSearch::deleteAll('alertId = :alertId AND name = :name', [':alertId' => $alert->id,':name' => $termName]);
-
-      $alertsMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alert->id,'term_searched' => $termName])->all();
-      foreach ($alertsMentions as $alertMention) {
-        if($alertMention->mentionsCount){
-          foreach ($alertMention->mentions as $mentions => $mention) {
-            $user = \app\models\UsersMentions::findOne($mention->origin_id);
-            if(!is_null($user)){
-              $user->delete();
-            }
-          }
-        }
-        $alertMention->delete();
-      }
+      // delete mentions
+      \app\models\AlertsMencions::deleteAll('alertId = :alertId AND term_searched = :term_searched', [':alertId' => $alertId, ':term_searched' => $termName]);
 
       return ['status'=>true];
     }
@@ -192,10 +170,6 @@ class AlertController extends Controller
         \app\helpers\DocumentHelper::moveFilesToRoot($alert->id,$alertMention->resources->name);
         if ($alertMention->mentionsCount) {
           foreach ($alertMention->mentions as $mentions => $mention) {
-            $user = \app\models\UsersMentions::findOne($mention->origin_id);
-            if(!is_null($user)){
-              $user->delete();
-            }
             $mention->delete();
           }
         }
@@ -214,16 +188,10 @@ class AlertController extends Controller
       foreach ($alert->alertsMentions as $alertMention) {
         if ($alertMention->mentionsCount) {
           foreach ($alertMention->mentions as $mentions => $mention) {
-            $user = \app\models\UsersMentions::findOne($mention->origin_id);
-            if(!is_null($user)){
-              $user->delete();
-            }
             $mention->delete();
           }
         }
       }
-      
-      
       return ['status' => true];
     }
 
@@ -588,36 +556,21 @@ class AlertController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        //if model
-        if($model){
-          // delete user
-          foreach ($model->alertsMentions as $alertMention) {
-            if($alertMention->mentionsCount){
-                foreach ($alertMention->mentions as $mentions => $mention) {
-                  $user = \app\models\UsersMentions::findOne($mention->origin_id);
-                  if(!is_null($user)){
-                    $user->delete();
-                  }
-                }
-              }
-          }
-          // delete alert
-          $model->delete();
-          $history_search = \app\models\HistorySearch::findOne(['alertId' => $id]);
-          if($history_search){
-            // delete history
-            $history_search->delete();
-          }
-
-          // delete product models
-          $ProductsModelsAlerts = \app\models\ProductsModelsAlerts::find()->where(['alertId' => $id])->all();
-          foreach ($ProductsModelsAlerts as $productsModel){
-            $productsModel->delete();
-          }
-          \app\helpers\DirectoryHelper::removeDirectory($id);
-
-        }
+        $alert_delete = Yii::$app->db->createCommand('DELETE FROM alerts WHERE id=:alertId');
         
+        // delete history search
+        $history_search = \app\models\HistorySearch::findOne(['alertId' => $model->id]);
+        if($history_search){
+          // delete history
+          $history_search->delete();
+        }
+        // remove directory
+        \app\helpers\DirectoryHelper::removeDirectory($id);
+        // prepare and execute delete alert
+        $alert_delete->bindParam(':alertId', $id);
+        $alert_delete->execute();
+        // delete user then no have mention
+        Yii::$app->db->createCommand('DELETE FROM users_mentions WHERE users_mentions.id NOT IN ( SELECT distinct origin_id FROM mentions)')->execute(); 
 
         return $this->redirect(['index']);
     }
