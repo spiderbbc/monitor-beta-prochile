@@ -347,6 +347,9 @@ class NewsApi extends Model
 	{
 		// check if save date searched
 		if ($this->status_history_search == 'Finish' && $this->condition_alert_mention == 'INACTIVE') {
+			$alert = \app\models\Alerts::findOne($this->alertId);
+			$alert->status = 0;
+			$alert->save();
 			$alerts_mencions = \app\models\AlertsMencions::find()->where(['alertId' => $this->alertId])->all();
 			foreach ($alerts_mencions as $alerts_mencion) {
 				$alerts_mencion->condition = $this->condition_alert_mention;

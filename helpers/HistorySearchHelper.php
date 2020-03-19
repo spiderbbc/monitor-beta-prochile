@@ -21,9 +21,9 @@ use app\models\Alerts;
     public static function createOrUpdate($alertId,$properties)
     {
         $is_model = HistorySearch::find()->where(['alertId' => $alertId])->exists();
-        $model = Alerts::findOne($alertId);
+        $alert = Alerts::findOne($alertId);
 
-        $resourceIds = $model->config->configSourcesByAlertResource;
+        $resourceIds = $alert->config->configSourcesByAlertResource;
 
         if($is_model){
             $model = HistorySearch::find()->where(['alertId' => $alertId])->one();
