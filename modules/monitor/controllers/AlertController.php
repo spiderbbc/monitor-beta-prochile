@@ -185,7 +185,8 @@ class AlertController extends Controller
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
       $alert = $this->findModel($alertId);
       //move json file and delete mentions
-      foreach ($alert->alertsMentions as $alertMention) {
+      foreach ($alert->alertsMentions as $alertMention) {// move json file
+        \app\helpers\DocumentHelper::moveFilesToRoot($alert->id,$alertMention->resources->name);
         if ($alertMention->mentionsCount) {
           foreach ($alertMention->mentions as $mentions => $mention) {
             $mention->delete();
@@ -195,6 +196,25 @@ class AlertController extends Controller
       return ['status' => true];
     }
 
+    public function actionChangeLangAlert($alertId,$lang)
+    {
+      \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+      $alert = $this->findModel($alertId);
+      $status = null;
+      if ($alert->config->uuid != $lang) {
+        $status = 'change';
+        // delete mentions
+        \app\models\AlertsMencions::deleteAll('alertId = :alertId', [':alertId' => $alertId]);
+        foreach ($alert->config->sources as $source) {
+          // delete folder resourceName  
+          \app\helpers\DirectoryHelper::removeDirectory($alert->id,$source->name);
+        }
+        
+
+      }
+
+      return ['status' => $status];
+    }
     /**
      * Lists all Alerts models.
      * @return mixed
@@ -367,13 +387,16 @@ class AlertController extends Controller
         $config->competitors = explode(",",$config->competitors);
 
         $alert->scenario = 'saveOrUpdate';
+        // change inactive while is update
+        $alert->status = 0;
+        $alert->save();
 
         $isDocumentExist = \app\helpers\DocumentHelper::isDocumentExist($alert->id,'Excel Document');
 
         // reset alerts_mentions
         if (Yii::$app->getRequest()->getQueryParam('fresh') == 'true') {
           $alerts_mentions = \app\models\AlertsMencions::deleteAll('alertId = :alertId', [':alertId' => $id]);
-          $alert->status = 1;
+          $alert->status = 0;
           $alert->save();
           // delete history
           \app\helpers\HistorySearchHelper::deleteHistory($alert->id);

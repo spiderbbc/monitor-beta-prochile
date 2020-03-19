@@ -64,7 +64,7 @@ class TwitterApi extends Model {
 			// set if search finish
 			$this->searchFinish();
 			// set products and his languaje search
-			$lang = (!is_null($alert['config']['uuid'])) ? $this->lang[$alert['config']['uuid']]: 'en' ;
+			$lang = (!empty($alert['config']['uuid'])) ? $this->lang[$alert['config']['uuid']]: 'en' ;
 			
 			$products_params = $this->setProductsParams($products,$lang);
 

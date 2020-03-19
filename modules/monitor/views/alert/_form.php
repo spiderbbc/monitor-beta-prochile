@@ -178,8 +178,8 @@ if (!$alert->isNewRecord) {
                     <?= $form->field($config, 'lang')->widget(Select2::classname(), [
                     'data' => $config->lang,
                     'options' => [
-                        'id' => 'languaje',
-                        'placeholder' => 'Seleciona el Lenguaje', 
+                        'id' => 'language',
+                        'placeholder' => 'Selecciona el Lenguaje', 
                         'value' => $config->uuid
                     ],
                         'pluginOptions' => [
