@@ -401,7 +401,7 @@ class NewsApi extends Model
 		$resourcesId = (new \yii\db\Query())
 		    ->select('id,name')
 		    ->from('resources')
-		    ->where(['name' => 'Web page','resourcesId' => $socialId['id']])
+		    ->where(['name' => 'Noticias Webs','resourcesId' => $socialId['id']])
 		    ->all();
 		
 

@@ -32,7 +32,7 @@ class BaseApi extends Model {
 		'Instagram Comments'      => 'InstagramCommentsApi',
 		'Live Chat'               => 'liveChat',
 		'Live Chat Conversations' => 'liveChatConversations',
-		'Web page'                => 'webPage',
+		'Noticias Webs'           => 'webPage',
 		'Excel Document'          => 'excelDocument',
 	];
 
@@ -314,13 +314,13 @@ class BaseApi extends Model {
  
 	} 
 
-	public function readDataWebPageApi($alertId,$data){ 
+	public function readDataNoticiasWebsApi($alertId,$data){ 
 		$searchNewsApi = new \app\models\search\NewsSearch();
 		$params = [$alertId,$data];
 
 		$searchNewsApi->load($params); 
 		if($searchNewsApi->search()){ 
-			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Web page'); 
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Noticias Webs'); 
 		} 
  
 	} 

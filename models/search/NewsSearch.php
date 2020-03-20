@@ -301,7 +301,7 @@ class NewsSearch
     $resourcesId = (new \yii\db\Query())
         ->select('id')
         ->from('resources')
-        ->where(['name' => 'Web page','resourcesId' => $socialId['id']])
+        ->where(['name' => 'Noticias Webs','resourcesId' => $socialId['id']])
         ->all();
     
 

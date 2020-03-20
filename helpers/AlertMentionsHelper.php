@@ -162,7 +162,7 @@ class AlertMentionsHelper
                 return [$resource_name,'0','0','0',$model->twitterTotal];
                 break;
 
-            case 'Web page':
+            case 'Noticias Webs':
                 return [$resource_name,'0','0','0',$model->total];                      
                 break;
 
@@ -335,7 +335,7 @@ class AlertMentionsHelper
                 $data['total'] = $total;
                 return $data; 
                 break;
-            case 'Web page':
+            case 'Noticias Webs':
                 $total = 0;
                 foreach ($models as $model) {
                     if ($model->mentionsCount) {
@@ -446,7 +446,7 @@ class AlertMentionsHelper
         $hour_news_api = 8; 
 
 
-        $sourcesTargest = ['Instagram Comments','Facebook Comments','Facebook Messages','Web page'];
+        $sourcesTargest = ['Instagram Comments','Facebook Comments','Facebook Messages','Noticias Webs'];
         // loop alerts config
         for ($a=0; $a < sizeof($alerts) ; $a++) { 
             foreach ($alerts[$a]['config']['configSources'] as $resourceName) {
@@ -470,7 +470,7 @@ class AlertMentionsHelper
                         $fecha = new \DateTime();
                         $updatedAt_diff = $now->diff($fecha->setTimestamp($alertMention->updatedAt));
                        
-                        if ($resourceName != 'Web page') {
+                        if ($resourceName != 'Noticias Webs') {
                             if($updatedAt_diff->i <= $minutes_to_call){
                                 $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
                             } // end if diff
