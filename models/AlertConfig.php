@@ -15,6 +15,7 @@ use app\helpers\DateHelper;
  * @property int $alertId
  * @property string $product_description
  * @property string $competitors
+ * @property string $urls
  * @property string $country
  * @property string $url_drive
  * @property int $start_date
@@ -29,7 +30,7 @@ use app\helpers\DateHelper;
 class AlertConfig extends \yii\db\ActiveRecord
 {
     public $country = 'Chile';
-    public $lang = ['Español','Ingles'];
+    public $langs = ['Español','Ingles'];
     /**
      * {@inheritdoc}
      */
@@ -58,6 +59,8 @@ class AlertConfig extends \yii\db\ActiveRecord
     {
         return [
             [['start_date','end_date'], 'required'],
+            [['lang'], 'integer'],
+          //  [['urls'], 'string'],
             // normalize "start_date" and "end_date" using the function "normalizeDate"
             [['start_date','end_date'], 'filter', 'filter' => [$this, 'normalizeDate']],
             // normalize "phone" using the function "normalizeTags"
@@ -109,7 +112,7 @@ class AlertConfig extends \yii\db\ActiveRecord
             'alertId' => Yii::t('app', 'Alert ID'),
             'product_description' => Yii::t('app', 'Product Description'),
             'competitors' => Yii::t('app', 'Competitors'),
-            'country' => Yii::t('app', 'url Drive'),
+            'urls'    => Yii::t('app', 'Urls Web'),
             'country' => Yii::t('app', 'country'),
             'start_date' => Yii::t('app', 'Fecha Inicio'),
             'end_date' => Yii::t('app', 'Fecha Final'),

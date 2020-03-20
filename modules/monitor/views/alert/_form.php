@@ -34,7 +34,7 @@ if (!$alert->isNewRecord) {
                 <div class="col-md-6">
                     <?= $form->field($config, 'start_date')->widget(DatePicker::classname(), [
                             'type' => DatePicker::TYPE_INPUT,
-                            'options' => ['id' => 'start_date','name' => 'start_date','placeholder' => 'Enter start date ...'],
+                            'options' => ['id' => 'start_date','name' => 'start_date','placeholder' => 'Ingrese Fecha Inicio'],
                             'pluginOptions' => [
                                 'orientation' => 'down left',
                                 'format' => 'dd/mm/yyyy',
@@ -51,7 +51,7 @@ if (!$alert->isNewRecord) {
                 <div class="col-md-6">
                     <?= $form->field($config, 'end_date')->widget(DatePicker::classname(), [
                         'type' => DatePicker::TYPE_INPUT,
-                            'options' => ['id' => 'end_date','name' => 'end_date','placeholder' => 'Enter end date ...'],
+                            'options' => ['id' => 'end_date','name' => 'end_date','placeholder' => 'Ingrese Fecha Final'],
                             'pluginOptions' => [
                                 'orientation' => 'down left',
                                 'format' => 'dd/mm/yyyy',
@@ -69,7 +69,7 @@ if (!$alert->isNewRecord) {
                             'data' => $alert->social,
                             'options' => [
                                 'id' => 'social_resourcesId',
-                                'placeholder' => 'Select a resources...',
+                                'placeholder' => 'Selecione la red Social',
                                 'multiple' => true,
                                 'theme' => 'krajee',
                                 'debug' => false,
@@ -94,12 +94,48 @@ if (!$alert->isNewRecord) {
                     ?>
                 </div>
                 <div class="col-md-4">
+                    <?= $form->field($config, 'urls')->widget(Select2::classname(), [
+                    'options' => [
+                        'id' => 'urls',
+                        //'resourceName' => 'Product Competition',
+                        'placeholder' => 'Ingrese url a Buscar', 
+                        'multiple' => true
+                    ],
+                        'pluginOptions' => [
+                            'tags' => true,
+                            'tokenSeparators' => [',', ' '],
+                            'minimumInputLength' => 2
+                        ],
+                    ]); 
+                    ?> 
+                </div>
+                <div class="col-md-4">
+                    <?= $form->field($alert, 'productsIds')->widget(Select2::classname(), [
+                    'changeOnReset' => false,
+                    'options' => [
+                            'id' => 'productsIds',
+                            'placeholder' => 'Ingrese terminos a buscar', 
+                            'multiple' => true,
+                        ],
+                        'pluginOptions' => [
+                            'tags' => true,
+                            'tokenSeparators' => [','],
+                            'minimumInputLength' => 2,
+                            'maximumSelectionLength' => 20
+                        ],
+                    ])->label('Terminos a buscar');
+                    ?>
+                </div>
+            </div>
+            <!-- config properties-->
+            <div class="row">
+                <div class="col-md-4">
                     <?= $form->field($alert, 'dictionaryIds')->widget(Select2::classname(), [
                             'data' => $drive->dictionaries,
                             'options' => [
                                 'id' => 'social_dictionaryId',
                                 'resourceName' => 'dictionaries',
-                                'placeholder' => 'Select a dictionaries...',
+                                'placeholder' => 'Selecione Diccionarios de Palabras',
                                 'multiple' => true,
                                 'theme' => 'krajee',
                                 'value' => (isset($alert->dictionariesName)) ? $alert->dictionariesName : [],
@@ -122,32 +158,12 @@ if (!$alert->isNewRecord) {
                     ?>
                 </div>
                 <div class="col-md-4">
-                    <?= $form->field($alert, 'productsIds')->widget(Select2::classname(), [
-                    'changeOnReset' => false,
-                    'options' => [
-                            'id' => 'productsIds',
-                            'placeholder' => 'write a tags free words ...', 
-                            'multiple' => true,
-                        ],
-                        'pluginOptions' => [
-                            'tags' => true,
-                            'tokenSeparators' => [','],
-                            'minimumInputLength' => 2,
-                            'maximumSelectionLength' => 20
-                        ],
-                    ])->label('Terminos a buscar');
-                    ?>
-                </div>
-            </div>
-            <!-- config properties-->
-            <div class="row">
-                <div class="col-md-4">
                     <?= $form->field($alert, 'free_words')->widget(Select2::classname(), [
                     'changeOnReset' => false,
                     'options' => [
                             'id' => 'free_words',
                             'resourceName' => 'Free Words',
-                            'placeholder' => 'write a tags free words ...', 
+                            'placeholder' => 'Ingrese Palabras Libres', 
                             'multiple' => true,
                         ],
                         'pluginOptions' => [
@@ -155,32 +171,16 @@ if (!$alert->isNewRecord) {
                             'tokenSeparators' => [',', ' '],
                             'minimumInputLength' => 2
                         ],
-                    ])->label('Tag free words'); 
-                    ?>   
-                </div>
-                <div class="col-md-4">
-                    <?= $form->field($config, 'competitors')->widget(Select2::classname(), [
-                    'options' => [
-                        'id' => 'competitors',
-                        'resourceName' => 'Product Competition',
-                        'placeholder' => 'write a tags competitors ...', 
-                        'multiple' => true
-                    ],
-                        'pluginOptions' => [
-                            'tags' => true,
-                            'tokenSeparators' => [',', ' '],
-                            'minimumInputLength' => 2
-                        ],
-                    ])->label('Tag competitors'); 
-                    ?> 
+                    ]); 
+                    ?>  
                 </div>
                 <div class="col-md-4">
                     <?= $form->field($config, 'lang')->widget(Select2::classname(), [
-                    'data' => $config->lang,
+                    'data' => $config->langs,
                     'options' => [
                         'id' => 'language',
-                        'placeholder' => 'Selecciona el Lenguaje', 
-                        'value' => $config->uuid
+                        'placeholder' => 'Selecciona el Idioma', 
+                        'value' => $config->lang
                     ],
                         'pluginOptions' => [
                         ],

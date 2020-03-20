@@ -201,7 +201,7 @@ class AlertController extends Controller
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
       $alert = $this->findModel($alertId);
       $status = null;
-      if ($alert->config->uuid != $lang) {
+      if ($alert->config->lang != $lang) {
         $status = 'change';
         // delete mentions
         \app\models\AlertsMencions::deleteAll('alertId = :alertId', [':alertId' => $alertId]);
@@ -277,7 +277,8 @@ class AlertController extends Controller
           $config->start_date = Yii::$app->request->post('start_date');
           $config->end_date = Yii::$app->request->post('end_date');
           //languaje
-          $config->uuid = Yii::$app->request->post('AlertConfig')['lang'];
+          $config->lang = Yii::$app->request->post('AlertConfig')['lang'];
+          $config->urls = implode(',', Yii::$app->request->post('AlertConfig')['urls']);
 
           if($config->save()){
             //sources model
@@ -385,6 +386,8 @@ class AlertController extends Controller
         // set tag 
         $config->product_description = explode(",",$config->product_description);
         $config->competitors = explode(",",$config->competitors);
+        // covert reade
+        $config->urls = explode(",",$config->urls);
 
         $alert->scenario = 'saveOrUpdate';
         // change inactive while is update
@@ -402,9 +405,6 @@ class AlertController extends Controller
           \app\helpers\HistorySearchHelper::deleteHistory($alert->id);
         }
 
-        
-        
-        
         if (Yii::$app->request->post() && $alert->load(Yii::$app->request->post()) && $config->load(Yii::$app->request->post())) {
           $error = false;
           $messages;
@@ -421,7 +421,8 @@ class AlertController extends Controller
           $config->start_date = Yii::$app->request->post('start_date');
           $config->end_date = Yii::$app->request->post('end_date');
           //languaje
-          $config->uuid = Yii::$app->request->post('AlertConfig')['lang'];
+          $config->lang = Yii::$app->request->post('AlertConfig')['lang'];
+          $config->urls = implode(',', Yii::$app->request->post('AlertConfig')['urls']);
           $config->save();
 
           // add resource alert

@@ -21,9 +21,10 @@ class m190813_203806_Alert_Config extends Migration
         $this->createTable('{{%alert_config}}', [
             'id'                  => $this->primaryKey(),
             'alertId'             => $this->integer(11)->notNull()->unique(),
-            'uuid'                => $this->string(),
+            'lang'                => $this->integer(),
             'product_description' => $this->string(40)->notNull(),
             'competitors'         => $this->string(40)->notNull(),
+            'urls'                 => $this->text(),
             'country'             => $this->json(),
             'url_drive'           => $this->string(40),
             'start_date'          => $this->integer(),
@@ -38,14 +39,15 @@ class m190813_203806_Alert_Config extends Migration
 
         $this->insert('{{%alert_config}}', [
             'alertId'             => 1,
-            'uuid'                => 'Boom_1559312912',
+            'lang'                => 1,
             'product_description' => 'tecnology,Home entretaiment',
             'competitors'         => 'Sansung,Iphone,Hyundai',
+            'urls'                => 'https://www.cnn.com/,https://www.foxnews.com/,https://www.usatoday.com/',
             'country'             => null,
-            'start_date'          => '1575226766',
-            'end_date'            => '1576177166',
-            'createdAt'           => '1565888154',
-            'updatedAt'           => '1565888154',
+            'start_date'          => '1589983118',
+            'end_date'            => '1590415118',
+            'createdAt'           => '1590415118',
+            'updatedAt'           => '1590415118',
             'createdBy'           => '1',
             'updatedBy'           => '1',
         ]);

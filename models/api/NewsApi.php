@@ -52,7 +52,7 @@ class NewsApi extends Model
 			// set paginator
 			$this->_setPaginator();
 			// set products and his languaje search
-			$lang = (!empty($alert['config']['uuid'])) ? $this->lang[$alert['config']['uuid']]: 'en' ;
+			$lang = (!empty($alert['config']['lang'])) ? $this->lang[$alert['config']['lang']]: 'en' ;
 			$products_params = $this->setProductsParams($lang);
 			if (empty($products_params)) {
 				$this->changeStatusAlertMentions();
