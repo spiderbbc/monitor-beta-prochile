@@ -308,7 +308,7 @@ class NewsApi extends Model
 	{
 
 		$model = [
-            'Web page' => [
+            'Noticias Webs' => [
                 'resourceId' => $this->resourcesId,
                 'status' => $this->status_history_search
             ]
