@@ -256,7 +256,7 @@ class AlertController extends Controller
         $sources = new \app\models\AlertconfigSources();
         $drive   = new \app\models\api\DriveApi();
 
-        $alert->scenario = 'saveOrUpdate';
+       $alert->scenario = 'saveOrUpdate';
         
 
 
@@ -278,7 +278,8 @@ class AlertController extends Controller
           $config->end_date = Yii::$app->request->post('end_date');
           //languaje
           $config->lang = Yii::$app->request->post('AlertConfig')['lang'];
-          $config->urls = implode(',', Yii::$app->request->post('AlertConfig')['urls']);
+          $config->urls = (Yii::$app->request->post('AlertConfig')['urls']) ?
+                          implode(',', Yii::$app->request->post('AlertConfig')['urls']) : null;
 
           if($config->save()){
             //sources model
@@ -422,7 +423,8 @@ class AlertController extends Controller
           $config->end_date = Yii::$app->request->post('end_date');
           //languaje
           $config->lang = Yii::$app->request->post('AlertConfig')['lang'];
-          $config->urls = implode(',', Yii::$app->request->post('AlertConfig')['urls']);
+          $config->urls = (Yii::$app->request->post('AlertConfig')['urls']) ?
+                          implode(',', Yii::$app->request->post('AlertConfig')['urls']) : null;
           $config->save();
 
           // add resource alert

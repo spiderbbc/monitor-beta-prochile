@@ -3,7 +3,7 @@
 const origin           = location.origin;
 const baseUrl  = `${origin}/${appId}/web/monitor/alert/`;
 
-const reloadButton = Vue.component('sync-product',{
+/*const reloadButton = Vue.component('sync-product',{
 	template: '#sync-product-id',
 	data(){
 		return {
@@ -48,7 +48,7 @@ var vm = new Vue({
 	}	
 });
 
-
+*/
 let message_error_no_dates = "Debe de escojer fecha de Inicio y fecha Final";
 let message_more_than_one_month= "Consultar las paginas web tiene que ser un rango menor de <b>1 mes</b>";
 

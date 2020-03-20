@@ -111,11 +111,11 @@ if (!$alert->isNewRecord) {
                 </div>
                 <div class="col-md-4">
                     <?= $form->field($alert, 'productsIds')->widget(Select2::classname(), [
-                    'changeOnReset' => false,
                     'options' => [
                             'id' => 'productsIds',
                             'placeholder' => 'Ingrese terminos a buscar', 
                             'multiple' => true,
+                            'value'=> ($alert->productsIds) ? $alert->productsIds : ['test'] 
                         ],
                         'pluginOptions' => [
                             'tags' => true,
