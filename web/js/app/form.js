@@ -3,56 +3,43 @@
 const origin           = location.origin;
 const baseUrl  = `${origin}/${appId}/web/monitor/alert/`;
 
-/*const reloadButton = Vue.component('sync-product',{
-	template: '#sync-product-id',
-	data(){
-		return {
-			msg: 'Reload'
-		}
-	},
-	methods: {
-		reload(){
-			this.msg = 'Loading';
-			fetch(`${baseUrl}reload-products`)
-			  .then(response => {
-			    return response.json()
-			  })
-			  .then(data => {
-			    // Work with JSON data here
-			    if(data.status){
-			    	$("#productsIds").trigger('change');
-			    	location.reload();
-			    	this.msg = 'Reload';
-			    }
-			  })
-			  .catch(err => {
-			    // Do something for an error here
-			})
-		}
-	}
-});
-
-
-// vue here
-var vm = new Vue({
-	el: '#views-alert',
-	data: {
-		loaded: true
-	},
-	mounted(){
-	    
-
-	},
-	components:{
-		reloadButton
-	}	
-});
-
-*/
 let message_error_no_dates = "Debe de escojer fecha de Inicio y fecha Final";
 let message_more_than_one_month= "Consultar las paginas web tiene que ser un rango menor de <b>1 mes</b>";
 
 
+$('#urls').on('select2:select', function (e) {
+    var selectId = 'social_resourcesId';
+    var data = {
+        id: '4',
+        text: 'Paginas Webs'
+    };
+    add_options_select(selectId,data);
+    
+});
+
+$('#social_resourcesId').on('select2:unselecting', function (e) {
+    var resource = e.params.args.data;
+    if(resource.text == "Paginas Webs"){
+    	var urls = $('#urls')
+    	urls.val(null).trigger('change'); // Select the option with a value of '1'
+    }
+});
+
+function add_options_select(selectId,data) {
+	var social = $('#'+selectId);
+	var current_values = social.val();
+
+    // Set the value, creating a new option if necessary
+    if (social.find('option[value=' + data.id +']').length) {
+        current_values.push(data.id);
+        social.val(current_values).trigger('change');
+    } else { 
+        // Create a DOM Option and pre-select by default
+        var newOption = new Option(data.text, data.id, true, true);
+        // Append it to the select
+        social.append(newOption).trigger('change');
+    }
+}
 
 /**
  * [modalReosurces method that validates according to the time and the social network chosen the type of message to show the user]

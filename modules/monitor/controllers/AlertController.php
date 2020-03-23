@@ -284,8 +284,10 @@ class AlertController extends Controller
           if($config->save()){
             //sources model
             $is_save_socialIds = $config->saveAlertconfigSources($alert->alertResourceId);
+
             if(!$is_save_socialIds){
               $error = true;
+              $messages = $config->errors;
             }
           }else{ 
             $messages = $config->errors;
@@ -383,7 +385,6 @@ class AlertController extends Controller
        
         $alert->productsIds  = \yii\helpers\ArrayHelper::map(\app\models\TermsSearch::find()->where(['alertId' => $alert->id])->all(),'id','name');
        
-
         // set tag 
         $config->product_description = explode(",",$config->product_description);
         $config->competitors = explode(",",$config->competitors);

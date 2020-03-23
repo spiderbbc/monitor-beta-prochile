@@ -68,8 +68,16 @@ class m190813_202212_Resources extends Migration
         
         // 4
         $this->insert('{{%resources}}', [
-            'name'        => 'Web page',
+            'name'        => 'Noticias Webs',
             'resourcesId' => '2',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
+        ]);
+        $this->insert('{{%resources}}', [
+            'name'        => 'Paginas Webs',
+            'resourcesId' => '5',
             'createdAt'   => '1488153462',
             'updatedAt'   => '1488153462',
             'createdBy'   => '1',

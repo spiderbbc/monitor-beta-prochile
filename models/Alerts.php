@@ -28,7 +28,7 @@ class Alerts extends \yii\db\ActiveRecord
     public $files;
     public $free_words = [];
     public $dictionaryIds = [];
-    public $productsIds;
+    public $productsIds = [];
     public $alertResourceId  = [];
 
     const STATUS_ACTIVE    = 1;
@@ -63,7 +63,9 @@ class Alerts extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            //[['userId','name','alertResourceId','productsIds'], 'required'],
             [['userId','name','alertResourceId','productsIds'], 'required', 'on' => 'saveOrUpdate'],
+           // [['userId','name','alertResourceId','productsIds'], 'required'],
             [['status'], 'default','value' => 1],
             [['userId', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['name'], 'string', 'max' => 255],

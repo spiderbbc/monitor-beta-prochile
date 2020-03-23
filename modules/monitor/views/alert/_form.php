@@ -207,7 +207,7 @@ if (!$alert->isNewRecord) {
                                     var social = $('#social_resourcesId');
                                     var current_values = social.val();
                                     var data = {
-                                        id: '8',
+                                        id: '5',
                                         text: 'Excel Document'
                                     };
 
