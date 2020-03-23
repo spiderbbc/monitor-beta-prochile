@@ -7,6 +7,17 @@ let message_error_no_dates = "Debe de escojer fecha de Inicio y fecha Final";
 let message_more_than_one_month= "Consultar las paginas web tiene que ser un rango menor de <b>1 mes</b>";
 
 
+$('#urls').on('select2:unselecting', function (e) {
+    var urls = $(this).val();
+    if (urls.length == 1) {
+    	remove_value_selector('social_resourcesId','4');
+    }
+    
+});
+
+/**
+ * [event when selecting select2 of urls: adding web page to select2 resourceID]
+ */
 $('#urls').on('select2:select', function (e) {
     var selectId = 'social_resourcesId';
     var data = {
@@ -16,7 +27,9 @@ $('#urls').on('select2:select', function (e) {
     add_options_select(selectId,data);
     
 });
-
+/**
+ * [event when unselecting select2 of resourceId: if resource is web page clean the select web urls]
+ */
 $('#social_resourcesId').on('select2:unselecting', function (e) {
     var resource = e.params.args.data;
     if(resource.text == "Paginas Webs"){
@@ -25,6 +38,11 @@ $('#social_resourcesId').on('select2:unselecting', function (e) {
     }
 });
 
+/**
+ * [add_options_select adding data to select2]
+ * @param  {[type]} string [id to select2]
+ * @param  {[type]} obj [data to select2]
+ */
 function add_options_select(selectId,data) {
 	var social = $('#'+selectId);
 	var current_values = social.val();
@@ -218,4 +236,22 @@ function swal_modal_info(resource,days,days_ago) {
             clean_select2(social,resource);
 		}
 	});
+}
+
+/**
+ * [remove_value_selector delete value to select2]
+ * @param  {[type]} selectId [description]
+ * @param  {[type]} termId   [description]
+ * @return {[type]}          [description]
+ */
+function remove_value_selector(selectId,termId) {
+	var selectId = `#${selectId}`;
+	var terms = $(selectId).select2('data');
+	var value = [];
+	for (var s = 0; s < terms.length; s++) {
+		if(terms[s].id != termId){
+			value.push(terms[s].id);
+		}
+	}
+	$(selectId).val(value).trigger('change');
 }

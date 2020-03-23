@@ -146,29 +146,6 @@ class Alerts extends \yii\db\ActiveRecord
                 }
             }
             
-
-            //get family/products/models
-            /*for($c = 0; $c < sizeOf($alertsConfig); $c++){
-                $products_models_alerts = ProductsModelsAlerts::findAll(['alertId' => $alertsConfig[$c]['id']]);
-                if(!empty($products_models_alerts)){
-                    $alertsConfig[$c]['products'] = [];
-                    foreach($products_models_alerts as $product){
-                        // models
-                        if(!in_array($product->productModel->name,$alertsConfig[$c]['products'])){
-                            array_push($alertsConfig[$c]['products'], $product->productModel->name);
-                        }
-                        // products
-                        if(!in_array($product->productModel->product->name,$alertsConfig[$c]['products'])){
-                            array_push($alertsConfig[$c]['products'], $product->productModel->product->name);
-                        }
-                        // category
-                        if(!in_array($product->productModel->product->category->name,$alertsConfig[$c]['products'])){
-                            array_push($alertsConfig[$c]['products'], $product->productModel->product->category->name);
-                        }
-                        //array_push($alertsConfig[$c]['products'], $product->productModel->product->category->productsFamily->name);
-                    }
-                }
-            }*/
         }
        return $alertsConfig;
     }
@@ -187,7 +164,7 @@ class Alerts extends \yii\db\ActiveRecord
     
     public function getSocial(){
         $socials = Resources::getDb()->cache(function ($db) {
-            return Resources::find()->where(['resourcesId' => [1,2]])->all();
+            return Resources::find()->where(['resourcesId' => [1,2,5]])->all();
         },60);
         $socialIds = \yii\helpers\ArrayHelper::map($socials,'id','name');
         return $socialIds;
