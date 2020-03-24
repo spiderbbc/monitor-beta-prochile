@@ -145,8 +145,22 @@ class StringHelper
         return $s->getString();
     }
 
+    public static function isUrl($url)
+    {
+        $s = new Stringizer($url);
+        return $s->isUrl(); // true
+    }
 
-
+    public static function validUrlFromString($url_string){
+        $urls = explode(',', $url_string);
+        $valid_urls = [];
+        foreach ($urls as $url) {
+            if (self::isUrl($url)) {
+                array_push($valid_urls, $url);
+            }
+        }
+        return $valid_urls;
+    }
 
     
     public static function in_array_r($needle, $haystack, $strict = true) {

@@ -32,8 +32,9 @@ class BaseApi extends Model {
 		'Instagram Comments'      => 'InstagramCommentsApi',
 		'Live Chat'               => 'liveChat',
 		'Live Chat Conversations' => 'liveChatConversations',
-		'Noticias Webs'           => 'webPage',
+		'Noticias Webs'           => 'newsApi',
 		'Excel Document'          => 'excelDocument',
+		'Paginas Webs'            => 'webPages',
 	];
 
 
@@ -83,7 +84,6 @@ class BaseApi extends Model {
 
 	public function facebookCommentsApi($alerts = []){
 		
-		
 		$facebookCommentsApi = new \app\models\api\FacebookCommentsApi();
 
 		foreach ($alerts as $alert){
@@ -98,7 +98,6 @@ class BaseApi extends Model {
 
 	public function facebookMessagesApi($alerts = []){
 
-		
 		$facebookMessagesApi = new \app\models\api\FacebookMessagesApi();
 
 		foreach ($alerts as $alert){
@@ -160,7 +159,7 @@ class BaseApi extends Model {
 		
 	}
 
-	public function webpage($alerts = []){
+	public function newsApi($alerts = []){
 
 		$newsApi = new \app\models\api\NewsApi();
 		$newsApi->setNumberCallsByAlert($alerts);
@@ -172,6 +171,20 @@ class BaseApi extends Model {
 			}
 		}
 		
+	}
+
+	public function webPages($alerts = [])
+	{
+		$scraping = new \app\models\api\Scraping();
+
+		foreach ($alerts as $alert) {
+			if ($alert['config']['urls'] != '') {
+				$query_params = $scraping->prepare($alert);
+				$crawlers = $scraping->getRequest();
+				$content  = $scraping->getContent($crawlers);
+				$scraping->setContent($content);
+			}
+		}
 	}
 
 	public function countAllTerms($alerts = []){
