@@ -500,4 +500,13 @@ class AlertMentionsHelper
         return $alerts;
     }
 
+    public static function getResourceIdByName($resourceName)
+    {
+        $resourcesId = (new \yii\db\Query())
+            ->select('id')
+            ->from('resources')
+            ->where(['name' => $resourceName])
+            ->all();
+        return \yii\helpers\ArrayHelper::getColumn($resourcesId,'id')[0];
+    }
 }

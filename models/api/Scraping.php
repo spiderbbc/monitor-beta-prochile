@@ -10,19 +10,22 @@ use Goutte\Client;
 use GuzzleHttp\Client as GuzzleClient;
 use Symfony\Component\DomCrawler\Crawler;
 
+
 /**
  * class wrapper to web scraping
  */
 class Scraping extends Model
 {
-	private $resourcesName = 'Paginas Webs';
+	private $resourceName = 'Paginas Webs';
 	private $alertId;
 	private $resourcesId;
+	private $terms;
 	private $start_date;
 	private $end_date;
 	private $urls;
 	private $data;
 
+	const TYPE_MENTIONS = 'web';
 	/**
      * [rules for scrapping a webpage]
      * @return [array] [title => rule xpath]
@@ -59,7 +62,7 @@ class Scraping extends Model
 			$this->end_date       = $alert['config']['end_date'];
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
-			$products   = $alert['products'];
+			$this->terms   = $alert['products'];
 			// set if search finish
 			//$this->searchFinish();
 			
@@ -67,7 +70,6 @@ class Scraping extends Model
 			$this->urls = $this->_setUrls($alert['config']['urls']);
 
 		}
-		return false;
 	}
 	/**
 	 * [_setUrls get http request to url and extract all links with the same domain the url]
@@ -78,7 +80,10 @@ class Scraping extends Model
 	{
 		$valid_urls = \app\helpers\StringHelper::validUrlFromString($urls_string);
 		$urls = [];
+
+		// Initialize the client with the handler option
 		$client = new GuzzleClient();
+		//$client = new GuzzleClient();
 		// loop on urls
 		foreach ($valid_urls as $url) {
 			$domain = \app\helpers\StringHelper::getDomain($url);
@@ -107,11 +112,15 @@ class Scraping extends Model
 						    }
 						    
 						} // for each links
+						
+						
 						// put original url
 						array_push($all_links, $url);
 						$all_links = array_unique($all_links);
+						// reorder array
+						$links_order = array_values($all_links);
 						$urls[$url]['domain'] = $domain;
-						$urls[$url]['links'] = $all_links;
+						$urls[$url]['links'] = $links_order;
 					}
 				}
 			} catch (\GuzzleHttp\Exception\RequestException $e) {
@@ -120,7 +129,6 @@ class Scraping extends Model
 				continue;
 			}
 		}
-
 		return $urls;
 	}
 
@@ -186,7 +194,10 @@ class Scraping extends Model
         }// end loop crawlers
       	return $contents;
 	}
-
+	/**
+	 * [setContent reoder array on each data for url]
+	 * @param [array] $contents [content for each url]
+	 */
 	public function setContent($contents)
 	{
 		$data = [];
@@ -210,9 +221,118 @@ class Scraping extends Model
 		}// end loop contents
 		return $data;
 	}
+	/**
+	 * [searchTermsInContent search terms in the content extract in the web pages]
+	 * @param  [array] $data  [array data with his links and content]
+	 * @return [array] $model [array with the sentences order by terms]
+	 */
+	public function searchTermsInContent($data)
+	{
+		$model = [];
+		$terms = $this->terms;
+		/*var_dump($data);
+		die();*/
+
+		if (!empty($data)) {
+			foreach ($data as $url => $values) {
+				//echo $url."\n";
+				foreach ($values as $link => $nodes) {
+					//echo $link."\n";
+					for ($n=0; $n < sizeof($nodes) ; $n++) { 
+						//echo $nodes[$n]."\n";
+						$sentence = $nodes[$n];
+						for ($t=0; $t <sizeof($terms) ; $t++) { 
+
+							$isContains = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence,$terms[$t]);
+							if ($isContains) {
+								if (!ArrayHelper::keyExists($terms[$t], $model, false)) {
+									$model[$terms[$t]] = [];
+								}
+
+								$register = [
+									'source' => [
+										'name' => \app\helpers\StringHelper::getDomain($link)
+									],
+									'url' => $link,
+									'content' => $sentence,
+									'message_markup' => $sentence
+								];
+								//$model[$terms[$t]][] = $register;
+								if (!in_array($register, $model[$terms[$t]])) {
+									$model[$terms[$t]][] = $register;
+								}
+							}
+						}
+					}// end loop nodes
+				}// end loop values
+			}// end loop end data
+		}// end if emty data
+		return $model;
+	}
+
+	public function saveTermsMentions($model)
+	{
+		$terms = array_keys($model);
+		$properties = [
+			'alertId'       => $this->alertId,
+			'resourcesId'   => $this->resourcesId,
+			'date_searched' => \app\helpers\DateHelper::getToday(),
+			'type'          => self::TYPE_MENTIONS,
+		];
+		if (!empty($terms)) {
+			for ($t=0; $t < sizeof($terms) ; $t++) { 
+				$properties['term_searched'] = $terms[$t];
+				$this->_saveAlertsMencions($properties);
+			}
+		}
+		$this->data = $model;
+	}
+
+	/**
+	 * [_saveAlertsMencions save in alerts_mencions model]
+	 * @param  array  $properties [description]
+	 * @return [type]             [description]
+	 */
+	private function _saveAlertsMencions($properties = []){
+		
+		$model =  \app\models\AlertsMencions::find()->where([
+			'alertId'       => $this->alertId,
+			'resourcesId'   => $this->resourcesId,
+			'type'          => self::TYPE_MENTIONS,
+			'term_searched' => $properties['term_searched']
+		])
+		->one();
+
+		if(is_null($model)){
+			$model = new \app\models\AlertsMencions();
+			$model->alertId = $this->alertId;
+			$model->resourcesId = $this->resourcesId;
+		}
+		foreach($properties as $property => $values){
+    		$model->$property = $values;
+    	}
+    	if(!$model->save()){
+    		var_dump($model->errors);
+    	}
+
+	}
+
+	/**
+	 * [saveJsonFile save a json file]
+	 * @return [none] [description]
+	 */
+	public function saveJsonFile(){
+
+		if(!empty($this->data)){
+			$jsonfile = new \app\models\file\JsonFile($this->alertId,$this->resourceName);
+			$jsonfile->load($this->data);
+			$jsonfile->save();
+		}
+
+	}
 	
 	function __construct(){
-		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourcesName);
+		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourceName);
 		// call the parent __construct
 		parent::__construct();
 	}

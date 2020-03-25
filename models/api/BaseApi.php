@@ -182,7 +182,12 @@ class BaseApi extends Model {
 				$query_params = $scraping->prepare($alert);
 				$crawlers = $scraping->getRequest();
 				$content  = $scraping->getContent($crawlers);
-				$scraping->setContent($content);
+				$data     = $scraping->setContent($content);
+				$model    = $scraping->searchTermsInContent($data);
+				if(!empty($model)){
+					$scraping->saveTermsMentions($model);
+					$scraping->saveJsonFile();
+				}
 			}
 		}
 	}
