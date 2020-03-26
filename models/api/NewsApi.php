@@ -30,7 +30,7 @@ class NewsApi extends Model
 	public $condition_alert_mention = 'ACTIVE';
 
 	const LIMIT_CALLS = 166;
-	const TYPE_MENTIONS = 'web';
+	const TYPE_MENTIONS = 'news';
 	const NUMBER_DATA_BY_REQUEST = 20;
 
 

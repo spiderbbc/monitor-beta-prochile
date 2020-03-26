@@ -180,10 +180,10 @@ class Scraping extends Model
 	                    {
 	                    	$text = $node->text();
 	                    	if (!\app\helpers\StringHelper::isEmpty($text)) {
-	                    		$text = \app\helpers\StringHelper::collapseWhitespace($text);
+	                    		$text_without_spaces = \app\helpers\StringHelper::collapseWhitespace($text);
 	                    		return [
 		                            'id' => $node->extract(['id'])[0],
-		                            '_text' => trim($node->text()),
+		                            '_text' => trim($text_without_spaces),
 		                        ];
 	                    	}
 	                    	//return null;
