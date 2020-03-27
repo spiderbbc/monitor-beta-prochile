@@ -33,7 +33,6 @@ class Scraping extends Model
     public function rules()
     {
         return [
-            '//div'         => Yii::t('app','div'),
             '//title'       => Yii::t('app','document_title'),
             '//h1'          => Yii::t('app','cabezera_1'),
             '//h2'          => Yii::t('app','cabezera_2'),
@@ -44,13 +43,11 @@ class Scraping extends Model
             '//a'           => Yii::t('app','link'),
             '//b'           => Yii::t('app','negrita'),
             '//span'        => Yii::t('app','contenedor'),
-            '//li'          => Yii::t('app','ítem'),
+            '//ul//li'          => Yii::t('app','ítem'),
             '//address'     => Yii::t('app','address'),
-            '//div/article' => Yii::t('app','cabezera_2'),
             '//aside'       => Yii::t('app','aside'),
             '//hgroup'      => Yii::t('app','hgroup'),
             '//p'           => Yii::t('app','paragraph'),
-            '//footer/div'  => Yii::t('app','footer'),
         ];
     }
 
@@ -129,6 +126,17 @@ class Scraping extends Model
 				continue;
 			}
 		}
+		
+
+$urls = [
+			'https://www.nytimes.com/'=>[
+				'domain' => 'forbes.com',
+				'links'  => [
+					'https://www.forbes.com/'
+				],
+			]
+		];
+
 		return $urls;
 	}
 
@@ -176,11 +184,12 @@ class Scraping extends Model
         	foreach ($links as $link => $crawler) {
         		for ($c =0; $c  < sizeof($crawler) ; $c ++) { 
         			foreach ($this->rules() as $rule => $title){
-        				$contents[$url][$link][] = $crawler[$c]->filterXpath($rule)->each(function ($node,$i)
+        				$contents[$url][$link][] = $crawler[$c]->filterXpath($rule)->each(function ($node,$i) use ($rule)
 	                    {
 	                    	$text = $node->text();
 	                    	if (!\app\helpers\StringHelper::isEmpty($text)) {
 	                    		$text_without_spaces = \app\helpers\StringHelper::collapseWhitespace($text);
+	                    		//echo $rule."\n";
 	                    		return [
 		                            'id' => $node->extract(['id'])[0],
 		                            '_text' => trim($text_without_spaces),
@@ -248,7 +257,6 @@ class Scraping extends Model
 								if (!ArrayHelper::keyExists($terms[$t], $model, false)) {
 									$model[$terms[$t]] = [];
 								}
-
 								$register = [
 									'source' => [
 										'name' => \app\helpers\StringHelper::getDomain($link)
