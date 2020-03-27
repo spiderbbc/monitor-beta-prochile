@@ -98,7 +98,7 @@ class Alerts extends \yii\db\ActiveRecord
      * [getBringAllAlertsToRun get all the alerts with resources,products only use to console actions]
      * @return [array] [if not alerts with condition return a empty array]
      */
-    public function getBringAllAlertsToRun($read = false){
+    public function getBringAllAlertsToRun($read = false,$resourceName = ''){
 
         // get time
         $expression = new \yii\db\Expression('NOW()');
@@ -107,46 +107,38 @@ class Alerts extends \yii\db\ActiveRecord
         // get all alert with relation config with the condicion start_date less or equals to $timestamp
         $alerts = $this->find()->where([
             'status' => self::STATUS_ACTIVE,
-        ])->with(['config' => function($query) use($timestamp) {
+        ])->with(['config' => function($query) use($timestamp,$resourceName) {
             $query->andWhere([
                 'and',
                     ['<=', 'start_date', $timestamp],
-                   // ['>=', 'end_date', $timestamp],
                 ]);
-            $query->with(['configSources.alertResource']);
+            if($resourceName != ''){
+                $query->with(['configSources.alertResource' => function($query) use ($resourceName){
+                     $query->andWhere(['name' => $resourceName]);
+                }]);
+                
+            }else{
+                $query->with(['configSources.alertResource' => function($query) use ($resourceName){
+                    $query->andWhere([
+                    'and',
+                        ['!=', 'name', 'Paginas Webs'],
+                    ]);
+                }]);
+            }
         }
         ])->orderBy('id DESC')->asArray()->all();
 
-        $alertsConfig = [];
         // there is alert in the model
         if(!empty($alerts)){
-            // loop searching alert with mentions relation and config relation
-            for($a = 0; $a < sizeOf($alerts); $a++){
-                if((!empty($alerts[$a]['config']))){
-                    // reduce configSources.alertResource
-                    for($s = 0; $s < sizeOf($alerts[$a]['config']['configSources']); $s ++){
-                        $alertResource = ArrayHelper::getValue($alerts[$a]['config']['configSources'][$s], 'alertResource.name');
-                        $alerts[$a]['config']['configSources'][$s] = $alertResource;
-                    } // end for $alerts[$a]['config']['configSources']
-                    array_push($alertsConfig, $alerts[$a]);
-                } // end if not empty
-            } // end loop alerts config
-            
+            $alertsConfig = \app\helpers\AlertMentionsHelper::orderConfigSources($alerts);
             if ($read) {
                 $alertsConfig = \app\helpers\AlertMentionsHelper::checksSourcesCall($alertsConfig);
             }
 
-            for($c = 0; $c < sizeOf($alertsConfig); $c++) {
-                $terms_search = \app\models\TermsSearch::findAll(['alertId' => $alertsConfig[$c]['id']]);
-                if(!empty($terms_search)){
-                    $alertsConfig[$c]['products'] = [];
-                    foreach ($terms_search as $term) {
-                        array_push($alertsConfig[$c]['products'], $term->name);
-                    }
-                }
-            }
+            $alertsConfig = \app\helpers\AlertMentionsHelper::setTermsSearch($alertsConfig);
             
         }
+       //var_dump($alertsConfig);
        return $alertsConfig;
     }
     /**

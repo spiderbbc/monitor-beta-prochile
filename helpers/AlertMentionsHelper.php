@@ -509,6 +509,37 @@ class AlertMentionsHelper
         return $alerts;
     }
 
+    public static function orderConfigSources($alerts)
+    {
+        $alertsConfig = [];
+        // loop searching alert with mentions relation and config relation
+        for($a = 0; $a < sizeOf($alerts); $a++){
+            if((!empty($alerts[$a]['config']))){
+                // reduce configSources.alertResource
+                for($s = 0; $s < sizeOf($alerts[$a]['config']['configSources']); $s ++){
+                    $alertResource = \yii\helpers\ArrayHelper::getValue($alerts[$a]['config']['configSources'][$s], 'alertResource.name');
+                    $alerts[$a]['config']['configSources'][$s] = $alertResource;
+                } // end for $alerts[$a]['config']['configSources']
+                array_push($alertsConfig, $alerts[$a]);
+            } // end if not empty
+        } // end loop alerts config
+        return $alertsConfig;
+    }
+
+    public function setTermsSearch($alertsConfig)
+    {
+        for($c = 0; $c < sizeOf($alertsConfig); $c++) {
+            $terms_search = \app\models\TermsSearch::findAll(['alertId' => $alertsConfig[$c]['id']]);
+            if(!empty($terms_search)){
+                $alertsConfig[$c]['products'] = [];
+                foreach ($terms_search as $term) {
+                    array_push($alertsConfig[$c]['products'], $term->name);
+                }
+            }
+        }
+        return $alertsConfig;
+    }
+
     public static function getResourceIdByName($resourceName)
     {
         $resourcesId = (new \yii\db\Query())
