@@ -185,7 +185,7 @@ class BaseApi extends Model {
 				$data     = $scraping->setContent($content);
 				$model    = $scraping->searchTermsInContent($data);
 				if(!empty($model)){
-					$scraping->saveTermsMentions($model);
+					//$scraping->saveTermsMentions($model);
 					$scraping->saveJsonFile();
 				}
 			}

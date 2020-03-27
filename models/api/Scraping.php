@@ -50,7 +50,11 @@ class Scraping extends Model
             '//p'           => Yii::t('app','paragraph'),
         ];
     }
-
+    /**
+     * [prepare set all internal properties]
+     * @param  [array] $alert [alert to run]
+     * @return [void]
+     */
 	public function prepare($alert)
 	{
 		if(!empty($alert)){
@@ -61,11 +65,10 @@ class Scraping extends Model
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->terms   = $alert['products'];
 			// set if search finish
-			//$this->searchFinish();
+			$this->searchFinish();
 			
 			
 			$this->urls = $this->_setUrls($alert['config']['urls']);
-
 		}
 	}
 	/**
@@ -128,7 +131,7 @@ class Scraping extends Model
 		}
 		
 
-$urls = [
+		$urls = [
 			'https://www.nytimes.com/'=>[
 				'domain' => 'forbes.com',
 				'links'  => [
@@ -239,8 +242,14 @@ $urls = [
 	{
 		$model = [];
 		$terms = $this->terms;
-		/*var_dump($data);
-		die();*/
+
+		$properties = [
+			'alertId'       => $this->alertId,
+			'resourcesId'   => $this->resourcesId,
+			'date_searched' => \app\helpers\DateHelper::getToday(),
+			'type'          => self::TYPE_MENTIONS,
+		];
+		
 
 		if (!empty($data)) {
 			foreach ($data as $url => $values) {
@@ -265,9 +274,11 @@ $urls = [
 									'content' => $sentence,
 									'message_markup' => $sentence
 								];
-								//$model[$terms[$t]][] = $register;
 								if (!in_array($register, $model[$terms[$t]])) {
 									$model[$terms[$t]][] = $register;
+									$properties['term_searched'] = $terms[$t];
+									$properties['url'] = $url;
+									$this->_saveAlertsMencions($properties);
 								}
 							}
 						}
@@ -275,25 +286,8 @@ $urls = [
 				}// end loop values
 			}// end loop end data
 		}// end if emty data
-		return $model;
-	}
-
-	public function saveTermsMentions($model)
-	{
-		$terms = array_keys($model);
-		$properties = [
-			'alertId'       => $this->alertId,
-			'resourcesId'   => $this->resourcesId,
-			'date_searched' => \app\helpers\DateHelper::getToday(),
-			'type'          => self::TYPE_MENTIONS,
-		];
-		if (!empty($terms)) {
-			for ($t=0; $t < sizeof($terms) ; $t++) { 
-				$properties['term_searched'] = $terms[$t];
-				$this->_saveAlertsMencions($properties);
-			}
-		}
 		$this->data = $model;
+		return (!empty($this->data)) ? true : false;
 	}
 
 	/**
@@ -326,6 +320,47 @@ $urls = [
 	}
 
 	/**
+	 * [searchFinish look up on alert_mentions table the date searched and compare end_date and determine if the mention active/inactive]
+	 * @return [void]
+	 */
+	private function searchFinish(){
+    
+    	$alertsMencions = \app\models\AlertsMencions::find()->where([
+    		'alertId'       => $this->alertId,
+	        'resourcesId'   => $this->resourcesId,
+	        'type'          => 'web',
+    	])->all(); 
+
+	    $params = [
+	        'Paginas Webs' => [
+	            'resourceId' => $this->resourcesId,
+	            'status' => 'Pending'
+	        ]
+	    ];
+
+	    if (count($alertsMencions)) {
+	    	$count = 0;
+	    	$date_searched_flag   = $this->end_date;
+	      	foreach ($alertsMencions as $alert_mention) {
+	      		if (!\app\helpers\DateHelper::isToday($date_searched_flag)) {
+	      			if($alert_mention->date_searched >= $date_searched_flag){
+	      				$alert_mention->condition = 'INACTIVE';
+	      				$count++;
+	      			}else{
+	      				$alert_mention->condition = 'ACTIVE';
+	      			}
+	      			$alert_mention->save();
+	      		}
+	      	}
+	      	if($count >= count($alertsMencions)){
+	          $params['Paginas Webs']['status'] = 'Finish'; 
+	        }
+	    }  
+      	\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $params);
+
+    }
+
+	/**
 	 * [saveJsonFile save a json file]
 	 * @return [none] [description]
 	 */
@@ -339,6 +374,8 @@ $urls = [
 
 	}
 	
+
+
 	function __construct(){
 		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourceName);
 		// call the parent __construct
