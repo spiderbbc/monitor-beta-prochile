@@ -13,6 +13,9 @@ return [
 	'adminEmail'  => 'eduardo@montana-studio.com',
 	'senderEmail' => 'eduardo@montana-studio.com',
 	'senderName'  => 'monitor-beta',
+	'scraping'    =>[
+		'time_min_sleep'  => 10, 
+	],
 	'newsApi'     => [
 		'time_hours_sleep' => 8,
 		'apiKey' => 'ca5709f738c146a0b5f86fad213c9316',

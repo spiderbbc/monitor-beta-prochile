@@ -64,25 +64,6 @@ class DaemonController extends Controller
         }
     }
     /**
-     * [actionSyncProducts sync products to drive documents]
-     * @return [type] [description]
-     */
-    public function actionSyncProducts(){
-        $drive = new DriveApi();
-        $drive->getContentDocument();
-        return ExitCode::OK;
-    }
-
-    public function actionVerifyAlertsFinish(){
-        $alert = new Alerts();
-        $alertsConfig = $alert->getBringAllAlertsToFinish();
-        
-
-
-
-        return ExitCode::OK;
-    }
-    /**
      * [only development function]
      * @return [type] [description]
      */

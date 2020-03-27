@@ -443,10 +443,11 @@ class AlertMentionsHelper
     {
         $now = new \DateTime('NOW');
         $minutes_to_call = \Yii::$app->params['facebook']['time_min_sleep']; 
-        $hour_news_api = 8; 
+        $minutes_scraping = \Yii::$app->params['scraping']['time_min_sleep']; 
+        $hour_news_api   = \Yii::$app->params['newsApi']['time_hours_sleep'];; 
 
 
-        $sourcesTargest = ['Instagram Comments','Facebook Comments','Facebook Messages','Noticias Webs'];
+        $sourcesTargest = ['Instagram Comments','Facebook Comments','Facebook Messages','Noticias Webs','Paginas Webs'];
         // loop alerts config
         for ($a=0; $a < sizeof($alerts) ; $a++) { 
             foreach ($alerts[$a]['config']['configSources'] as $resourceName) {
@@ -470,16 +471,24 @@ class AlertMentionsHelper
                         $fecha = new \DateTime();
                         $updatedAt_diff = $now->diff($fecha->setTimestamp($alertMention->updatedAt));
                        
-                        if ($resourceName != 'Noticias Webs') {
-                            if($updatedAt_diff->i <= $minutes_to_call){
-                                $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
-                            } // end if diff
-                        }else{
-                            // diff between 8 hours
-                            //echo $updatedAt_diff->h."\n";
-                            if($updatedAt_diff->h <= $hour_news_api){
-                                $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
-                            } // end if diff
+                        switch ($resourceName) {
+                            case 'Noticias Webs':
+                                // diff between 8 hours
+                                if($updatedAt_diff->h <= $hour_news_api){
+                                    $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
+                                }
+                                break;
+                            case 'Paginas Webs':
+                                // diff between 10 minutes
+                                if($updatedAt_diff->i <= $minutes_scraping){
+                                    $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
+                                }
+                                break;
+                            default:
+                                if($updatedAt_diff->i <= $minutes_to_call){
+                                    $index = array_search($resourceName,$alerts[$a]['config']['configSources']);
+                                } // end if diff
+                                break;
                         }
                         
                     }// end if mentions
@@ -496,7 +505,7 @@ class AlertMentionsHelper
                     $alerts[$a]['config']['configSources'] = array_values($alerts[$a]['config']['configSources']);
                 }// end if !is_null
             }// end foreach config  config.sources
-        } // end llop alerts
+        } // end loop alerts
         return $alerts;
     }
 
