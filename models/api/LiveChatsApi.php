@@ -20,7 +20,7 @@ class LiveChatsApi extends Model {
 	
 	public $data;
 
-
+	private $resourceName = 'Live Chat Conversations';
 	private $_api_login;
 	private $_access_secret_token;
 
@@ -370,27 +370,6 @@ class LiveChatsApi extends Model {
 		return $this->_client;
 	}
 
-	/**
-	 * [_setResourceId return the id from resource]
-	 */
-	private function _setResourceId(){
-		
-		$socialId = (new \yii\db\Query())
-		    ->select('id')
-		    ->from('type_resources')
-		    ->where(['name' => 'Social media'])
-		    ->one();
-		
-		
-		$resourcesId = (new \yii\db\Query())
-		    ->select('id')
-		    ->from('resources')
-		    ->where(['name' => 'Live Chat Conversations','resourcesId' => $socialId['id']])
-		    ->all();
-		
-
-		$this->resourcesId = ArrayHelper::getColumn($resourcesId,'id')[0];    
-	}
 
 	/**
 	 * [_setCredentials set credencial ]
@@ -414,7 +393,7 @@ class LiveChatsApi extends Model {
 	function __construct(){
 		
 		// set resource 
-		$this->_setResourceId();
+		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourceName);
 		// set credencials
 		$this->_setCredentials();
 		// get client

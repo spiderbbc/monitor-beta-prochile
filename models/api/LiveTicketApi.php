@@ -19,7 +19,7 @@ class LiveTicketApi extends Model {
 	
 	public $data;
 
-
+	private $resourceName = 'Live Chat';
 	private $_api_login;
 	private $_access_secret_token;
 
@@ -374,28 +374,6 @@ class LiveTicketApi extends Model {
 		return $this->_client;
 	}
 
-	/**
-	 * [_setResourceId return the id from resource]
-	 */
-	private function _setResourceId(){
-		
-		$socialId = (new \yii\db\Query())
-		    ->select('id')
-		    ->from('type_resources')
-		    ->where(['name' => 'Social media'])
-		    ->one();
-		
-		
-		$resourcesId = (new \yii\db\Query())
-		    ->select('id')
-		    ->from('resources')
-		    ->where(['name' => 'Live Chat','resourcesId' => $socialId['id']])
-		    ->all();
-		
-
-		$this->resourcesId = ArrayHelper::getColumn($resourcesId,'id')[0];    
-	}
-
 	
 	private function _setCredentials(){
 
@@ -419,7 +397,7 @@ class LiveTicketApi extends Model {
 	function __construct(){
 		
 		// set resource 
-		$this->_setResourceId();
+		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourceName);
 		// set credencials
 		$this->_setCredentials();
 		// get client

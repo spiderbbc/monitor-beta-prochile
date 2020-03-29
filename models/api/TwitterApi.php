@@ -38,7 +38,7 @@ class TwitterApi extends Model {
 	
 	private $limit = 0;
 	private $minimum = 98;
-	
+	private $resourceName = 'Twitter';
 	private $products_count;
 	
 	private $codebird;
@@ -64,10 +64,9 @@ class TwitterApi extends Model {
 			// set if search finish
 			$this->searchFinish();
 			// set products and his languaje search
-			$lang = (!empty($alert['config']['lang'])) ? $this->lang[$alert['config']['lang']]: 'en' ;
+			$lang = $this->lang[$alert['config']['lang']];
 			
 			$products_params = $this->setProductsParams($products,$lang);
-
 			return $products_params;
 		}
 		return false;
@@ -519,17 +518,6 @@ class TwitterApi extends Model {
 		return $geo;
 	}
 	/**
-	 * [_setResourceId return the id from resource]
-	 */
-	private function _setResourceId(){
-		$resourcesId = (new \yii\db\Query())
-		    ->select('id')
-		    ->from('resources')
-		    ->where(['name' => 'Twitter'])
-		    ->all();
-		$this->resourcesId = ArrayHelper::getColumn($resourcesId,'id')[0];
-	}
-	/**
 	 * [_getTwitterLogin login to twitter]
 	 * @return [type] [description]
 	 */
@@ -587,7 +575,7 @@ class TwitterApi extends Model {
 
 	function __construct($products_count = 0){
 		// set resource 
-		$this->_setResourceId();
+		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourceName);
 		// get twitter login api
 		$this->_getTwitterLogin();
 		// set limit

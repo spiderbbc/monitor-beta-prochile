@@ -39,7 +39,7 @@ class InstagramCommentsApi extends Model {
 	private $_limit_commets = 25;
 	
 	//private $_access_secret_token;
-	
+	private $resourceName = 'Instagram Comments';
 	private $_page_access_token;
 	private $_business_account_id;
 	private $_appsecret_proof;
@@ -730,33 +730,10 @@ class InstagramCommentsApi extends Model {
 		return $this->_client;
 	}
 
-	/**
-	 * [_setResourceId return the id from resource]
-	 */
-	private function _setResourceId(){
-		
-		$socialId = (new \yii\db\Query())
-		    ->select('id')
-		    ->from('type_resources')
-		    ->where(['name' => 'Social media'])
-		    ->one();
-		
-		
-		$resourcesId = (new \yii\db\Query())
-		    ->select('id')
-		    ->from('resources')
-		    ->where(['name' => 'Instagram Comments','resourcesId' => $socialId['id']])
-		    ->all();
-		
-
-		$this->resourcesId = ArrayHelper::getColumn($resourcesId,'id')[0];    
-	}
-
 	function __construct(){
 		
 		// set resource 
-		$this->_setResourceId();
-
+		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourceName);
 		// get client
 		$this->_getClient();
 		

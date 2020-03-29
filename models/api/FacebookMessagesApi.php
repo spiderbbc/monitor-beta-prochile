@@ -38,7 +38,7 @@ class FacebookMessagesApi extends Model {
 	
 	private $_limit_message = 1;
 	
-	
+	private $resourceName = 'Facebook Messages';
 	private $_page_access_token;
 	private $_business_account_id;
 	private $_appsecret_proof;
@@ -502,33 +502,11 @@ class FacebookMessagesApi extends Model {
 		return $this->_client;
 	}
 
-	/**
-	 * [_setResourceId return the id from resource]
-	 */
-	private function _setResourceId(){
-		
-		$socialId = (new \yii\db\Query())
-		    ->select('id')
-		    ->from('type_resources')
-		    ->where(['name' => 'Social media'])
-		    ->one();
-		
-		
-		$resourcesId = (new \yii\db\Query())
-		    ->select('id')
-		    ->from('resources')
-		    ->where(['name' => 'Facebook Messages','resourcesId' => $socialId['id']])
-		    ->all();
-		
-
-		$this->resourcesId = ArrayHelper::getColumn($resourcesId,'id')[0];    
-	}
 
 	function __construct(){
 		
 		// set resource 
-		$this->_setResourceId();
-
+		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourceName);
 		// get client
 		$this->_getClient();
 		

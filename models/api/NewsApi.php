@@ -18,13 +18,14 @@ class NewsApi extends Model
 	public $end_date;
 	public $products;
 	public $resourcesId;
-	public $resourceName;
 	
 	public $data;
 
 	public $total_call;
 	public $paginator;
+	
 	private $lang = ['es','en'];
+	private $resourceName = 'Noticias Webs';
 
 	public $status_history_search = 'Pending';
 	public $condition_alert_mention = 'ACTIVE';
@@ -52,7 +53,7 @@ class NewsApi extends Model
 			// set paginator
 			$this->_setPaginator();
 			// set products and his languaje search
-			$lang = (!empty($alert['config']['lang'])) ? $this->lang[$alert['config']['lang']]: 'en' ;
+			$lang = $this->lang[$alert['config']['lang']];
 			$products_params = $this->setProductsParams($lang);
 			if (empty($products_params)) {
 				$this->changeStatusAlertMentions();
@@ -386,32 +387,10 @@ class NewsApi extends Model
 		}
 		
 	}
-	/**
-	 * [_setResourceId return the id from resource]
-	 */
-	private function _setResourceId(){
-		
-		$socialId = (new \yii\db\Query())
-		    ->select('id')
-		    ->from('type_resources')
-		    ->where(['name' => 'Web'])
-		    ->one();
-		
-		
-		$resourcesId = (new \yii\db\Query())
-		    ->select('id,name')
-		    ->from('resources')
-		    ->where(['name' => 'Noticias Webs','resourcesId' => $socialId['id']])
-		    ->all();
-		
-
-		$this->resourcesId = yii\helpers\ArrayHelper::getColumn($resourcesId,'id')[0];    
-		$this->resourceName = yii\helpers\ArrayHelper::getColumn($resourcesId,'name')[0];    
-	}
 	
 	function __construct(){
 		// set resource 
-		$this->_setResourceId();
+		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourceName);
 		
 		parent::__construct(); 
 	}

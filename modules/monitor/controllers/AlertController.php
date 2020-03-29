@@ -277,7 +277,8 @@ class AlertController extends Controller
           $config->start_date = Yii::$app->request->post('start_date');
           $config->end_date = Yii::$app->request->post('end_date');
           //languaje
-          $config->lang = Yii::$app->request->post('AlertConfig')['lang'];
+          $config->lang = (empty(Yii::$app->request->post('AlertConfig')['lang']))? 0 : Yii::$app->request->post('AlertConfig')['lang'];
+
           $config->urls = (Yii::$app->request->post('AlertConfig')['urls']) ?
                           implode(',', Yii::$app->request->post('AlertConfig')['urls']) : null;
 
