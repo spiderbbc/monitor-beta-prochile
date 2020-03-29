@@ -131,14 +131,14 @@ class Scraping extends Model
 		}
 		
 
-		$urls = [
+		/*$urls = [
 			'https://www.nytimes.com/'=>[
 				'domain' => 'forbes.com',
 				'links'  => [
 					'https://www.forbes.com/'
 				],
 			]
-		];
+		];*/
 
 		return $urls;
 	}

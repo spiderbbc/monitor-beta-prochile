@@ -138,7 +138,7 @@ class NewsSearch
     $alertsMencions =  \app\models\AlertsMencions::find()->where([
         'alertId'       =>  $this->alertId,
         'resourcesId'   =>  $this->resourcesId,
-        'type'          =>  'web',
+        'type'          =>  \app\models\api\NewsApi::TYPE_MENTIONS,
         'term_searched' =>  $product,
     ])->select('id')->one();
 

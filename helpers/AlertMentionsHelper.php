@@ -165,6 +165,9 @@ class AlertMentionsHelper
             case 'Noticias Webs':
                 return [$resource_name,'0','0','0',$model->total];                      
                 break;
+            case 'Paginas Webs':
+                return [$resource_name,'0','0','0',$model->total];                      
+                break;    
 
             
             default:
@@ -343,10 +346,21 @@ class AlertMentionsHelper
                     }
                 }
                 // set
-                
                 $data['total'] = $total;
                 return $data; 
                 break;
+            case 'Paginas Webs':
+                $total = 0;
+                foreach ($models as $model) {
+                    if ($model->mentionsCount) {
+                        $total += $model->mentionsCount;
+                    }
+                }
+                // set
+                $data['total'] = $total;
+                return $data; 
+                break;
+                
                          
 
             default:
@@ -548,5 +562,15 @@ class AlertMentionsHelper
             ->where(['name' => $resourceName])
             ->all();
         return \yii\helpers\ArrayHelper::getColumn($resourcesId,'id')[0];
+    }
+
+
+    public static function isAlertHaveDictionaries($alertId)
+    {
+        if(!is_null($alertId)){
+            $keywords = \app\models\Keywords::find()->where(['alertId' => $alertId])->exists();
+            return $keywords;
+        }
+        return false;
     }
 }

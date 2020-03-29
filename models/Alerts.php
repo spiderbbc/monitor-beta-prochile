@@ -107,27 +107,33 @@ class Alerts extends \yii\db\ActiveRecord
         // get all alert with relation config with the condicion start_date less or equals to $timestamp
         $alerts = $this->find()->where([
             'status' => self::STATUS_ACTIVE,
-        ])->with(['config' => function($query) use($timestamp,$resourceName) {
+        ])->with(['config' => function($query) use($timestamp,$read,$resourceName) {
             $query->andWhere([
                 'and',
                     ['<=', 'start_date', $timestamp],
                 ]);
-            if($resourceName != ''){
-                $query->with(['configSources.alertResource' => function($query) use ($resourceName){
-                     $query->andWhere(['name' => $resourceName]);
-                }]);
-                
+            if ($read) {
+                if($resourceName != ''){
+                    $query->with(['configSources.alertResource' => function($query) use ($resourceName){
+                         $query->andWhere(['name' => $resourceName]);
+                    }]);
+                    
+                }else{
+                    $query->with(['configSources.alertResource' => function($query) use ($resourceName){
+                        $query->andWhere([
+                        'and',
+                            ['!=', 'name', 'Paginas Webs'],
+                        ]);
+                    }]);
+                }
             }else{
-                $query->with(['configSources.alertResource' => function($query) use ($resourceName){
-                    $query->andWhere([
-                    'and',
-                        ['!=', 'name', 'Paginas Webs'],
-                    ]);
-                }]);
+                $query->with(['configSources.alertResource']);
             }
         }
         ])->orderBy('id DESC')->asArray()->all();
 
+        $alertsConfig = null;
+        
         // there is alert in the model
         if(!empty($alerts)){
             $alertsConfig = \app\helpers\AlertMentionsHelper::orderConfigSources($alerts);
@@ -138,7 +144,7 @@ class Alerts extends \yii\db\ActiveRecord
             $alertsConfig = \app\helpers\AlertMentionsHelper::setTermsSearch($alertsConfig);
             
         }
-       //var_dump($alertsConfig);
+        
        return $alertsConfig;
     }
     /**

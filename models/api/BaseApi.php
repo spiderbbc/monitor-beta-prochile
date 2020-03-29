@@ -342,6 +342,17 @@ class BaseApi extends Model {
  
 	} 
 
+	public function readDataPaginasWebsApi($alertId,$data)
+	{
+		$searchScrapingApi = new \app\models\search\ScrapingSearch();
+		$params = [$alertId,$data];
+
+		$searchScrapingApi->load($params);
+		if($searchScrapingApi->search()){ 
+			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Paginas Webs'); 
+		} 
+	}
+
 	
 }
 
