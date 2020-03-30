@@ -16,7 +16,7 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class Scraping extends Model
 {
-	private $resourceName = 'Paginas Webs';
+	public $resourceName = 'Paginas Webs';
 	private $alertId;
 	private $resourcesId;
 	private $terms;

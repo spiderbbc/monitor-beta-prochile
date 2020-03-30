@@ -215,6 +215,20 @@ class AlertController extends Controller
 
       return ['status' => $status];
     }
+
+    public function actionDeleteUrlAlert($alertId,$urlName)
+    {
+      \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+     
+      $scraping = new \app\models\api\Scraping();
+      $resourceId = \app\helpers\AlertMentionsHelper::getResourceIdByName($scraping->resourceName);
+      $type = $scraping::TYPE_MENTIONS;
+      
+      \app\models\AlertsMencions::deleteAll('alertId = :alertId  AND  resourcesId = :resourcesId AND type = :type AND url = :url', 
+        [':alertId' => $alertId,':resourcesId' => $resourceId, ':type' => $type, ':url' => $urlName]);
+
+      return ['status' => true];
+    }
     /**
      * Lists all Alerts models.
      * @return mixed

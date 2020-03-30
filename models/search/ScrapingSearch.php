@@ -77,11 +77,11 @@ class ScrapingSearch
 		// if  dictionaries and  !boolean
 		if($this->isDictionaries && !$this->isBoolean){
 		    // init search
-		    echo "only dictionaries \n";
+		    //echo "only dictionaries \n";
 		    $webContent = $this->data;
 		    $filter_data = $this->searchDataByDictionary($webContent);
 		    $search = $this->saveWebContent($filter_data);
-		    //return $search;
+		    return $search;
 		    
 		}
 

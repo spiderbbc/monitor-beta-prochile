@@ -31,11 +31,24 @@ $('#social_dictionaryId,#free_words, #competitors').on('select2:select', functio
     swal_modal_filter_add(term,id,dictionaryName);
 });
 
+/**
+ * [description] event select of select2, when change languaje on alert
+ */
 $('#language').on('select2:select', function (e) {
     var id = $(this).attr('id');
     var lang = $('#'+id).select2('data');
     lang = lang[0];
     swal_modal_change_language(lang,id);
+});
+
+
+/**
+ * [description] event select of select2, when change languaje on alert
+ */
+$('#urls').on('select2:unselecting', function (e) {
+    var id = $(this).attr('id');
+    var unselecting_url = e.params.args.data;
+    swal_modal_url_delete(unselecting_url,id);
 });
 
 /**
@@ -49,10 +62,6 @@ $('#social_dictionaryId,#free_words, #competitors').on('select2:unselecting', fu
     var dictionaryName = ($(this).attr('resourceName') == "dictionaries") ? filter.text : $(this).attr('resourceName');
     swal_modal_filter_delete(filter,id,dictionaryName);
 });
-
-
-
-
 
 
 /**
@@ -174,7 +183,6 @@ function swal_modal_info_term(term,id) {
 	});
 }
 
-
 /**
  * [swal_modal_filter_delete modal info to delete filter to search]
  * @param  {[type]} term [description]
@@ -235,7 +243,67 @@ function swal_modal_filter_delete(filter,id,dictionaryName) {
 		
 	});
 }
+/**
+ * [swal_modal_url_delete modal info to delete url to search]
+ * @param  {[type]} unselecting_url [description]
+ * @return {[type]}      [description]
+ */
+function swal_modal_url_delete(unselecting_url,id) {
+	$url_text = reduce_sentence(unselecting_url.text);
+	Swal.fire({
+	  icon: 'warning',
+	  title: 'Oops...',
+	  html: ` ¿ Desea eliminar <b>${$url_text}</b> ? <hr> Se procedera a <b>eliminar</b> los resultados recabados por este filtro`,
+	  showCancelButton: true,
+	  confirmButtonColor: '#3085d6',
+	  cancelButtonColor: '#d33',
+	  confirmButtonText: `No, Deseo conservar "${$url_text}"!`,
+	  cancelButtonText: `Quitar "${$url_text}" como filtro!`
+	}).then((result) => {
+		// checks if a action user
+		if ('value' in result) {
+			// click button info 
+			if(result.value){
+				add_selector(id,unselecting_url.id);	
+			}
 
+		}
+		if('dismiss' in result){
+			// if user click out box modal
+			if (result.dismiss == "backdrop") {
+				add_selector(id,unselecting_url.id);
+			}
+			// delete filter button danger
+			if(result.dismiss == "cancel"){
+				// delete result
+				var data = {alertId: alertId,urlName: unselecting_url.text};
+				
+				$.ajax({
+			        url: origin + `/${appId}/web/monitor/alert/delete-url-alert`,
+			        data: data,
+			        type: "GET",
+			        dataType: "json",
+			      }).done(function(data) {
+			        if(data.status){
+					    Swal.fire(
+					      `Eliminado`,
+					      `La Alerta elimino el filtro <b>${$url_text} </b>`,
+					      'success'
+					    );
+		            }else{
+		            	Swal.fire(
+					      'Opss',
+					      'No se pudo realizar la operacion',
+					      'error'
+					    );
+		              
+		            }
+			    });
+			}
+		}
+		
+	});
+}
 /**
  * [swal_modal_filter_add modal info to add filter to search]
  * @param  {[type]} term [description]
@@ -301,7 +369,11 @@ function swal_modal_filter_add(term,id,dictionaryName) {
 	});
 }
 
-
+/**
+ * [swal_modal_change_language modal info to chenge languaje to aler]
+ * @param  {[type]} term [description]
+ * @return {[type]}      [description]
+ */
 function swal_modal_change_language(lang,id){
 	Swal.fire({
 	  icon: 'warning',
@@ -390,9 +462,29 @@ function remove_value_selector(selectId,termId) {
 	}
 	$(selectId).val(value).trigger('change');
 }
-
+/**
+ * [restore_simple_select restore value on selectr2 languaje]
+ * @param  {[type]} selectId [description]
+ * @param  {[type]} termId   [description]
+ * @return {[type]}          [description]
+ */
 function restore_simple_select(id,value){
 	value = (value != 1) ? 1:0;
 	$('#'+id).val(value); // Select the option with a value of '1'
 	$('#'+id).trigger('change'); // Notify any JS components that the value changed
+}
+
+/**
+ * [reduce_sentence reduce large string url return only domain]
+ * @param  {[type]} sentence [description]
+ * @return {[type]}          [description]
+ */
+function reduce_sentence(sentence){
+    const max_length = 35;
+    if (sentence.length > max_length) {
+        var matches = sentence.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+        var domain = matches && matches[1]; 
+        sentence = domain.concat('...');
+    }
+    return sentence;
 }

@@ -95,7 +95,8 @@ let resourceIcons = {
     'Instagram Comments': 'socicon-instagram',
     'Facebook Messages': 'socicon-messenger',
     'Excel Document': 'socicon-windows',
-    'Web page': 'socicon-internet'
+    'Noticias Webs': 'socicon-livejournal',
+    'Paginas Webs': 'socicon-internet'
 }
 // title alert view
 let title_with_data = '<strong>Alerta Activa</strong>';
