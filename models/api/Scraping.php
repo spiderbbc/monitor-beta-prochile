@@ -43,7 +43,7 @@ class Scraping extends Model
             '//a'           => Yii::t('app','link'),
             '//b'           => Yii::t('app','negrita'),
             '//span'        => Yii::t('app','contenedor'),
-            '//ul//li'          => Yii::t('app','ítem'),
+            '//ul//li'      => Yii::t('app','ítem'),
             '//address'     => Yii::t('app','address'),
             '//aside'       => Yii::t('app','aside'),
             '//hgroup'      => Yii::t('app','hgroup'),
@@ -194,7 +194,7 @@ class Scraping extends Model
 	                    		$text_without_spaces = \app\helpers\StringHelper::collapseWhitespace($text);
 	                    		//echo $rule."\n";
 	                    		return [
-		                            'id' => $node->extract(['id'])[0],
+		                           // 'id' => $node->extract(['id'])[0],
 		                            '_text' => trim($text_without_spaces),
 		                        ];
 	                    	}
@@ -204,6 +204,7 @@ class Scraping extends Model
         		}// end loop crawler
         	}// end loop links
         }// end loop crawlers
+
       	return $contents;
 	}
 	/**

@@ -39,6 +39,7 @@ class JsonFile {
 		$products_sinceId = [];
 		for($p = 0; $p < sizeOf($products); $p++){
 			$ids = $this->filebase->get($this->documentId)->filter('data',$products[$p],function($tweet, $product) {
+
 			    if($tweet['product_name'] == $product){
 			    	return $tweet['id'];
 			    }
@@ -83,6 +84,10 @@ class JsonFile {
 		return $this->filebase->findAll(true, true);
 	}
 
+	public function has($value)
+	{
+		return $this->filebase->has($value);
+	}
 
 	function __construct($documentId,$source)
 	{
@@ -94,7 +99,7 @@ class JsonFile {
 			'dir'           => \Yii::getAlias('@data')."{$s}{$this->documentId}{$s}{$this->source}",
 			'cache'         => true,
 			'cache_expires' => 1800,
-			'pretty'        => true,
+			'pretty'        => false,
 			'safe_filename' => true,
 	    	//'read_only'      => $read_only,
         ]);

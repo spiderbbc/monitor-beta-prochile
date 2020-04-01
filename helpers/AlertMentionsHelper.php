@@ -540,7 +540,7 @@ class AlertMentionsHelper
         return $alertsConfig;
     }
 
-    public function setTermsSearch($alertsConfig)
+    public static function setTermsSearch($alertsConfig)
     {
         for($c = 0; $c < sizeOf($alertsConfig); $c++) {
             $terms_search = \app\models\TermsSearch::findAll(['alertId' => $alertsConfig[$c]['id']]);
