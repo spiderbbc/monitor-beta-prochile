@@ -130,7 +130,9 @@ class StringHelper
 
     public static function replacingSpacesWithUnderscores($sentence){
         $s = new Stringizer($sentence);
-        return str_replace(' ', '_', $s->camelToSnake()); // true;
+        $collapseUnderscorespace = self::replaceIncaseSensitive($s->camelToSnake(),'#','_');
+        $collapseWhitespace = self::replaceIncaseSensitive($collapseUnderscorespace,' ','_');
+        return $collapseWhitespace; // true;
     }
 
     public static function substring($sentence,$start,$end){

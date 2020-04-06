@@ -140,11 +140,9 @@ class Alerts extends \yii\db\ActiveRecord
             if ($read) {
                 $alertsConfig = \app\helpers\AlertMentionsHelper::checksSourcesCall($alertsConfig);
             }
-
             $alertsConfig = \app\helpers\AlertMentionsHelper::setTermsSearch($alertsConfig);
-            
         }
-        
+       
        return $alertsConfig;
     }
     /**

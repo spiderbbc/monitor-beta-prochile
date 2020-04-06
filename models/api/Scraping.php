@@ -132,10 +132,10 @@ class Scraping extends Model
 		
 
 		/*$urls = [
-			'https://www.nytimes.com/'=>[
+			'https://www.forbes.com'=>[
 				'domain' => 'forbes.com',
 				'links'  => [
-					'https://www.forbes.com/'
+					'https://www.businessinsider.com/lifestyle'
 				],
 			]
 		];*/
@@ -148,32 +148,52 @@ class Scraping extends Model
 	 * @return [array] [crawlers instaces]
 	 */
 	public function getRequest()
-	{
-		$client = new Client();
-		$crawler = [];
- 		
- 		if (!empty($this->urls)) {
-			foreach ($this->urls as $url => $values) {
-				if (!empty($values['links'])) {
-					for ($l=0; $l < sizeof($values['links']) ; $l++) { 
-						$link = $values['links'][$l];
-						$response = $client->request('GET',$link);
-						$status_code = $client->getResponse()->getStatus();
-						if ($status_code == 200) {
-							$domain = $values['domain'];
-							if($domain){
-								$content_type = $client->getResponse()->getHeader('Content-Type');
-				                if (strpos($content_type, 'text/html') !== false) {
-				                    $crawler[$url][$link][] = $response;
-				                }
-							}// if domain
-						}// end if status code 
-					}// end loop for links
-				}// end if empty
-			}// end loop foreach
-		}// end if empty
-		return $crawler;
-	}
+    {
+        $client = new Client();
+        
+
+        $guzzleClient = new \GuzzleHttp\Client(array(
+        	'verify' => Yii::getAlias('@cacert'),
+	        'curl' => array(
+	        	CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+	           // CURLOPT_FOLLOWLOCATION => true,
+	          //  CURLOPT_SSL_VERIFYHOST => false,
+	            CURLOPT_SSL_VERIFYPEER => false
+	        )
+	    ));
+	    $client->setClient($guzzleClient);
+        $crawler = [];
+
+
+        
+        if (!empty($this->urls)) {
+            foreach ($this->urls as $url => $values) {
+                if (!empty($values['links'])) {
+                    for ($l=0; $l < sizeof($values['links']) ; $l++) { 
+                        $link = $values['links'][$l];
+                        try {
+						    $response = $client->request('GET',$link);
+						    $status_code = $client->getResponse()->getStatus();
+						    
+						    if ($status_code == 200) {
+						        $domain = $values['domain'];
+						        if($domain){
+						            $content_type = $client->getResponse()->getHeader('Content-Type');
+						            if (strpos($content_type, 'text/html') !== false) {
+						                $crawler[$url][$link][] = $response;
+						            }
+						        }// if domain
+						    }// end if status code    
+						} catch (\GuzzleHttp\Exception\ConnectException $e) {
+						     var_dump($e);
+						     continue;
+						}
+                    }// end loop for links
+                }// end if empty
+            }// end loop foreach
+        }// end if empty
+        return $crawler;
+    }
 	/**
 	 * [getContent loop on each link to filter for his crawler]
 	 * @param  [array] $crawlers [url and his links with each craw]
