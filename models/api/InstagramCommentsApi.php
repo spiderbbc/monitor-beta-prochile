@@ -68,6 +68,7 @@ class InstagramCommentsApi extends Model {
 	    		'alertId'       => $this->alertId,
 		        'resourcesId'   => $this->resourcesId,
 		        'type'        	=> 'comments Instagram',
+		        'condition'     => 'INACTIVE'
 	    	])->all();
 
 	    	if (count($alertsMencions)) {
@@ -548,7 +549,6 @@ class InstagramCommentsApi extends Model {
 		$this->_appsecret_proof = $this->_getAppsecretProof($this->_page_access_token);
 		// loading firts query
 		$params['query'] = $this->_postSimpleQuery();  
-
 		return $params; 
 
 	}

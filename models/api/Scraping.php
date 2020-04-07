@@ -133,9 +133,9 @@ class Scraping extends Model
 
 		/*$urls = [
 			'https://www.forbes.com'=>[
-				'domain' => 'forbes.com',
+				'domain' => 'chron.com',
 				'links'  => [
-					'https://www.businessinsider.com/lifestyle'
+					'https://www.chron.com'
 				],
 			]
 		];*/
@@ -300,6 +300,18 @@ class Scraping extends Model
 									$properties['term_searched'] = $terms[$t];
 									$properties['url'] = $url;
 									$this->_saveAlertsMencions($properties);
+								}
+							}else{
+								$ismodel = \app\models\AlertsMencions::find()->where([
+									'alertId'       => $this->alertId,
+									'resourcesId'   => $this->resourcesId,
+									'type'          => self::TYPE_MENTIONS,
+									'term_searched' => $terms[$t],
+									'url'			=> $link
+								])->one();
+								if (!is_null($ismodel)) {
+									$ismodel->date_searched = \app\helpers\DateHelper::getToday();
+									$ismodel->save();
 								}
 							}
 						}
