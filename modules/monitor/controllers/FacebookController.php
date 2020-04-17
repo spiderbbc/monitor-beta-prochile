@@ -97,7 +97,7 @@ class FacebookController extends \yii\web\Controller
     {
       $user_facebook = \app\models\CredencialsApi::find() ->where( [ 
         'userId' => $userId, 
-        'resourceId' =>  5,
+        'resourceId' =>  2,
         'name_app' =>  \Yii::$app->params['facebook']['name_app'],
       ] )->one();
 

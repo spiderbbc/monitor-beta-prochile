@@ -21,6 +21,7 @@ class FacebookHelper
 {
 
 	private static $_resource_id = 2;
+	private static $_baseUrl = 'https://graph.facebook.com/v4.0';
 
 	/**
      * return facebook object.
@@ -199,6 +200,58 @@ class FacebookHelper
 	}
 
 	/**
+	 * [_getBusinessAccountId get bussinessId]
+	 * @param  [type] $user_credential [description]
+	 * @return [string]                  [description]
+	 */
+	public static function getBusinessAccountId($access_secret_token){
+		
+		$bussinessId = Yii::$app->params['facebook']['business_id'];
+		$appsecret_proof = \app\helpers\FacebookHelper::getAppsecretProof($access_secret_token);
+
+		$params = [
+            'access_token'    => $access_secret_token,
+            'appsecret_proof' => $appsecret_proof
+        ];
+
+        $BusinessAccountId = null;
+        $client = new yii\httpclient\Client(['baseUrl' => self::$_baseUrl]);
+       
+        try{
+        	
+        	$accounts = $client->get("{$bussinessId}?fields=instagram_business_account",$params)->send();
+        	$data = $accounts->getData();
+        	if(isset($data['error'])){
+        		// to $user_credential->user->username and $user_credential->name_app
+        		// error send email with $data['error']['message']
+        		return null;
+        	}
+      
+        	$BusinessAccountId = $data['instagram_business_account']['id']; 
+
+        }catch(\yii\httpclient\Exception $e){
+        	// problem conections
+        	// send a email
+        }
+        
+
+        return (!is_null($BusinessAccountId)) ? $BusinessAccountId : null;
+
+	}
+
+
+	/**
+	 * [getAppsecretProof return app secret proof]
+	 * @param  [string] $access_token [access_token from credencialApi table]
+	 * @return [string]               [AppsecretProof]
+	 */
+	public static function getAppsecretProof($access_token)
+	{
+		$app_secret = \Yii::$app->params['facebook']['app_secret'];
+		return hash_hmac('sha256', $access_token, $app_secret); 
+	}
+
+	/**
 	 * [getCredencials return object credencial by userId]
 	 * @param  [int] $userId [id from user table]
 	 * @return [object / null]         [description]
@@ -214,6 +267,112 @@ class FacebookHelper
 		return ($userCredential) ? $userCredential : null;
 			
 
+	}
+
+	/**
+	 * [getUserActiveFacebook take a user active with credential facebook]
+	 * @return [array] [users]
+	 */
+	public static function getUserActiveFacebook()
+	{
+		$usersFacebook = \app\models\Users::find()->select('id')->where([
+            'status' => 10
+        ])->with(['credencialsApis' => function ($query)
+            {   
+                $query->andWhere(['resourceId' => 2]);
+                $query->andWhere(['not', ['access_secret_token' => null]]);
+                $query->andWhere(['not', ['access_secret_token' => 'encrycpt here']]);
+                $query->andWhere([
+                'and',
+                    ['>=', 'expiration_date', time()],
+                ]);
+                $query->orderBy(['updatedAt' => 'DESC']);
+            }
+        ])->asArray()->all();
+
+        $usersFacebook = array_filter($usersFacebook,function ($user)
+        {
+            return (!empty($user['credencialsApis']));
+        });
+
+        // restores index
+        $usersFacebook = array_values($usersFacebook);
+        // get client
+        $client = new yii\httpclient\Client(['baseUrl' => self::$_baseUrl]);
+
+        for ($u=0; $u < sizeof($usersFacebook) ; $u++) { 
+
+        	$access_secret_token = $usersFacebook[$u]['credencialsApis'][0]['access_secret_token'];
+
+    		$appsecret_proof = self::getAppsecretProof($access_secret_token);
+			$params = [
+	            'access_token' => $access_secret_token,
+	            'appsecret_proof' => $appsecret_proof
+	        ];
+        	
+        	try {
+
+        		$accounts = $client->get('me/accounts',$params)->send();
+
+	        	$data = $accounts->getData();
+
+	        	if(isset($data['error'])){
+	        		// to $user_credential->user->username and $user_credential->name_app
+	        		// error send email with $data['error']['message']
+	        		return null;
+	        	}else{
+	        		$usersFacebook[$u]['credencial'] = $data;
+	        		$usersFacebook[$u]['appsecret_proof'] = $appsecret_proof;
+	        	}
+	        	
+        		
+        	} catch (\yii\httpclient\Exception $e) {
+        		echo $e->getMessage();
+        	}
+        }
+        
+       $userFacebook = self::getUserbyPermissions($usersFacebook);
+
+       return $userFacebook;
+	}
+
+	/**
+	 * [getUserbyPermissions return the user with the proper permission]
+	 * @param  [array] $usersFacebook [users from db]
+	 * @return [type]                [description]
+	 */
+	public static function getUserbyPermissions($usersFacebook)
+	{
+		$user = [];
+		if (!empty($usersFacebook)) {
+			for ($u=0; $u < sizeof($usersFacebook) ; $u++) { 
+				if (!empty($usersFacebook[$u]['credencialsApis']) && !empty($usersFacebook[$u]['credencial'])) {
+					for ($d=0; $d < sizeof($usersFacebook[$u]['credencial']['data']) ; $d++) { 
+						$name_app = $usersFacebook[$u]['credencial']['data'][$d]['name'];
+						if ($name_app == \Yii::$app->params['facebook']['name_account']) {
+							$taks = $usersFacebook[$u]['credencial']['data'][$d]['tasks'];
+							if (in_array('MANAGE', $taks)) {
+								$user['user_id'] = $usersFacebook[$u]['id']; 
+								$user['credencial'] = $usersFacebook[$u]['credencial']['data'][0]; 
+								$user['appsecret_proof'] = $usersFacebook[$u]['appsecret_proof']; 
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $user;
+	}
+	/**
+	 * [getIdPostFacebook return id post]
+	 * @param  [string] $id [string compuest by numerodelapagina_numerodepost]
+	 * @return [string ]     [return numerodepost ]
+	 */
+	public static function getIdPostFacebook($id)
+	{
+		$post_id = explode('_', $id);
+		return end($post_id);
 	}
 
 

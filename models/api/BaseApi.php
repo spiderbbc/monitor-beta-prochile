@@ -353,6 +353,30 @@ class BaseApi extends Model {
 		} 
 	}
 
+	public function callInsights($userFacebook)
+	{
+	 	$insightsApi = new \app\models\api\InsightsApi();
+	 	
+	 	if ($insightsApi->prepare($userFacebook)) {
+	 		$page = $insightsApi->getInsightsPageFacebook();
+	 		if ($page) {
+	 			$insightsApi->setInsightsPageFacebook($page);
+	 			
+	 		}
+	 		$insightsApi->setInsightsPostFacebook();
+
+	 		$pageIns = $insightsApi->getInsightsPageInstagram();
+	 		if ($pageIns) {
+	 			$insightsApi->setInsightsPageInstagram($pageIns);
+	 		}
+	 		$insightsApi->setInsightsPostInstagram();
+	 		$insightsApi->setStorysPostInstagram();
+
+	 		$insightsApi->setInsightsPostonDbSave();
+
+	 	}
+	} 
+
 	
 }
 

@@ -65,7 +65,6 @@ use app\widgets\AlertFacebook;
             'homeLink' => false
         ]) ?>
         <?= Alert::widget() ?>
-            <?= AlertFacebook::widget() ?>
         
         <?= $content ?>
     </div>
