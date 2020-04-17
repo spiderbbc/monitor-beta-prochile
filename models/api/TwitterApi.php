@@ -262,7 +262,7 @@ class TwitterApi extends Model {
         			$properties['max_id'] = '';
         			// is date search is today
         			$since_date = Yii::$app->formatter->asTimestamp($since_date);
-
+        			$since_date = intval($since_date);
         			if(DateHelper::isToday($since_date)){
         				$properties['since_id'] = $sinceId;
         				$date_searched = $since_date;

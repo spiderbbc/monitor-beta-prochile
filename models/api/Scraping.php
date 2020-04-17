@@ -375,6 +375,7 @@ class Scraping extends Model
 	    	$count = 0;
 	    	$date_searched_flag   = $this->end_date;
 	      	foreach ($alertsMencions as $alert_mention) {
+	      		$date_searched_flag = intval($date_searched_flag);
 	      		if (!\app\helpers\DateHelper::isToday($date_searched_flag)) {
 	      			if($alert_mention->date_searched >= $date_searched_flag){
 	      				$alert_mention->condition = 'INACTIVE';
