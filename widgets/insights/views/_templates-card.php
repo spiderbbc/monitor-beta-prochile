@@ -66,7 +66,7 @@ use yii\helpers\Html;
 
 
 <script type="text/x-template" id="post-template">
-	<div class="tab-pane active" :id="idTab+'a'">
+	<div class="tab-pane" :id="idTab+'a'">
 		<div class="table-responsive">
 			<table class="table">
 	          <thead>
@@ -78,7 +78,7 @@ use yii\helpers\Html;
 	          <tbody v-if="contentPosts">
 	            <tr v-for="post in contentPosts">
 	              <th scope="row"><a :href="post.permalink" target="_blank">{{post.message  | stringSubstr}}</a></th>
-	              <td align="center" v-for="insigth in post.wInsights">
+	              <td v-for="insigth in post.wInsights">
 	              		<div v-if="insigth.value">
 	              			{{insigth.value}}
 	              		</div>
@@ -94,7 +94,7 @@ use yii\helpers\Html;
 </script>
 
 <script type="text/x-template" id="insights-template">
-<div class="tab-pane" :id="idTab+'b'">
+<div class="tab-pane active" :id="idTab+'b'">
 	<div v-if="loaded" class="table-responsive">
 		<table class="table">
 	      <thead>
