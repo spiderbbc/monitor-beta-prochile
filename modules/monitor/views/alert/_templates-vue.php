@@ -268,35 +268,20 @@ use yii\helpers\Html;
 </script>
 <!-- template que muestra la tabla de lista de emojis -->
 <script type="text/x-template" id="emojis-list">
-    <div v-if="loaded" class="panel-group" id="accordion">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h2 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#emoji1">
-            <h2>Listas de Emojis</h2></a>
-          </h2>
+    <div v-if="loaded">
+        <h4>Lista de Emojis</h4>
+        <div class="row">
+            <div class="col-md-12">
+                <table id="emoji-list" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th align="center">Emoji</th>
+                            <th align="center">Total</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
-        <div id="emoji1" class="panel-collapse collapse">
-          <div class="panel-body">
-            <table class="table table-striped table-bordered" cellspacing="0"  style="width:100%">
-              <thead>
-                  <tr>
-                      <th>Nombre</th>
-                      <th>Emojis</th>
-                      <th>Count</th>
-                  </tr>
-              </thead>
-              <tfoot>
-                  <tr v-for="(emojis,name,index) in response">
-                      <th>{{name}}</th>
-                      <th>{{emojis.emoji}}</th>
-                      <th>{{emojis.count}}</th>
-                  </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-      </div>
     </div>
 </script>
 <!-- template que muestra llos indicadores de cada red social -->

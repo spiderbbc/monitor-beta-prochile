@@ -679,7 +679,7 @@ const listMentions = Vue.component('list-mentions',{
 	},
 	methods:{
 		setDataTable(){
-			return initSearchTable();
+			return initMentionsSearchTable();
 		}
 	}
 });
@@ -789,24 +789,29 @@ const listEmojis = Vue.component('list-emojis',{
 	data: function () {
 	    return {
 	    	response:null,
-	    	loaded: false
+	    	loaded: true
 	    }
 	},
 	mounted(){
-		setInterval(function () {
-	      this.fetchEmojis();
-	    }.bind(this), refreshTime);
+		var table = this.setDataTableEmoji();
+		
+		setInterval( function () {
+		    table.ajax.reload(null,false);
+		}, refreshTimeTable );
+
 	},
 	methods:{
 		fetchEmojis(){
 			axios.get(baseUrlApi + 'list-emojis' + '?alertId=' + id )
 		      .then((response) => {
-		        if(typeof response.data.data.length === 'undefined'){
-		        	this.response = response.data.data;
+		        if(typeof response.data.length != 'undefined'){
 		        	this.loaded = true;
 		        }
 		    })
 		},
+		setDataTableEmoji(){
+			return initEmojisTable();
+		}
 	},
 });
 
