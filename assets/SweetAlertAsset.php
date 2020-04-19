@@ -12,13 +12,13 @@ use yii\web\View;
  */
 class SweetAlertAsset extends AssetBundle
 {
-    public $sourcePath = '@vendor/sweetalert/dist';
+    public $sourcePath = '@npm/sweetalert2/dist';
 
     /**
      * @inheritdoc
      */
     public $js = [
-        YII_ENV_DEV ? 'sweetalert2.js' : 'sweetalert2.min.js',
+        YII_ENV_DEV ? 'sweetalert2.js' : 'sweetalert2.all.min.js',
     ];
 
     public $css = [
