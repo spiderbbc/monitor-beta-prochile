@@ -37,7 +37,11 @@ class BaseApi extends Model {
 		'Paginas Webs'            => 'webPages',
 	];
 
-
+	/**
+	 * [callResourcesApi call his method by the resources in the alert]
+	 * @param  array  $alerts [group of array]
+	 * @return [null]         
+	 */
 	public function callResourcesApi($alerts = []){
 
 		if(!empty($alerts)){
@@ -59,7 +63,11 @@ class BaseApi extends Model {
 			
 		} // if alert
 	}
-
+	/**
+	 * [twitterApi call twitter model Api]
+	 * @param  array  $alerts [alert with twitter resources]
+	 * @return [null]        
+	 */
 	public function twitterApi($alerts = []){
 		
 		$products_count = $this->countAllTerms($alerts);
@@ -81,7 +89,11 @@ class BaseApi extends Model {
 			
 		}
 	}
-
+	/**
+	 * [facebookCommentsApi call facebook comments model Api]
+	 * @param  array  $alerts [alert with facebook resources]
+	 * @return [null]        
+	 */
 	public function facebookCommentsApi($alerts = []){
 		
 		$facebookCommentsApi = new \app\models\api\FacebookCommentsApi();
@@ -95,7 +107,11 @@ class BaseApi extends Model {
 		}
 
 	}
-
+	/**
+	 * [facebookMessagesApi call facebook messages(inbox) model Api]
+	 * @param  array  $alerts [alert with facebook resources]
+	 * @return [null]        
+	 */
 	public function facebookMessagesApi($alerts = []){
 
 		$facebookMessagesApi = new \app\models\api\FacebookMessagesApi();
@@ -109,7 +125,11 @@ class BaseApi extends Model {
 		}
 
 	}
-
+	/**
+	 * [InstagramCommentsApi call instagram comments model Api]
+	 * @param  array  $alerts [alert with instagram resources]
+	 * @return [null]        
+	 */
 	public function InstagramCommentsApi($alerts = []){
 		
 		
@@ -124,7 +144,11 @@ class BaseApi extends Model {
 		}
 
 	}
-
+	/**
+	 * [liveChat call liveChat comments model Api]
+	 * @param  array  $alerts [alert with liveChat resources]
+	 * @return [null]        
+	 */
 	public function liveChat($alerts = []){
 		$LivechatTicketApi = new \app\models\api\LiveTicketApi();
 
@@ -139,7 +163,11 @@ class BaseApi extends Model {
 
 		
 	}
-
+	/**
+	 * [liveChatConversations call liveChat Conversations comments model Api]
+	 * @param  array  $alerts [alert with liveChat resources]
+	 * @return [null]        
+	 */
 	public function liveChatConversations($alerts = []){
 		
 		$LiveChatApi = new \app\models\api\LiveChatsApi();
@@ -153,12 +181,20 @@ class BaseApi extends Model {
 			}
 		}
 	}
-
+	/**
+	 * [excelDocument call excelDocument model Api]
+	 * @param  array  $alerts [alert with excelDocument resources]
+	 * @return [null]        
+	 */
 	public function excelDocument($alerts = []){
 		//echo "excelDocument". "\n";
 		
 	}
-
+	/**
+	 * [newsApi call newsApi model Api]
+	 * @param  array  $alerts [alert with newsApi resources]
+	 * @return [null]        
+	 */
 	public function newsApi($alerts = []){
 
 		$newsApi = new \app\models\api\NewsApi();
@@ -172,7 +208,11 @@ class BaseApi extends Model {
 		}
 		
 	}
-
+	/**
+	 * [webPages call webPages model Api]
+	 * @param  array  $alerts [alert with webPages resources]
+	 * @return [null]        
+	 */
 	public function webPages($alerts = [])
 	{
 		$scraping = new \app\models\api\Scraping();
@@ -190,7 +230,11 @@ class BaseApi extends Model {
 			}
 		}
 	}
-
+	/**
+	 * [countAllTerms coutn term or products on alerts]
+	 * @param  array  $alerts [alert with webPages resources]
+	 * @return [int] count terms        
+	 */
 	public function countAllTerms($alerts = []){
 		$count = 0;
 		for($a = 0; $a < sizeOf($alerts); $a++){
@@ -201,7 +245,11 @@ class BaseApi extends Model {
 		return $count;
 	}
 
-
+	/**
+	 * [saveJsonFile converst data in file json on his path]
+	 * @param  array  $folderpath [confgi path folder]
+	 * @param  array  $data [data collect in the api]
+	 */
 	public function saveJsonFile($folderpath = [],$data){
 
 		if(!empty($data)){
@@ -214,7 +262,11 @@ class BaseApi extends Model {
 		}
 
 	}
-
+	/**
+	 * [readDataResource call method read depende on the resource in the alert]
+	 * @param  array  $alerts [group alerts]
+	 * @return [null]         [description]
+	 */
 	public function readDataResource($alerts = []){
 		$alerts= ArrayHelper::map($alerts,'id','config.configSources');
         $data = [];
@@ -243,7 +295,12 @@ class BaseApi extends Model {
 
 	}
 
-
+	/**
+	 * [readDataTwitterApi read and search depends on the params the alerts]
+	 * @param  [int] $alertId   [id of the alert]
+	 * @param  [array] $data    [data from the json file]
+	 * @return [null]          
+	 */
 	public function readDataTwitterApi($alertId,$data){
 		$searchTwitterApi = new \app\models\search\TwitterSearch();
 		$params = [$alertId,$data];
@@ -256,7 +313,12 @@ class BaseApi extends Model {
 		
 	}
 
-
+	/**
+	 * [readDataFacebookCommentsApi read and search depends on the params the alerts]
+	 * @param  [int] $alertId   [id of the alert]
+	 * @param  [array] $data    [data from the json file]
+	 * @return [null]          
+	 */
 	public function readDataFacebookCommentsApi($alertId,$data){
 		$searchFacebookApi = new \app\models\search\FacebookSearch();
 		$params = [$alertId,$data];
@@ -268,7 +330,12 @@ class BaseApi extends Model {
 
 		}
 	}
-
+	/**
+	 * [readDataFacebookMessagesApi read and search depends on the params the alerts]
+	 * @param  [int] $alertId   [id of the alert]
+	 * @param  [array] $data    [data from the json file]
+	 * @return [null]          
+	 */
 	public function readDataFacebookMessagesApi($alertId,$data){
 		$searchFacebookMessagesApi = new \app\models\search\FacebookMessagesSearch();
 		$params = [$alertId,$data];
@@ -281,7 +348,12 @@ class BaseApi extends Model {
 		
 		
 	}
-
+	/**
+	 * [readDataInstagramCommentsApi read and search depends on the params the alerts]
+	 * @param  [int] $alertId   [id of the alert]
+	 * @param  [array] $data    [data from the json file]
+	 * @return [null]          
+	 */
 	public function readDataInstagramCommentsApi($alertId,$data){
 		$searchInstagramApi = new \app\models\search\InstagramSearch();
 		$params = [$alertId,$data];
@@ -295,7 +367,12 @@ class BaseApi extends Model {
 		}
 		
 	}
-
+	/**
+	 * [readDataExcelDocumentApi read and search depends on the params the alerts]
+	 * @param  [int] $alertId   [id of the alert]
+	 * @param  [array] $data    [data from the json file]
+	 * @return [null]          
+	 */
 	public function readDataExcelDocumentApi($alertId,$data){
 		$searchExcel = new \app\models\search\ExcelSearch();
 		$params = [$alertId,$data];
@@ -308,7 +385,12 @@ class BaseApi extends Model {
 		}
 
 	}
-
+	/**
+	 * [readDataLiveChatApi read and search depends on the params the alerts]
+	 * @param  [int] $alertId   [id of the alert]
+	 * @param  [array] $data    [data from the json file]
+	 * @return [null]          
+	 */
 	public function readDataLiveChatApi($alertId,$data){ 
 		$searchLiveApi = new \app\models\search\LiveTicketSearch(); 
 		$params = [$alertId,$data]; 
@@ -319,7 +401,12 @@ class BaseApi extends Model {
 		} 
  
 	} 
-
+	/**
+	 * [readDataliveChatConversationsApi read and search depends on the params the alerts]
+	 * @param  [int] $alertId   [id of the alert]
+	 * @param  [array] $data    [data from the json file]
+	 * @return [null]          
+	 */
 	public function readDataliveChatConversationsApi($alertId,$data){ 
 		$searchLiveChatApi = new \app\models\search\LiveChatSearch(); 
 		$params = [$alertId,$data]; 
@@ -330,7 +417,12 @@ class BaseApi extends Model {
 		} 
  
 	} 
-
+	/**
+	 * [readDataNoticiasWebsApi read and search depends on the params the alerts]
+	 * @param  [int] $alertId   [id of the alert]
+	 * @param  [array] $data    [data from the json file]
+	 * @return [null]          
+	 */
 	public function readDataNoticiasWebsApi($alertId,$data){ 
 		$searchNewsApi = new \app\models\search\NewsSearch();
 		$params = [$alertId,$data];
@@ -341,7 +433,12 @@ class BaseApi extends Model {
 		} 
  
 	} 
-
+	/**
+	 * [readDataPaginasWebsApi read and search depends on the params the alerts]
+	 * @param  [int] $alertId   [id of the alert]
+	 * @param  [array] $data    [data from the json file]
+	 * @return [null]          
+	 */
 	public function readDataPaginasWebsApi($alertId,$data)
 	{
 		$searchScrapingApi = new \app\models\search\ScrapingSearch();
@@ -352,7 +449,12 @@ class BaseApi extends Model {
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Paginas Webs'); 
 		} 
 	}
-
+	/**
+	 * [callInsights call api facebook graph to get insights]
+	 * @param  [int] $alertId   [id of the alert]
+	 * @param  [array] $data    [data from the json file]
+	 * @return [null]          
+	 */
 	public function callInsights($userFacebook)
 	{
 	 	$insightsApi = new \app\models\api\InsightsApi();
