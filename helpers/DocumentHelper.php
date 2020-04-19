@@ -41,13 +41,16 @@ class DocumentHelper
         foreach($files as $file){
             $split_path = explode("{$s}",$file);
             $fileName = end($split_path);
-            if(copy("{$file}","{$path}{$folderName}{$s}{$fileName}")){
-                try {
-                   unlink("{$file}"); 
-                } catch (\yii\base\ErrorException $e) {
-                    continue;
+            try {
+                if(copy("{$file}","{$path}{$folderName}{$s}{$fileName}")){
+                    try {
+                       unlink("{$file}"); 
+                    } catch (\yii\base\ErrorException $e) {
+                        continue;
+                    }
                 }
-                
+            } catch (\yii\base\ErrorException $e) {
+                continue;
             }
         }
 
