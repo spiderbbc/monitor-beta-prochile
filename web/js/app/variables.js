@@ -89,6 +89,7 @@ let tableConfigMentions = {
 let tableConfigEmojis = {
     'scrollY': '400px',
     "searching": false,
+    "order": [[ 1, "desc" ]],
     "lengthChange": false,
     'scrollCollapse': true,
     //'serverSide': true,
