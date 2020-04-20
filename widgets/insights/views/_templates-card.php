@@ -72,13 +72,13 @@ use yii\helpers\Html;
 	          <thead>
 	            <tr v-if="insightsHeader">
 	              <th scope="col">titulo post</th>
-	              <th v-for="header in insightsHeader" scope="col">{{header}}</th>
+	              <th v-for="header in insightsHeader" scope="col">{{header  | setHeadersPost}}</th>
 	            </tr>
 	          </thead>
 	          <tbody v-if="contentPosts">
 	            <tr v-for="post in contentPosts">
 	              <th scope="row"><a :href="post.permalink" target="_blank">{{post.message  | stringSubstr}}</a></th>
-	              <td v-for="insigth in post.wInsights">
+	              <td style="text-align:left" v-for="insigth in post.wInsights">
 	              		<div v-if="insigth.value">
 	              			{{insigth.value}}
 	              		</div>

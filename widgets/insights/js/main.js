@@ -4,7 +4,12 @@ const baseUrlApi = `${origin}/monitor-beta-prochile/web/monitor/api/insights/`;
 const baseUrlImg = `${origin}/monitor-beta-prochile/web/img/`;
 const titleInsights = {
 	'Número de seguidores': 'Seguidores Unicos',
-}
+};
+
+const headersPost = {
+	'likes' : 'Me Gusta',
+	'coments': 'Comentarios y respuestas'
+};
 
 
 const cardWidget = Vue.component('card-widget',{
@@ -126,6 +131,12 @@ const PostsInsights = Vue.component('posts',{
 		isNullValue: function (value) {
 			if (!value) {
 				value = 0;
+			}
+			return value;
+		},
+		setHeadersPost: function(value){
+			if (headersPost[value]) {
+				return headersPost[value];
 			}
 			return value;
 		}
