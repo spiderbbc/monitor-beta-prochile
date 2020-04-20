@@ -107,12 +107,9 @@ use yii\helpers\Html;
 	      <tbody v-if="contentStorys">
 	        <tr v-for="story in contentStorys">
 				<th scope="row"><a :href="story.permalink" target="_blank">{{story.timespan | getDate }}</a></th>
-	            <td align="center" v-for="insigth in story.wInsights">
-              		<div class="text-center" v-if="insigth.value">
+	            <td style="text-align:left" v-for="insigth in story.wInsights">
+              		<div  v-if="insigth.value">
               			{{insigth.value}}
-              		</div>
-              		<div v-else>
-              			{{insigth.value}} 
               		</div>
           	  </td>
 	        </tr>
