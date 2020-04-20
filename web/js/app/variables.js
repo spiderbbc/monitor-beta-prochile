@@ -12,7 +12,7 @@ const baseUrlDocument = `${origin}/${appId}/web/monitor/pdf/`;
 const baseUrlView = `${origin}/${appId}/web/monitor/alert/`;
 // 1000 = 1 seg
 
-let refreshTime = 20000;
+let refreshTime = 5000;
 let refreshSweetAlert = 30000;
 let refreshTimeTable = 40000;
 let data_chart = new Object();
@@ -23,7 +23,7 @@ let controllerName = {
     "Facebook Comments": "Facebook-comments",
     "Facebook Comments": "Facebook-comments",
 };
-let tableConfig = {
+let tableConfigMentions = {
     'scrollY': '400px',
     'scrollCollapse': true,
     //'serverSide': true,
@@ -83,6 +83,34 @@ let tableConfig = {
         },
         "width": "10%"
     }]
+};
+
+
+let tableConfigEmojis = {
+    'scrollY': '400px',
+    "searching": false,
+    "lengthChange": false,
+    'scrollCollapse': true,
+    //'serverSide': true,
+    "processing": true,
+    "ajax": {
+        'url': baseUrlApi + 'list-emojis?alertId=' + id,
+        //"dataSrc": "mentions"
+    },
+    "fixedColumns": true,
+    "columns": [
+        {
+            "data": "emoji",
+            "width": "200px"
+        }, 
+        {
+            "data": "count",
+            "width": "200px"
+        }
+    ],
+    "columnDefs": [
+        {"className": "dt-center", "targets": "_all"}
+      ]
 };
 
 let columnsName = ['col-md-12','col-md-6','col-md-4','col-md-3','col-md-5','col-md-2','col-sm-1 col-md-1 col-lg-1','col-xs-4 col-sm-3 col-md-8r'];

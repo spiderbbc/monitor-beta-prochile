@@ -65,14 +65,14 @@ function addLink(data, id) {
 /**
  * [metodo inicializa lac tabla de menciones]
  */
-function initSearchTable(){
+function initMentionsSearchTable(){
 	// Setup - add a text input to each footer cell
     $('#list-mentions thead th').each( function () {
         var title = $('#list-mentions tfoot th').eq( $(this).index() ).text();
         $(this).html(  '<input type="text" size="10" placeholder="Search '+title+'"  />'  );
     } );
 
-    var table = $('#list-mentions').DataTable(tableConfig);
+    var table = $('#list-mentions').DataTable(tableConfigMentions);
     // Apply the search
     table.columns().eq( 0 ).each( function ( colIdx ) {
         $( 'input', table.column( colIdx ).header() ).on( 'keyup change', function () {
@@ -85,6 +85,14 @@ function initSearchTable(){
 
     return table;
 }
+
+
+function initEmojisTable(){
+  var table = $('#emoji-list').DataTable(tableConfigEmojis);
+  return table;
+}
+
+
 
 
 function modalFinish(count, baseUrlView,id){

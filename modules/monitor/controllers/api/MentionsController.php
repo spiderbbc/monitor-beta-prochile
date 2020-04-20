@@ -426,19 +426,23 @@ class MentionsController extends Controller
       $emojis = \Emoji\detect_emoji($mention['message']);
       if(!empty($emojis)){
           foreach($emojis as $emoji){
-            $name = $emoji['short_name'];
+            $name = (string)$emoji['short_name'];
             if(isset($model[$name])){
               $model[$name]['count'] += 1;
               
             }else{
-              $emoji = $emoji['emoji'];
+              $emoji = strval($emoji['emoji']);
               $model[$name] = ['count' => 1,'emoji' => $emoji ];
             }
           }
       }
     }
-
-    return array('data' => $model);    
+    uasort($model,function($a,$b)
+    {
+      return ($a["count"] < $b["count"]) ? 1 : -1;
+    });
+    
+    return array('data' =>array_values($model));    
 
   }
 
