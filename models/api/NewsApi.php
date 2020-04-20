@@ -87,7 +87,7 @@ class NewsApi extends Model
 
 			if (!$productMention) {
 				# start date and end date is today
-				if (\app\helpers\DateHelper::isToday($this->start_date) && \app\helpers\DateHelper::isToday($this->end_date)) {
+				if (\app\helpers\DateHelper::isToday((int)$this->start_date) && \app\helpers\DateHelper::isToday((int)$this->end_date)) {
 					$from = $to = \app\helpers\DateHelper::getToday();
 				}else{
 					// is between

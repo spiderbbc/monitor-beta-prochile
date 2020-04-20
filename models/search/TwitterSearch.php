@@ -85,7 +85,6 @@ class TwitterSearch
         // if  dictionaries and  !boolean
         if($this->isDictionaries && !$this->isBoolean){
             // init search
-            echo "only dictionaries \n";
             $mentions = $this->data;
             $data = $this->searchDataByDictionary($mentions);
 

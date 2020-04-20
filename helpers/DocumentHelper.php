@@ -35,12 +35,22 @@ class DocumentHelper
         // create directory
         $folderName = 'processed';
         $create = \yii\helpers\FileHelper::createDirectory("{$path}{$folderName}",$mode = 0775, $recursive = true);
+        
+
         // move files
         foreach($files as $file){
             $split_path = explode("{$s}",$file);
             $fileName = end($split_path);
-            if(copy("{$file}","{$path}{$folderName}{$s}{$fileName}")){
-                unlink("{$file}");
+            try {
+                if(copy("{$file}","{$path}{$folderName}{$s}{$fileName}")){
+                    try {
+                       unlink("{$file}"); 
+                    } catch (\yii\base\ErrorException $e) {
+                        continue;
+                    }
+                }
+            } catch (\yii\base\ErrorException $e) {
+                continue;
             }
         }
 

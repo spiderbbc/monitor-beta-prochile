@@ -185,7 +185,7 @@ class Scraping extends Model
 						        }// if domain
 						    }// end if status code    
 						} catch (\GuzzleHttp\Exception\ConnectException $e) {
-						     var_dump($e);
+						    // var_dump($e);
 						     continue;
 						}
                     }// end loop for links
