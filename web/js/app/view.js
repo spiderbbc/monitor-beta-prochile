@@ -123,7 +123,7 @@ const statusAlert = Vue.component('status-alert',{
  * @return {[component]}           [component]
  */
 const count_mentions = Vue.component('total-mentions',{
-	props: ['count','shares','likes','coments','likes_comments'],
+	props: ['count','shares','retweets','likes','coments','likes_comments'],
 	data: function () {
 	    return {
 	    }
@@ -926,6 +926,7 @@ const vm = new Vue({
 		      .get(baseUrlApi + 'count-mentions' + '?alertId=' +this.alertId)
 		      .then(response => {
 		      	this.count = response.data.count;
+		      	this.retweets = response.data.retweets;
 		      	this.shares = response.data.shares;
 		      	this.likes = response.data.likes;
 		      	this.coments = response.data.coments;
