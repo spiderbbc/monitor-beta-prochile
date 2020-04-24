@@ -12,6 +12,10 @@ use Yii;
  * @property string|null $name
  * @property int|null $status
  * @property int|null $end_date
+ * @property int|null $resourceId | only class 
+ * @property int|null $locationId | only class 
+ * @property int|null $dictionaryId | only class 
+ * @property int|null $urls | only class 
  * @property int|null $createdAt
  * @property int|null $updatedAt
  * @property int|null $createdBy
@@ -26,6 +30,10 @@ use Yii;
  */
 class MTopics extends \yii\db\ActiveRecord
 {
+    public $resourceId;
+    public $locationId;
+    public $dictionaryId;
+    public $urls;
     /**
      * {@inheritdoc}
      */
@@ -40,8 +48,8 @@ class MTopics extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userId'], 'required'],
-            [['userId', 'status', 'end_date', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+            [['userId','name','end_date','resourceId'], 'required'],
+            [['userId', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['userId'], 'exist', 'skipOnError' => true, 'targetClass' => \app\models\Users::className(), 'targetAttribute' => ['userId' => 'id']],
         ];
@@ -55,9 +63,13 @@ class MTopics extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'userId' => Yii::t('app', 'User ID'),
-            'name' => Yii::t('app', 'Name'),
+            'name' => Yii::t('app', 'Nombre'),
             'status' => Yii::t('app', 'Status'),
-            'end_date' => Yii::t('app', 'End Date'),
+            'end_date' => Yii::t('app', 'Fecha Final'),
+            'locationId' => Yii::t('app', 'Pais'),
+            'dictionaryId' => Yii::t('app', 'Diccionarios Drive'),
+            'urls' => Yii::t('app', 'Urls'),
+            'end_date' => Yii::t('app', 'Fecha Final'),
             'createdAt' => Yii::t('app', 'Created At'),
             'updatedAt' => Yii::t('app', 'Updated At'),
             'createdBy' => Yii::t('app', 'Created By'),
