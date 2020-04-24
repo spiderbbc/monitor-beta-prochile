@@ -15,6 +15,10 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
+    	$period = \app\helpers\DateHelper::daysUntil('2020-04-09','2020-04-30');
+    	echo "<pre>";
+    	print_r($period);
+    	die();
         return $this->render('index');
     }
 }

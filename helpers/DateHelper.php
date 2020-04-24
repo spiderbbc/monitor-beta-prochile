@@ -141,6 +141,16 @@ class DateHelper
 
     }
 
+    public static function daysUntil($from_date,$to_date)
+    {
+        $period = Date::parse($from_date)->daysUntil($to_date);
+        $days = [];
+        foreach ($period as $key => $date) {
+            $days[] = $date->format('U');
+        }
+        return $days;
+    }
+
     /**
      * [isBetweenDate chekcs if date is between two date ]
      * @param  [type]  $date [date to look up]
