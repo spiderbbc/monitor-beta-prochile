@@ -81,7 +81,9 @@ class JsonFile {
 	}
 
 	public function findAll(){
-		return $this->filebase->findAll(true, true);
+		$data = $this->filebase->findAll(true, true);
+		$this->filebase->flushCache(); 
+		return $data;
 	}
 
 	public function has($value)

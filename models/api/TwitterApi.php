@@ -40,6 +40,7 @@ class TwitterApi extends Model {
 	private $minimum = 98;
 	private $resourceName = 'Twitter';
 	private $products_count;
+	private $filename;
 	
 	private $codebird;
 	private $data = [];
@@ -172,11 +173,9 @@ class TwitterApi extends Model {
 			//Console::stdout("loop in call method {$product}.. \n", Console::BOLD);
 			$this->data[$product] = $this->_getTweets($products_params[$p]);
 		}
-		
+		$this->_orderTweets();
 
-		$data = $this->_orderTweets($this->data);
-
-		return $data;
+		return (count($this->data)) ? true : false;
 	}
 
 	/**
@@ -266,6 +265,7 @@ class TwitterApi extends Model {
         			if(DateHelper::isToday($since_date)){
         				$properties['since_id'] = $sinceId;
         				$date_searched = $since_date;
+        				$this->filename = $since_date;
         			}else{
         				$date_searched = DateHelper::add($since_date,'1 day');
         				$date_searched = Yii::$app->formatter->asTimestamp($date_searched);
@@ -382,11 +382,11 @@ class TwitterApi extends Model {
 	 * @param  [type] $data [description]
 	 * @return [type]       [description]
 	 */
-	private function _orderTweets($data){
+	private function _orderTweets(){
 		$tweets = [];
 		$source = 'TWITTER';
 	
-		foreach ($data as $product => $object){
+		foreach ($this->data as $product => $object){
 			$index = 0;
 			for ($o = 0; $o < sizeof($object) ; $o++){
 				if(!empty($object[$o]['statuses'])){
@@ -425,8 +425,7 @@ class TwitterApi extends Model {
 				} // if not empty statuses
 			}// for each object twitter
 		} // for each product
-
-		return $tweets;
+		$this->data = $tweets;
 	}
 	/**
 	 * [_getUserData get data user from the json]
@@ -504,6 +503,20 @@ class TwitterApi extends Model {
 		$key     = key($country);
 		$geo     = implode(",",$country[$key]);
 		return $geo;
+	}
+
+	public function saveJsonFile(){
+
+		$source = 'Twitter';
+		if(!is_null($this->data)){
+			$jsonfile = new JsonFile($this->alertId,$source);
+			$jsonfile->load($this->data);
+			if ($this->filename) {
+				$jsonfile->fileName = $this->filename;
+			}
+			$jsonfile->save();
+		}
+
 	}
 	/**
 	 * [_getTwitterLogin login to twitter]

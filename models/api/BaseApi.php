@@ -76,14 +76,10 @@ class BaseApi extends Model {
 		foreach ($alerts as $alert) {
 			$products_params = $tweets->prepare($alert);
 			if($products_params){
-				$data = $tweets->call($products_params);
-				if(!empty($data)){
+				if($tweets->call($products_params)){
 					// path to folder flat archives
-					$folderpath = [
-						'source' => 'Twitter',
-						'documentId' => $alert['id'],
-					];
-					$this->saveJsonFile($folderpath,$data);
+					$tweets->saveJsonFile();
+					
 				}
 			}
 			
@@ -246,23 +242,6 @@ class BaseApi extends Model {
 	}
 
 	/**
-	 * [saveJsonFile converst data in file json on his path]
-	 * @param  array  $folderpath [confgi path folder]
-	 * @param  array  $data [data collect in the api]
-	 */
-	public function saveJsonFile($folderpath = [],$data){
-
-		if(!empty($data)){
-			// pass to variable
-		    list('source' => $source,'documentId' => $documentId) = $folderpath;
-			// call jsonfile
-			$jsonfile = new JsonFile($documentId,$source);
-			$jsonfile->load($data);
-			$jsonfile->save();
-		}
-
-	}
-	/**
 	 * [readDataResource call method read depende on the resource in the alert]
 	 * @param  array  $alerts [group alerts]
 	 * @return [null]         [description]
@@ -270,6 +249,8 @@ class BaseApi extends Model {
 	public function readDataResource($alerts = []){
 		$alerts= ArrayHelper::map($alerts,'id','config.configSources');
         $data = [];
+        
+ 
         foreach($alerts as $alertid => $sources){
             foreach ($sources as $source){
                 $jsonFile= new JsonFile($alertid,$source);
@@ -280,6 +261,8 @@ class BaseApi extends Model {
             }
                
         }
+        
+ 
         // no empty
         if(!empty($data)){
         	foreach ($data as $alertId => $resources){
