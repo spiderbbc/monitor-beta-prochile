@@ -522,7 +522,7 @@ class MentionsController extends Controller
    
     //menciones por recurso y fecha
     $expression = new Expression("created_time,DATE(FROM_UNIXTIME(created_time)) AS date,COUNT(*) AS total");
-    $expressionGroup = new Expression("DATE(FROM_UNIXTIME(created_time))");
+    $expressionGroup = new Expression("created_time,DATE(FROM_UNIXTIME(created_time))");
     
     $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
     
@@ -591,7 +591,7 @@ class MentionsController extends Controller
     }
 
 
-    return array('status'=>true,'model' => $model,'data' => $data,'resourceNames' => $resourceNames);  
+    return array('status'=>true,'model' => $model,'resourceNames' => $resourceNames);  
   }
 
 
