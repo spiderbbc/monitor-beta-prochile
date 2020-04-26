@@ -46,7 +46,7 @@ class FacebookHelper
 		$fb = self::getFacebook();
 		$helper = $fb->getRedirectLoginHelper();
 		// Optional permissions
-		$permissions = ['manage_pages','pages_show_list','read_page_mailboxes','ads_management','pages_messaging','instagram_basic','pages_show_list']; 
+		$permissions = ['read_insights','manage_pages','pages_show_list','read_page_mailboxes','ads_management','pages_messaging','instagram_basic','instagram_manage_insights','pages_show_list']; 
 		// crea una URL absoluta: http://www.example.com/index.php?r=post/index
 		$url = Yii::$app->urlManager->createAbsoluteUrl(['monitor/facebook/validate-fb']);
 

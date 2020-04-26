@@ -175,7 +175,7 @@ class InsightsApi extends Model
             'access_token' => $this->_access_token,
             'appsecret_proof' => $this->_appsecret_proof
         ];
-
+        
 
 		return \app\helpers\InsightsHelper::getData($end_point,$params);
 	}
@@ -248,13 +248,12 @@ class InsightsApi extends Model
 					'type_content_id' => $typeContent->id,
 					'resource_id'     => $resource->id,
 				];
-
 				for ($d=0; $d < sizeof($data) ; $d++) { 
 					$where['content_id'] = $data[$d]['id'];
 					$properties = [
 						'message'   => $data[$d]['caption'],
 						'permalink' => $data[$d]['permalink'],
-						'image_url' => $data[$d]['media_url'],
+						'image_url' => (isset($data[$d]['media_url'])) ? $data[$d]['media_url'] : $data[$d]['thumbnail_url'],
 						'timespan'  => \app\helpers\DateHelper::asTimestamp($data[$d]['timestamp']),
 					];
 
@@ -301,7 +300,7 @@ class InsightsApi extends Model
 		
 			$data = \app\helpers\InsightsHelper::getData($end_point,$params);
 
-			if (!is_null($data)) {
+			if ($data) {
 				$data = $data['data'];
 				// if there content
 				$where =[
