@@ -17,7 +17,12 @@ use yii\db\Expression;
 class TopicsHelper
 {
 
-	
+	/**
+	 * [saveOrUpdateResourceId create or update MTopicResources models]
+	 * @param  [type] $resourcesId [description]
+	 * @param  [type] $topicId     [description]
+	 * @return [type]              [description]
+	 */
 	public static function saveOrUpdateResourceId($resourcesId,$topicId)
 	{
 		$istopicResource = \app\modules\topic\models\MTopicResources::find()->where(['topicId' => $topicId])->exists();
@@ -30,10 +35,13 @@ class TopicsHelper
 			$model->resourceId = $resourcesId[$r];
 			$model->save();
 		}
-		
-
 	}
-
+	/**
+	 * [saveOrUpdateLocationId create or update MTopicsLocation models]
+	 * @param  [type] $locationsId [description]
+	 * @param  [type] $topicId     [description]
+	 * @return [type]              [description]
+	 */
 	public static function saveOrUpdateLocationId($locationsId,$topicId)
 	{
 		$istopicResource = \app\modules\topic\models\MTopicsLocation::find()->where(['topicId' => $topicId])->exists();
@@ -48,7 +56,11 @@ class TopicsHelper
 		}
 	}
 
-
+	/**
+	 * [saveOrUpdateDictionaries create or update MDictionaries models]
+	 * @param  array  $dictionariesProperty [description]
+	 * @return [type]                       [description]
+	 */
 	public static function saveOrUpdateDictionaries($dictionariesProperty = [])
 	{
 		$dictionaries = [];
@@ -70,7 +82,11 @@ class TopicsHelper
 		}
 		return $dictionaries;
 	}
-
+	/**
+	 * [saveOrUpdateDictionariesWords create or update MDictionaries models]
+	 * @param  [type] $content [description]
+	 * @return [type]          [description]
+	 */
 	public static function saveOrUpdateDictionariesWords($content)
 	{
 		if (!empty($content)) {
@@ -99,7 +115,12 @@ class TopicsHelper
 			}
 		}
 	}
-
+	/**
+	 * [saveOrUpdateTopicsDictionaries create or update MTopicsDictionary models]
+	 * @param  array  $sheetIds [description]
+	 * @param  [type] $topicId  [description]
+	 * @return [type]           [description]
+	 */
 	public static function saveOrUpdateTopicsDictionaries($sheetIds = [],$topicId)
 	{
 		if (!empty($sheetIds)) {
@@ -117,7 +138,12 @@ class TopicsHelper
 			}
 		}
 	}
-
+	/**
+	 * [saveOrUpdateUrls create or update MUrlsTopics models]
+	 * @param  [type] $urls    [description]
+	 * @param  [type] $topicId [description]
+	 * @return [type]          [description]
+	 */
 	public static function saveOrUpdateUrls($urls,$topicId)
 	{
 		$istopicUrls = \app\modules\topic\models\MUrlsTopics::find()->where(['topicId' => $topicId])->exists();
