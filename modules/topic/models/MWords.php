@@ -5,27 +5,26 @@ namespace app\modules\topic\models;
 use Yii;
 
 /**
- * This is the model class for table "m_dictionaries".
+ * This is the model class for table "m_words".
  *
  * @property int $id
- * @property string $name
- * @property string|null $color
+ * @property string|null $name
+ * @property int|null $status
  * @property int|null $createdAt
  * @property int|null $updatedAt
  * @property int|null $createdBy
  * @property int|null $updatedBy
  *
- * @property MKeywords[] $mKeywords
- * @property MTopicsDictionary[] $mTopicsDictionaries
+ * @property MTopicsStadistics[] $mTopicsStadistics
  */
-class MDictionaries extends \yii\db\ActiveRecord
+class MWords extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'm_dictionaries';
+        return 'm_words';
     }
 
     /**
@@ -34,9 +33,8 @@ class MDictionaries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
-            [['createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
-            [['name', 'color'], 'string', 'max' => 45],
+            [['status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+            [['name'], 'string', 'max' => 255],
         ];
     }
 
@@ -48,7 +46,7 @@ class MDictionaries extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Name'),
-            'color' => Yii::t('app', 'Color'),
+            'status' => Yii::t('app', 'Status'),
             'createdAt' => Yii::t('app', 'Created At'),
             'updatedAt' => Yii::t('app', 'Updated At'),
             'createdBy' => Yii::t('app', 'Created By'),
@@ -57,22 +55,12 @@ class MDictionaries extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[MKeywords]].
+     * Gets query for [[MTopicsStadistics]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getMKeywords()
+    public function getMTopicsStadistics()
     {
-        return $this->hasMany(MKeywords::className(), ['dictionaryId' => 'id']);
-    }
-
-    /**
-     * Gets query for [[MTopicsDictionaries]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMTopicsDictionaries()
-    {
-        return $this->hasMany(MTopicsDictionary::className(), ['dictionaryID' => 'id']);
+        return $this->hasMany(MTopicsStadistics::className(), ['wordId' => 'id']);
     }
 }

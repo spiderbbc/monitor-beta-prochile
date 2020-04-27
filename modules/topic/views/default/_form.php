@@ -26,7 +26,8 @@ use kartik\select2\Select2;
                     'type' => DatePicker::TYPE_INPUT,
                     'options' => ['placeholder' => 'Ingrese Fecha Final'],
                     'pluginOptions' => [
-                        'format' => 'dd/mm/yyyy',
+                        'format' => 'yyyy-mm-dd',
+                        //'format' => 'dd/mm/yyyy',
                         'todayHighlight' => true,
                         'autoclose' => true,
                     ],
@@ -46,7 +47,7 @@ use kartik\select2\Select2;
                         'multiple' => true,
                         'theme' => 'krajee',
                         'debug' => false,
-                        'value' => '',
+                        'value' => ($model->resourcesIds) ? $model->resourcesIds : [] ,
                        
                     ],
                     'pluginEvents' => [
@@ -62,7 +63,7 @@ use kartik\select2\Select2;
                     'options' => [
                         'id' => 'locationId',
                         'placeholder' => 'Selecciona el Pais', 
-                        'value' => ''
+                        'value' => ($model->locations) ? $model->locations: [], 
                     ],
                     'pluginOptions' => [
                     ],
@@ -71,13 +72,13 @@ use kartik\select2\Select2;
         </div>
         <div class="col-md-4">
             <?= $form->field($model, 'dictionaryId')->widget(Select2::classname(), [
-                    'data' => $drive->dictionaries,
+                    'data' => $drive->dictionariesTitlesForTopic,
                     'options' => [
                         'placeholder' => 'Selecione los Diccionarios',
                         'multiple' => true,
                         'theme' => 'krajee',
                         'debug' => false,
-                        'value' => '',
+                        'value' => ($model->dictionaries) ? $model->dictionaries : [],
                        
                     ],
                     'pluginEvents' => [
@@ -96,7 +97,6 @@ use kartik\select2\Select2;
                     'id' => 'urls',
                     'placeholder' => 'Ingrese url a Buscar', 
                     'multiple' => true,
-                  //  'rows' => 4
                 ],
                 'pluginOptions' => [
                     'tags' => true,

@@ -88,13 +88,27 @@ class MTopics extends \yii\db\ActiveRecord
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getResourcesIds()
+    {
+        $sources = $this->mTopicResources;
+        // set resources id select2
+        $selectIds = [];
+        foreach ($sources as $source) {
+          $selectIds[] =  $source->resource->id;
+        }   
+        return $selectIds;                  
+    }
+
+    /**
      * Gets query for [[User]].
      *
      * @return \yii\db\ActiveQuery
      */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['id' => 'userId']);
+        return $this->hasOne(\app\models\Users::className(), ['id' => 'userId']);
     }
 
     /**
@@ -108,6 +122,20 @@ class MTopics extends \yii\db\ActiveRecord
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDictionaries()
+    {
+        $topicsDictionaries = $this->mTopicsDictionaries;
+        // set resources id select2
+        $selectIds = [];
+        foreach ($topicsDictionaries as $topicsDictionarie) {
+          $selectIds[] =  $topicsDictionarie->dictionary->id;
+        }   
+        return $selectIds;                  
+    }
+
+    /**
      * Gets query for [[MTopicsLocations]].
      *
      * @return \yii\db\ActiveQuery
@@ -115,6 +143,20 @@ class MTopics extends \yii\db\ActiveRecord
     public function getMTopicsLocations()
     {
         return $this->hasMany(MTopicsLocation::className(), ['topicId' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocations()
+    {
+        $locations = $this->mTopicsLocations;
+        // set resources id select2
+        $selectIds = [];
+        foreach ($locations as $value) {
+          $selectIds[] =  $value->location->id;
+        }   
+        return $selectIds;                  
     }
 
     /**
@@ -136,4 +178,19 @@ class MTopics extends \yii\db\ActiveRecord
     {
         return $this->hasMany(MUrlsTopics::className(), ['topicId' => 'id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUrlsTopics()
+    {
+        $urls = $this->mUrlsTopics;
+        // set resources id select2
+        $selectIds = [];
+        foreach ($urls as $url) {
+          $selectIds[] =  $url->url;
+        }   
+        return $selectIds;                  
+    }
+
 }

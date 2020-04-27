@@ -29,15 +29,31 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
-            'userId',
+            //'id',
+            //'userId',
+            [
+                'label' => Yii::t('app','Estado'),
+                'format'    => 'raw',
+                'attribute' => 'status',
+                'value' => function($model) {
+                    return ($model->status) ? 'Active' : 'Inactive';
+                }
+            ],
             'name',
-            'status',
-            'end_date',
-            'createdAt',
+            [
+                'label' => Yii::t('app','Fecha Final'),
+                'format'    => 'raw',
+                'attribute' => 'end_date',
+                'value' => function($model) {
+                    date_default_timezone_set('UTC');
+                    return date('Y-m-d',$model->end_date);
+                }
+            ],
+            //'end_date:datetime',
+            /*'createdAt',
             'updatedAt',
             'createdBy',
-            'updatedBy',
+            'updatedBy',*/
         ],
     ]) ?>
 

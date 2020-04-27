@@ -21,7 +21,7 @@ class m200423_171117_mDictionaries extends Migration
         $this->createTable('{{%m_dictionaries}}', [
             'id'                    => $this->primaryKey(),
             'name'                  => $this->string(45)->notNull(),
-            'color'                 => $this->string(45)->notNull(),
+            'color'                 => $this->string(45),
             'createdAt'             => $this->integer(11),
             'updatedAt'             => $this->integer(11),
             'createdBy'             => $this->integer(11),

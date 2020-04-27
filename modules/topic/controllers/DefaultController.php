@@ -67,7 +67,40 @@ class DefaultController extends Controller
         $model = new MTopics();
         $drive   = new \app\models\api\DriveApi();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+
+            //save end date unix
+            $model->end_date = Yii::$app->formatter->asTimestamp($model->end_date);
+            // save topic
+            $model->save();
+            // save resourceIds
+            $resourcesId = Yii::$app->request->post('MTopics')['resourceId'];
+            if ($resourcesId) {
+                \app\helpers\TopicsHelper::saveOrUpdateResourceId($resourcesId,$model->id);
+            }
+            //save country
+            $locationsId[] = Yii::$app->request->post('MTopics')['locationId'];
+            if ($locationsId) {
+                 \app\helpers\TopicsHelper::saveOrUpdateLocationId($locationsId,$model->id);
+            }
+            // save dictionaries
+            $sheetIds = Yii::$app->request->post('MTopics')['dictionaryId'];
+            if ($sheetIds) {
+                $dictionariesProperty = $drive->getDictionariesByIdsForTopic($sheetIds);
+                $dictionaries = \app\helpers\TopicsHelper::saveOrUpdateDictionaries($dictionariesProperty);
+                // get words and dictionaries names
+                $content = $drive->getContentDictionaryByTitle($dictionaries);
+                // save words and his relations with topics
+                \app\helpers\TopicsHelper::saveOrUpdateDictionariesWords($content);   
+                // relation topic
+                \app\helpers\TopicsHelper::saveOrUpdateTopicsDictionaries($sheetIds,$model->id);   
+            }
+            //save urls 
+            $urls = Yii::$app->request->post('MTopics')['urls'];
+            if ($urls) {
+                \app\helpers\TopicsHelper::saveOrUpdateUrls($urls,$model->id); 
+            }
+            
             return $this->redirect(['view', 'id' => $model->id]);
         }
         return $this->render('create', [
@@ -86,13 +119,60 @@ class DefaultController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $drive   = new \app\models\api\DriveApi();
+        // formateer to form
+        date_default_timezone_set('UTC');
+        $model->end_date = date('Y-m-d',$model->end_date);
+        // adding urls to form
+        $model->urls = $model->urlsTopics;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            //save end date unix
+            $model->end_date = Yii::$app->formatter->asTimestamp($model->end_date);
+            // save topic
+            $model->save();
+            // save resourceIds
+            $resourcesId = Yii::$app->request->post('MTopics')['resourceId'];
+            if ($resourcesId) {
+                \app\helpers\TopicsHelper::saveOrUpdateResourceId($resourcesId,$model->id);
+            }else{
+                \app\modules\topic\models\MTopicResources::deleteAll('topicId ='.$model->id);
+            }
+            //save country
+            $locationsId[] = Yii::$app->request->post('MTopics')['locationId'];
+            if ($locationsId) {
+                 \app\helpers\TopicsHelper::saveOrUpdateLocationId($locationsId,$model->id);
+            }else{
+                \app\modules\topic\models\MTopicsLocation::deleteAll('topicId ='.$model->id);
+            }
+            // save dictionaries
+            $sheetIds = Yii::$app->request->post('MTopics')['dictionaryId'];
+            if ($sheetIds) {
+                $dictionariesProperty = $drive->getDictionariesByIdsForTopic($sheetIds);
+                $dictionaries = \app\helpers\TopicsHelper::saveOrUpdateDictionaries($dictionariesProperty);
+                // get words and dictionaries names
+                $content = $drive->getContentDictionaryByTitle($dictionaries);
+                // save words and his relations with topics
+                \app\helpers\TopicsHelper::saveOrUpdateDictionariesWords($content);   
+                // relation topic
+                \app\helpers\TopicsHelper::saveOrUpdateTopicsDictionaries($sheetIds,$model->id);   
+            }else{
+                \app\modules\topic\models\MTopicsDictionary::deleteAll('topicId ='.$model->id);
+            }
+            //save urls 
+            $urls = Yii::$app->request->post('MTopics')['urls'];
+            if ($urls) {
+                \app\helpers\TopicsHelper::saveOrUpdateUrls($urls,$model->id); 
+            }else{
+                \app\modules\topic\models\MUrlsTopics::deleteAll('topicId ='.$model->id);
+            }
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'drive' => $drive,
         ]);
     }
 

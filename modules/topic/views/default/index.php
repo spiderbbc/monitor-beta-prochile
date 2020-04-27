@@ -27,11 +27,41 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'userId',
-            'name',
+            [
+                'label' => Yii::t('app','Usuario'),
+                'attribute' => 'userId',
+                'format' => 'raw',
+                'value' => function($model){
+                    return Html::a($model->user->username,['update', 'id' => $model->id]);
+                }
+            ],
+            [
+                //'label' => Yii::t('app','Nombre de la Alerta'),
+                'attribute' => 'name',
+                'format' => 'raw',
+                'value' => function($model) {
+                  return Html::a($model->name,['update', 'id' => $model->id]);
+                }
+            ],
+            [
+                'label' => Yii::t('app', 'Fecha Final'),
+                'attribute' => 'end_date',
+                'format' => 'raw',
+                'value' => function($model) { 
+                    date_default_timezone_set('UTC');
+                    return Html::a(date('Y-m-d',$model->end_date), ['update', 'id' => $model->id]);
+                },
+                'filter' => \kartik\date\DatePicker::widget([
+                    'name' => 'MTopicsSearch[end_date]',
+                    'type' => \kartik\date\DatePicker::TYPE_COMPONENT_APPEND,
+                    'value' => $searchModel['end_date'],
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'format' => 'yyyy/mm/dd',
+                    ]
+                ]),
+            ],
             'status',
-            'end_date',
             //'createdAt',
             //'updatedAt',
             //'createdBy',
