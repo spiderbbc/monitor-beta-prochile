@@ -146,6 +146,16 @@ class MTopics extends \yii\db\ActiveRecord
     }
 
     /**
+     * Gets query for [[MWords]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMWords()
+    {
+        return $this->hasMany(MWords::className(), ['topicId' => 'id']);
+    }
+
+    /**
      * @return \yii\db\ActiveQuery
      */
     public function getLocations()

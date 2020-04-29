@@ -8,6 +8,7 @@ use Yii;
  * This is the model class for table "m_words".
  *
  * @property int $id
+ * @property int $topicId
  * @property string|null $name
  * @property int|null $status
  * @property int|null $createdAt
@@ -16,6 +17,7 @@ use Yii;
  * @property int|null $updatedBy
  *
  * @property MTopicsStadistics[] $mTopicsStadistics
+ * @property MTopics $topic
  */
 class MWords extends \yii\db\ActiveRecord
 {
@@ -33,8 +35,10 @@ class MWords extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+            [['topicId'], 'required'],
+            [['topicId', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['name'], 'string', 'max' => 255],
+            [['topicId'], 'exist', 'skipOnError' => true, 'targetClass' => MTopics::className(), 'targetAttribute' => ['topicId' => 'id']],
         ];
     }
 
@@ -45,6 +49,7 @@ class MWords extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
+            'topicId' => Yii::t('app', 'Topic ID'),
             'name' => Yii::t('app', 'Name'),
             'status' => Yii::t('app', 'Status'),
             'createdAt' => Yii::t('app', 'Created At'),
@@ -62,5 +67,15 @@ class MWords extends \yii\db\ActiveRecord
     public function getMTopicsStadistics()
     {
         return $this->hasMany(MTopicsStadistics::className(), ['wordId' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Topic]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTopic()
+    {
+        return $this->hasOne(MTopics::className(), ['id' => 'topicId']);
     }
 }

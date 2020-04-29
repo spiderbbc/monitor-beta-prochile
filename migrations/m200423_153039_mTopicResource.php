@@ -65,7 +65,7 @@ class m200423_153039_mTopicResource extends Migration
 
         // add foreign key for table `m_topic`
         $this->addForeignKey(
-            'fk-alert_config_sources-m_topic',
+            'fk-m_topic_resources-m_topic',
             'm_topic_resources',
             'topicId',
             'm_topics',

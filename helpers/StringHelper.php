@@ -74,6 +74,22 @@ class StringHelper
         $s = new Stringizer($sentence);
         return $s->containsCount($word); // true, case insensitive
     }
+    /**
+     * https://github.com/jasonlam604/Stringizer#dasherize
+     */
+    public static function dasherize($sentence){
+        $s = new Stringizer($sentence);
+        return $s->dasherize();
+    }
+
+    /**
+     * https://github.com/jasonlam604/Stringizer#lowercase
+     */
+    public static function lowercase($sentence){
+        $s = new Stringizer($sentence);
+        $s->lowercase();
+        return $s->getString();
+    }
 
     public static function replace($sentence,$word,$replace){
         $s = new Stringizer($sentence);

@@ -2,7 +2,6 @@
 namespace app\helpers;
 
 use yii;
-use yii\db\Expression;
 
 /**
  *
@@ -156,5 +155,203 @@ class TopicsHelper
 			$model->url = $urls[$u];
 			$model->save();
 		}
+	}
+
+	/**
+	 * [getTopicsByResourceName get  topic related with resource name]
+	 * @param  [string] $resourceName [name resource]
+	 * @return [array]               [topics]
+	 */
+	public static function getTopicsByResourceName($resourceName)
+	{
+		$topics = \app\modules\topic\models\MTopics::find()->where(['status' => 1])->with(
+			[
+				'mTopicResources.resource' => function ($query) use($resourceName)
+				{
+					$query->andWhere(['name' => $resourceName]);
+				}
+			]
+		)->asArray()->all();
+
+		$results = [];
+
+		for ($t=0; $t < sizeof($topics); $t++) { 
+			if (\yii\helpers\ArrayHelper::keyExists('mTopicResources',$topics[$t])) {
+				if (!is_null($topics[$t]['mTopicResources'])) {
+					$mTopicResources = \yii\helpers\ArrayHelper::remove($topics[$t],'mTopicResources');
+					for ($m=0; $m < sizeof($mTopicResources) ; $m++) { 
+						if (!is_null($mTopicResources[$m]['resource'])) {
+							$resource = \yii\helpers\ArrayHelper::remove($mTopicResources[$m],'resource');
+							$topics[$t]['resource'] = $resource;
+							$results[] = $topics[$t];
+						}
+					}// end loop for
+				}// end if
+			}
+		}// end loop for
+
+
+		return $results;
+	}
+	/**
+	 * [saveOrUpdateWords save words in the table words: words are trending, term or hastag related in the searcg]
+	 * @param  [type] $data    [description]
+	 * @param  [type] $topicId [description]
+	 * @return [type]          [description]
+	 */
+	public static function saveOrUpdateWords($data,$topicId)
+	{
+		foreach ($data as $key => $values) {
+			for ($t=0; $t <sizeof($values) ; $t++) { 
+				$is_word = \app\modules\topic\models\MWords::find()->where(
+					[
+						'topicId' => $topicId,
+						'name' => $values[$t]['name'],
+					]
+				)->exists();
+				if (!$is_word) {
+					$model = new \app\modules\topic\models\MWords();
+					$model->topicId = $topicId;
+					$model->name = $values[$t]['name'];
+					if ($model->save()) {
+						$data[$key][$t]['wordId']= $model->id;
+					}
+				}else{
+
+					$model = \app\modules\topic\models\MWords::find()->where(
+						[
+							'topicId' => $topicId,
+							'name' => $values[$t]['name'],
+						]
+					)->one();
+					$data[$key][$t]['wordId']= $model->id;
+
+				}// end if !word
+			}// end loop for
+		}// end loop foreach
+		return $data;
+	}
+	/**
+	 * [saveOrUpdateTopicsStadistics save or update TopicsStadistics]
+	 * @param  [type] $data       [description]
+	 * @param  [type] $topicId    [description]
+	 * @param  [type] $resourceId [description]
+	 * @return [type]             [description]
+	 */
+	public static function saveOrUpdateTopicsStadistics($data,$topicId,$resourceId)
+	{
+		foreach ($data as $key => $values) {
+			for ($t=0; $t < sizeof($values) ; $t++) { 
+				$is_topic_stadistics = \app\modules\topic\models\MTopicsStadistics::find()->where(
+					[
+						'topicId' => $topicId,
+						'resourceId' => $resourceId,
+						'locationId' => $key,
+						'wordId' => $values[$t]['wordId'],
+					]
+				)->exists();
+				if (!$is_topic_stadistics) {
+					$model =  new \app\modules\topic\models\MTopicsStadistics();
+					$model->topicId = $topicId;
+					$model->resourceId = $resourceId;
+					$model->locationId = $key;
+					$model->wordId = $values[$t]['wordId'];
+
+					if($model->save()){
+						$data[$key][$t]['topicStadisticId'] = $model->id;
+					}
+
+				} else {
+					$model = \app\modules\topic\models\MTopicsStadistics::find()->where(
+						[
+							'topicId' => $topicId,
+							'resourceId' => $resourceId,
+							'locationId' => $key,
+							'wordId' => $values[$t]['wordId'],
+						]
+					)->one();
+
+					$data[$key][$t]['topicStadisticId'] = $model->id;
+				}
+				
+			}
+		}
+
+		return $data;
+	}
+	/**
+	 * [saveOrUpdateStadistics save or update Stadistics]
+	 * @param  [type] $data [description]
+	 * @return [type]       [description]
+	 */
+	public static function saveOrUpdateStadistics($data)
+	{
+		foreach ($data as $key => $values) {
+			for ($t=0; $t < sizeof($values); $t++) { 
+				$is_stadistics = \app\modules\topic\models\MStatistics::find()->where(
+					[
+						'topicStaticId' => $values[$t]['topicStadisticId'],
+						'timespan' => \app\helpers\DateHelper::getTodayDate()
+					]
+				)->exists();
+
+				if (!$is_stadistics) {
+					$model = new \app\modules\topic\models\MStatistics();
+					$model->topicStaticId = $values[$t]['topicStadisticId'];
+					$model->total = $values[$t]['total'];
+					$model->timespan =\app\helpers\DateHelper::getTodayDate();
+
+					if($model->save()){
+						$data[$key][$t]['stadisticId'] = $model->id;
+					}else{
+						var_dump($model->errors);
+					}
+
+
+				} else {
+					$model = \app\modules\topic\models\MStatistics::find()->where(
+						[
+							'topicStaticId' => $values[$t]['topicStadisticId'],
+							'timespan' => \app\helpers\DateHelper::getTodayDate()
+						]
+					)->one();
+
+					$model->total = $values[$t]['total'];
+
+					if($model->save()){
+						$data[$key][$t]['stadisticId'] = $model->id;
+					}
+				}
+				
+			}
+		}
+
+		return $data;
+	}
+	/**
+	 * [saveOrUpdateAttachments save or update Attachments]
+	 * @param  [type] $data [description]
+	 * @return [type]       [description]
+	 */
+	public static function saveOrUpdateAttachments($data)
+	{
+		foreach ($data as $key => $values) {
+			for ($v=0; $v < sizeof($values) ; $v++) { 
+				$is_attachments = \app\modules\topic\models\MAttachments::find()->where(
+					[
+						'statisticId' => $values[$v]['stadisticId'],
+						'src_url' => $values[$v]['url'],
+					]
+				)->exists();
+
+				if (!$is_attachments) {
+					$model = new \app\modules\topic\models\MAttachments();
+					$model->statisticId = $values[$v]['stadisticId'];
+					$model->src_url = $values[$v]['url'];
+					$model->save();
+				}
+			}
+		}
+		return $data;
 	}
 }

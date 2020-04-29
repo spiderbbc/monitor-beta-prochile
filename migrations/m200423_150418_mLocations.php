@@ -3,13 +3,11 @@
 use yii\db\Migration;
 
 /**
- * Class m200423_165018_mLocations
+ * Class mm200423_150418_mLocations
  */
-class m200423_165018_mLocations extends Migration
+class m200423_150418_mLocations extends Migration
 {
-
-    
-    // Use up()/down() to run migration code without a transaction.
+        // Use up()/down() to run migration code without a transaction.
     public function up()
     {
         $tableOptions = null;
@@ -54,5 +52,4 @@ class m200423_165018_mLocations extends Migration
     {
         $this->dropTable('{{%m_locations}}');
     }
-    
 }

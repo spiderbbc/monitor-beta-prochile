@@ -20,6 +20,7 @@ class m200423_160408_mWords extends Migration
 
         $this->createTable('{{%m_words}}',[
             'id'              => $this->primaryKey(),
+            'topicId'         => $this->integer()->notNull(),
             'name'            => $this->string(),
             'status'          => $this->smallInteger(1)->defaultValue(1),
             'createdAt'       => $this->integer(),
@@ -28,6 +29,24 @@ class m200423_160408_mWords extends Migration
             'updatedBy'       => $this->integer(),
 
         ],$tableOptions);
+
+        // creates index for column `topicId`
+        $this->createIndex(
+            'idx-m_words-m_topic',
+            'm_words',
+            'topicId'
+        );
+
+        // add foreign key for table `m_topic`
+        $this->addForeignKey(
+            'fk-m_words-m_topic',
+            'm_words',
+            'topicId',
+            'm_topics',
+            'id',
+            'CASCADE',
+            'CASCADE'
+        );
     }
 
     public function down()

@@ -26,15 +26,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
-            [
-                'label' => Yii::t('app','Usuario'),
-                'attribute' => 'userId',
-                'format' => 'raw',
-                'value' => function($model){
-                    return Html::a($model->user->username,['update', 'id' => $model->id]);
-                }
-            ],
             [
                 //'label' => Yii::t('app','Nombre de la Alerta'),
                 'attribute' => 'name',

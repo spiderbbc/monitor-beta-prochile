@@ -20,8 +20,9 @@ class m200423_160625_mTopicsStadistic extends Migration
 
         $this->createTable('{{%m_topics_stadistics}}',[
             'id'              => $this->primaryKey(),
-            'topicId'         => $this->integer()->notNull(),
+            'topicId'         => $this->integer(),
             'resourceId'      => $this->integer()->notNull(),
+            'locationId'      => $this->integer()->notNull(),
             'wordId'          => $this->integer()->notNull(),
             'status'          => $this->smallInteger(1)->defaultValue(1),
             'createdAt'       => $this->integer(),
@@ -66,6 +67,24 @@ class m200423_160625_mTopicsStadistic extends Migration
             'CASCADE',
             'CASCADE'
         );
+
+        /*// creates index for column `locationId`
+        $this->createIndex(
+            'idx-m_topics_stadistics-locationId',
+            'm_topics_stadistics',
+            'locationId'
+        );
+
+        // add foreign key for table `m_locations`
+        $this->addForeignKey(
+            'fk-m_topics_stadistics-locationId',
+            'm_topics_stadistics',
+            'locationId',
+            'm_locations',
+            'id',
+            'CASCADE',
+            'CASCADE'
+        );*/
 
          // creates index for column `wordId`
         $this->createIndex(
