@@ -97,7 +97,7 @@ class DaemonController extends Controller
         return ExitCode::OK;
     }
 
-    public function actionTopicRun($resourceName = "Twitter")
+    public function actionTopicRun($resourceName = "Instagram")
     {
         $topics = \app\helpers\TopicsHelper::getTopicsByResourceName($resourceName);
         if (!empty($topics)) {

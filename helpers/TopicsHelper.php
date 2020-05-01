@@ -238,7 +238,7 @@ class TopicsHelper
 	 * @param  [type] $resourceId [description]
 	 * @return [type]             [description]
 	 */
-	public static function saveOrUpdateTopicsStadistics($data,$topicId,$resourceId)
+	public static function saveOrUpdateTopicsStadistics($data,$topicId,$resourceId,$location=true)
 	{
 		foreach ($data as $key => $values) {
 			for ($t=0; $t < sizeof($values) ; $t++) { 
@@ -246,7 +246,7 @@ class TopicsHelper
 					[
 						'topicId' => $topicId,
 						'resourceId' => $resourceId,
-						'locationId' => $key,
+						'locationId' => ($location)? $key: null,
 						'wordId' => $values[$t]['wordId'],
 					]
 				)->exists();
@@ -254,7 +254,7 @@ class TopicsHelper
 					$model =  new \app\modules\topic\models\MTopicsStadistics();
 					$model->topicId = $topicId;
 					$model->resourceId = $resourceId;
-					$model->locationId = $key;
+					$model->locationId = ($location)? $key: null;
 					$model->wordId = $values[$t]['wordId'];
 
 					if($model->save()){
@@ -266,7 +266,7 @@ class TopicsHelper
 						[
 							'topicId' => $topicId,
 							'resourceId' => $resourceId,
-							'locationId' => $key,
+							'locationId' => ($location)? $key: null,
 							'wordId' => $values[$t]['wordId'],
 						]
 					)->one();
@@ -353,5 +353,20 @@ class TopicsHelper
 			}
 		}
 		return $data;
+	}
+	/**
+	 * [getKeywordsDictionaries get words from dictionaries key = wordId value= word]
+	 * @param  [type] $model [description]
+	 * @return [type]        [description]
+	 */
+	public static function getKeywordsDictionaries($model)
+	{
+		$words = [];
+		foreach ($model->mTopicsDictionaries as $mTopicDictionarie) {
+            foreach ($mTopicDictionarie->dictionary->mKeywords as $kewords) {
+                $words[$kewords->id] = \app\helpers\StringHelper::lowercase($kewords->name);
+            }
+        }
+        return $words;
 	}
 }

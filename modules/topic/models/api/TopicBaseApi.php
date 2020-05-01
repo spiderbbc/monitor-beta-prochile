@@ -43,6 +43,21 @@ class TopicBaseApi
 				}
 			}
 		}
+	}
+
+	/**
+	 * [InstagramApi functions call to Scraping top Hastag and Instagram Page Api ]
+	 * @param array $topics [description]
+	 */
+	public function InstagramApi($topics = []){
+		$hashtag = new \app\modules\topic\models\api\InstagramApi();
+		foreach ($topics as $topic) {
+			if ($hashtag->prepare($topic)) {
+				if ($hashtag->callHashtag()) {
+					$hashtag->saveData();
+				}
+			}
+		}
 	}	
 }
 

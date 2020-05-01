@@ -83,7 +83,6 @@ class Scraping extends Model
 
 		// Initialize the client with the handler option
 		$client = new GuzzleClient();
-		//$client = new GuzzleClient();
 		// loop on urls
 		foreach ($valid_urls as $url) {
 			$domain = \app\helpers\StringHelper::getDomain($url);

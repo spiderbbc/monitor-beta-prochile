@@ -2,9 +2,7 @@
 namespace app\modules\topic\models\api;
 
 use Yii;
-use yii\base\Model;
 
-use Codebird\Codebird;
 
 
 /**
@@ -18,7 +16,6 @@ class TwitterApi
 	public $resourceId;
 	public $locations;
 	public $codebird;
-	public $limit = 5;
 	public $remaining = 10;
 	public $apistatus = true;
 	public $data;
@@ -60,7 +57,6 @@ class TwitterApi
         		}
         	}
 		}
-
 		return $this->data;
 
 	}
@@ -89,7 +85,6 @@ class TwitterApi
 		$trendingsStadistic = \app\helpers\TopicsHelper::saveOrUpdateStadistics($trendingTopicsStadistics);
 		
 		$trendingsAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($trendingsStadistic);
-
 		// if dictionary
 		$model = \app\modules\topic\models\MTopics::findOne($this->topicId);
 
@@ -102,15 +97,8 @@ class TwitterApi
 
 	public function searchAndSaveWordsDictionaries($model,$data)
 	{
-		$words = [];
 		// get keywors dictionaries
-        foreach ($model->mTopicsDictionaries as $mTopicDictionarie) {
-            foreach ($mTopicDictionarie->dictionary->mKeywords as $kewords) {
-                $words[$kewords->id] = \app\helpers\StringHelper::lowercase($kewords->name);
-            }
-        }
-
-       
+		$words = \app\helpers\TopicsHelper::getKeywordsDictionaries($model);
         // get trendings
         foreach ($data as $index => $values) {
 	        for ($d=0; $d <sizeof($values) ; $d++) { 
