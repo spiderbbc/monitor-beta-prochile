@@ -64,13 +64,12 @@ class InstagramCommentsApi extends Model {
 			$this->end_date   = $alert['config']['end_date'];
 
 			//get from alermentios
-			$alertsMencions = \app\models\AlertsMencions::find()->where([
+			/*$alertsMencions = \app\models\AlertsMencions::find()->where([
 	    		'alertId'       => $this->alertId,
 		        'resourcesId'   => $this->resourcesId,
 		        'type'        	=> 'comments Instagram',
 		        'condition'     => 'INACTIVE'
 	    	])->all();
-
 	    	if (count($alertsMencions)) {
 	    		$products = [];
 	    		foreach ($alertsMencions as $alertsMencion) {
@@ -82,13 +81,13 @@ class InstagramCommentsApi extends Model {
 
 	    		$alert['products'] = array_values($alert['products']);
 
-	    	}
+	    	}*/
 			////
+			
 			
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->products   = $alert['products'];
-
 			if (count($this->products)) {
 				return $this->_setParams();
 			} else {
