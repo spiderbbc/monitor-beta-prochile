@@ -17,14 +17,13 @@ class TopicBaseApi
 		$resources = [];
 		for ($t=0; $t <sizeof($topics) ; $t++) { 
 			if (!empty($topics[$t]['resource'])) {
-				$resourceName = $topics[$t]['resource']['name'];
+				$resourceName = \app\helpers\StringHelper::replace($topics[$t]['resource']['name']," ","");
 				if (method_exists($this, $resourceName.'Api')) {
 					$method = "${resourceName}Api";
 					$resources[$method][] = $topics[$t];
 				}
 			}
 		}
-
 		foreach($resources as $method => $topics){
 			$this->{$method}($topics);
 		}
@@ -46,17 +45,29 @@ class TopicBaseApi
 	}
 
 	/**
-	 * [InstagramApi functions call to Scraping top Hastag and Instagram Page Api ]
+	 * [InstagramApi functions call to Scraping top Hastag and Instagram Page]
 	 * @param array $topics [description]
 	 */
 	public function InstagramApi($topics = []){
-		$hashtag = new \app\modules\topic\models\api\InstagramApi();
+		$hashtag = new \app\modules\topic\models\api\InstagramScraping();
 		foreach ($topics as $topic) {
 			if ($hashtag->prepare($topic)) {
 				if ($hashtag->callHashtag()) {
 					$hashtag->saveData();
 				}
 			}
+		}
+	}
+
+	/**
+	 * [PaginasWebApi functions call to Scraping url from Web Pages ]
+	 * @param array $topics [description]
+	 */
+	public function PaginasWebsApi($topics = []){
+
+		$webScraping = new \app\modules\topic\models\api\WebScraping();
+		foreach ($topics as $topic) {
+			$webScraping->prepare();
 		}
 	}	
 }

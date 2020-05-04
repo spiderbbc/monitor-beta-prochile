@@ -7,7 +7,7 @@ use Yii;
 /**
  * wrapper Instagram for topics
  */
-class InstagramApi
+class InstagramScraping
 {
 	public $topicId;
 	public $userId;
