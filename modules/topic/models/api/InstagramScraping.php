@@ -117,8 +117,9 @@ class InstagramScraping
 		if (!empty($this->data)) {
 			$data[] = $this->data;
 			$model_words = \app\helpers\TopicsHelper::saveOrUpdateWords($data,$this->topicId);
+			$hashTagAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($model_words);
 			$hashTagTopicsStadistics = \app\helpers\TopicsHelper::saveOrUpdateTopicsStadistics(
-				$model_words,
+				$hashTagAttachments,
 				$this->topicId,
 				$this->resourceId,
 				false
@@ -126,12 +127,12 @@ class InstagramScraping
 
 			$hashTagStadistic = \app\helpers\TopicsHelper::saveOrUpdateStadistics($hashTagTopicsStadistics);
 		
-			$hashTagAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($hashTagStadistic);
+			
 			// if dictionary
 			$model = \app\modules\topic\models\MTopics::findOne($this->topicId);
 
 			if ($model->mTopicsDictionaries) {
-				$this->searchAndSaveWordsDictionaries($model,$hashTagAttachments);
+				$this->searchAndSaveWordsDictionaries($model,$hashTagStadistic);
 			}
 		}
 		

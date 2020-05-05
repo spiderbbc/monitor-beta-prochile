@@ -46,6 +46,7 @@ class MTopicsStadistics extends \yii\db\ActiveRecord
             [['resourceId'], 'exist', 'skipOnError' => true, 'targetClass' => MResources::className(), 'targetAttribute' => ['resourceId' => 'id']],
             [['topicId'], 'exist', 'skipOnError' => true, 'targetClass' => MTopics::className(), 'targetAttribute' => ['topicId' => 'id']],
             [['wordId'], 'exist', 'skipOnError' => true, 'targetClass' => MWords::className(), 'targetAttribute' => ['wordId' => 'id']],
+            [['attachmentId'], 'exist', 'skipOnError' => true, 'targetClass' => MAttachments::className(), 'targetAttribute' => ['attachmentId' => 'id']],
         ];
     }
 
@@ -61,6 +62,7 @@ class MTopicsStadistics extends \yii\db\ActiveRecord
             'locationId' => Yii::t('app', 'Location ID'),
             'wordId' => Yii::t('app', 'Word ID'),
             'status' => Yii::t('app', 'Status'),
+            'attachmentId' => Yii::t('app', 'Url'),
             'createdAt' => Yii::t('app', 'Created At'),
             'updatedAt' => Yii::t('app', 'Updated At'),
             'createdBy' => Yii::t('app', 'Created By'),
@@ -116,5 +118,15 @@ class MTopicsStadistics extends \yii\db\ActiveRecord
     public function getWord()
     {
         return $this->hasOne(MWords::className(), ['id' => 'wordId']);
+    }
+
+    /**
+     * Gets query for [[Word]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function geMAttachments()
+    {
+        return $this->hasOne(MAttachments::className(), ['id' => 'attachmentId']);
     }
 }

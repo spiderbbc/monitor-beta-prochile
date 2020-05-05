@@ -3,9 +3,9 @@
 use yii\db\Migration;
 
 /**
- * Class m200423_193533_mAttachments
+ * Class m200423_153533_mAttachments
  */
-class m200423_193533_mAttachments extends Migration
+class m200423_153533_mAttachments extends Migration
 {
 
     
@@ -21,7 +21,7 @@ class m200423_193533_mAttachments extends Migration
 
         $this->createTable('{{%m_attachments}}',[
             'id'              => $this->primaryKey(),
-            'statisticId'     => $this->integer()->notNull(),
+          //  'statisticId'     => $this->integer()->notNull(),
             'src_url'         => $this->text(),
             'createdAt'       => $this->integer(),
             'updatedAt'       => $this->integer(),
@@ -33,7 +33,7 @@ class m200423_193533_mAttachments extends Migration
 
         
 
-         // creates index for column `content_id`
+         /*// creates index for column `content_id`
         $this->createIndex(
             'idx-m_attachments-statisticId',
             'm_attachments',
@@ -50,7 +50,7 @@ class m200423_193533_mAttachments extends Migration
             'id',
             'CASCADE',
             'CASCADE'
-        );
+        );*/
 
     }
 

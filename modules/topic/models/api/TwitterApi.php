@@ -76,20 +76,23 @@ class TwitterApi
 		}
 
 		$trendings = \app\helpers\TopicsHelper::saveOrUpdateWords($data,$this->topicId);
+
+		$trendingsAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($trendings);
 		
 		$trendingTopicsStadistics = \app\helpers\TopicsHelper::saveOrUpdateTopicsStadistics(
-			$trendings,
+			$trendingsAttachments,
 			$this->topicId,
 			$this->resourceId
 		);
+		
+		
 		$trendingsStadistic = \app\helpers\TopicsHelper::saveOrUpdateStadistics($trendingTopicsStadistics);
 		
-		$trendingsAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($trendingsStadistic);
 		// if dictionary
 		$model = \app\modules\topic\models\MTopics::findOne($this->topicId);
 
 		if ($model->mTopicsDictionaries) {
-			$this->searchAndSaveWordsDictionaries($model,$trendingsAttachments);
+			$this->searchAndSaveWordsDictionaries($model,$trendingsStadistic);
 		}
 		
 		

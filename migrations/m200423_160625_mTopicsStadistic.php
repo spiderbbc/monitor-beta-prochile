@@ -24,6 +24,7 @@ class m200423_160625_mTopicsStadistic extends Migration
             'resourceId'      => $this->integer()->notNull(),
             'locationId'      => $this->integer(),
             'wordId'          => $this->integer()->notNull(),
+            'attachmentId'    => $this->integer()->notNull(),
             'status'          => $this->smallInteger(1)->defaultValue(1),
             'createdAt'       => $this->integer(),
             'updatedAt'       => $this->integer(),
@@ -103,6 +104,26 @@ class m200423_160625_mTopicsStadistic extends Migration
             'CASCADE',
             'CASCADE'
         );
+
+
+        // creates index for column `attachmentId`
+        $this->createIndex(
+            'idx-m_topics_stadistics-attachmentId',
+            'm_topics_stadistics',
+            'attachmentId'
+        );
+
+        // add foreign key for table `m_attachments`
+        $this->addForeignKey(
+            'fk-m_topics_stadistics-attachmentId',
+            'm_topics_stadistics',
+            'attachmentId',
+            'm_attachments',
+            'id',
+            'CASCADE',
+            'CASCADE'
+        );
+
 
     }
 

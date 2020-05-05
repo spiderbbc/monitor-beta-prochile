@@ -78,29 +78,30 @@ class WebScraping{
 	public function saveData($analisysText = [])
 	{
 		$trendingsWebPage = \app\helpers\TopicsHelper::saveOrUpdateWords($analisysText,$this->topicId);
+		$trendingsAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($trendingsWebPage);
 		$trendingTopicsStadistics = \app\helpers\TopicsHelper::saveOrUpdateTopicsStadistics(
-			$trendingsWebPage,
+			$trendingsAttachments,
 			$this->topicId,
 			$this->resourceId,
 			false
 		);
 		$trendingsStadistic = \app\helpers\TopicsHelper::saveOrUpdateStadistics($trendingTopicsStadistics);
-		$trendingsAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($trendingsStadistic);
+		
 		// if dictionary
 		$model = \app\modules\topic\models\MTopics::findOne($this->topicId);
 
 		if ($model->mTopicsDictionaries) {
-			$this->searchAndSaveWordsDictionaries($model,$trendingsAttachments);
+			$this->searchAndSaveWordsDictionaries($model,$trendingsStadistic);
 		}
 	}
 
-	public function searchAndSaveWordsDictionaries($model,$trendingsAttachments)
+	public function searchAndSaveWordsDictionaries($model,$trendingsStadistic)
 	{
 		// get keywors dictionaries
 		$words = \app\helpers\TopicsHelper::getKeywordsDictionaries($model);
 		// loop dictionaries words in to trends words
 		foreach ($words as $keywordId => $word) {
-			foreach ($trendingsAttachments as $sentence => $values) {
+			foreach ($trendingsStadistic as $sentence => $values) {
 				$isContains = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence,$word);
 				$statisticId = $values[0]['stadisticId'];
 				if ($isContains) {

@@ -248,6 +248,7 @@ class TopicsHelper
 						'resourceId' => $resourceId,
 						'locationId' => ($location)? $key: null,
 						'wordId' => $values[$t]['wordId'],
+						'attachmentId' => $values[$t]['attachmentId'],
 					]
 				)->exists();
 				if (!$is_topic_stadistics) {
@@ -256,6 +257,7 @@ class TopicsHelper
 					$model->resourceId = $resourceId;
 					$model->locationId = ($location)? $key: null;
 					$model->wordId = $values[$t]['wordId'];
+					$model->attachmentId = $values[$t]['attachmentId'];
 
 					if($model->save()){
 						$data[$key][$t]['topicStadisticId'] = $model->id;
@@ -270,6 +272,7 @@ class TopicsHelper
 							'resourceId' => $resourceId,
 							'locationId' => ($location)? $key: null,
 							'wordId' => $values[$t]['wordId'],
+							'attachmentId' => $values[$t]['attachmentId'],
 						]
 					)->one();
 
@@ -341,17 +344,25 @@ class TopicsHelper
 			for ($v=0; $v < sizeof($values) ; $v++) { 
 				$is_attachments = \app\modules\topic\models\MAttachments::find()->where(
 					[
-						'statisticId' => $values[$v]['stadisticId'],
+						//'statisticId' => $values[$v]['stadisticId'],
 						'src_url' => $values[$v]['url'],
 					]
 				)->exists();
 
 				if (!$is_attachments) {
 					$model = new \app\modules\topic\models\MAttachments();
-					$model->statisticId = $values[$v]['stadisticId'];
+					//$model->statisticId = $values[$v]['stadisticId'];
 					$model->src_url = $values[$v]['url'];
 					$model->save();
+				}else{
+					$model = \app\modules\topic\models\MAttachments::find()->where(
+						[
+							'src_url' => $values[$v]['url'],
+						]
+					)->one();
 				}
+				// get id attachments
+				$data[$key][$v]['attachmentId'] = $model->id;
 			}
 		}
 		return $data;
