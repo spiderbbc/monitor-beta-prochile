@@ -241,7 +241,7 @@ class TopicsHelper
 	public static function saveOrUpdateTopicsStadistics($data,$topicId,$resourceId,$location=true)
 	{
 		foreach ($data as $key => $values) {
-			for ($t=0; $t < sizeof($values) ; $t++) { 
+			for ($t=0; $t < sizeof($values) ; $t++) {
 				$is_topic_stadistics = \app\modules\topic\models\MTopicsStadistics::find()->where(
 					[
 						'topicId' => $topicId,
@@ -259,6 +259,8 @@ class TopicsHelper
 
 					if($model->save()){
 						$data[$key][$t]['topicStadisticId'] = $model->id;
+					}else{
+						var_dump($model->errors);
 					}
 
 				} else {

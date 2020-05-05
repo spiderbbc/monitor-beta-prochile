@@ -67,7 +67,18 @@ class TopicBaseApi
 
 		$webScraping = new \app\modules\topic\models\api\WebScraping();
 		foreach ($topics as $topic) {
-			$webScraping->prepare();
+			if ($webScraping->prepare($topic)) {
+				$crawlers = $webScraping->getRequest();
+				if (!empty($crawlers)) {
+					$content = \app\helpers\ScrapingHelper::getContent($crawlers);
+					$data     = \app\helpers\ScrapingHelper::setContent($content);
+					$groupContentData = $webScraping->groupContentData($data);
+					$analisysText = $webScraping->setAnalisys($groupContentData);
+					if ($analisysText) {
+						$webScraping->saveData($analisysText);
+					}
+				}
+			}
 		}
 	}	
 }

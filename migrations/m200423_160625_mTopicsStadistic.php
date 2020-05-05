@@ -22,7 +22,7 @@ class m200423_160625_mTopicsStadistic extends Migration
             'id'              => $this->primaryKey(),
             'topicId'         => $this->integer(),
             'resourceId'      => $this->integer()->notNull(),
-            'locationId'      => $this->integer()->notNull(),
+            'locationId'      => $this->integer(),
             'wordId'          => $this->integer()->notNull(),
             'status'          => $this->smallInteger(1)->defaultValue(1),
             'createdAt'       => $this->integer(),

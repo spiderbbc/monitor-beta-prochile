@@ -106,6 +106,54 @@ class ScrapingHelper{
 	}
 
 	/**
+	 * [getRequest get url and send request to transfrom in crawler instance]
+	 * @return [array] [crawlers instaces]
+	 */
+	public static function getRequest($urls)
+    {
+        $client = new \Goutte\Client();
+
+        $guzzleClient = new \GuzzleHttp\Client(array(
+        	'verify' => Yii::getAlias('@cacert'),
+	        'curl' => array(
+	        	CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+	           // CURLOPT_FOLLOWLOCATION => true,
+	          //  CURLOPT_SSL_VERIFYHOST => false,
+	            CURLOPT_SSL_VERIFYPEER => false
+	        )
+	    ));
+	    $client->setClient($guzzleClient);
+        $crawler = [];
+
+        if (!empty($urls)) {
+            foreach ($urls as $url => $values) {
+                if (!empty($values['links'])) {
+                    for ($l=0; $l < sizeof($values['links']) ; $l++) { 
+                        $link = $values['links'][$l];
+                        try {
+						    $response = $client->request('GET',$link);
+						    $status_code = $client->getResponse()->getStatus();
+
+						    if ($status_code == 200) {
+						        $domain = $values['domain'];
+						        if($domain){
+						            $content_type = $client->getResponse()->getHeader('Content-Type');
+						            if (strpos($content_type, 'text/html') !== false) {
+						                $crawler[$url][$link][] = $response;
+						            }
+						        }// if domain
+						    }// end if status code    
+						} catch (\GuzzleHttp\Exception\ConnectException $e) {
+						    // var_dump($e);
+						     continue;
+						}
+                    }// end loop for links
+                }// end if empty
+            }// end loop foreach
+        }// end if empty
+        return $crawler;
+    }
+	/**
 	 * [getContent loop on each link to filter for his crawler]
 	 * @param  [array] $crawlers [url and his links with each craw]
 	 * @return [array] $contents [each link with content by rules]
@@ -154,7 +202,8 @@ class ScrapingHelper{
 					if (!empty($nodes[$n])) {
 						for ($s=0; $s < sizeof($nodes[$n]) ; $s++) { 
 							if (!is_null($nodes[$n][$s])) {
-								$text = $nodes[$n][$s]['_text'];
+								$text = \app\helpers\StringHelper::stripTags($nodes[$n][$s]['_text']);
+								$text = \app\helpers\StringHelper::collapseWhitespace($text);
 								if (!in_array($text, $data[$url][$link])) {
 									$data[$url][$link][] = $text;
 								}
@@ -165,6 +214,90 @@ class ScrapingHelper{
 			}// end loop values
 		}// end loop contents
 		return $data;
+	}
+
+	public static function sendTextAnilysis($multipartForm,$link)
+	{
+		$client = new \GuzzleHttp\Client();
+		$response = $client->request('POST', 'http://textalyser.net/index.php?lang=en#analysis',$multipartForm);
+
+		$code = $response->getStatusCode();
+		$reason = $response->getReasonPhrase();
+
+		if ($code == 200 && $reason == 'OK') {
+			$body = $response->getBody()->getContents();
+        	$crawler = new \Symfony\Component\DomCrawler\Crawler($body);
+        	// get table
+        	$table = $crawler->filter('table')->eq(11);
+        	// read the table
+	        $tds = [];
+	        foreach ($table as $node => $content) {
+	            // create crawler instance for result
+	            $crawler = new \Symfony\Component\DomCrawler\Crawler($content);
+	            //iterate again
+	            $index = 0;
+	            $rows= [];
+	            foreach ($crawler->filter('td') as $node) {
+	                $rows[] = $node->nodeValue;
+	                if (sizeof($rows) % 4 == 0) {
+	                    $tds[] = $rows;
+	                    $rows =[];
+	                }
+	            }
+	        }
+		}
+		$analysis = \app\helpers\StringHelper::sortDataAnalysisTable($tds,$link);
+		return $analysis;
+		
+	}
+
+	public static function composeMultipartForm($contentGroup,$stoplist_perso = [])
+	{
+		$stoplist_perso = (!empty($stoplist_perso)) ? implode(" ", $stoplist_perso) : '';
+		return [
+            'multipart' => [
+                [
+                    'name'     => 'text_main',
+                    'contents' => $contentGroup
+                ],
+                [
+                    'name'     => 'site_to_analyze',
+                    'contents' => 'http://'
+                ],
+                [
+                    'name'     => 'file_to_analyze',
+                    'contents' => '(binary)'
+                ],
+                [
+                    'name'     => 'min_char',
+                    'contents' => 3
+                ],
+                [
+                    'name'     => 'special_word',
+                    'contents' => ''
+                ],
+                [
+                    'name'     => 'words_toanalyse',
+                    'contents' => 10
+                ],
+                [
+                    'name'     => 'count_numbers',
+                    'contents' => 1
+                ],
+                [
+                    'name'     => 'is_log',
+                    'contents' => 1
+                ],
+                [
+                    'name'     => 'stoplist_lang',
+                    'contents' => 1
+                ],
+                [
+                    'name'     => $stoplist_perso,
+                    'contents' => 'worth year',
+                ],
+            ]
+        ];
 	}
 }
 

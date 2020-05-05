@@ -161,6 +161,14 @@ class StringHelper
         return $s->getString();
     }
     /**
+     * https://github.com/jasonlam604/Stringizer#striptags
+     */
+    public static function stripTags($sentence){
+        $s = new Stringizer($sentence);
+        return $s->stripTags();
+    }
+
+    /**
      * https://github.com/jasonlam604/Stringizer#isempty
      */
     public static function isEmpty($sentence){
@@ -320,6 +328,25 @@ class StringHelper
               
         // return result 
         return $params[$param]; 
+    }
+
+
+    public static function sortDataAnalysisTable($tds = [],$link)
+    {
+        if (!empty($tds)) {
+            $headersTarget = ['name','total'];
+            
+            $statistics = [];
+
+            for ($i=1; $i < 5; $i++) { 
+                for ($h=0; $h < sizeof($headersTarget); $h++) { 
+                    $tmp[$headersTarget[$h]] = $tds[$i][$h];
+                    $tmp['url'] = $link;
+                }
+                $statistics[] = $tmp;
+            }
+            return $statistics;
+        }
     }
 
 }
