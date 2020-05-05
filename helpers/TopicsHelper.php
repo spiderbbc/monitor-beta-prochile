@@ -382,4 +382,26 @@ class TopicsHelper
         }
         return $words;
 	}
+	/**
+	 * [checkFinalTimeTopic check the end date of the topic if the end date has already been met, change the status]
+	 * @param  array  $topic [current topic]
+	 */
+	public static function checkFinalTimeTopic($topic = [])
+	{
+		if (isset($topic['end_date'])) {
+			$end_date = intval($topic['end_date']);
+			$today_date = \app\helpers\DateHelper::getTodayDate(true);
+			
+			if ($today_date >= $end_date) {
+				$model = \app\modules\topic\models\MTopics::findOne($topic['id']);
+				if (!is_null($model)) {
+					$model->status = 0;
+					$model->resourceId = $topic['resource']['id'];
+					if (!$model->save()) {
+						var_dump($model->errors);
+					}
+				}
+			}
+		}
+	}
 }

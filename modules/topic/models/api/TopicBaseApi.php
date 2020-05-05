@@ -21,6 +21,7 @@ class TopicBaseApi
 				if (method_exists($this, $resourceName.'Api')) {
 					$method = "${resourceName}Api";
 					$resources[$method][] = $topics[$t];
+					\app\helpers\TopicsHelper::checkFinalTimeTopic($topics[$t]);
 				}
 			}
 		}
