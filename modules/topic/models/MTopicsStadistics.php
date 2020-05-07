@@ -125,7 +125,7 @@ class MTopicsStadistics extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function geMAttachments()
+    public function getMAttachments()
     {
         return $this->hasOne(MAttachments::className(), ['id' => 'attachmentId']);
     }

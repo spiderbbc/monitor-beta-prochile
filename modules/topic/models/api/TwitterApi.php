@@ -64,9 +64,10 @@ class TwitterApi
 	public function saveData()
 	{
 		$data = [];
+
 		foreach ($this->data as $locationId => $trendings) {
 			if (!empty($trendings)) {
-				for ($t=0; $t < sizeof($trendings) ; $t++) { 
+				for ($t=0; $t < sizeof($trendings); $t++) { 
 					if (!is_null($trendings[$t]['tweet_volume'])) {
 						$trendings[$t]['total'] = $trendings[$t]['tweet_volume'];
 						$data[$locationId][] = $trendings[$t];

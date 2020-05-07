@@ -96,6 +96,21 @@ class DateHelper
         return $diff;
     }
 
+    public static function periodDates($start_date,$end_date)
+    {
+        $start_date = Yii::$app->formatter->asDatetime($start_date,'yyyy-MM-dd');
+        $end_date = Yii::$app->formatter->asDatetime($end_date,'yyyy-MM-dd');
+        // By default daysUntil will use a 1-day interval:
+        $period = Date::parse($start_date)->daysUntil($end_date);
+        // iterate by days
+        $days = [];
+        foreach ($period as $date) {
+            $days[] = $date->format('Y-m-d');
+        }
+
+        return $days;
+    }
+
     /**
      * [asTimestamp get time in unix date]
      * @param  [type] $date [11 julio de 2019 or 11/07/2019 yes is my birthday]

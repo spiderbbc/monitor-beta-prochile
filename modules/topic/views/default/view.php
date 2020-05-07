@@ -3,6 +3,12 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
+\app\assets\highchartsAsset::register($this);
+\app\assets\JqcloudAsset::register($this);
+\app\assets\AxiosAsset::register($this);
+\app\assets\VueAsset::register($this);
+\app\assets\TopicAsset::register($this);
+
 /* @var $this yii\web\View */
 /* @var $model app\modules\topic\models\MTopics */
 
@@ -11,9 +17,10 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'M Topics'), 'url' =>
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="mtopics-view">
+<div class="mtopics-view" id="topics-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
+    <?= Html::hiddenInput('topicId', $model->id,['id' => 'topicId']); ?>
 
     <p>
         <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -57,4 +64,11 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
+
+    <cloud-view></cloud-view>
+    
+
+    
+
 </div>
+<?= $this->render('_templates-vue');  ?>

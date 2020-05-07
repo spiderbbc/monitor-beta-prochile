@@ -73,4 +73,15 @@ class MResources extends \yii\db\ActiveRecord
     {
         return $this->hasMany(MTopicsStadistics::className(), ['resourceId' => 'id']);
     }
+
+
+    /**
+     * Gets query for [[MTopicsStadisticsCount]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCountStadistics()
+    {
+        return $this->hasMany(MTopicsStadistics::className(), ['resourceId' => 'id'])->count();
+    }
 }

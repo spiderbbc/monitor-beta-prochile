@@ -3,6 +3,9 @@
 namespace app\modules\topic\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+
 
 /**
  * This is the model class for table "m_topics".
@@ -40,6 +43,20 @@ class MTopics extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'm_topics';
+    }
+
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['createdAt','updatedAt'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updatedAt'],
+                ],
+                'value' => function() { return date('U');  },
+            ],
+        ];
     }
 
     /**
@@ -85,6 +102,12 @@ class MTopics extends \yii\db\ActiveRecord
     public function getMTopicResources()
     {
         return $this->hasMany(MTopicResources::className(), ['topicId' => 'id']);
+    }
+
+    public function getSources()
+    {
+        return $this->hasMany(MResources::className(), ['id' => 'resourceId'])
+            ->viaTable('m_topic_resources', ['topicId' => 'id']);
     }
 
     /**

@@ -404,4 +404,34 @@ class TopicsHelper
 			}
 		}
 	}
+	/**
+	 * [orderSeries order  data to graph]
+	 * @param  [type] $mStadistics [description]
+	 * @param  [type] $period      [description]
+	 * @return [type]              [description]
+	 */
+	public static function orderSeries($mStadistics,$period)
+	{
+		$stadistics = [];
+
+		if (!empty($mStadistics) && !empty($period)) {
+			for ($m=0; $m <sizeof($mStadistics) ; $m++) { 
+				$stadistics[$m]['name'] = $mStadistics[$m]['name'];
+				
+				for ($p=0; $p < sizeof($period) ; $p++) { 
+					
+					$stadistics[$m]['data'][$p] = null;
+				}
+
+				for ($d=0; $d < sizeof($mStadistics[$m]['data']) ; $d++) { 
+					$clave = array_search($mStadistics[$m]['data'][$d]['date'], $period);
+
+					if (!is_bool($clave)) {
+						$stadistics[$m]['data'][$clave] = (int) $mStadistics[$m]['data'][$d]['total'];
+					}
+				}
+			}
+		}
+		return $stadistics;
+	}
 }
