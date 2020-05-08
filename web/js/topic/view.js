@@ -8,7 +8,6 @@ const topicsView = Vue.component('cloud-view',{
 	},
 	mounted(){
 		this.fetchNumbersResources();
-
 	},
 	methods: {
 		fetchNumbersResources(){
@@ -22,7 +21,6 @@ const topicsView = Vue.component('cloud-view',{
 		},
 		setResourceObj(topic){
 			var sources = topic.sources;
-			console.log(sources.length);
 			if (sources.length) {
 				for (var s = 0; s < sources.length; s++) {
 					if (sources[s].mTopicsStadistics.length) {
@@ -46,7 +44,8 @@ const cloud = Vue.component('cloud-words',{
 	'props': ['resourceId','name'],
 	'data': function () {
 	    return {
-	    	loaded: false
+	    	loaded: false,
+	    	response: null
 	    }
 	},
 	mounted(){
@@ -57,18 +56,37 @@ const cloud = Vue.component('cloud-words',{
 			axios.get(baseUrlApi + 'cloud-word' + '?topicId=' + id + '&resourceId='+ this.resourceId)
 		      .then(response => {
 		      	if (response.status == 200) {
-		      		this.loaded = true; 
-		      		var some_words_with_same_weight =
-					    $("#jqcloud"+this.resourceId).jQCloud(response.data.words, {
-					      width: 1000,
-      					  height: 350,
-      					  delay: 50
-					});
+		      		this.response = response.data.words
+		      		if (this.response.length) {
+		      			var words = this.handlers(this.response);
+			      		this.loaded = true; 
 
+			      		var some_words_with_same_weight =
+						    $("#jqcloud"+this.resourceId).jQCloud(words, {
+						      width: 1000,
+	      					  height: 350,
+	      					  delay: 50
+						});
+
+		      		}
 		      	}
 		      })
 		      .catch(error => console.log(error))
 
+		},
+		reload(){
+			var words = this.handlers(this.response);
+			$("#jqcloud"+this.resourceId).jQCloud('update', words);
+		},
+		handlers(response){
+			var words = response.map(function(r){
+				/*r.handlers = {click: function() {
+			     // $("#list-mentions").DataTable().search(r.text).draw();
+			    }};*/
+			    r.html = {'class': 'pointer-jqcloud'};
+			    return r;
+			});
+			return words;
 		}
 	}
 	
@@ -130,7 +148,6 @@ const dateWordsHistoria = Vue.component('words-history',{
 				axios.get(baseUrlApi + 'stadistics-date' + '?topicId=' + id)
 			      .then(response => {
 			      	if (response.status == 200 && response.data.period.length && response.data.seriesWords.length) {
-			      		console.log(response.data.seriesWords);
 			      		$( document ).ready(function() {
 				      		Highcharts.chart('history', {
 							    chart: {

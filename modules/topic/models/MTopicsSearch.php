@@ -17,7 +17,7 @@ class MTopicsSearch extends MTopics
     public function rules()
     {
         return [
-            [['id', 'userId', 'status', 'end_date', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
+            [['id', 'userId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['name'], 'safe'],
         ];
     }
@@ -61,7 +61,7 @@ class MTopicsSearch extends MTopics
             'id' => $this->id,
             'userId' => $this->userId,
             'status' => $this->status,
-            'end_date' => $this->end_date,
+           // 'end_date' => $this->end_date,
             'createdAt' => $this->createdAt,
             'updatedAt' => $this->updatedAt,
             'createdBy' => $this->createdBy,

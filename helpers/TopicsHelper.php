@@ -389,10 +389,11 @@ class TopicsHelper
 	public static function checkFinalTimeTopic($topic = [])
 	{
 		if (isset($topic['end_date'])) {
+			date_default_timezone_set('UTC');
 			$end_date = intval($topic['end_date']);
-			$today_date = \app\helpers\DateHelper::getTodayDate(true);
+			$today_date = \app\helpers\DateHelper::getTodayDate(false);
 			
-			if ($today_date >= $end_date) {
+			if ($today_date->getTimestamp() > $end_date) {
 				$model = \app\modules\topic\models\MTopics::findOne($topic['id']);
 				if (!is_null($model)) {
 					$model->status = 0;

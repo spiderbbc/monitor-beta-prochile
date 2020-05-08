@@ -56,6 +56,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     return date('Y-m-d',$model->end_date);
                 }
             ],
+            [
+                'label' => Yii::t('app','Recursos Sociales'),
+                'format'    => 'raw',
+                'attribute' => 'resourceId',
+                'value' => function($model) {
+                    $html = '';
+                    foreach ($model->mTopicResources as $topicResource) {
+                        $html .= " <span class='label label-info'>{$topicResource->resource->name}</span>";
+                    }
+                    return $html;
+                },
+
+            ],
+            
             //'end_date:datetime',
             /*'createdAt',
             'updatedAt',

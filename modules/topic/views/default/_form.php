@@ -27,9 +27,10 @@ use kartik\select2\Select2;
                     'options' => ['placeholder' => 'Ingrese Fecha Final'],
                     'pluginOptions' => [
                         'format' => 'yyyy-mm-dd',
-                        //'format' => 'dd/mm/yyyy',
+                       // 'startView' => 1,
                         'todayHighlight' => true,
                         'autoclose' => true,
+                        'startDate'=>"0d"
                     ],
                     'pluginEvents' => [
                     ],
@@ -39,10 +40,11 @@ use kartik\select2\Select2;
     </div>
 
     <div class="row">
-        <div class="col-md-4">
+        <div id="resourceId_row" class="">
             <?= $form->field($model, 'resourceId')->widget(Select2::classname(), [
                     'data' => \yii\helpers\ArrayHelper::map(app\modules\topic\models\MResources::find()->all(),'id','name'),
                     'options' => [
+                        'id' => 'topic_resourcesId',
                         'placeholder' => 'Selecione la red Social',
                         'multiple' => true,
                         'theme' => 'krajee',
@@ -53,11 +55,15 @@ use kartik\select2\Select2;
                     'pluginEvents' => [
                     ],
                     'toggleAllSettings' => [
+                       'selectLabel' => '',
+                       'unselectLabel' => '',
+                       'selectOptions' => ['class' => 'text-success'],
+                       'unselectOptions' => ['class' => 'text-danger'],
                     ],
                 ]);
             ?>
         </div>
-        <div class="col-md-4">
+        <div id="locationId_row" class="">
             <?= $form->field($model, 'locationId')->widget(Select2::classname(), [
                     'data' => \yii\helpers\ArrayHelper::map(app\modules\topic\models\MLocations::find()->all(),'id','name'),
                     'options' => [
@@ -70,7 +76,7 @@ use kartik\select2\Select2;
                 ]); 
             ?> 
         </div>
-        <div class="col-md-4">
+        <div id="dictionaryId_row" class="">
             <?= $form->field($model, 'dictionaryId')->widget(Select2::classname(), [
                     'data' => $drive->dictionariesTitlesForTopic,
                     'options' => [
@@ -94,7 +100,7 @@ use kartik\select2\Select2;
         <div class="col-md-12">
             <?= $form->field($model, 'urls')->widget(Select2::classname(), [
                 'options' => [
-                    'id' => 'urls',
+                    'id' => 'topic_urls',
                     'placeholder' => 'Ingrese url a Buscar', 
                     'multiple' => true,
                 ],
@@ -116,3 +122,15 @@ use kartik\select2\Select2;
     <?php ActiveForm::end(); ?>
 
 </div>
+<?php 
+
+$this->registerJsFile(
+    '@web/js/topic/form.js',
+    ['depends' => [
+        \app\assets\VueAsset::className(),
+        \app\assets\SweetAlertAsset::className(),
+        ]
+    ]
+);
+
+?>

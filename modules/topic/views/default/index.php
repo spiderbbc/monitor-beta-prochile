@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     date_default_timezone_set('UTC');
                     return Html::a(date('Y-m-d',$model->end_date), ['update', 'id' => $model->id]);
                 },
-                'filter' => \kartik\date\DatePicker::widget([
+                /*'filter' => \kartik\date\DatePicker::widget([
                     'name' => 'MTopicsSearch[end_date]',
                     'type' => \kartik\date\DatePicker::TYPE_COMPONENT_APPEND,
                     'value' => $searchModel['end_date'],
@@ -50,9 +50,29 @@ $this->params['breadcrumbs'][] = $this->title;
                         'autoclose' => true,
                         'format' => 'yyyy/mm/dd',
                     ]
-                ]),
+                ]),*/
             ],
-            'status',
+            [
+                'label' => Yii::t('app','Recurso Social'),
+                'format'    => 'raw',
+                'attribute' => 'resourceId',
+                'value' => function($model) {
+                    $html = '';
+                    foreach ($model->mTopicResources as $topicResource) {
+                        $html .= " <span class='label label-info'>{$topicResource->resource->name}</span>";
+                    }
+                    return $html;
+                }
+            ],
+            [
+                'label' => Yii::t('app','Estado'),
+                'format'    => 'raw',
+                'attribute' => 'status',
+                'value' => function($model){
+                   return ($model->status) ? 'Active' : 'Inactive';
+                },
+               'contentOptions' => ['style' => 'width: 10%;min-width: 20px'],     
+            ],
             //'createdAt',
             //'updatedAt',
             //'createdBy',
