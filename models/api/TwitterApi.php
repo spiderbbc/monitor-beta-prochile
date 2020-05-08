@@ -519,7 +519,7 @@ class TwitterApi extends Model {
 
 	}
 	/**
-	 * [_getTwitterLogin login to twitter]
+	 * [_getTwitterLogin login to twitter depred]
 	 * @return [type] [description]
 	 */
 	private function _getTwitterLogin(){
@@ -546,7 +546,7 @@ class TwitterApi extends Model {
 
 	}
 	/**
-	 * [_getBearerToken get the bearer_token]
+	 * [_getBearerToken get the bearer_token depred]
 	 * @param  [type] $api_key        [description]
 	 * @param  [type] $api_secret_key [description]
 	 * @return [type]                 [description]
@@ -562,7 +562,7 @@ class TwitterApi extends Model {
 
 	}
 	/**
-	 * [_setBearerToken set bearer_token in the database]
+	 * [_setBearerToken set bearer_token in the database depred]
 	 * @param [type] $bearer_token [description]
 	 */
 	private function _setBearerToken($bearer_token){
@@ -578,7 +578,10 @@ class TwitterApi extends Model {
 		// set resource 
 		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourceName);
 		// get twitter login api
-		$this->_getTwitterLogin();
+		$this->codebird = \app\helpers\TwitterHelper::login($this->resourcesId);
+		if (is_null($this->codebird)) {
+			throw new \yii\base\Exception("Error Login Twitter Api Request", 1);
+		}
 		// set limit
 		$this->products_count = $products_count;
 		// call the parent __construct

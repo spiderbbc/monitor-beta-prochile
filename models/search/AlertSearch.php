@@ -81,17 +81,6 @@ class AlertSearch extends Alerts
         if(($this->start_date != '') && ($this->end_date != ''))
             $query->andFilterWhere(['between', 'start_date', strtotime($this->start_date),strtotime($this->end_date)]);
 
-        /*// date start_date
-        if($this->start_date != '')
-            $query->andFilterWhere(['like', AlertConfig::tableName() . '.start_date', strtotime($this->start_date)]);
-
-        // date end_date
-        if($this->end_date != '')
-            $query->andFilterWhere(['like', AlertConfig::tableName() . '.end_date', strtotime($this->end_date)]);*/
-
-
-        /*if($this->alertResourceId != '')
-            $query->andFilterWhere(['like', Resources::tableName() .'.name', $this->alertResourceId]);*/
         
         $query->andFilterWhere(['like', Resources::tableName() .'.name', $this->alertResourceId]);    
 

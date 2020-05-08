@@ -212,13 +212,12 @@ class BaseApi extends Model {
 	public function webPages($alerts = [])
 	{
 		$scraping = new \app\models\api\Scraping();
-
 		foreach ($alerts as $alert) {
 			if ($alert['config']['urls'] != '') {
 				$query_params = $scraping->prepare($alert);
 				$crawlers = $scraping->getRequest();
-				$content  = $scraping->getContent($crawlers);
-				$data     = $scraping->setContent($content);
+				$content  = \app\helpers\ScrapingHelper::getContent($crawlers);
+				$data     = \app\helpers\ScrapingHelper::setContent($content);
 				$model    = $scraping->searchTermsInContent($data);
 				if(!empty($model)){
 					$scraping->saveJsonFile();

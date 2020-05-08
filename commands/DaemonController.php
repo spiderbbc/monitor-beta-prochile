@@ -81,6 +81,7 @@ class DaemonController extends Controller
             $baseApi = new BaseApi();
             $api = $baseApi->readDataResource($alertsConfig);
         }
+        return ExitCode::OK;
     }
 
     /**
@@ -95,12 +96,24 @@ class DaemonController extends Controller
         }
         return ExitCode::OK;
     }
+
+    public function actionTopicRun($resourceName = "Paginas Webs")
+    {
+        $topics = \app\helpers\TopicsHelper::getTopicsByResourceName($resourceName);
+        if (!empty($topics)) {
+            $topicBase = new \app\modules\topic\models\api\TopicBaseApi();
+            $api = $topicBase->callResourcesApiTopic($topics);
+        }
+
+        return ExitCode::OK;
+    }
     /**
      * [only development function]
      * @return [type] [description]
      */
     public function actionTruncateProducts(){
         \Yii::$app->db->createCommand()->delete('products_series','status = :status', [':status' => 1])->execute();
+        return ExitCode::OK;
     }
 
 }

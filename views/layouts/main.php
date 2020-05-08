@@ -41,6 +41,7 @@ use app\widgets\AlertFacebook;
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
            // ['label' => 'Home', 'url' => ['/site/index']],
+            ['label' => 'Menciones', 'url' => ['/topic/']],
             ['label' => 'Monitor', 'url' => ['/monitor/alert/index']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
