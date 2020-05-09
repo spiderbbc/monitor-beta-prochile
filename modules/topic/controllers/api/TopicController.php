@@ -145,14 +145,17 @@ class TopicController extends Controller
 	{
 		$model = $this->findModel($topicId);
 
-		$expression = new Expression("DATE(FROM_UNIXTIME(timespan)) AS date,total");
+		//$expression = new Expression("DATE(FROM_UNIXTIME(timespan)) AS date,total");
+		$expression = new Expression("timespan AS date,total");
 		$expressionGroup = new Expression("DATE(FROM_UNIXTIME(timespan))");
 		
 		$mStadistics = [];
 		$mWord = [];
 		$seriesWords = [];
 
-		$end_date = \app\helpers\DateHelper::add($model->end_date,'+2 days');
+		//$end_date = \app\helpers\DateHelper::sub($model->end_date,'+1 days');
+		$end_date = $model->end_date;
+		
 		$period = \app\helpers\DateHelper::periodDates($model->createdAt,$end_date);
 
 		if ($model->mTopicsStadistics) {
@@ -164,6 +167,11 @@ class TopicController extends Controller
 			          ->where(['topicStaticId' => $topicsStadistic->id])
 			          ->groupBy($expressionGroup)
 			          ->all();
+			    
+			    foreach ($rows as $index => $row) {
+			    	$date_utc = \Yii::$app->formatter->asDatetime($row['date'],'yyyy-MM-dd');
+			        $rows[$index]['date'] = $date_utc;
+			    }     
 
 				$mStadistics[] = [
 					'name' => $topicsStadistic->word->name,
@@ -173,13 +181,14 @@ class TopicController extends Controller
 		}// end if
 
 		// reoorder data
-		$seriesWords = \app\helpers\TopicsHelper::orderSeries($mStadistics,$period);
+		$stadistic = \app\helpers\TopicsHelper::orderStadistic($mStadistics);
+		//$seriesWords = \app\helpers\TopicsHelper::orderSeries($stadistic,$period);
 		
 
 		return [
-			'seriesWords' => $seriesWords,
-			'period' => $period,
-			//'mStadistics' => $mStadistics,
+			'seriesWords' => $stadistic,
+			/*'seriesWords' => $seriesWords,
+			'period' => $period,*/
 		];
 	}
 

@@ -17,20 +17,20 @@ class ScrapingHelper{
     public static function rules()
     {
         return [
-            '//title'       => Yii::t('app','document_title'),
+           // '//title'       => Yii::t('app','document_title'),
             '//h1'          => Yii::t('app','cabezera_1'),
             '//h2'          => Yii::t('app','cabezera_2'),
             '//h3'          => Yii::t('app','cabezera_3'),
             '//h4'          => Yii::t('app','cabezera_4'),
             '//h5'          => Yii::t('app','cabezera_5'),
-            '//strong'      => Yii::t('app','negrita'),
-            '//a'           => Yii::t('app','link'),
-            '//b'           => Yii::t('app','negrita'),
-            '//span'        => Yii::t('app','contenedor'),
-            '//ul//li'      => Yii::t('app','ítem'),
-            '//address'     => Yii::t('app','address'),
-            '//aside'       => Yii::t('app','aside'),
-            '//hgroup'      => Yii::t('app','hgroup'),
+            //'//strong'      => Yii::t('app','negrita'),
+           // '//a'           => Yii::t('app','link'),
+           // '//b'           => Yii::t('app','negrita'),
+            //'//span'        => Yii::t('app','contenedor'),
+            //'//ul//li'      => Yii::t('app','ítem'),
+            //'//address'     => Yii::t('app','address'),
+            //'//aside'       => Yii::t('app','aside'),
+           // '//hgroup'      => Yii::t('app','hgroup'),
             '//p'           => Yii::t('app','paragraph'),
         ];
     }
@@ -100,6 +100,16 @@ class ScrapingHelper{
 				continue;
 			}
 		}
+
+		/*$urls = [
+			'http://testing-ground.scraping.pro/whoami'=>[
+				'domain' => 'scraping.pro',
+				'links'  => [
+					'http://testing-ground.scraping.pro/whoami',
+					'http://testing-ground.scraping.pro/textlist'
+				],
+			]
+		];*/
 
 		return $urls;
 		
@@ -298,6 +308,21 @@ class ScrapingHelper{
                 ],
             ]
         ];
+	}
+
+	public static function getStopList()
+	{
+		return [
+			//English
+			'you',
+			'I',
+			'we',
+			'your',
+			'they',
+			'it',
+
+
+		];
 	}
 }
 

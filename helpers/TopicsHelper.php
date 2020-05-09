@@ -293,41 +293,42 @@ class TopicsHelper
 	{
 		foreach ($data as $key => $values) {
 			for ($t=0; $t < sizeof($values); $t++) { 
-				$is_stadistics = \app\modules\topic\models\MStatistics::find()->where(
-					[
-						'topicStaticId' => $values[$t]['topicStadisticId'],
-						'timespan' => \app\helpers\DateHelper::getTodayDate()
-					]
-				)->exists();
-
-				if (!$is_stadistics) {
-					$model = new \app\modules\topic\models\MStatistics();
-					$model->topicStaticId = $values[$t]['topicStadisticId'];
-					$model->total = $values[$t]['total'];
-					$model->timespan =\app\helpers\DateHelper::getTodayDate();
-
-					if($model->save()){
-						$data[$key][$t]['stadisticId'] = $model->id;
-					}else{
-						var_dump($model->errors);
-					}
-
-
-				} else {
-					$model = \app\modules\topic\models\MStatistics::find()->where(
+				if (isset($values[$t]['total'])) {
+					$is_stadistics = \app\modules\topic\models\MStatistics::find()->where(
 						[
 							'topicStaticId' => $values[$t]['topicStadisticId'],
 							'timespan' => \app\helpers\DateHelper::getTodayDate()
 						]
-					)->one();
+					)->exists();
 
-					$model->total = $values[$t]['total'];
+					if (!$is_stadistics) {
+						$model = new \app\modules\topic\models\MStatistics();
+						$model->topicStaticId = $values[$t]['topicStadisticId'];
+						$model->total = $values[$t]['total'];
+						$model->timespan =\app\helpers\DateHelper::getTodayDate();
 
-					if($model->save()){
-						$data[$key][$t]['stadisticId'] = $model->id;
+						if($model->save()){
+							$data[$key][$t]['stadisticId'] = $model->id;
+						}else{
+							var_dump($model->errors);
+						}
+
+
+					} else {
+						$model = \app\modules\topic\models\MStatistics::find()->where(
+							[
+								'topicStaticId' => $values[$t]['topicStadisticId'],
+								'timespan' => \app\helpers\DateHelper::getTodayDate()
+							]
+						)->one();
+
+						$model->total = $values[$t]['total'];
+
+						if($model->save()){
+							$data[$key][$t]['stadisticId'] = $model->id;
+						}
 					}
 				}
-				
 			}
 		}
 
@@ -405,6 +406,37 @@ class TopicsHelper
 			}
 		}
 	}
+
+	public static function orderStadistic($mStadistics)
+	{
+		\yii\helpers\ArrayHelper::multisort($mStadistics, ['total', 'name'], [SORT_ASC, SORT_DESC]);
+		
+		$static = [];
+		$tmp_name = []; 
+		/*for ($m=0; $m < sizeof($mStadistics) ; $m++) { 
+			if (!in_array($mStadistics[$m]['name'], $tmp_name)) {
+				$tmp_name[$m] = $mStadistics[$m]['name'];
+			}else{
+				$value = \yii\helpers\ArrayHelper::getValue($mStadistics[$m], 'data');
+			}
+			
+		}*/
+		/*for ($m=0; $m < sizeof($mStadistics) ; $m++) { 
+			if (!in_array($mStadistics[$m]['name'], $tmp_name)) {
+				$tmp_name[$m] = $mStadistics[$m]['name'];
+			}else{
+				$value = \yii\helpers\ArrayHelper::getValue($mStadistics[$m], 'data');
+				$index = array_search($mStadistics[$m]['name'], $tmp_name);
+				for ($v=0; $v < sizeof($value); $v++) { 
+					$mStadistics[$index]['data'][] = $value[$v];
+				}
+				unset($mStadistics[$m]);
+			}
+			
+		}
+		$mStadistics = array_values($mStadistics);*/
+		return $mStadistics;
+	}
 	/**
 	 * [orderSeries order  data to graph]
 	 * @param  [type] $mStadistics [description]
@@ -426,13 +458,15 @@ class TopicsHelper
 
 				for ($d=0; $d < sizeof($mStadistics[$m]['data']) ; $d++) { 
 					$clave = array_search($mStadistics[$m]['data'][$d]['date'], $period);
-
+					//var_dump($clave);
 					if (!is_bool($clave)) {
-						$stadistics[$m]['data'][$clave] = (int) $mStadistics[$m]['data'][$d]['total'];
+						$stadistics[$m]['data'][$clave] += (int) $mStadistics[$m]['data'][$d]['total'];
 					}
 				}
 			}
 		}
+		/*echo "<pre>";
+		var_dump($stadistics);*/
 		return $stadistics;
 	}
 }
