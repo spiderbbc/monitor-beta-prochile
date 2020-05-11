@@ -102,8 +102,8 @@ class InsightsController extends Controller
         	$insights = \app\models\WInsights::find()->where([
         		'content_id' => $posts_content[$p]['id'],
         	])->andWhere([
-        		'title' => ['likes','Alcance','coments']
-        	])->orderBy(['end_time' => SORT_DESC ])->asArray()->limit(3)->all();
+        		'title' => ['likes','Alcance','coments','Impresiones','Interacción']
+        	])->orderBy(['end_time' => SORT_DESC ])->asArray()->limit(5)->all();
         	if (!is_null($insights)) {
         		$posts_content[$p]['wInsights'] = $insights;
         	}
