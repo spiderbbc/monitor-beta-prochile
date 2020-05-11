@@ -116,14 +116,15 @@ class InstagramScraping
 		$data = [];
 		if (!empty($this->data)) {
 			$data[] = $this->data;
-			$model_words = \app\helpers\TopicsHelper::saveOrUpdateWords($data,$this->topicId);
-			$hashTagAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($model_words);
+			$trendings = \app\helpers\TopicsHelper::saveOrUpdateWords($data,$this->topicId);
 			$hashTagTopicsStadistics = \app\helpers\TopicsHelper::saveOrUpdateTopicsStadistics(
-				$hashTagAttachments,
+				$trendings,
 				$this->topicId,
 				$this->resourceId,
 				false
 			);
+			$hashTagAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($hashTagTopicsStadistics);
+			
 
 			$hashTagStadistic = \app\helpers\TopicsHelper::saveOrUpdateStadistics($hashTagTopicsStadistics);
 		

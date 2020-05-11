@@ -98,10 +98,12 @@ class DateHelper
 
     public static function periodDates($start_date,$end_date)
     {
+        date_default_timezone_set('UTC');
         $start_date = Yii::$app->formatter->asDatetime($start_date,'yyyy-MM-dd');
         $end_date = Yii::$app->formatter->asDatetime($end_date,'yyyy-MM-dd');
         // By default daysUntil will use a 1-day interval:
-        $period = Date::parse($start_date)->daysUntil($end_date);
+        //$period = Date::parse($start_date)->range($end_date,1, 'days');
+        $period = Date::parse($start_date)->toPeriod($end_date, '1 days');
         // iterate by days
         $days = [];
         foreach ($period as $date) {

@@ -3,9 +3,9 @@
 use yii\db\Migration;
 
 /**
- * Class m200423_153533_mAttachments
+ * Class m200423_160825_mAttachments
  */
-class m200423_153533_mAttachments extends Migration
+class m200423_160825_mAttachments extends Migration
 {
 
     
@@ -21,7 +21,7 @@ class m200423_153533_mAttachments extends Migration
 
         $this->createTable('{{%m_attachments}}',[
             'id'              => $this->primaryKey(),
-          //  'statisticId'     => $this->integer()->notNull(),
+            'topicStatisticId'=> $this->integer()->notNull(),
             'src_url'         => $this->text(),
             'createdAt'       => $this->integer(),
             'updatedAt'       => $this->integer(),
@@ -33,24 +33,24 @@ class m200423_153533_mAttachments extends Migration
 
         
 
-         /*// creates index for column `content_id`
+         // creates index for column `topicStatisticId`
         $this->createIndex(
-            'idx-m_attachments-statisticId',
+            'idx-m_attachments-topicStatisticId',
             'm_attachments',
-            'statisticId'
+            'topicStatisticId'
         );
 
         // relation
-        // add foreign key for table `seriesId`
+        // add foreign key for table `m_topics_stadistics`
         $this->addForeignKey(
-            'fk-m_attachments-statisticId',
+            'fk-m_attachments-topicStatisticId',
             'm_attachments',
-            'statisticId',
-            'm_statistics',
+            'topicStatisticId',
+            'm_topics_stadistics',
             'id',
             'CASCADE',
             'CASCADE'
-        );*/
+        );
 
     }
 

@@ -337,14 +337,16 @@ class StringHelper
             $headersTarget = ['name','total'];
             
             $statistics = [];
+            $size = (sizeof($tds) >= 5) ? 5 : sizeof($tds);
 
-            for ($i=1; $i < 5; $i++) { 
+            for ($i=1; $i < $size; $i++) { 
                 for ($h=0; $h < sizeof($headersTarget); $h++) { 
                     $tmp[$headersTarget[$h]] = $tds[$i][$h];
                     $tmp['url'] = $link;
                 }
                 $statistics[] = $tmp;
             }
+            
             return $statistics;
         }
     }

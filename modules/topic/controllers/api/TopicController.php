@@ -81,19 +81,39 @@ class TopicController extends Controller
 				'topicId' => $topicId,
 				'resourceId' => $resourceId,
 			]
-		)->with(['word','mStatistics','mAttachments'])->asArray()->all();
+		)->with(
+			[
+				'word',
+				'mStatistics' => function ($query)
+				{
+					date_default_timezone_set('UTC');
+					$timespan = \app\helpers\DateHelper::getTodayDate();
+					$query->andWhere(['>=','timespan',$timespan]);
+				},
+				'mAttachments'
+			]
+		)->asArray()->all();
+
 
 		$words = [];
+		$index = 0;
 
 		if (!is_null($model)) {
 			for ($i=0; $i < sizeof($model); $i++) { 
-				$words[] = [
-					'text' => $model[$i]['word']['name'],
-					'weight' => $model[$i]['mStatistics'][0]['total'],
-					'link' => $model[$i]['mAttachments']['src_url'],
-				];
+				if (!empty($model[$i]['mStatistics'])) {
+				 	$words[$index] = [
+				 		'text' => $model[$i]['word']['name'],
+				 		'weight' => 0,
+						'link' => $model[$i]['mAttachments'][0]['src_url'],
+				 	];
+				 	for ($s=0; $s < sizeof($model[$i]['mStatistics']); $s++) { 
+				 		$words[$index]['weight'] += $model[$i]['mStatistics'][$s]['total'];
+				 	}
+				 	$index++;
+				 } 
 			}
 		}
+
 
 		return [
         	'words' => $words
@@ -145,41 +165,45 @@ class TopicController extends Controller
 	{
 		$model = $this->findModel($topicId);
 
-		$expression = new Expression("DATE(FROM_UNIXTIME(timespan)) AS date,total");
+		//$expression = new Expression("DATE(FROM_UNIXTIME(timespan)) AS date,total");
+		$expression = new Expression("timespan AS date,total");
 		$expressionGroup = new Expression("DATE(FROM_UNIXTIME(timespan))");
 		
 		$mStadistics = [];
 		$mWord = [];
 		$seriesWords = [];
 
-		$end_date = \app\helpers\DateHelper::add($model->end_date,'+2 days');
+		//$end_date = \app\helpers\DateHelper::sub($model->end_date,'+1 days');
+		$end_date = $model->end_date;
+		
 		$period = \app\helpers\DateHelper::periodDates($model->createdAt,$end_date);
 
 		if ($model->mTopicsStadistics) {
 			foreach ($model->mTopicsStadistics as $topicsStadistic) {
-
-				$rows = (new \yii\db\Query())
-			          ->select($expression)
-			          ->from('m_statistics')
-			          ->where(['topicStaticId' => $topicsStadistic->id])
-			          ->groupBy($expressionGroup)
-			          ->all();
-
-				$mStadistics[] = [
-					'name' => $topicsStadistic->word->name,
-					'data' => $rows
-				];
+				if ($topicsStadistic->mStatistics) {
+					$data = [];
+					foreach ($topicsStadistic->mStatistics as $index  => $stadistic) {
+						$date_utc = \Yii::$app->formatter->asDatetime($stadistic->timespan,'yyyy-MM-dd');
+						$data[$index]['date'] =  $date_utc;
+						$data[$index]['total'] =  $stadistic->total;
+					}
+					$mStadistics[] = [
+						'name' => $topicsStadistic->word->name,
+						'data' => $data
+					];
+				}
+				
 			}// end loop mTopicsStadistics
 		}// end if
 
 		// reoorder data
+		\yii\helpers\ArrayHelper::multisort($mStadistics, ['total', 'name'], [SORT_ASC, SORT_DESC]);
 		$seriesWords = \app\helpers\TopicsHelper::orderSeries($mStadistics,$period);
 		
 
 		return [
 			'seriesWords' => $seriesWords,
 			'period' => $period,
-			//'mStadistics' => $mStadistics,
 		];
 	}
 

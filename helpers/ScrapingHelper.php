@@ -17,20 +17,20 @@ class ScrapingHelper{
     public static function rules()
     {
         return [
-            '//title'       => Yii::t('app','document_title'),
+           // '//title'       => Yii::t('app','document_title'),
             '//h1'          => Yii::t('app','cabezera_1'),
             '//h2'          => Yii::t('app','cabezera_2'),
             '//h3'          => Yii::t('app','cabezera_3'),
             '//h4'          => Yii::t('app','cabezera_4'),
             '//h5'          => Yii::t('app','cabezera_5'),
             '//strong'      => Yii::t('app','negrita'),
-            '//a'           => Yii::t('app','link'),
-            '//b'           => Yii::t('app','negrita'),
+           //'//a'           => Yii::t('app','link'),
+           '//b'           => Yii::t('app','negrita'),
             '//span'        => Yii::t('app','contenedor'),
             '//ul//li'      => Yii::t('app','ítem'),
-            '//address'     => Yii::t('app','address'),
-            '//aside'       => Yii::t('app','aside'),
-            '//hgroup'      => Yii::t('app','hgroup'),
+            //'//address'     => Yii::t('app','address'),
+            //'//aside'       => Yii::t('app','aside'),
+           '//hgroup'      => Yii::t('app','hgroup'),
             '//p'           => Yii::t('app','paragraph'),
         ];
     }
@@ -100,6 +100,16 @@ class ScrapingHelper{
 				continue;
 			}
 		}
+
+		/*$urls = [
+			'http://testing-ground.scraping.pro/whoami'=>[
+				'domain' => 'scraping.pro',
+				'links'  => [
+					'http://testing-ground.scraping.pro/whoami',
+					'http://testing-ground.scraping.pro/textlist'
+				],
+			]
+		];*/
 
 		return $urls;
 		
@@ -204,7 +214,7 @@ class ScrapingHelper{
 							if (!is_null($nodes[$n][$s])) {
 								$text = \app\helpers\StringHelper::stripTags($nodes[$n][$s]['_text']);
 								$text = \app\helpers\StringHelper::collapseWhitespace($text);
-								if (!in_array($text, $data[$url][$link])) {
+								if (!in_array($text, $data[$url][$link]) && !\app\helpers\StringHelper::isEmpty($text)) {
 									$data[$url][$link][] = $text;
 								}
 							}
@@ -247,6 +257,7 @@ class ScrapingHelper{
 	        }
 		}
 		$analysis = \app\helpers\StringHelper::sortDataAnalysisTable($tds,$link);
+		$analysis = self::removeStopWords($analysis);
 		return $analysis;
 		
 	}
@@ -298,6 +309,60 @@ class ScrapingHelper{
                 ],
             ]
         ];
+	}
+
+	public static function removeStopWords($analysis = [])
+	{
+		if (!empty($analysis)) {
+			$stoplist = self::getStopList();
+			for ($a=0; $a < sizeof($analysis) ; $a++) { 
+				if (in_array($analysis[$a]['name'], $stoplist)) {
+					unset($analysis[$a]);
+				}
+			}
+		}
+		$analysis = array_values($analysis);
+		return $analysis;
+	}
+
+	public static function getStopList()
+	{
+		return [
+			//English
+			'you',
+			'I',
+			'we',
+			'your',
+			'they',
+			'it',
+			'captcha',
+			//spanish
+			'que',
+			'hay',
+			'luego',
+			'nada',
+			'ser',
+			'luego',
+			'sin',
+			'con',
+			'nos',
+			'el',
+			'la',
+			'las',
+			'los',
+			'yo',
+			'tu',
+			'ella',
+			'ellas',
+			'ellos',
+			'nosotros',
+			'que',
+			'como',
+			'por',
+			'para',
+
+
+		];
 	}
 }
 

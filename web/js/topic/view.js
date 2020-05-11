@@ -83,7 +83,12 @@ const cloud = Vue.component('cloud-words',{
 				/*r.handlers = {click: function() {
 			     // $("#list-mentions").DataTable().search(r.text).draw();
 			    }};*/
-			    r.html = {'class': 'pointer-jqcloud'};
+			    r.html = {
+			    	'class': 'pointer-jqcloud',
+			    	'data-toggle':'tooltip',
+			    	'title':'Total: '+r.weight,
+
+			    };
 			    return r;
 			});
 			return words;
