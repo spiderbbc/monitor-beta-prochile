@@ -78,13 +78,14 @@ class TwitterApi
 
 		$trendings = \app\helpers\TopicsHelper::saveOrUpdateWords($data,$this->topicId);
 
-		$trendingsAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($trendings);
 		
 		$trendingTopicsStadistics = \app\helpers\TopicsHelper::saveOrUpdateTopicsStadistics(
-			$trendingsAttachments,
+			$trendings,
 			$this->topicId,
 			$this->resourceId
 		);
+
+		$trendingsAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($trendingTopicsStadistics);
 		
 		
 		$trendingsStadistic = \app\helpers\TopicsHelper::saveOrUpdateStadistics($trendingTopicsStadistics);

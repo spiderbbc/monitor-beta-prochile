@@ -77,58 +77,69 @@ class WebScraping{
 
 	public function saveData($analisysText = [])
 	{
+
 		$trendingsWebPage = \app\helpers\TopicsHelper::saveOrUpdateWords($analisysText,$this->topicId);
-		$trendingsAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($trendingsWebPage);
+
 		$trendingTopicsStadistics = \app\helpers\TopicsHelper::saveOrUpdateTopicsStadistics(
-			$trendingsAttachments,
+			$trendingsWebPage,
 			$this->topicId,
 			$this->resourceId,
 			false
 		);
+
+		$trendingsAttachments =  \app\helpers\TopicsHelper::saveOrUpdateAttachments($trendingTopicsStadistics);
+
 		$trendingsStadistic = \app\helpers\TopicsHelper::saveOrUpdateStadistics($trendingTopicsStadistics);
 		
 		// if dictionary
 		$model = \app\modules\topic\models\MTopics::findOne($this->topicId);
 
 		if ($model->mTopicsDictionaries) {
+
 			$this->searchAndSaveWordsDictionaries($model,$trendingsStadistic);
 		}
 	}
 
 	public function searchAndSaveWordsDictionaries($model,$trendingsStadistic)
 	{
+		
 		// get keywors dictionaries
 		$words = \app\helpers\TopicsHelper::getKeywordsDictionaries($model);
 		// loop dictionaries words in to trends words
 		foreach ($words as $keywordId => $word) {
 			foreach ($trendingsStadistic as $sentence => $values) {
-				$isContains = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence,$word);
-				$statisticId = $values[0]['stadisticId'];
-				if ($isContains) {
-					$is_words_dictionary_statistic = \app\modules\topic\models\MWordsDictionaryStatistic::find()->where(
-							[
-								'keywordId' => $keywordId,
-								'statisticId'=> $statisticId
-							]
-						)->exists();
-					if (!$is_words_dictionary_statistic) {
-						$model = new \app\modules\topic\models\MWordsDictionaryStatistic();
-						$model->keywordId = $keywordId;
-						$model->statisticId = $statisticId;
-						$model->count = $isContains;
-					}else{
-						$model = \app\modules\topic\models\MWordsDictionaryStatistic::find()->where(
-								[
-									'keywordId' => $keywordId,
-									'statisticId'=> $statisticId
-								]
-						)->one();
-						$model->keywordId = $keywordId;
-						$model->statisticId = $statisticId;
-						$model->count = $isContains;
-					}
-					if (!$model->save()) {
-						var_dump($model->errors);
+				if (sizeof($values)) {
+					$isContains = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence,$word);
+					if (isset($values[0]['stadisticId'])) {
+						$statisticId = $values[0]['stadisticId'];
+						if ($isContains) {
+
+							$is_words_dictionary_statistic = \app\modules\topic\models\MWordsDictionaryStatistic::find()->where(
+									[
+										'keywordId' => $keywordId,
+										'statisticId'=> $statisticId
+									]
+								)->exists();
+							if (!$is_words_dictionary_statistic) {
+								$model = new \app\modules\topic\models\MWordsDictionaryStatistic();
+								$model->keywordId = $keywordId;
+								$model->statisticId = $statisticId;
+								$model->count = $isContains;
+							}else{
+								$model = \app\modules\topic\models\MWordsDictionaryStatistic::find()->where(
+										[
+											'keywordId' => $keywordId,
+											'statisticId'=> $statisticId
+										]
+								)->one();
+								$model->keywordId = $keywordId;
+								$model->statisticId = $statisticId;
+								$model->count = $isContains;
+							}
+							if (!$model->save()) {
+								var_dump($model->errors);
+							}
+						}
 					}
 				}
 			}

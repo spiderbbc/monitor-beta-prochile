@@ -8,9 +8,9 @@ use Yii;
  * This is the model class for table "m_topics_stadistics".
  *
  * @property int $id
- * @property int $topicId
+ * @property int|null $topicId
  * @property int $resourceId
- * @property int $locationId
+ * @property int|null $locationId
  * @property int $wordId
  * @property int|null $status
  * @property int|null $createdAt
@@ -18,8 +18,8 @@ use Yii;
  * @property int|null $createdBy
  * @property int|null $updatedBy
  *
+ * @property MAttachments[] $mAttachments
  * @property MStatistics[] $mStatistics
- * @property MLocations $location
  * @property MResources $resource
  * @property MTopics $topic
  * @property MWords $word
@@ -40,13 +40,11 @@ class MTopicsStadistics extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['topicId', 'resourceId', 'wordId'], 'required'],
             [['topicId', 'resourceId', 'locationId', 'wordId', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
-            [['locationId'], 'exist', 'skipOnError' => true, 'targetClass' => MLocations::className(), 'targetAttribute' => ['locationId' => 'id']],
+            [['resourceId', 'wordId'], 'required'],
             [['resourceId'], 'exist', 'skipOnError' => true, 'targetClass' => MResources::className(), 'targetAttribute' => ['resourceId' => 'id']],
             [['topicId'], 'exist', 'skipOnError' => true, 'targetClass' => MTopics::className(), 'targetAttribute' => ['topicId' => 'id']],
             [['wordId'], 'exist', 'skipOnError' => true, 'targetClass' => MWords::className(), 'targetAttribute' => ['wordId' => 'id']],
-            [['attachmentId'], 'exist', 'skipOnError' => true, 'targetClass' => MAttachments::className(), 'targetAttribute' => ['attachmentId' => 'id']],
         ];
     }
 
@@ -56,18 +54,27 @@ class MTopicsStadistics extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'ID'),
-            'topicId' => Yii::t('app', 'Topic ID'),
-            'resourceId' => Yii::t('app', 'Resource ID'),
-            'locationId' => Yii::t('app', 'Location ID'),
-            'wordId' => Yii::t('app', 'Word ID'),
-            'status' => Yii::t('app', 'Status'),
-            'attachmentId' => Yii::t('app', 'Url'),
-            'createdAt' => Yii::t('app', 'Created At'),
-            'updatedAt' => Yii::t('app', 'Updated At'),
-            'createdBy' => Yii::t('app', 'Created By'),
-            'updatedBy' => Yii::t('app', 'Updated By'),
+            'id' => 'ID',
+            'topicId' => 'Topic ID',
+            'resourceId' => 'Resource ID',
+            'locationId' => 'Location ID',
+            'wordId' => 'Word ID',
+            'status' => 'Status',
+            'createdAt' => 'Created At',
+            'updatedAt' => 'Updated At',
+            'createdBy' => 'Created By',
+            'updatedBy' => 'Updated By',
         ];
+    }
+
+    /**
+     * Gets query for [[MAttachments]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMAttachments()
+    {
+        return $this->hasMany(MAttachments::className(), ['topicStatisticId' => 'id']);
     }
 
     /**
@@ -78,16 +85,6 @@ class MTopicsStadistics extends \yii\db\ActiveRecord
     public function getMStatistics()
     {
         return $this->hasMany(MStatistics::className(), ['topicStaticId' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Location]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getLocation()
-    {
-        return $this->hasOne(MLocations::className(), ['id' => 'locationId']);
     }
 
     /**
@@ -118,15 +115,5 @@ class MTopicsStadistics extends \yii\db\ActiveRecord
     public function getWord()
     {
         return $this->hasOne(MWords::className(), ['id' => 'wordId']);
-    }
-
-    /**
-     * Gets query for [[Word]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMAttachments()
-    {
-        return $this->hasOne(MAttachments::className(), ['id' => 'attachmentId']);
     }
 }

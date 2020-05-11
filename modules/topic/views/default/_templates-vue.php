@@ -24,7 +24,6 @@ use yii\helpers\Html;
 <script type="text/x-template" id="cloud-words">
     <div>
         <h2>Cloud words {{name}}</h2>
-        <button v-on:click.prevent="reload" class="btn btn-sm btn-primary" id="update-demo">Update</button>
         <div :id="'jqcloud'+ resourceId"  class="jqcloud"></div>
     </div>
 </script>

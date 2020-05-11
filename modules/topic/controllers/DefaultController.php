@@ -185,19 +185,7 @@ class DefaultController extends Controller
      */
     public function actionDelete($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->mTopicsStadistics) {
-            foreach ($model->mTopicsStadistics as $mTopicsStadistics) {
-               $attachment= \app\modules\topic\models\MAttachments::findOne($mTopicsStadistics->attachmentId);
-               if (!is_null($attachment)) {
-                   $attachment->delete();
-               }
-            }
-        }
-
-        $model->delete();
-
+        $model = $this->findModel($id)->delete();
         return $this->redirect(['index']);
     }
 
