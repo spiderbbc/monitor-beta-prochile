@@ -38,6 +38,8 @@ class Scraping extends Model
 			$this->alertId        = $alert['id'];
 			$this->start_date     = $alert['config']['start_date'];
 			$this->end_date       = $alert['config']['end_date'];
+			// reset data
+			$this->data = [];
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
 			$this->terms   = $alert['products'];

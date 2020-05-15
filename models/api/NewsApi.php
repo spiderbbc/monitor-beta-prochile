@@ -42,6 +42,8 @@ class NewsApi extends Model
 			$this->alertId        = $alert['id'];
 			$this->start_date     = $alert['config']['start_date'];
 			$this->end_date       = $alert['config']['end_date'];
+			// reset data
+			$this->data = [];
 
 			/**
 			 * validate there is one month old

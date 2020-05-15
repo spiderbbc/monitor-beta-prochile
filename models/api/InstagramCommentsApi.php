@@ -62,6 +62,8 @@ class InstagramCommentsApi extends Model {
 			$this->userId     = $alert['userId'];
 			$this->start_date = $alert['config']['start_date'];
 			$this->end_date   = $alert['config']['end_date'];
+			// reset data
+			$this->data = [];
 
 			//get from alermentios
 			/*$alertsMencions = \app\models\AlertsMencions::find()->where([

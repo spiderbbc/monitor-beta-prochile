@@ -242,8 +242,6 @@ class TopicsHelper
 	 */
 	public static function saveOrUpdateTopicsStadistics($data,$topicId,$resourceId,$location=true)
 	{
-
-
 		if ($topicId) {
 			foreach ($data as $key => $values) {
 				for ($t=0; $t < sizeof($values) ; $t++) {

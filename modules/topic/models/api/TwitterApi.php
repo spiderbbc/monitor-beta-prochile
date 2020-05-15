@@ -14,11 +14,12 @@ class TwitterApi
 	public $userId;
 	public $end_date;
 	public $resourceId;
-	public $locations;
 	public $codebird;
 	public $remaining = 10;
 	public $apistatus = true;
-	public $data;
+	public $data = [];
+	public $locations = [];
+	
 
 
 	public function prepare($topic)
@@ -29,7 +30,6 @@ class TwitterApi
 		$this->resourceId = \app\helpers\AlertMentionsHelper::getResourceIdByName($topic['resource']['name']);
 		// get locations topics
 		$this->locations = \app\helpers\TwitterHelper::getLocationsForTopicId($this->topicId);
-		
 		// get twitter login api
 		$this->codebird = \app\helpers\TwitterHelper::login($this->resourceId);
 
@@ -42,8 +42,9 @@ class TwitterApi
 		$this->codebird->setTimeout(4000);
 		$this->codebird->setConnectionTimeout(9000);
 
-
+		$this->data = [];
 		foreach ($this->locations as $locationId => $woeid) {
+
 			$data[$locationId] = $this->codebird->trends_place(['id' => $woeid], true);
 			if($data[$locationId]['rate']['remaining'] <= $this->remaining){
 				echo "out limit ....\n";
@@ -65,6 +66,7 @@ class TwitterApi
 	{
 		$data = [];
 		$limit = 15;
+
 		foreach ($this->data as $locationId => $trendings) {
 			if (!empty($trendings)) {
 				for ($t=0; $t < $limit; $t++) { 
@@ -78,7 +80,6 @@ class TwitterApi
 
 		$trendings = \app\helpers\TopicsHelper::saveOrUpdateWords($data,$this->topicId);
 
-		
 		$trendingTopicsStadistics = \app\helpers\TopicsHelper::saveOrUpdateTopicsStadistics(
 			$trendings,
 			$this->topicId,

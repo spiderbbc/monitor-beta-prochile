@@ -58,6 +58,8 @@ class TwitterApi extends Model {
 			$this->end_date       = $alert['config']['end_date'];
 
 			$this->country       = (!is_null($alert['config']['country'])) ? $this->_setCountry($alert['config']['country']): null ;
+			// reset data
+			$this->data = [];
 			
 			// order products by his  length
 			array_multisort(array_map('strlen', $alert['products']), $alert['products']);
