@@ -266,7 +266,7 @@ $this->registerJsFile(
 );
 
 if (!$alert->isNewRecord) {
-    Yii::$app->view->registerJs('var alertId = "'. $alert->id.'"',  \yii\web\View::POS_HEAD);
+    Yii::$app->view->registerJs('var alertId = "'. $alert->id.'";var appId = "'. Yii::$app->id.'" ',  \yii\web\View::POS_HEAD);
     $this->registerJsFile(
     '@web/js/app/update.js',
     ['depends' => [

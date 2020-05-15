@@ -80,13 +80,16 @@ const cloud = Vue.component('cloud-words',{
 		},
 		handlers(response){
 			var words = response.map(function(r){
-				/*r.handlers = {click: function() {
+				r.handlers = {click: function() {
+					//console.log(r.url);
+					window.open(r.url, '_blank');
 			     // $("#list-mentions").DataTable().search(r.text).draw();
-			    }};*/
+			    }};
 			    r.html = {
 			    	'class': 'pointer-jqcloud',
 			    	'data-toggle':'tooltip',
 			    	'title':'Total: '+r.weight,
+			    	//'target':'_blank'
 
 			    };
 			    return r;

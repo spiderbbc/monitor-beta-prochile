@@ -33,7 +33,9 @@ class DriveApi extends Model{
             'diccionario',
             'diccionarios',
             'dictionary',
-            'words'
+            'words',
+            'Palabras',
+            'palabras'
         ];
 
         for ($i = 0; $i < sizeof($response->sheets); $i++) {

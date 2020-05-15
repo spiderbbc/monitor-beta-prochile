@@ -509,7 +509,7 @@ class TwitterApi extends Model {
 
 		$source = 'Twitter';
 		if(!is_null($this->data)){
-			$jsonfile = new JsonFile($this->alertId,$source);
+			$jsonfile = new JsonFile($this->alertId,$this->resourceName);
 			$jsonfile->load($this->data);
 			if ($this->filename) {
 				$jsonfile->fileName = $this->filename;

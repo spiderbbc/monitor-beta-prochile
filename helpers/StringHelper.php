@@ -182,7 +182,8 @@ class StringHelper
      */
     public static function replacingSpacesWithUnderscores($sentence){
         $s = new Stringizer($sentence);
-        $collapseUnderscorespace = self::replaceIncaseSensitive($s->camelToSnake(),'#','_');
+        $collapseDiagonalpace = self::replaceIncaseSensitive($s->camelToSnake(),'/','_');
+        $collapseUnderscorespace = self::replaceIncaseSensitive($collapseDiagonalpace,'#','_');
         $collapseWhitespace = self::replaceIncaseSensitive($collapseUnderscorespace,' ','_');
         return $collapseWhitespace; // true;
     }
