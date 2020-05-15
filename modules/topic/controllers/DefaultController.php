@@ -79,7 +79,8 @@ class DefaultController extends Controller
                 \app\helpers\TopicsHelper::saveOrUpdateResourceId($resourcesId,$model->id);
             }
             //save country
-            $locationsId[] = Yii::$app->request->post('MTopics')['locationId'];
+            $locationsId[] = (Yii::$app->request->post('MTopics')['locationId']) ?
+                        Yii::$app->request->post('MTopics')['locationId']: 1;
             if ($locationsId) {
                  \app\helpers\TopicsHelper::saveOrUpdateLocationId($locationsId,$model->id);
             }
