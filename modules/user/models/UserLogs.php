@@ -3,6 +3,9 @@
 namespace app\modules\user\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\AttributeBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "user_logs".
@@ -28,6 +31,28 @@ class UserLogs extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'user_logs';
+    }
+
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['createdAt','updatedAt'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updatedAt'],
+                ],
+                //'value' => function() { return date('U');  },
+            ],
+            'log_date' => [
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['log_date'],
+                ],
+                'value' => function() { return new \yii\db\Expression('NOW()');  },
+            ],
+
+        ];
     }
 
     /**
@@ -71,6 +96,6 @@ class UserLogs extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(Users::className(), ['id' => 'userId']);
+        return $this->hasOne(\app\models\Users::className(), ['id' => 'userId']);
     }
 }

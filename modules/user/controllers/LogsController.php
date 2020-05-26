@@ -4,7 +4,7 @@ namespace app\modules\user\controllers;
 
 use Yii;
 use app\modules\user\models\UserLogs;
-use app\modules\user\models\UserLogsSearch;
+use app\modules\user\models\search\UserLogsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -37,7 +37,6 @@ class LogsController extends Controller
     {
         $searchModel = new UserLogsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

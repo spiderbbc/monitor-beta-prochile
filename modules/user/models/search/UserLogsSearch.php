@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\user\models;
+namespace app\modules\user\models\search;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -11,6 +11,7 @@ use app\modules\user\models\UserLogs;
  */
 class UserLogsSearch extends UserLogs
 {
+    public $username;
     /**
      * {@inheritdoc}
      */
@@ -18,7 +19,8 @@ class UserLogsSearch extends UserLogs
     {
         return [
             [['id', 'userId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
-            [['remote_addr', 'log_date', 'message', 'user_agent'], 'safe'],
+            [['username','message'], 'string'],
+            [['username','message'], 'safe'],
         ];
     }
 
@@ -47,6 +49,7 @@ class UserLogsSearch extends UserLogs
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+        $query->joinWith('user');
 
         $this->load($params);
 
@@ -66,10 +69,11 @@ class UserLogsSearch extends UserLogs
             'createdBy' => $this->createdBy,
             'updatedBy' => $this->updatedBy,
         ]);
-
-        $query->andFilterWhere(['like', 'remote_addr', $this->remote_addr])
-            ->andFilterWhere(['like', 'message', $this->message])
-            ->andFilterWhere(['like', 'user_agent', $this->user_agent]);
+            
+        $query->andFilterWhere(['like', 'message', $this->message])
+            ->andFilterWhere(['like', \app\models\Users::tableName() .'.username', $this->username]);
+        
+           // $query->andFilterWhere(['like', \app\models\Users::tableName() .'.username', $this->username]); 
 
         return $dataProvider;
     }
