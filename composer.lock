@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c03b0b73b1d69bde167dff0cc61e7822",
+    "content-hash": "548d90a51de809a2b395f36059159fd8",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -106,7 +106,7 @@
             "version": "3.3.11",
             "source": {
                 "type": "git",
-                "url": "https://github.com/RobinHerbots/Inputmask.git",
+                "url": "git@github.com:RobinHerbots/Inputmask.git",
                 "reference": "5e670ad62f50c738388d4dcec78d2888505ad77b"
             },
             "dist": {
@@ -208,7 +208,7 @@
             "version": "2.24.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:moment/moment.git",
+                "url": "https://github.com/moment/moment.git",
                 "reference": "96d0d6791ab495859d09a868803d31a55c917de1"
             },
             "dist": {
@@ -278,6 +278,57 @@
             "license": [
                 "MIT"
             ]
+        },
+        {
+            "name": "cbschuld/browser.php",
+            "version": "v1.9.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cbschuld/Browser.php.git",
+                "reference": "9d07d6410977d494d7b8ecc2f3c877645c5477d9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cbschuld/Browser.php/zipball/9d07d6410977d494d7b8ecc2f3c877645c5477d9",
+                "reference": "9d07d6410977d494d7b8ecc2f3c877645c5477d9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.9.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "src/Browser.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Schuld",
+                    "email": "chris@chrisschuld.com",
+                    "homepage": "https://chrisschuld.com"
+                }
+            ],
+            "description": "A PHP Class to detect a user's Browser.  This encapsulation provides a breakdown of the browser and the version of the browser using the browser's user-agent string.  This is not a guaranteed solution but provides an overall accurate way to detect what browser a user is using.",
+            "homepage": "https://chrisschuld.com/projects/browser-php-detecting-a-users-browser-from-php/",
+            "keywords": [
+                "browser",
+                "detection",
+                "user agent"
+            ],
+            "time": "2020-04-14T18:46:44+00:00"
         },
         {
             "name": "cebe/markdown",
@@ -2264,7 +2315,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/axios/axios.git",
+                "url": "git@github.com:axios/axios.git",
                 "reference": "5e0fb5fc998d7f9f5a897363977b42f4fa047238"
             },
             "dist": {
@@ -2406,7 +2457,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:vuejs/vue.git",
+                "url": "https://github.com/vuejs/vue.git",
                 "reference": "0948d999f2fddf9f90991956493f976273c5da1f"
             },
             "dist": {
