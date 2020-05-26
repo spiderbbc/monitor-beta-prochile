@@ -65,7 +65,7 @@ class AlertMentionsHelper
      * @return boolean                 [description]
      */
     public static function isAlertsMencionsExists($publication_id,$alertId){
-        if(\app\models\AlertsMencions::find()->where( [ 'publication_id' => $publication_id] )->exists()){
+        if(\app\models\AlertsMencions::find()->where(['alertId' => $alertId,'publication_id' => $publication_id])->exists()){
             return true;
         }
         return false;

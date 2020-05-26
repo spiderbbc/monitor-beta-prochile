@@ -475,12 +475,14 @@ class TopicsHelper
 				}
 			}
 		}
-		/*echo "<pre>";
-		var_dump($stadistics);*/
 		return $stadistics;
 	}
 
-
+	/**	 
+	* [getAttributesForDetailView compose detailView array if there url on topic]
+	* @param  [obj] $model [topic  model]
+	* @return [array]              [arraty detailView]
+	*/
 	public static function getAttributesForDetailView($model)
 	{
 		$urls = \app\modules\topic\models\MUrlsTopics::find()->where(['topicId' => $model->id])->all();
