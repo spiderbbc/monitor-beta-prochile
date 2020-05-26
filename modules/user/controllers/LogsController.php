@@ -3,11 +3,13 @@
 namespace app\modules\user\controllers;
 
 use Yii;
-use app\modules\user\models\UserLogs;
-use app\modules\user\models\search\UserLogsSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+
+use app\modules\user\models\UserLogs;
+use app\modules\user\models\search\UserLogsSearch;
 
 /**
  * LogsController implements the CRUD actions for UserLogs model.
@@ -24,6 +26,26 @@ class LogsController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index'],
+                'rules' => [
+                    [
+                        'actions' => ['index'],
+                        'allow' => true,
+                        'matchCallback' => function ($rule, $action) {
+                            $condition = false;
+                            if(isset(Yii::$app->user->identity->username)){
+                                $user = Yii::$app->user->identity->username;
+                                $usernames = ['admin','mauro'];
+                                $condition = (in_array(Yii::$app->user->identity->username,$usernames))? true : false;
+                            }
+                            
+                            return $condition;
+                        }
+                    ],
                 ],
             ],
         ];
