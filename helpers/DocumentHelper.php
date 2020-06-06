@@ -64,13 +64,14 @@ class DocumentHelper
         if (is_dir($pathTarget)) {
             $filesTarget = \yii\helpers\FileHelper::findFiles($pathTarget,['except'=>['*.php','*.txt'],'recursive' => false]);
             // move files
-            foreach($filesTarget as $file){
+            if(isset($files[0])){
+                $file = $files[0];
                 $split_path = explode("{$s}",$file);
                 $fileName = end($split_path);
-                if(copy("{$file}","{$rootPath}{$s}{$fileName}")){
+                if(copy("{$file}","{$path}{$folderName}{$s}{$fileName}")){
                     unlink("{$file}");
                 }
-            } 
+            }
         }
     }
 
