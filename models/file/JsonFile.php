@@ -81,7 +81,7 @@ class JsonFile {
 	}
 
 	public function findAll(){
-		$data = $this->filebase->first();
+		$data = $this->filebase->findAll(true, true);
 		$this->filebase->flushCache(); 
 		return $data;
 	}

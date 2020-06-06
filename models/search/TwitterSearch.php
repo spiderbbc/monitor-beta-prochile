@@ -31,7 +31,7 @@ class TwitterSearch
         for($p = 1; $p < sizeof($params); $p++){
             // loop with json file
             for($j = 0; $j < sizeof($params[$p]); $j++){
-                $products = $params[$p][$j];
+                $products = $params[$p][$j][0];
                 // for each product
                 foreach($products as $product => $datos){
                    // for each tweets 
