@@ -30,22 +30,19 @@ class ScrapingSearch
 	    $this->isDictionaries = \app\helpers\AlertMentionsHelper::isAlertHaveDictionaries($this->alertId);
 
 	    for($p = 1 ; $p < sizeof($params); $p++){
-	        foreach($params[$p] as $data => $group){
-	            foreach($group as $pages => $terms){
-	                foreach($terms as $term => $content){
-	                    //echo $term."\n";
-	                    if(!ArrayHelper::keyExists($term,$this->data)){
-	                        $this->data[$term] = [];
-	                    }// end if keyExists
-	                    for($n = 0 ; $n < sizeOf($content); $n++){
-	                        if(!in_array($content[$n], $this->data[$term])){
-	                            $this->data[$term][] = $content[$n];
-	                        }// end if in_array
-	                    }// end loop news
-	                }
-	            }// end foreach terms
-	        }// end foreach group
-	    }// end loop
+			foreach($params[$p] as $data => $values){
+			  foreach($values as $term => $news){
+				if(!ArrayHelper::keyExists($term,$this->data)){
+				  $this->data[$term] = [];
+				}// end if keyExists
+				for($n = 0 ; $n < sizeOf($news); $n++){
+				  if(!in_array($news[$n], $this->data[$term])){
+					  $this->data[$term][] = $news[$n];
+				  }// end if in_array
+				}// end loop news
+			  }
+			}// end foreach group
+		}// end loop
 
 	    return (count($this->data)) ? true : false;
   	}

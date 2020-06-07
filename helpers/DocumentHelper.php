@@ -38,7 +38,23 @@ class DocumentHelper
         
 
         // move files
-        foreach($files as $file){
+        // foreach($files as $file){
+        //     $split_path = explode("{$s}",$file);
+        //     $fileName = end($split_path);
+        //     try {
+        //         if(copy("{$file}","{$path}{$folderName}{$s}{$fileName}")){
+        //             try {
+        //                unlink("{$file}"); 
+        //             } catch (\yii\base\ErrorException $e) {
+        //                 continue;
+        //             }
+        //         }
+        //     } catch (\yii\base\ErrorException $e) {
+        //         continue;
+        //     }
+        // }
+        if(isset($files[0])){
+            $file = $files[0];
             $split_path = explode("{$s}",$file);
             $fileName = end($split_path);
             try {
@@ -46,11 +62,11 @@ class DocumentHelper
                     try {
                        unlink("{$file}"); 
                     } catch (\yii\base\ErrorException $e) {
-                        continue;
+                        echo $e->getMessage();
                     }
                 }
             } catch (\yii\base\ErrorException $e) {
-                continue;
+                echo $e->getMessage();
             }
         }
 

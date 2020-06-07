@@ -30,22 +30,20 @@ class NewsSearch
     $this->resourcesId    = $this->_setResourceId();
     $this->isDictionaries = $this->_isDictionaries();
 
-
+    // print_r($params);
+    // die();
     for($p = 1 ; $p < sizeof($params); $p++){
-        foreach($params[$p] as $data => $group){
-            foreach($group as $pages => $products){
-                foreach($products as $product => $news){
-                    //echo $product."\n";
-                    if(!ArrayHelper::keyExists($product,$this->data)){
-                        $this->data[$product] = [];
-                    }// end if keyExists
-                    for($n = 0 ; $n < sizeOf($news); $n++){
-                        if(!in_array($news[$n], $this->data[$product])){
-                            $this->data[$product][] = $news[$n];
-                        }// end if in_array
-                    }// end loop news
-                }
-            }// end foreach products
+        foreach($params[$p] as $data => $values){
+          foreach($values as $term => $news){
+            if(!ArrayHelper::keyExists($term,$this->data)){
+              $this->data[$term] = [];
+            }// end if keyExists
+            for($n = 0 ; $n < sizeOf($news); $n++){
+              if(!in_array($news[$n], $this->data[$term])){
+                  $this->data[$term][] = $news[$n];
+              }// end if in_array
+            }// end loop news
+          }
         }// end foreach group
     }// end loop
     return (count($this->data)) ? true : false;
