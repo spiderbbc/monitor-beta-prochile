@@ -42,7 +42,6 @@ class DaemonController extends Controller
         $alert = new Alerts();
         $alertsConfig = $alert->getBringAllAlertsToRun(true);
         
-        
         if(!empty($alertsConfig)){
            $baseApi = new BaseApi();
            $api = $baseApi->callResourcesApi($alertsConfig);
