@@ -3,6 +3,7 @@
 use yii\db\Migration;
 
 /**
+ * ./yii migrate --migrationPath=@app/modules/user/migrations --interactive=0
  * Class m190813_195501_Users
  */
 class m190813_195501_Users extends Migration
@@ -75,11 +76,11 @@ class m190813_195501_Users extends Migration
         ]);
 
         $this->insert('{{%users}}', [
-            'username'      => 'ignacio',
+            'username'      => 'juan',
             'auth_key'      => 'tPwo4kDpN7JAz8Rrm9EwNAQ7q8F1p7FN',
-            // ignacio
-            'password_hash' => '$2y$13$HCB7rbz/TdIJKJlNtk9cC.h7EWK2jHSse5kSiSv7IZgfnGECO4AMK',
-            'email'         => 'ignacio@social-mediatrends.com',
+            // juan
+            'password_hash' => '$2y$13$eYPpYuOC.oJJarMh21VS1uqARV7MsZu8.VgT7/ukXZFArR2Xy5Maq',
+            'email'         => 'juan@social-mediatrends.com',
             'status'        => 10,
             'created_at'    => 0,
             'updated_at'    => 0,
