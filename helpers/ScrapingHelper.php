@@ -116,6 +116,61 @@ class ScrapingHelper{
 	}
 
 	/**
+	 * [getOrSetUrlsFromCache return urls from cache]
+	 * @param  array  $urls [urls valids]
+	 * @param  array  $id   [id from alert]
+	 * @return [array]      [all the sublinks by each url]
+	 *
+	 */
+	public static function getOrSetUrlsFromCache($urls,$key,$id)
+	{
+		// ver si un nueva url no esta en cache y agregarla con value 0
+		$cache = \Yii::$app->cache;
+		$data = $cache->get("{$key}_{$id}");
+		$time_expired = 86400; // seconds in a days
+		$urls_keys = array_keys($urls);
+		if ($data === false) {
+            // $data is not found in cache, calculate it from scratch
+            foreach($urls_keys as $index => $url){
+                $data[$url] = 0;
+            }
+            $cache->set("{$key}_{$id}", $data, $time_expired);
+        } else {
+           // $data is found with data
+           // if a new url
+           foreach($urls_keys as $index => $url){
+                if(!isset($data[$url])){
+                    $data[$url] = 0; 
+                }
+            }
+
+		}
+		
+		$new_url = [];
+        foreach ($urls as $url => $properties) {
+            $limit = (sizeOf($properties['links']) > 1) ? 5 : sizeOf($properties['links']); 
+            $index = $data[$url];
+            $tmp = 0;
+            $new_url[$url]['domain'] = $properties['domain'];
+            for ($i=$index; $i < sizeOf($properties['links']) ; $i++) { 
+                if($tmp >= $limit){
+                    break;
+                }
+                $new_url[$url]['links'][] = $properties['links'][$i];
+                $tmp++;
+            }
+            if($i >= sizeOf($properties['links'])){
+                $data[$url] = 0;
+            }else{
+                $data[$url] = $i;
+            }
+            
+		}
+		$cache->set("{$key}_{$id}", $data, $time_expired);
+		return $new_url;
+	}
+
+	/**
 	 * [getRequest get url and send request to transfrom in crawler instance]
 	 * @return [array] [crawlers instaces]
 	 */

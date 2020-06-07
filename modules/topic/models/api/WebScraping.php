@@ -40,6 +40,8 @@ class WebScraping{
 	{
 		// get all sub links by each url
 		$urls = \app\helpers\ScrapingHelper::getLinksInUrlsWebPage($this->urls);
+		// get from cache
+		$urls =  \app\helpers\ScrapingHelper::getOrSetUrlsFromCache($urls,'topic',$this->topicId);
 		// get the crawlers
 		$crawlers = \app\helpers\ScrapingHelper::getRequest($urls);
 
