@@ -258,9 +258,8 @@ class InstagramCommentsApi extends Model {
 		for($f = 0; $f < count($feeds);$f++){
 			if(isset($feeds[$f]['data'])){
 				for($d = 0; $d < count($feeds[$f]['data']); $d++){
-					
 					$feedId       = $feeds[$f]['data'][$d]['id'];
-					$caption      = $feeds[$f]['data'][$d]['caption'];
+					$caption      = (isset($feeds[$f]['data'][$d]['caption'])) ? $feeds[$f]['data'][$d]['caption'] : "-";
 					$url          = $feeds[$f]['data'][$d]['permalink'];
 					$like_count   = $feeds[$f]['data'][$d]['like_count'];
 

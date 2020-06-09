@@ -136,6 +136,7 @@ const count_mentions = Vue.component("total-mentions", {
  * @return {[component]}           [component]
  */
 const box_sources = Vue.component("box-sources", {
+  props: ["is_change"],
   template: "#view-box-sources",
   data: function () {
     return {
@@ -147,9 +148,12 @@ const box_sources = Vue.component("box-sources", {
     };
   },
   mounted() {
+    this.fetchStatus();
     setInterval(
       function () {
-        this.fetchStatus();
+        if (this.is_change) {
+          this.fetchStatus();
+        }
       }.bind(this),
       refreshTime
     );
@@ -193,6 +197,7 @@ const box_sources = Vue.component("box-sources", {
  * @return {[component]}           [component]
  */
 const count_resources_chat = Vue.component("total-resources-chart", {
+  props: ["is_change"],
   template: "#view-total-resources-chart",
   data: function () {
     return {
@@ -262,13 +267,21 @@ const count_resources_chat = Vue.component("total-resources-chart", {
     this.response = [this.dataTable];
     // Load the Visualization API and the corechart package.
     google.charts.load("current", { packages: ["corechart"] });
+    // get firts data
+    this.fetchResourceCount();
+    // load chart
+    if (this.loaded) {
+      google.charts.setOnLoadCallback(this.drawColumnChart);
+    }
+
     setInterval(
       function () {
         if (this.loaded) {
           google.charts.setOnLoadCallback(this.drawColumnChart);
         }
-
-        this.fetchResourceCount();
+        if (this.is_change) {
+          this.fetchResourceCount();
+        }
       }.bind(this),
       refreshTime
     );
@@ -324,6 +337,7 @@ const count_resources_chat = Vue.component("total-resources-chart", {
  * @return {[component]}           [component]
  */
 const post_interations_chart = Vue.component("post-interation-chart", {
+  props: ["is_change"],
   template: "#view-post-mentions-chart",
   data: function () {
     return {
@@ -395,14 +409,21 @@ const post_interations_chart = Vue.component("post-interation-chart", {
     this.response = [this.dataTable];
     // Load the Visualization API and the corechart package.
     google.charts.load("current", { packages: ["corechart"] });
+    // get firts data
+    this.fetchResourceCount();
+    // load chart
+    if (this.loaded) {
+      google.charts.setOnLoadCallback(this.drawColumnChart);
+    }
 
     setInterval(
       function () {
-        this.fetchResourceCount();
         if (this.loaded) {
           google.charts.setOnLoadCallback(this.drawColumnChart);
         }
-        this.fetchResourceCount();
+        if (this.is_change) {
+          this.fetchResourceCount();
+        }
       }.bind(this),
       refreshTime
     );
@@ -457,6 +478,7 @@ const post_interations_chart = Vue.component("post-interation-chart", {
  * @return {[component]}           [component]
  */
 const products_interations_chart = Vue.component("products-interations-chart", {
+  props: ["is_change"],
   template: "#view-products-interations-chart",
   data: function () {
     return {
@@ -524,11 +546,20 @@ const products_interations_chart = Vue.component("products-interations-chart", {
     this.response = [this.dataTable];
     // Load the Visualization API and the corechart package.
     google.charts.load("current", { packages: ["corechart"] });
+    // first call
     this.fetchResourceCount();
+    // // load chart
+    // if (this.loaded && this.response.length) {
+    //   google.charts.setOnLoadCallback(this.drawColumnChart);
+    // }
     setInterval(
       function () {
-        google.charts.setOnLoadCallback(this.drawColumnChart);
-        this.fetchResourceCount();
+        if (this.loaded) {
+          google.charts.setOnLoadCallback(this.drawColumnChart);
+        }
+        if (this.is_change) {
+          this.fetchResourceCount();
+        }
       }.bind(this),
       refreshTime
     );
@@ -543,7 +574,7 @@ const products_interations_chart = Vue.component("products-interations-chart", {
             for (let index in response.data.data) {
               this.response.push(response.data.data[index]);
             }
-            //console.log(this.response);
+            console.log(this.response);
             this.loaded = true;
           }
         })
@@ -564,7 +595,7 @@ const products_interations_chart = Vue.component("products-interations-chart", {
       var options = {
         title: "Gráfico de número de interacciones por terminos",
         vAxis: { format: "decimal" },
-        //hAxis: {minValue: 50},
+        hAxis: { titleTextStyle: { color: "Black" }, format: "string" },
         width: 1200,
         height: 400,
         colors: ["#1b9e77", "#d95f02", "#7570b3", "#2f1bad", "#bf16ab"],
@@ -586,6 +617,7 @@ const products_interations_chart = Vue.component("products-interations-chart", {
  * @return {[component]}           [component]
  */
 const count_resources_date_chat = Vue.component("count-date-resources-chart", {
+  props: ["is_change"],
   template: "#view-date-resources-chart",
   data: function () {
     return {
@@ -600,12 +632,20 @@ const count_resources_date_chat = Vue.component("count-date-resources-chart", {
   mounted() {
     // Load the Visualization API and the corechart package.
     google.charts.load("current", { packages: ["corechart", "line"] });
+    // get firts data
+    this.fetchResourceCount();
+    // load chart
+    if (this.loaded) {
+      google.charts.setOnLoadCallback(this.drawColumnChart);
+    }
 
     setInterval(
       function () {
-        this.fetchResourceCount();
         if (this.loaded) {
           google.charts.setOnLoadCallback(this.drawColumnChart);
+        }
+        if (this.is_change) {
+          this.fetchResourceCount();
         }
       }.bind(this),
       refreshTime
@@ -702,6 +742,7 @@ const count_resources_date_chat = Vue.component("count-date-resources-chart", {
  * @return {[component]}           [component]
  */
 const listMentions = Vue.component("list-mentions", {
+  props: ["is_change"],
   template: "#mentions-list",
   data: function () {
     return {
@@ -710,9 +751,12 @@ const listMentions = Vue.component("list-mentions", {
   },
   mounted() {
     var table = this.setDataTable();
+    //table.ajax.reload(null, false);
     setInterval(function () {
-      table.ajax.reload(null, false);
-    }, refreshTimeTable);
+      if (this.is_change) {
+        table.ajax.reload(null, false);
+      }
+    }, refreshTime - 2000);
   },
   methods: {
     setDataTable() {
@@ -823,6 +867,7 @@ const tableDate = Vue.component("resource-date-mentions", {
  * @return {[component]}           [component]
  */
 const listEmojis = Vue.component("list-emojis", {
+  props: ["is_change"],
   template: "#emojis-list",
   data: function () {
     return {
@@ -834,7 +879,9 @@ const listEmojis = Vue.component("list-emojis", {
     var table = this.setDataTableEmoji();
 
     setInterval(function () {
-      table.ajax.reload(null, false);
+      if (this.is_change) {
+        table.ajax.reload(null, false);
+      }
     }, refreshTimeTable);
   },
   methods: {
@@ -860,20 +907,20 @@ const listEmojis = Vue.component("list-emojis", {
  */
 
 const sweetAlert = Vue.component("modal-alert", {
+  props: ["count"],
   template: "#modal-alert",
   data: function () {
     return {
       alertId: id,
       response: null,
       isShowModal: false,
-      count: 0,
+      //count: 0,
       flag: false,
     };
   },
   mounted() {
     setInterval(
       function () {
-        this.fetchCount();
         if (this.count) {
           this.fetchStatus();
           if (this.isShowModal && !this.flag) {
@@ -941,14 +988,9 @@ const vm = new Vue({
     coments: 0,
     likes_comments: 0,
     resourcescount: [],
+    is_change: false,
   },
   mounted() {
-    /*if (!localStorage.init) {
-			console.log("runnig init");
-			this.init();
-			localStorage.init = 1;
-		}*/
-    //this.init();
     setInterval(
       function () {
         this.fetchIsData();
@@ -971,6 +1013,19 @@ const vm = new Vue({
         .catch((error) => console.log(error));
       if (this.count > 0) {
         this.isData = true;
+        if (localStorage.getItem("alert_count_" + id)) {
+          var count_storage = localStorage.getItem("alert_count_" + id);
+          if (count_storage != this.count) {
+            localStorage.setItem("alert_count_" + id, this.count);
+            this.is_change = true;
+            console.info("Hubo un cambio en el count");
+          } else {
+            this.is_change = false;
+          }
+        } else {
+          localStorage.setItem("alert_count_" + id, this.count);
+          console.info("set storage ...");
+        }
       }
     },
     init() {

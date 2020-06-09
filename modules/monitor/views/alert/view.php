@@ -107,43 +107,42 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
     ]) ?>
 
 
-    <modal-alert></modal-alert>
-    
+    <modal-alert :count="count"></modal-alert>
     <div v-if="isData">
         <div class="row">
-            <total-mentions :count="count" :retweets="retweets":shares="shares" :likes="likes" :coments="coments" :likes_comments="likes_comments">
+            <total-mentions  :count="count" :retweets="retweets":shares="shares" :likes="likes" :coments="coments" :likes_comments="likes_comments">
         </div>
         <div class="">
-          <box-sources></box-sources>
+          <box-sources :is_change="is_change"></box-sources>
        </div>
        <div class="row">
             <div class="col-md-12">
-                <total-resources-chart>
+                <total-resources-chart :is_change="is_change">
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <post-interation-chart>
+                <post-interation-chart :is_change="is_change">
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <products-interations-chart>
+                <products-interations-chart :is_change="is_change">
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <count-date-resources-chart>
+                <count-date-resources-chart :is_change="is_change">
             </div>
         </div>
         <div class="row">
-            <list-mentions></list-mentions>
+            <list-mentions :is_change="is_change"></list-mentions>
         </div>
         <div class="row">
             <cloud-words></cloud-words>
         </div>
         <div class="row">
-            <list-emojis></list-emojis>
+            <list-emojis :is_change="is_change"></list-emojis>
         </div>
             
         
