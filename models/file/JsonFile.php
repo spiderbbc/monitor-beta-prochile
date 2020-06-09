@@ -104,7 +104,6 @@ class JsonFile {
 			'cache_expires' => 1800,
 			'pretty'        => false,
 			'safe_filename' => true,
-	    	//'read_only'      => $read_only,
         ]);
 	}
 
