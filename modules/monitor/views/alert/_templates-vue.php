@@ -1,5 +1,9 @@
 <?php 
 use yii\helpers\Html;
+//use yii\grid\GridView;
+use kartik\grid\GridView;
+use yii\widgets\Pjax;
+use yii\widgets\ActiveForm;
 ?>
 <!-- template que muestra el boton para solicitar el pdf -->
 <script type="text/x-template" id="view-button-report">
@@ -7,100 +11,23 @@ use yii\helpers\Html;
 </script>
 
 <!-- template que muestra el total de todas las menciones -->
-<!-- template que muestra el total de todas las menciones -->
 <script type="text/x-template" id="view-total-mentions">
-     <div class="">
-        <div class="col-md-2">
+     <div class="row seven-cols">
+        <div v-for="(value,resource) in resourcescount" :class="calcColumns()">
           <!-- small box -->
-          <div class="small-box bg-info">
+          <div :class="getClass(resource)">
             <div class="inner">
-              <h3>{{count}}</h3>
+              <h3>{{value | formatNumber }}</h3>
 
-              <p>Total de Entradas</p>
+              <p>{{getTitle(resource)}}</p>
             </div>
             <div class="icon">
-              <i class="glyphicon glyphicon-hdd"></i>
+              <i :class="getIcon(resource)"></i>
             </div>
             <a href="#" class="small-box-footer">More info <i class="glyphicon glyphicon-chevron-right"></i></a>
           </div>
         </div>
-        <!-- ./col -->
-        <div class="col-md-2">
-          <!-- small box -->
-          <div class="small-box bg-info">
-            <div class="inner">
-              <h3>{{retweets}}</h3>
-
-              <p>Retweets</p>
-            </div>
-            <div class="icon">
-              <i class="socicon-twitter"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="glyphicon glyphicon-chevron-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-md-2">
-          <!-- small box -->
-          <div class="small-box bg-success">
-            <div class="inner">
-              <h3>{{shares}}<sup style="font-size: 20px"></sup></h3>
-
-              <p>Instagram Shares</p>
-            </div>
-            <div class="icon">
-              <i class="glyphicon glyphicon-share"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-md-2">
-          <!-- small box -->
-          <div class="small-box bg-warning">
-            <div class="inner">
-              <h3>{{coments}}</h3>
-
-              <p>Comentarios Totales</p>
-            </div>
-            <div class="icon">
-              <i class="glyphicon glyphicon-comment"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-md-2">
-          <!-- small box -->
-          <div class="small-box bg-light">
-            <div class="inner">
-              <h3>{{likes}}</h3>
-
-              <p>Instagram Likes</p>
-            </div>
-            <div class="icon">
-              <i class="glyphicon glyphicon-heart"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
-        <!-- ./col -->
-        <div class="col-md-2">
-          <!-- small box -->
-          <div class="small-box bg-danger">
-            <div class="inner">
-              <h3>{{likes_comments}}</h3>
-
-              <p>likes comments</p>
-            </div>
-            <div class="icon">
-              <i class="glyphicon glyphicon-thumbs-up"></i>
-            </div>
-            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-          </div>
-        </div>
-        <!-- ./col -->
+        
       </div>
 </script>
 
@@ -203,37 +130,103 @@ use yii\helpers\Html;
 <!-- template que muestra todas las menciones -->
 <script type="text/x-template" id="mentions-list">
     <div>
-        <h4>Menciones</h4>
-        <div class="row">
-            <div class="col-md-12">
-                <table id="list-mentions" class="table table-striped table-bordered" cellspacing="0"  style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Recurso</th>
-                            <th>Producto</th>
-                            <th>Fecha</th>
-                            <th>Nombre</th>
-                            <th>Usuario</th>
-                            <th>Titulo</th>
-                            <th>mensaje</th>
-                            <th>Url</th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th>Recurso</th>
-                            <th>Producto</th>
-                            <th>Fecha</th>
-                            <th>Nombre</th>
-                            <th>Usuario</th>
-                            <th>Titulo</th>
-                            <th>mensaje</th>
-                            <th>Url</th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
+    <?php Pjax::begin(['id' => 'mentions', 'timeout' => 10000, 'enablePushState' => false]) ?>
+        <?=   $this->render('_search-word', ['model' => $searchModel]); ?>
+
+        <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'autoXlFormat'=>true,
+        'krajeeDialogSettings' => ['overrideYiiConfirm' => false],
+        'toggleDataContainer' => ['class' => 'btn-group mr-2'],
+        'export'=>[
+            'showConfirmAlert'=>false,
+            'target'=>GridView::TARGET_BLANK
+        ],
+        'columns' => [
+          [
+                'label' => Yii::t('app','Recurso Social'),
+                'attribute' => 'resourceName',
+                'format' => 'raw',
+                'value' => function($model){
+                    return $model['recurso'];
+                }
+            ],
+            [
+                'label' => Yii::t('app','Término buscado'),
+                'headerOptions' => ['style' => 'width:12%'],
+                'attribute' => 'termSearch',
+                'format' => 'raw',
+                'value' => function($model){
+                    return $model['term_searched'];
+                }
+            ],
+            [
+                'label' => Yii::t('app','Fecha'),
+                'headerOptions' => ['style' => 'width:8%'],
+                //'attribute' => 'userId',
+                'format' => 'raw',
+                'value' => function($model){
+                    return \Yii::$app->formatter->asDate($model['created_time'], 'yyyy-MM-dd');
+                }
+            ],
+            [
+                'label' => Yii::t('app','Nombre'),
+                'attribute' => 'name',
+                'format' => 'raw',
+                'value' => function($model){
+                    return $model['name'];
+                }
+            ],
+            [
+                'label' => Yii::t('app','Username'),
+                'attribute' => 'screen_name',
+                'format' => 'raw',
+                'value' => function($model){
+                    return $model['screen_name'];
+                }
+            ],
+            [
+                'label' => Yii::t('app','Titulo'),
+                'attribute' => 'subject',
+                'format' => 'raw',
+                'value' => function($model){
+                    return $model['subject'];
+                }
+            ],
+            [
+                'label' => Yii::t('app','Mencion'),
+                'attribute' => 'message_markup',
+                'format' => 'raw',
+                'value' => function($model){
+                    return $model['message_markup'];
+                }
+            ],
+            [
+                'label' => Yii::t('app','Url'),
+                //'attribute' => 'userId',
+                'format' => 'raw',
+                'value' => function($model){
+                    return \yii\helpers\Html::a('link',$model['url'],['target'=>'_blank', 'data-pjax'=>"0"]);
+                }
+            ],
+        ],
+        'class' => 'yii\grid\Column',
+        'pjax'=>false,
+        'pjaxSettings'=>[
+          'options'=>[
+            'id'=> 'mentions'
+          ]
+        ],
+        'showPageSummary'=>true,
+        'panel'=>[
+            'type'=>'primary',
+            'heading'=>'Menciones'
+        ],
+    ]); ?>
+  <?php Pjax::end() ?>
+
+    
     </div>
 </script>
 <!-- template que muestra las nubes de palabras -->

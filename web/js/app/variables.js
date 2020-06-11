@@ -21,6 +21,45 @@ let controllerName = {
   "Facebook Comments": "Facebook-comments",
   "Facebook Comments": "Facebook-comments",
 };
+
+// property for each box on resource social
+let smallboxProperties = {
+  count: {
+    title: "Total de Entradas",
+    class: "small-box bg-info",
+    icon: "glyphicon glyphicon-hdd",
+  },
+  retweet_count: {
+    title: "Total Retweet",
+    class: "small-box bg-success",
+    icon: "socicon-twitter",
+  },
+  favorite_count: {
+    title: "Total Favoritos",
+    class: "small-box bg-danger",
+    icon: "socicon-twitter",
+  },
+  shares: {
+    title: "Total Post Facebook Share",
+    class: "small-box bg-info",
+    icon: "socicon-facebook",
+  },
+  like_count: {
+    title: "Total Likes Post Instagram",
+    class: "small-box bg-danger",
+    icon: "socicon-instagram",
+  },
+  total_comments: {
+    title: "Total Comentarios",
+    class: "small-box bg-warning",
+    icon: "glyphicon glyphicon-comment",
+  },
+  total_inbox: {
+    title: "Total Inbox Facebook",
+    class: "small-box bg-info",
+    icon: "socicon-messenger",
+  },
+};
 let tableConfigMentions = {
   scrollY: "400px",
   scrollCollapse: true,

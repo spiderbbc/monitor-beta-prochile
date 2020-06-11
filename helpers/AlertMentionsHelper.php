@@ -94,6 +94,7 @@ class AlertMentionsHelper
      */
     public static function getSocialNetworkInteractions($resource_name,$resource_id,$alertId)
     {
+        
         $model = new \app\models\AlertsMencions();
         $model->alertId = $alertId;
         $model->resourcesId = $resource_id;
@@ -102,25 +103,25 @@ class AlertMentionsHelper
             
             case 'Facebook Comments':
 
-                return [$resource_name,$model->shareFaceBookPost,'0',$model->likesFacebookComments,$model->total];
+                return [$resource_name,$model->shareFaceBookPost,$model->likesFacebookComments,$model->total];
                 break;
 
             case 'Facebook Messages':
-                $count = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => $resource_id])->count();
-                /*$model->alertId = $alertId;
-                $model->resourcesId = $resource_id;*/
                 
-                return [$resource_name,'0','0','0',$count];
+                $count = self::getCountAlertMentionsByResourceId($model->alertId,$model->resourcesId);
+                return [$resource_name,'0','0',$count];
                 break;    
 
             case 'Instagram Comments':
                 
-                return [$resource_name,'0',$model->likesInstagramPost,$model->likesFacebookComments,$model->total];
+                return [$resource_name,'0',$model->likesInstagramPost,$model->total];
                 break;
             case 'Twitter':
-                return [$resource_name,$model->twitterRetweets,'0',$model->twitterLikes,$model->twitterTotal];
-            
+                $totalProperty = $model->twitterCountProperty;
+                array_push($totalProperty,$model->twitterTotal);
+                return $totalProperty;
                 break;
+                
             case 'Live Chat':
                 $models = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'resourcesId' => $resource_id])->all();
                 $expression = new Expression("`mention_data`->'$.id' AS ticketId");
@@ -137,7 +138,7 @@ class AlertMentionsHelper
                 }
 
 
-                return [$resource_name,'0','0','0',$total];
+                return [$resource_name,'0','0',$total];
 
                 break;
 
@@ -155,20 +156,18 @@ class AlertMentionsHelper
                     $total += intval($rows);  
                 }
 
-                return [$resource_name,'0','0','0',$total];
+                return [$resource_name,'0','0',$total];
 
                 break;  
             case 'Excel Document':
-                return [$resource_name,'0','0','0',$model->twitterTotal];
-                break;
-
-            case 'Noticias Webs':
-                return [$resource_name,'0','0','0',$model->total];                      
-                break;
+                return [$resource_name,'0','0',$model->twitterTotal];
+                break; 
             case 'Paginas Webs':
-                return [$resource_name,'0','0','0',$model->total];                      
+                return [$resource_name,'0','0',$model->total];                      
+                break;
+            case 'Noticias Webs':
+                return [$resource_name,'0','0',$model->total];                      
                 break;    
-
             
             default:
                 # code...
@@ -572,5 +571,58 @@ class AlertMentionsHelper
             return $keywords;
         }
         return false;
+    }
+
+    public static function getAlertsMentionsIdsByAlertIdAndResourcesIds($alertId,$resourceSocialIds = [])
+    {
+        $db = \Yii::$app->db;
+        $alerMentionsIds = $db->cache(function ($db) use($alertId,$resourceSocialIds){
+            $alerMentions = \app\models\AlertsMencions::find()->select('id')->where(['alertId' => $alertId,'resourcesId' => $resourceSocialIds])->asArray()->all();
+            $alerMentionsIds = [];
+            if(!empty($alerMentions)){
+                for ($a=0; $a < sizeOf($alerMentions) ; $a++) { 
+                    $alerMentionsIds[] = $alerMentions[$a]['id'];
+                }
+            }
+            return $alerMentionsIds;
+        },60);
+        return $alerMentionsIds;
+    }
+    
+    /**
+     * [setMentionData get and order values json on array]
+     * @param  [array] 
+     * @return [array] 
+     */
+    public static function setMentionData($mention_data_array){
+        $model= [];
+        if(!empty($mention_data_array)){
+            for($m=0;$m < sizeOf($mention_data_array); $m++){
+                if(!empty($mention_data_array[$m])){
+                    for ($d=0; $d < sizeOf($mention_data_array[$m]) ; $d++) { 
+                        $tmp = json_decode($mention_data_array[$m][$d]['mention_data'],true);
+                        foreach($tmp as $property => $value){
+                            if(isset($model[$property])){
+                                $model[$property] += $value; 
+                            }else{
+                                $model[$property] = $value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $model;
+    }
+
+    public static function getCountAlertMentionsByResourceId($alertId,$resourceId){
+        $db = \Yii::$app->db;
+        $count = $db->cache(function ($db) use($alertId,$resourceId){
+            return (new \yii\db\Query())
+                ->from('alerts_mencions')
+                ->where(['alertId' => $alertId,'resourcesId' => $resourceId])
+                ->count();
+        },60);
+        return $count;
     }
 }

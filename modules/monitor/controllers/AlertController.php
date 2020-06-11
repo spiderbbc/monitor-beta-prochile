@@ -58,19 +58,19 @@ class AlertController extends Controller
                   'sql' => 'SELECT * FROM alerts WHERE userId='.Yii::$app->user->getId(),
               ],
           ],
-          // [
-          //   'enabled' => Yii::$app->request->isGet && !Yii::$app->user->isGuest,
-          //   'class' => 'yii\filters\PageCache',
-          //   'only' => ['view'],
-          //   'duration' => 180,
-          //   'variations' => [
-          //       \Yii::$app->language,
-          //   ],
-          //   'dependency' => [
-          //         'class' => 'yii\caching\DbDependency',
-          //         'sql' => 'SELECT * FROM alerts WHERE userId='.Yii::$app->user->getId().' AND id='.Yii::$app->request->get('id'),
-          //     ],
-          // ],
+          [
+            'enabled' => Yii::$app->request->isGet && !Yii::$app->user->isGuest,
+            'class' => 'yii\filters\PageCache',
+            'only' => ['view'],
+            'duration' => 180,
+            'variations' => [
+                \Yii::$app->language,
+            ],
+            'dependency' => [
+                  'class' => 'yii\caching\DbDependency',
+                  'sql' => 'SELECT * FROM alerts WHERE userId='.Yii::$app->user->getId().' AND id='.Yii::$app->request->get('id'),
+              ],
+          ],
         ];
     }
 
@@ -166,7 +166,9 @@ class AlertController extends Controller
     {
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
       $alert = $this->findModel($alertId);
+      
       $isDictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->exists();
+      
       // if dictionaryName is equal filterName is there a dictionary
       if ($dictionaryName == $filterName) {
         
@@ -188,7 +190,7 @@ class AlertController extends Controller
         }
 
       }
-
+      
       //move json file and delete mentions
       foreach ($alert->alertsMentions as $alertMention) {
         // move json file
@@ -277,9 +279,13 @@ class AlertController extends Controller
      */
     public function actionView($id)
     {
-        
+      $searchModel = new \app\models\search\MentionSearch();
+      $dataProvider = $searchModel->search(\Yii::$app->request->queryParams,$id);
+
       return $this->render('view', [
         'model' => $this->findModel($id),
+        'searchModel' => $searchModel,
+        'dataProvider' => $dataProvider,
       ]);
     }
 

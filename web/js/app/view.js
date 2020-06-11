@@ -1,6 +1,10 @@
 // flag to chart line
 let loadedChart = false;
 
+Vue.filter("formatNumber", function (value) {
+  return value.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+});
+
 /**
  * Override the default yii confirm dialog. This function is
  * called by yii when a confirmation is requested.
@@ -123,11 +127,26 @@ const statusAlert = Vue.component("status-alert", {
  * @return {[component]}           [component]
  */
 const count_mentions = Vue.component("total-mentions", {
-  props: ["count", "shares", "retweets", "likes", "coments", "likes_comments"],
+  template: "#view-total-mentions",
+  props: ["count", "resourcescount"],
   data: function () {
     return {};
   },
-  template: "#view-total-mentions",
+  methods: {
+    calcColumns() {
+      var size = Object.keys(this.resourcescount).length;
+      return columnsName[size - 1];
+    },
+    getClass(resource) {
+      return smallboxProperties[resource].class;
+    },
+    getTitle(resource) {
+      return smallboxProperties[resource].title;
+    },
+    getIcon(resource) {
+      return smallboxProperties[resource].icon;
+    },
+  },
 });
 
 /**
@@ -204,13 +223,7 @@ const count_resources_chat = Vue.component("total-resources-chart", {
       alertId: id,
       response: [],
       loaded: false,
-      dataTable: [
-        "Red Social",
-        "Shares/Retweets",
-        "Likes Post",
-        "Likes",
-        "Total",
-      ],
+      dataTable: ["Red Social", "Shares/Retweets", "Likes", "Total"],
       view: null,
       column: [
         0,
@@ -235,31 +248,27 @@ const count_resources_chat = Vue.component("total-resources-chart", {
           type: "string",
           role: "annotation",
         },
-        4,
-        {
-          calc: "stringify",
-          sourceColumn: 4,
-          type: "string",
-          role: "annotation",
-        },
+        // 4,
+        // {
+        //   calc: "stringify",
+        //   sourceColumn: 4,
+        //   type: "string",
+        //   role: "annotation",
+        // },
       ],
 
       options: {
-        chart: {
-          title: "",
-          subtitle: "",
-        },
-        theme: "material",
-        bars: "vertical",
+        focusTarget: "category",
+        title: "Gráfico de número de interacciones por red social",
         vAxis: { format: "decimal" },
-        colors: [
-          "#1b9e77",
-          "#d95f02",
-          "#7570b3",
-          "#2f1bad",
-          "#bf16ab",
-          "#b5d817",
-        ],
+        width: 1200,
+        height: 400,
+        colors: [],
+        animation: {
+          startup: true,
+          duration: 1500,
+          easing: "out",
+        },
       },
     };
   },
@@ -292,6 +301,7 @@ const count_resources_chat = Vue.component("total-resources-chart", {
         .get(baseUrlApi + "count-sources-mentions" + "?alertId=" + this.alertId)
         .then((response) => {
           if (typeof this.response === "object") {
+            this.options.colors = response.data.colors;
             this.response.splice(1, response.data.data.length);
             for (let index in response.data.data) {
               this.response.push(response.data.data[index]);
@@ -304,6 +314,7 @@ const count_resources_chat = Vue.component("total-resources-chart", {
     drawColumnChart() {
       var data = google.visualization.arrayToDataTable(this.response);
       var view = new google.visualization.DataView(data);
+
       view.setColumns(this.column);
       var chart = new google.visualization.ColumnChart(
         document.getElementById("resources_chart_count")
@@ -313,20 +324,7 @@ const count_resources_chat = Vue.component("total-resources-chart", {
         data_chart["chart_bar_resources_count"] = chart.getImageURI();
       });
 
-      var options = {
-        title: "Gráfico de número de interacciones por red social",
-        vAxis: { format: "decimal" },
-        width: 1200,
-        height: 400,
-        colors: ["#1b9e77", "#d95f02", "#7570b3", "#2f1bad", "#bf16ab"],
-        animation: {
-          startup: true,
-          duration: 1500,
-          easing: "out",
-        },
-      };
-
-      chart.draw(view, options);
+      chart.draw(view, this.options);
     },
   },
 });
@@ -574,7 +572,6 @@ const products_interations_chart = Vue.component("products-interations-chart", {
             for (let index in response.data.data) {
               this.response.push(response.data.data[index]);
             }
-            console.log(this.response);
             this.loaded = true;
           }
         })
@@ -750,13 +747,15 @@ const listMentions = Vue.component("list-mentions", {
     };
   },
   mounted() {
-    var table = this.setDataTable();
-    //table.ajax.reload(null, false);
-    setInterval(function () {
-      if (this.is_change) {
-        table.ajax.reload(null, false);
-      }
-    }, refreshTime - 2000);
+    setInterval(
+      function () {
+        if (this.is_change) {
+          console.log("ajax reload");
+          $.pjax.reload({ container: "#mentions", timeout: false });
+        }
+      }.bind(this),
+      refreshTime
+    );
   },
   methods: {
     setDataTable() {
@@ -771,6 +770,7 @@ const listMentions = Vue.component("list-mentions", {
  * @return {[component]}           [component]
  */
 const cloudWords = Vue.component("cloud-words", {
+  props: ["is_change"],
   template: "#cloud-words",
   data: function () {
     return {
@@ -783,7 +783,7 @@ const cloudWords = Vue.component("cloud-words", {
       function () {
         this.fetchWords();
       }.bind(this),
-      refreshTime
+      20000
     );
   },
   methods: {
@@ -811,13 +811,22 @@ const cloudWords = Vue.component("cloud-words", {
       var words = response.map(function (r) {
         r.handlers = {
           click: function () {
-            $("#list-mentions").DataTable().search(r.text).draw();
+            //$("#list-mentions").DataTable().search(r.text).draw();
+            //$("#mentionsearch-id").attr("value", id);
+            $('input[name="MentionSearch[message_markup]"]').attr("value", "");
+            $("#mentionsearch-message_markup").attr("value", "");
+            $('input[name="id"]').attr("value", id);
+            $("#mentionsearch-message_markup").attr("value", r.text);
+            $("#search").click();
           },
         };
         r.html = { class: "pointer-jqcloud" };
         return r;
       });
       return words;
+    },
+    scroll() {
+      console.log(1);
     },
   },
 });
@@ -877,9 +886,9 @@ const listEmojis = Vue.component("list-emojis", {
   },
   mounted() {
     var table = this.setDataTableEmoji();
-
+    this.fetchEmojis();
     setInterval(function () {
-      if (this.is_change) {
+      if (this.is_change && this.loaded) {
         table.ajax.reload(null, false);
       }
     }, refreshTimeTable);
@@ -890,6 +899,7 @@ const listEmojis = Vue.component("list-emojis", {
         .get(baseUrlApi + "list-emojis" + "?alertId=" + id)
         .then((response) => {
           if (typeof response.data.length != "undefined") {
+            this.response = response.data.data;
             this.loaded = true;
           }
         });
@@ -981,12 +991,9 @@ const vm = new Vue({
   el: "#alerts-view",
   data: {
     alertId: id,
-    isData: false,
     count: 0,
-    shares: 0,
-    likes: 0,
-    coments: 0,
-    likes_comments: 0,
+    isData: true,
+    //retweets: 0,
     resourcescount: [],
     is_change: false,
   },
@@ -1003,12 +1010,8 @@ const vm = new Vue({
       axios
         .get(baseUrlApi + "count-mentions" + "?alertId=" + this.alertId)
         .then((response) => {
-          this.count = response.data.count;
-          this.retweets = response.data.retweets;
-          this.shares = response.data.shares;
-          this.likes = response.data.likes;
-          this.coments = response.data.coments;
-          this.likes_comments = response.data.likes_comments;
+          this.count = response.data.data.count;
+          this.resourcescount = response.data.data;
         })
         .catch((error) => console.log(error));
       if (this.count > 0) {

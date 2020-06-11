@@ -108,13 +108,10 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 
 
     <modal-alert :count="count"></modal-alert>
-    <div v-if="isData">
+    <div v-show="isData">
         <div class="row">
-            <total-mentions  :count="count" :retweets="retweets":shares="shares" :likes="likes" :coments="coments" :likes_comments="likes_comments">
+            <!-- <total-mentions :count="count" :resourcescount="resourcescount"> -->
         </div>
-        <div class="">
-          <box-sources :is_change="is_change"></box-sources>
-       </div>
        <div class="row">
             <div class="col-md-12">
                 <total-resources-chart :is_change="is_change">
@@ -122,20 +119,20 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         </div>
         <div class="row">
             <div class="col-md-12">
-                <post-interation-chart :is_change="is_change">
+                <!-- <post-interation-chart :is_change="is_change"> -->
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <products-interations-chart :is_change="is_change">
+                <!-- <products-interations-chart :is_change="is_change"> -->
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <count-date-resources-chart :is_change="is_change">
+                <!-- <count-date-resources-chart :is_change="is_change"> -->
             </div>
         </div>
-        <div class="row">
+        <div  class="row">
             <list-mentions :is_change="is_change"></list-mentions>
         </div>
         <div class="row">
@@ -152,7 +149,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 
         
     </div>
-    <div v-else>
+    <div v-show="!isData">
         <div class="loader">
           <div class="spinner" style="height: 15vh;width:  15vh;"></div>
         </div>
@@ -162,7 +159,12 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 
 </div>
 
-<?= $this->render('_templates-vue');  ?>
+<?= $this->render('_templates-vue',
+    [
+        'dataProvider' => $dataProvider,
+        'searchModel' => $searchModel,
+    ]);  
+?>
 
 
 

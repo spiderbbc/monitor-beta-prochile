@@ -23,6 +23,11 @@ $config = [
         'user' => [
             'class' => 'app\modules\user\Module',
         ],
+        // kartik
+        'gridview' => [
+            'class' => '\kartik\grid\Module',
+            'bsVersion' => 3
+        ]
     ],
     'components' => [
         'assetManager' => [
