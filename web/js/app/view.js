@@ -751,7 +751,7 @@ const listMentions = Vue.component("list-mentions", {
     // $.pjax.reload({ container: "#mentions" });
     //$.pjax.reload({ container: "#mentions" });
     //jQuery.pjax.reload({ container: "#mentions" });
-    $.pjax.reload({ container: "#mentions", async: false });
+    // $.pjax.reload({ container: "#mentions", async: false });
     setInterval(
       function () {
         if (this.is_change) {
