@@ -211,19 +211,15 @@ class TwitterApi extends Model {
         	
         	// get data twitter api
         	$data[$index] = $this->search_tweets($params);
-        //	echo $data[$index]['rate']['remaining']."\n";
         	if($data[$index]['rate']['remaining'] < $this->minimum){
-        		break;
+        		continue;
         	}
         	// if there 200 status
         	if($data[$index]['httpstatus'] == 200){
-        	///	Console::stdout(" is 200 \n", Console::FG_GREEN);
+        		Console::stdout(" is 200 \n", Console::FG_GREEN);
         		// if statuses not empty
         		if(!empty($data[$index]['statuses'])){
         			$statusCount = count($data[$index]['statuses']);
-        			/*Console::stdout(" total result {$statusCount} \n", Console::BOLD);
-        			Console::stdout(" there is statuses limit in {$this->limit} \n", Console::BOLD);
-        			Console::stdout(" index in: {$index} \n", Console::BOLD);*/
         			// check limits
         			if(!$this->limit){
         				// set limit

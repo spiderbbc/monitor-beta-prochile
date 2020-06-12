@@ -130,6 +130,7 @@ use yii\widgets\ActiveForm;
 <!-- template que muestra todas las menciones -->
 <script type="text/x-template" id="mentions-list">
     <div>
+    <!-- <button v-on:click="reload">Reload</button> -->
     <?php Pjax::begin(['id' => 'mentions', 'timeout' => 10000, 'enablePushState' => false]) ?>
         <?=   $this->render('_search-word', ['model' => $searchModel]); ?>
 

@@ -212,83 +212,88 @@ class AlertMentionsHelper
     public static function getProductInterations($resourceName,$alerts_mention_ids,$alertId)
     {
         $data = [];
-        $models = \app\models\AlertsMencions::find()->where(['id' => $alerts_mention_ids,'alertId' => $alertId])->all();
+        //$models = \app\models\AlertsMencions::find()->where(['id' => $alerts_mention_ids,'alertId' => $alertId])->all();
+        $alertsMentions = \app\models\AlertsMencions::find()->where(
+            [
+                'id' => $alerts_mention_ids,
+                'alertId' => $alertId
+            ]
+        )->with('mentions')->asArray()->all();
 
         switch ($resourceName) {
             case 'Facebook Comments':
-                // contadores
-                $shares = 0;
-                $likes = 0;
-                $total = 0;
-                foreach ($models as $model) {
-                    $shares += $model->mention_data['shares'];
-                    if($model->mentionsCount){
-                        $total += $model->mentionsCount;
-                        foreach ($model->mentions as $mention) {
-                            $likes += $mention->mention_data['like_count'];
+                $data =[
+                    'shares'=> 0,
+                    'likes'=> 0,
+                    'total'=> 0,
+                ];
+                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
+                    $mention_data = json_decode($alertsMentions[$a]['mention_data'],true);
+                    $data['shares'] += $mention_data['shares'];
+                    if(count($alertsMentions[$a]['mentions'])){
+                        $data['total'] += count($alertsMentions[$a]['mentions']);
+                        for ($m=0; $m < sizeOf($alertsMentions[$a]['mentions']) ; $m++) { 
+                            $mention_data = json_decode($alertsMentions[$a]['mentions'][$m]['mention_data'],true);
+                            $data['likes'] += $mention_data['like_count'];
                         }
                     }
                 }
-                // shares
-                $data['shares'] = $shares;
-                //likes
-                $data['likes'] = $likes;
-                // total
-                $data['total'] = $total;
                 return $data;                
                 break;
             
             case 'Facebook Messages':
-                $total = 0;
-                foreach ($models as $model) {
-                    if($model->mentionsCount){
-                        $total += $model->mentionsCount;
+                $data =[
+                    'total'=> 0,
+                ];
+                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
+                    if(count($alertsMentions[$a]['mentions'])){
+                        $data['total'] += count($alertsMentions[$a]['mentions']);
                     }
                 }
-                // total
-                $data['total'] = $total;
                 return $data;
                 break;
             case 'Instagram Comments':
-                $like_post = 0;
-                $total = 0;
-                foreach ($models as $model) {
-                    if($model->mentionsCount){
-                        $total += $model->mentionsCount;
-                        $like_post += $model->mention_data['like_count'];
+                $data =[
+                    'like_post'=> 0,
+                    'total'=> 0,
+                ];
+
+                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
+                    if(count($alertsMentions[$a]['mentions'])){
+                        $data['total'] += count($alertsMentions[$a]['mentions']);
+                        for ($m=0; $m < sizeOf($alertsMentions[$a]['mentions']) ; $m++) { 
+                            $mention_data = json_decode($alertsMentions[$a]['mentions'][$m]['mention_data'],true);
+                            $data['like_post'] += $mention_data['like_count'];
+                        }
                     }
                 }
-                // like post
-                $data['like_post'] = $like_post;
-                // total
-                $data['total'] = $total;
                 return $data; 
             case 'Twitter':
-                $likes = 0;
-                $retweets = 0;
-                $total = 0;
-                foreach ($models as $model) {
-                    if($model->mentionsCount){
-                        $total += $model->mentionsCount;
-                        foreach ($model->mentions as $mention) {
-                            $likes += $mention->mention_data['favorite_count'];
-                            $retweets += $mention->mention_data['retweet_count'];
-                        }
+                $data =[
+                    'likes'=> 0,
+                    'retweets'=> 0,
+                    'total'=> 0,
+                ];
 
+                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
+                    if(count($alertsMentions[$a]['mentions'])){
+                        $data['total'] += count($alertsMentions[$a]['mentions']);
+                        for ($m=0; $m < sizeOf($alertsMentions[$a]['mentions']) ; $m++) { 
+                            $mention_data = json_decode($alertsMentions[$a]['mentions'][$m]['mention_data'],true);
+                            $data['likes'] += $mention_data['favorite_count'];
+                            $data['retweets'] += $mention_data['retweet_count'];
+                        }
                     }
                 }
+
                 // count values in document
                 $alertsMencions = new \app\models\AlertsMencions();
-                $alertMentionsDocuments = \app\models\AlertsMencions::find()->where(['alertId' => $alertId,'type' => 'document'])->all();
-                foreach ($alertMentionsDocuments as $alertMentionsDocument) {
-                    if($alertMentionsDocument->mentionsCount){
-                        $total += $alertsMencions->getCountDocumentByResource('TWITTER',$alertMentionsDocument->id);
+                $alertMentionsDocuments = \app\models\AlertsMencions::find()->with('mentions')->where(['alertId' => $alertId,'type' => 'document'])->asArray()->all();
+                for ($d=0; $d <  sizeOf($alertMentionsDocuments); $d++) { 
+                    if($alertMentionsDocuments[$d]['mentions']){
+                        $data['total'] += $alertsMencions->getCountDocumentByResource('TWITTER',$alertMentionsDocument->id);
                     }
                 }
-                // set
-                $data['total'] = $total;
-                $data['likes_twitter'] = $likes;
-                $data['retweets'] = $retweets;
                 return $data;
                 break;
             case 'Live Chat':
@@ -327,40 +332,38 @@ class AlertMentionsHelper
 
                 break;
             case 'Excel Document':
-                $total = 0;
-                foreach ($models as $model) {
-                    if ($model->mentionsCount) {
-                        $total += $model->mentionsCount;
+                $data =[
+                    'total'=> 0,
+                ];
+                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
+                    if(count($alertsMentions[$a]['mentions'])){
+                        $data['total'] += count($alertsMentions[$a]['mentions']);
                     }
                 }
-                // set
-                $data['total'] = $total;
                 return $data; 
                 break;
             case 'Noticias Webs':
-                $total = 0;
-                foreach ($models as $model) {
-                    if ($model->mentionsCount) {
-                        $total += $model->mentionsCount;
+                $data =[
+                    'total'=> 0,
+                ];
+                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
+                    if(count($alertsMentions[$a]['mentions'])){
+                        $data['total'] += count($alertsMentions[$a]['mentions']);
                     }
                 }
-                // set
-                $data['total'] = $total;
                 return $data; 
                 break;
             case 'Paginas Webs':
-                $total = 0;
-                foreach ($models as $model) {
-                    if ($model->mentionsCount) {
-                        $total += $model->mentionsCount;
+                $data =[
+                    'total'=> 0,
+                ];
+                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
+                    if(count($alertsMentions[$a]['mentions'])){
+                        $data['total'] += count($alertsMentions[$a]['mentions']);
                     }
                 }
-                // set
-                $data['total'] = $total;
                 return $data; 
                 break;
-                
-                         
 
             default:
                 # code...

@@ -26,7 +26,8 @@ $config = [
         // kartik
         'gridview' => [
             'class' => '\kartik\grid\Module',
-            'bsVersion' => 3
+            'bsVersion' => 3,
+            //'downloadAction' => 'gridview/export/download',
         ]
     ],
     'components' => [

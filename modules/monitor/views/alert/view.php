@@ -108,9 +108,9 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 
 
     <modal-alert :count="count"></modal-alert>
-    <div v-show="isData">
+    <div v-if="isData">
         <div class="row">
-            <!-- <total-mentions :count="count" :resourcescount="resourcescount"> -->
+            <total-mentions :count="count" :resourcescount="resourcescount">
         </div>
        <div class="row">
             <div class="col-md-12">
@@ -119,21 +119,21 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
         </div>
         <div class="row">
             <div class="col-md-12">
-                <!-- <post-interation-chart :is_change="is_change"> -->
+                <post-interation-chart :is_change="is_change">
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <!-- <products-interations-chart :is_change="is_change"> -->
+                <products-interations-chart :is_change="is_change">
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <!-- <count-date-resources-chart :is_change="is_change"> -->
+                <count-date-resources-chart :is_change="is_change">
             </div>
         </div>
-        <div  class="row">
-            <list-mentions :is_change="is_change"></list-mentions>
+        <div class="row">
+            <list-mentions  :is_change="is_change"></list-mentions>
         </div>
         <div class="row">
             <cloud-words></cloud-words>
@@ -149,7 +149,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
 
         
     </div>
-    <div v-show="!isData">
+    <div v-else>
         <div class="loader">
           <div class="spinner" style="height: 15vh;width:  15vh;"></div>
         </div>

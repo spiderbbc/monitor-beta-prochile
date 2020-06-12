@@ -747,19 +747,26 @@ const listMentions = Vue.component("list-mentions", {
     };
   },
   mounted() {
+    //$.pjax.reload({ container: "#mentions", async: true });
+    // $.pjax.reload({ container: "#mentions" });
+    //$.pjax.reload({ container: "#mentions" });
+    //jQuery.pjax.reload({ container: "#mentions" });
+    $.pjax.reload({ container: "#mentions", async: false });
     setInterval(
       function () {
         if (this.is_change) {
-          console.log("ajax reload");
-          $.pjax.reload({ container: "#mentions", timeout: false });
+          $.pjax.reload({ container: "#mentions", async: false });
         }
       }.bind(this),
-      refreshTime
+      refreshTime + 5000
     );
   },
   methods: {
     setDataTable() {
       return initMentionsSearchTable();
+    },
+    reload() {
+      $.pjax.reload({ container: "#mentions", async: false });
     },
   },
 });
@@ -992,7 +999,7 @@ const vm = new Vue({
   data: {
     alertId: id,
     count: 0,
-    isData: true,
+    isData: false,
     //retweets: 0,
     resourcescount: [],
     is_change: false,
@@ -1016,19 +1023,19 @@ const vm = new Vue({
         .catch((error) => console.log(error));
       if (this.count > 0) {
         this.isData = true;
-        if (localStorage.getItem("alert_count_" + id)) {
-          var count_storage = localStorage.getItem("alert_count_" + id);
-          if (count_storage != this.count) {
-            localStorage.setItem("alert_count_" + id, this.count);
-            this.is_change = true;
-            console.info("Hubo un cambio en el count");
-          } else {
-            this.is_change = false;
-          }
-        } else {
+      }
+      if (localStorage.getItem("alert_count_" + id)) {
+        var count_storage = localStorage.getItem("alert_count_" + id);
+        if (count_storage != this.count) {
           localStorage.setItem("alert_count_" + id, this.count);
-          console.info("set storage ...");
+          this.is_change = true;
+          console.info("Hubo un cambio en el count");
+        } else {
+          this.is_change = false;
         }
+      } else {
+        localStorage.setItem("alert_count_" + id, this.count);
+        console.info("set storage ...");
       }
     },
     init() {

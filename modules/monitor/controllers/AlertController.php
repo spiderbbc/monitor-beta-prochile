@@ -190,18 +190,19 @@ class AlertController extends Controller
         }
 
       }
-      
+
+      $alertMentionIds = [];
       //move json file and delete mentions
       foreach ($alert->alertsMentions as $alertMention) {
         // move json file
         \app\helpers\DocumentHelper::moveFilesToRoot($alert->id,$alertMention->resources->name);
         if ($alertMention->mentionsCount) {
-          foreach ($alertMention->mentions as $mentions => $mention) {
-            $mention->delete();
-          }
+            $alertMentionIds[] = $alertMention->id;
         }
       }
-     
+
+      \app\models\Mentions::deleteAll(['alert_mentionId' => $alertMentionIds]);
+      
       
       $status = ($isDictionary) ? true: false;
       return ['status'=>$status];
@@ -211,15 +212,16 @@ class AlertController extends Controller
     {
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
       $alert = $this->findModel($alertId);
+      $alertMentionIds = [];
       //move json file and delete mentions
-      foreach ($alert->alertsMentions as $alertMention) {// move json file
+      foreach ($alert->alertsMentions as $alertMention) {
+        // move json file
         \app\helpers\DocumentHelper::moveFilesToRoot($alert->id,$alertMention->resources->name);
         if ($alertMention->mentionsCount) {
-          foreach ($alertMention->mentions as $mentions => $mention) {
-            $mention->delete();
-          }
+            $alertMentionIds[] = $alertMention->id;
         }
       }
+      \app\models\Mentions::deleteAll(['alert_mentionId' => $alertMentionIds]);
       return ['status' => true];
     }
 

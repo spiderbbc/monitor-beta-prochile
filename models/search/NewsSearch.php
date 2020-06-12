@@ -225,25 +225,27 @@ class NewsSearch
     
     foreach($data as $product => $news){
         for($n = 0; $n < sizeOf($news); $n ++){
-          $wordsId = [];
-          for ($w=0; $w <sizeof($words) ; $w++) { 
-            $sentence = $data[$product][$n]['message_markup'];
-            $word = " {$words[$w]['name']} ";
-            $containsCount = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence, $word);
-            if ($containsCount) {
-              $wordsId[$words[$w]['id']] = $containsCount;
-              $data[$product][$n]['message_markup']  = \app\helpers\StringHelper::replaceIncaseSensitive($sentence,$word,"<strong>{$word}</strong>");
+          if(!is_null($data[$product][$n]['message_markup'])){
+            $wordsId = [];
+            for ($w=0; $w <sizeof($words) ; $w++) { 
+              $sentence = $data[$product][$n]['message_markup'];
+              $word = " {$words[$w]['name']} ";
+              $containsCount = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence, $word);
+              if ($containsCount) {
+                $wordsId[$words[$w]['id']] = $containsCount;
+                $data[$product][$n]['message_markup']  = \app\helpers\StringHelper::replaceIncaseSensitive($sentence,$word,"<strong>{$word}</strong>");
+              }
+            }// end loop words
+            if(!empty($wordsId)){
+              if(!ArrayHelper::keyExists($product, $model)){
+                    $model[$product] = [];
+                }
+                if(!in_array($news[$n], $model[$product])){
+                    $news[$n]['wordsId'] = $wordsId;
+                    $model[$product][] =  $news[$n];
+                }
+                //$data[$product][$n]['wordsId'] = $wordsId;
             }
-          }// end loop words
-          if(!empty($wordsId)){
-            if(!ArrayHelper::keyExists($product, $model)){
-                  $model[$product] = [];
-              }
-              if(!in_array($news[$n], $model[$product])){
-                  $news[$n]['wordsId'] = $wordsId;
-                  $model[$product][] =  $news[$n];
-              }
-              //$data[$product][$n]['wordsId'] = $wordsId;
           }
         } // end loop news
     }// end foreach
