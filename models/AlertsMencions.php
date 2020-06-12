@@ -230,7 +230,7 @@ class AlertsMencions extends \yii\db\ActiveRecord
         $retweets_count = 0;
 
         $db = \Yii::$app->db;
-        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->with('mentions')->asArray()->all();;
+        $alertMentions = $this->find()->where(['alertId' => $this->alertId,'resourcesId' => $this->resourcesId])->with('mentions')->asArray()->all();
 
         for ($a=0; $a < sizeOf($alertMentions) ; $a++) { 
             if(count($alertMentions[$a]['mentions'])){
