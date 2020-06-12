@@ -21,7 +21,7 @@ use yii\helpers\Html;
 			
 			<div class="card card-widget widget-user">
 				<!-- Add the bg color to the header using any of the bg-* classes -->
-				<div class="widget-user-header bg-info" :style="{backgroundImage: `url('${contentPage.image_url}')`, paddingTop: '10px'}">
+				<div class="widget-user-header bg-info">
 				</div>
 				<div v-if="contentPage.resource">
 					<a :href="contentPage.permalink" class="widget-user-image" style="top: 55px;" target="_blank">
@@ -77,7 +77,7 @@ use yii\helpers\Html;
 	          </thead>
 	          <tbody v-if="contentPosts">
 	            <tr v-for="post in contentPosts">
-	              <th scope="row"><a :href="post.permalink" target="_blank">{{post.message  | stringSubstr}}</a></th>
+	              <th scope="row"><a :href="post.permalink"  v-html="" target="_blank">{{post.message  | stringSubstr}}</a></th>
 	              <td style="text-align:left" v-for="insigth in post.wInsights">
 	              		<div v-if="insigth.value">
 	              			{{insigth.value}}
