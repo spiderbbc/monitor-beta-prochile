@@ -93,23 +93,11 @@ class InsightsController extends Controller
                 'type_content_id' => $postContentId->id,
                 'resource_id' => $resourceId // get by source
             ]
-        )->with(['resource'])->orderBy(['updatedAt' => SORT_DESC])->asArray()->limit(5)->all();
+        )->with(['resource','wProductsFamilyContent.serie'])->orderBy(['timespan' => SORT_DESC])->asArray()->limit(5)->all();
 
         
 
-        for ($p=0; $p < sizeof($posts_content) ; $p++) { 
-
-        	$insights = \app\models\WInsights::find()->where([
-        		'content_id' => $posts_content[$p]['id'],
-        	])->andWhere([
-        		'title' => ['likes','Alcance','coments','Impresiones','Interacción']
-        	])->orderBy(['end_time' => SORT_DESC ])->asArray()->limit(5)->all();
-        	if (!is_null($insights)) {
-        		$posts_content[$p]['wInsights'] = $insights;
-        	}
-        }
-
-        return $posts_content;
+        return \app\helpers\InsightsHelper::getPostInsightsByResource($posts_content,$resourceId);
 	}
 	/**
 	 * [actionStorysInsights returns the information on the Storys with its Insights]
