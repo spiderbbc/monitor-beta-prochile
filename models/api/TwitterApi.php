@@ -216,7 +216,7 @@ class TwitterApi extends Model {
         	}
         	// if there 200 status
         	if($data[$index]['httpstatus'] == 200){
-        		Console::stdout(" is 200 \n", Console::FG_GREEN);
+        		//Console::stdout(" is 200 \n", Console::FG_GREEN);
         		// if statuses not empty
         		if(!empty($data[$index]['statuses'])){
         			$statusCount = count($data[$index]['statuses']);
