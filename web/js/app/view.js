@@ -1023,19 +1023,19 @@ const vm = new Vue({
         .catch((error) => console.log(error));
       if (this.count > 0) {
         this.isData = true;
-      }
-      if (localStorage.getItem("alert_count_" + id)) {
-        var count_storage = localStorage.getItem("alert_count_" + id);
-        if (count_storage != this.count) {
-          localStorage.setItem("alert_count_" + id, this.count);
-          this.is_change = true;
-          console.info("Hubo un cambio en el count");
+        if (localStorage.getItem("alert_count_" + id)) {
+          var count_storage = localStorage.getItem("alert_count_" + id);
+          if (count_storage != this.count) {
+            localStorage.setItem("alert_count_" + id, this.count);
+            this.is_change = true;
+            console.info("Hubo un cambio en el count");
+          } else {
+            this.is_change = false;
+          }
         } else {
-          this.is_change = false;
+          localStorage.setItem("alert_count_" + id, this.count);
+          console.info("set storage ...");
         }
-      } else {
-        localStorage.setItem("alert_count_" + id, this.count);
-        console.info("set storage ...");
       }
     },
     init() {
