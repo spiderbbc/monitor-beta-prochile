@@ -212,6 +212,8 @@ class TwitterApi extends Model {
         	// get data twitter api
         	$data[$index] = $this->search_tweets($params);
         	if($data[$index]['rate']['remaining'] < $this->minimum){
+				//Console::stdout(" limits is: {$this->limit} \n", Console::BOLD);
+				//Console::stdout(" remaining is: {$data[$index]['rate']['remaining']} \n", Console::BOLD);
         		continue;
         	}
         	// if there 200 status
@@ -225,7 +227,7 @@ class TwitterApi extends Model {
         				// set limit
         				$remaining = $data[$index]['rate']['remaining'];
 	        			$this->limit = $this->_setLimits($remaining);
-	        			//Console::stdout(" limits is: {$this->limit} \n", Console::BOLD);
+	        			//Console::stdout(" set limit: {$this->limit} \n", Console::BOLD);
         			}
         			// if there sinceId
         			if(is_null($sinceId)){
