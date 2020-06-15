@@ -194,7 +194,6 @@ class TwitterSearch
                     ]
                     )->one();
                 $mention->message_markup  = $message_markup;
-                $mention->save();
             }else{
                 $mention  = new \app\models\Mentions();
                 $mention->url = $url;
@@ -280,6 +279,7 @@ class TwitterSearch
                 }
            } 
         }
+        unset($mentions);
         return $data;
     }
 

@@ -574,7 +574,6 @@ class InstagramCommentsApi extends Model {
 
 		/*$comments_query = "{$feedId}?fields=comments.limit({$this->_limit_commets}){user,username,timestamp,text,like_count,id,replies.limit($this->_limit_commets){username,text,timestamp,hidden}}";*/
 		$comments_query = "{$feedId}/comments?access_token={$this->_page_access_token}&fields=user%2Cusername%2Ctimestamp%2Ctext%2Clike_count%2Cid&limit={$this->_limit_commets}";
-
 		return $comments_query;
 
 	}
