@@ -52,8 +52,16 @@ class MentionSearch extends Mentions
     {   
         $model = $this->getData($params,$alertId);
 
+        $sort = new \yii\data\Sort([
+            'attributes' => [
+                'created_time',
+                // or any other attribute
+            ],
+        ]);
+
         $dataProvider = new \yii\data\ArrayDataProvider([
             'allModels' => $model,
+            'sort' => $sort,
             'pagination' => [
                 'pageSize' => 10,
             ]
