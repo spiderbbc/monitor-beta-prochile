@@ -454,7 +454,7 @@ class InsightsApi extends Model
 				$properties = [
 					'message'   => $posts[$p]['caption'],
 					'permalink' => $posts[$p]['permalink'],
-					'image_url' => $posts[$p]['media_url'],
+					'image_url' => (isset($posts[$p]['media_url'])) ? $posts[$p]['media_url'] : null,
 					'timespan'  => \app\helpers\DateHelper::asTimestamp($posts[$p]['timestamp']),
 				];
 
