@@ -2,7 +2,8 @@
 namespace app\helpers;
 
 use yii;
-
+use TextAnalysis\Filters\StopWordsFilter;
+use StopWordFactory;
 /**
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * ScrapingHelper wrapper for scraping function.
@@ -27,7 +28,7 @@ class ScrapingHelper{
            //'//a'           => Yii::t('app','link'),
            '//b'           => Yii::t('app','negrita'),
             '//span'        => Yii::t('app','contenedor'),
-            '//ul//li'      => Yii::t('app','ítem'),
+            '//ul//li/text()[not(ancestor::script)]'      => Yii::t('app','ítem'),
             //'//address'     => Yii::t('app','address'),
             //'//aside'       => Yii::t('app','aside'),
            '//hgroup'      => Yii::t('app','hgroup'),
@@ -101,15 +102,14 @@ class ScrapingHelper{
 			}
 		}
 
-		/*$urls = [
-			'http://testing-ground.scraping.pro/whoami'=>[
-				'domain' => 'scraping.pro',
-				'links'  => [
-					'http://testing-ground.scraping.pro/whoami',
-					'http://testing-ground.scraping.pro/textlist'
-				],
-			]
-		];*/
+		// $urls = [
+		// 	'http://localhost/test/text.html'=>[
+		// 		'domain' => 'text.html',
+		// 		'links'  => [
+		// 			'http://localhost/test/text.html',
+		// 		],
+		// 	]
+		// ];
 
 		return $urls;
 		
@@ -235,6 +235,7 @@ class ScrapingHelper{
 	                    {
 	                    	$text = $node->text();
 	                    	if (!\app\helpers\StringHelper::isEmpty($text)) {
+								$text = \app\helpers\StringHelper::lowercase($text);
 	                    		$text_without_spaces = \app\helpers\StringHelper::collapseWhitespace($text);
 	                    		//echo $rule."\n";
 	                    		return [
@@ -281,39 +282,36 @@ class ScrapingHelper{
 		return $data;
 	}
 
-	public static function sendTextAnilysis($multipartForm,$link)
+	public static function sendTextAnilysis($content,$link = null)
 	{
-		$client = new \GuzzleHttp\Client();
-		$response = $client->request('POST', 'http://textalyser.net/index.php?lang=en#analysis',$multipartForm);
-
-		$code = $response->getStatusCode();
-		$reason = $response->getReasonPhrase();
-
-		if ($code == 200 && $reason == 'OK') {
-			$body = $response->getBody()->getContents();
-        	$crawler = new \Symfony\Component\DomCrawler\Crawler($body);
-        	// get table
-        	$table = $crawler->filter('table')->eq(11);
-        	// read the table
-	        $tds = [];
-	        foreach ($table as $node => $content) {
-	            // create crawler instance for result
-	            $crawler = new \Symfony\Component\DomCrawler\Crawler($content);
-	            //iterate again
-	            $index = 0;
-	            $rows= [];
-	            foreach ($crawler->filter('td') as $node) {
-	                $rows[] = $node->nodeValue;
-	                if (sizeof($rows) % 4 == 0) {
-	                    $tds[] = $rows;
-	                    $rows =[];
-	                }
-	            }
-	        }
+		
+		// Create a tokenizer object to parse the book into a set of tokens
+		$tokenizer = new \TextAnalysis\Tokenizers\GeneralTokenizer();
+		// set tokens
+		$tokens = $tokenizer->tokenize($content);
+		// set anilisis
+		$freqDist = new \TextAnalysis\Analysis\FreqDist($tokens);
+		//Get all words
+		$allwords = $freqDist->getKeyValuesByFrequency();
+		//Get the top 10 most used words in Tom Sawyer 
+		$words = array_splice($allwords, 0, 50);
+		// get all stop words spanish
+		$stop_factory = StopWordFactory::get('stop-words_spanish_es.txt');
+		$stopWord_es = new StopWordsFilter($stop_factory);
+		// get alll words english
+		$stop_factory_en = StopWordFactory::get('stop-words_english.txt');
+		$stopWord_en = new StopWordsFilter($stop_factory_en);
+		// filter stop words
+		$data = [];
+		// limit from ten words
+		$limit = 10;
+		foreach ($words as $word => $value) {
+			if(!is_null($stopWord_en->transform($word)) && !is_null($stopWord_es->transform($word)) && count($data) < $limit){
+				$data[$word] = $value;
+			}
 		}
-		$analysis = \app\helpers\StringHelper::sortDataAnalysisTable($tds,$link);
-		$analysis = self::removeStopWords($analysis);
-		return $analysis;
+		$analysis = \app\helpers\StringHelper::sortDataAnalysis($data,$link);
+		return (is_null($link)) ? $data : $analysis;
 		
 	}
 
