@@ -184,7 +184,6 @@ class TwitterSearch
                 [
                     'alert_mentionId' => $alertsMentionsIds,
                     'origin_id' => $userMentions->id,
-                    'social_id' => $social_id
                 ])->exists()){
                 
                 $mention = \app\models\Mentions::find()->where(
