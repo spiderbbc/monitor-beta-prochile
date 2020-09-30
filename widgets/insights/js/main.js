@@ -1,16 +1,3 @@
-//const origin = location.origin;
-
-const baseUrlApi = `${origin}/monitor-beta-prochile/web/monitor/api/insights/`;
-const baseUrlImg = `${origin}/monitor-beta-prochile/web/img/`;
-const titleInsights = {
-  "Número de seguidores": "Seguidores Unicos",
-};
-
-const headersPost = {
-  likes: "Me Gusta",
-  coments: "Comentarios y respuestas",
-};
-
 const cardWidget = Vue.component("card-widget", {
   props: ["resources"],
   template: "#card-template",
@@ -33,7 +20,9 @@ const widget = Vue.component("widget", {
   methods: {
     fetchPage() {
       axios
-        .get(baseUrlApi + "content-page" + "?resourceId=" + this.resourceId)
+        .get(
+          baseUrlApiWidget + "content-page" + "?resourceId=" + this.resourceId
+        )
         .then((response) => {
           if (typeof response === "object") {
             this.contentPage = response.data;
@@ -100,7 +89,9 @@ const PostsInsights = Vue.component("posts", {
   methods: {
     fetchPost() {
       axios
-        .get(baseUrlApi + "posts-insights" + "?resourceId=" + this.resourceId)
+        .get(
+          baseUrlApiWidget + "posts-insights" + "?resourceId=" + this.resourceId
+        )
         .then((response) => {
           this.contentPosts = response.data;
           // set header
@@ -162,7 +153,12 @@ const InsightsStrorys = Vue.component("storys", {
   methods: {
     fetchStorys() {
       axios
-        .get(baseUrlApi + "storys-insights" + "?resourceId=" + this.resourceId)
+        .get(
+          baseUrlApiWidget +
+            "storys-insights" +
+            "?resourceId=" +
+            this.resourceId
+        )
         .then((response) => {
           this.contentStorys = response.data;
           //console.log(this.contentStorys);
@@ -232,7 +228,7 @@ var vue = new Vue({
   },
   methods: {
     fetchStatus() {
-      axios.get(baseUrlApi + "numbers-content").then((response) => {
+      axios.get(baseUrlApiWidget + "numbers-content").then((response) => {
         this.resources = response.data;
         if (this.resources.length) {
           this.loaded = true;

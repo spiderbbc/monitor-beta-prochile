@@ -21,6 +21,7 @@ class InsightsAsset extends AssetBundle
         'css/insights.css',
     ];
     public $js = [
+        'js/template.js',
         'js/main.js',
         //'js/widget/bootstrap.bundle.min.js',
     ];
@@ -28,5 +29,10 @@ class InsightsAsset extends AssetBundle
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
         '\app\assets\VueAsset',
+    ];
+
+    public $publishOptions = [
+        'forceCopy' => false,
+         //you can also make it work only in debug mode: 'forceCopy' => YII_DEBUG
     ];
 }
