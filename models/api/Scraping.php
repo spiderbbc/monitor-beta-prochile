@@ -72,50 +72,7 @@ class Scraping extends Model
 	 */
 	public function getRequest()
     {
-        $client = new Client();
-        
-
-        $guzzleClient = new \GuzzleHttp\Client(array(
-        	'verify' => Yii::getAlias('@cacert'),
-	        'curl' => array(
-	        	CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
-	           // CURLOPT_FOLLOWLOCATION => true,
-	          //  CURLOPT_SSL_VERIFYHOST => false,
-	            CURLOPT_SSL_VERIFYPEER => false
-	        )
-	    ));
-	    $client->setClient($guzzleClient);
-        $crawler = [];
-
-
-        
-        if (!empty($this->urls)) {
-            foreach ($this->urls as $url => $values) {
-                if (!empty($values['links'])) {
-                    for ($l=0; $l < sizeof($values['links']) ; $l++) { 
-                        $link = $values['links'][$l];
-                        try {
-						    $response = $client->request('GET',$link);
-						    $status_code = $client->getResponse()->getStatus();
-						    
-						    if ($status_code == 200) {
-						        $domain = $values['domain'];
-						        if($domain){
-						            $content_type = $client->getResponse()->getHeader('Content-Type');
-						            if (strpos($content_type, 'text/html') !== false) {
-						                $crawler[$url][$link][] = $response;
-						            }
-						        }// if domain
-						    }// end if status code    
-						} catch (\GuzzleHttp\Exception\ConnectException $e) {
-						    // var_dump($e);
-						     continue;
-						}
-                    }// end loop for links
-                }// end if empty
-            }// end loop foreach
-        }// end if empty
-        return $crawler;
+        return \app\helpers\ScrapingHelper::getRequest($this->urls);
     }
 	
 	/**
@@ -180,9 +137,11 @@ class Scraping extends Model
 							}
 						}
 					}// end loop nodes
+					unset($sentence);
 				}// end loop values
 			}// end loop end data
 		}// end if emty data
+		unset($tmp);
 		$this->data = $model;
 		return (!empty($this->data)) ? true : false;
 	}
@@ -234,9 +193,8 @@ class Scraping extends Model
 	            'status' => 'Pending'
 	        ]
 	    ];
-
+		$count = 0;
 	    if (count($alertsMencions)) {
-	    	$count = 0;
 	    	$date_searched_flag   = $this->end_date;
 	      	foreach ($alertsMencions as $alert_mention) {
 	      		$date_searched_flag = intval($date_searched_flag);
@@ -254,6 +212,12 @@ class Scraping extends Model
 	          $params['Paginas Webs']['status'] = 'Finish'; 
 	        }
 	    }  
+		$today_timespan = \app\helpers\DateHelper::getTodayDate();
+		$end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'1 day'));
+			  
+		if(($count > count($alertsMencions)) or ($today_timespan >= $end_date)){
+			$params['Paginas Webs']['status'] = 'Finish'; 
+		}  
       	\app\helpers\HistorySearchHelper::createOrUpdate($this->alertId, $params);
 
     }
