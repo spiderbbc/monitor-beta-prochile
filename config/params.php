@@ -10,6 +10,11 @@ Yii::setAlias('@pdf',dirname(dirname(__DIR__)). "{$s}{$folder}{$s}web{$s}pdf");
 Yii::setAlias('@credencials',dirname(dirname(__DIR__)). "{$s}{$folder}{$s}credentials{$s}monitor-app-96f0293a0153.json");
 Yii::setAlias('@insights',dirname(dirname(__DIR__)). "{$s}{$folder}{$s}widgets{$s}insights");
 Yii::setAlias('@cacert',dirname(dirname(__DIR__)). "{$s}{$folder}{$s}credentials{$s}cacert.pem");
+
+// set env var
+$dotenv = Dotenv\Dotenv::createImmutable( dirname(dirname(__DIR__)). "{$s}{$folder}{$s}");
+$dotenv->load();
+
 return [
 	'adminEmail'  => 'eduardo@montana-studio.com',
 	'senderEmail' => 'eduardo@montana-studio.com',
@@ -39,12 +44,12 @@ return [
 		],
 	],
 	'facebook'    => [ 
-		'time_min_sleep'  => 1, 
-		'business_id' => '101330848134001',
-		'app_id'      => '227526951746847',
-		'name_app'    => 'pro_chile_monitor',
-		'name_account'    => 'prochile_usa',
-		'app_secret'  => '6fad2007ef6412fcf59a5581ac6c764b'
+		'time_min_sleep'  => 5, 
+		'business_id'     => $_SERVER['BUSSINES_ID'],
+		'app_id'          => $_SERVER['APP_ID'],
+		'name_app'        => $_SERVER['NAME_APP'],
+		'name_account'    => $_SERVER['NAME_ACCOUNT'],
+		'app_secret'      => $_SERVER['APP_SECRET']
 
 	],
 ];

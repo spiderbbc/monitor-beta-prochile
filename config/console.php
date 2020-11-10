@@ -22,6 +22,29 @@ $config = [
             'class'           => 'yii\i18n\Formatter',
             'defaultTimeZone' => 'America/Santiago',
         ],
+        'cache' => [
+            'class' => 'yii\caching\MemCache',
+            'useMemcached' => true, // <--- here
+            'servers' => [
+                [
+                    'host' => '127.0.0.1',
+                    'port' => 11211,
+                    'weight' => 60,
+                ],
+            ],
+        ],
+        'mailer' => [
+            'class' => 'yii\swiftmailer\Mailer',
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'smtp.gmail.com',  // e.g. smtp.mandrillapp.com or smtp.gmail.com
+                'username' => $_SERVER['EMAIL_FROM'],
+                'password' => $_SERVER['EMAIL_PASS'],
+                'port' => '587', // Port 25 is a very common port too
+                'encryption' => 'tls', // It is often used, check your provider or mail server specs
+            ],
+            //'useFileTransport' => true,
+        ],
         'log' => [
             'targets' => [
                 [
