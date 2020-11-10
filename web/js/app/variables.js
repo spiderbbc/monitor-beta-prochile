@@ -1,7 +1,8 @@
 let id = document.getElementById("alertId").value;
 //console.log(location);
 const origin = location.origin;
-const appId = location.pathname.split("/")[1];
+const root = location.pathname.split("/")[1];
+const appId = root != "web" ? `${root}/web` : "web";
 
 //const apiUrl = `${origin}/${appId}/api/v1/mentions/`;
 
