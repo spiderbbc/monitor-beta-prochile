@@ -6,9 +6,9 @@ const appId = root != "web" ? `${root}/web` : "web";
 
 //const apiUrl = `${origin}/${appId}/api/v1/mentions/`;
 
-const baseUrlApi = `${origin}/${appId}/web/monitor/api/mentions/`;
-const baseUrlDocument = `${origin}/${appId}/web/monitor/pdf/`;
-const baseUrlView = `${origin}/${appId}/web/monitor/alert/`;
+const baseUrlApi = `${origin}/${appId}/monitor/api/mentions/`;
+const baseUrlDocument = `${origin}/${appId}/monitor/pdf/`;
+const baseUrlView = `${origin}/${appId}/monitor/alert/`;
 // 1000 = 1 seg
 
 let refreshTime = 15000;
