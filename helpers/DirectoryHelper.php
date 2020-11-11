@@ -53,6 +53,7 @@ class DirectoryHelper{
         }
         
         if (is_dir($path)) {
+            chmod($path, 0777);
             FileHelper::removeDirectory($path);
         }
     }
