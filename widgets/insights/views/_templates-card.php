@@ -111,7 +111,7 @@ use yii\helpers\Html;
 	              		<div class="text-center" v-if="insigth.value">
 	              			{{insigth.value  | formatNumber }}
 	              		</div>
-	              		<div v-else>
+	              		<div class="text-center" v-else>
 	              			{{insigth.value  | formatNumber }} 
 	              		</div>
 	          	  </td>
