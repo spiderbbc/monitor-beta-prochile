@@ -99,6 +99,7 @@ class JsonFile {
 		$this->source = $source;
 		if (!is_dir(\Yii::getAlias('@data')."{$s}{$this->documentId}{$s}{$this->source}")) {
 			$folder = \yii\helpers\FileHelper::createDirectory(\Yii::getAlias('@data')."{$s}{$this->documentId}{$s}{$this->source}", $mode = 0777,$recursive = true);
+			
 		}
 		// path to folder flat archives
 		$this->filebase = new Database([

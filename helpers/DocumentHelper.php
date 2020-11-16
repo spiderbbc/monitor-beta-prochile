@@ -34,25 +34,8 @@ class DocumentHelper
         $files = \yii\helpers\FileHelper::findFiles($path,['except'=>['*.php','*.txt'],'recursive' => false]); 
         // create directory
         $folderName = 'processed';
-        $create = \yii\helpers\FileHelper::createDirectory("{$path}{$folderName}",$mode = 0755, $recursive = true);
+        $create = \yii\helpers\FileHelper::createDirectory("{$path}{$folderName}",$mode = 0777, $recursive = true);
         
-
-        // move files
-        // foreach($files as $file){
-        //     $split_path = explode("{$s}",$file);
-        //     $fileName = end($split_path);
-        //     try {
-        //         if(copy("{$file}","{$path}{$folderName}{$s}{$fileName}")){
-        //             try {
-        //                unlink("{$file}"); 
-        //             } catch (\yii\base\ErrorException $e) {
-        //                 continue;
-        //             }
-        //         }
-        //     } catch (\yii\base\ErrorException $e) {
-        //         continue;
-        //     }
-        // }
         if(isset($files[0])){
             $file = $files[0];
             $split_path = explode("{$s}",$file);
