@@ -55,7 +55,7 @@ const titleToolTipsInsights = {
     "Número total de cuentas únicas que siguen este perfil (Lifetime)",
 };
 
-const titleInsightsTableTooltips = {
+const titleInsightsTableTooltip = {
   // facebook
   post_impressions:
     "Número de veces que se mostró en la pantalla de una persona la publicación de tu página. Las publicaciones incluyen estados, fotos, enlaces, videos y más.",
