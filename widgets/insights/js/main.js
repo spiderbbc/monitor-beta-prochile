@@ -143,7 +143,6 @@ const PostsInsights = Vue.component("posts", {
     },
     setHeaderToolTips: function (value) {
       if (typeof value !== "undefined" && titleInsightsTableTooltip[value]) {
-        console.log(value);
         return titleInsightsTableTooltip[value];
       }
       return value;

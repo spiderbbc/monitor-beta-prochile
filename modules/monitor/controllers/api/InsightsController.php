@@ -95,7 +95,6 @@ class InsightsController extends Controller
             ]
         )->with(['resource'])->orderBy(['timespan' => SORT_DESC])->asArray()->limit(5)->all();
 
-        
 
         return \app\helpers\InsightsHelper::getPostInsightsByResource($posts_content,$resourceId);
 	}

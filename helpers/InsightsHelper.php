@@ -384,7 +384,7 @@ class InsightsHelper
                     'name' => $where[$resourceName],
                 ])->orderBy([
                     'end_time' => SORT_DESC,
-                    new \yii\db\Expression('FIELD(name,"post_reactions_by_type_total","post_engaged_users","post_impressions")') 
+                    new \yii\db\Expression('FIELD(name,"impressions","reach","engagement","likes","coments")') 
                     
                     ])->asArray()->limit(sizeof($where[$resourceName]))->all();
                 if (!is_null($insights)) {

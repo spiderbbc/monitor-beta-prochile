@@ -100,7 +100,7 @@ use yii\helpers\Html;
 		      <thead>
 		        <tr v-if="storysHeader">
 		          <th scope="col">Link</th>		
-		          <th v-for="header in storysHeader" scope="col">{{header}}</th>
+		          <th align="center" style="text-align: center;" v-for="header in storysHeader" scope="col">{{header}}</th>
 		          
 		        </tr>
 		      </thead>
