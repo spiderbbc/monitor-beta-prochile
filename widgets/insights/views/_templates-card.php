@@ -34,7 +34,7 @@ use yii\helpers\Html;
 						<div v-for="(insights,index) in insightsPage" :class="getCol(insightsPage.length,index +1)">
 							<div class="description-block">
 							  <h5 class="description-header">{{insights.value}}</h5>
-							  <span class="">{{insights.title  | setTitleInsights}}</span>
+							   <span data-toggle="tooltip" data-placement="top" :title="insights.name  | setTitleTooltipsInsights" class="">{{insights.name  | setTitleInsights}}</span>
 							</div>
 							<!-- /.description-block -->
 						</div>
@@ -72,13 +72,13 @@ use yii\helpers\Html;
 	          <thead>
 	            <tr v-if="insightsHeader">
 	              <th scope="col">titulo post</th>
-	              <th v-for="header in insightsHeader" scope="col">{{header  | setHeadersPost}}</th>
+	              <th v-for="header in insightsHeader" data-placement="top" :title="header  | setHeaderToolTips" scope="col">{{header | setHeadersPost}}</th>
 	            </tr>
 	          </thead>
 	          <tbody v-if="contentPosts">
 	            <tr v-for="post in contentPosts">
-	              <th scope="row"><a :href="post.permalink"  v-html="" target="_blank">{{post.message  | stringSubstr}}</a></th>
-	              <td style="text-align:left" v-for="insigth in post.wInsights">
+	              <th scope="row"><a :href="post.permalink" data-placement="top" :title="post.message"  target="_blank">{{post.message  | stringSubstr}}</a></th>
+	              <td align="center" v-for="insigth in post.wInsights">
 	              		<div v-if="insigth.value">
 	              			{{insigth.value}}
 	              		</div>
@@ -107,9 +107,12 @@ use yii\helpers\Html;
 		      <tbody v-if="contentStorys">
 		        <tr v-for="story in contentStorys">
 					<th scope="row"><a :href="story.permalink" target="_blank">{{story.timespan | getDate }}</a></th>
-		            <td style="text-align:left" v-for="insigth in story.wInsights">
-	              		<div  v-if="insigth.value">
-	              			{{insigth.value}}
+		            <td align="center" v-for="insigth in story.wInsights">
+	              		<div class="text-center" v-if="insigth.value">
+	              			{{insigth.value  | formatNumber }}
+	              		</div>
+	              		<div v-else>
+	              			{{insigth.value  | formatNumber }} 
 	              		</div>
 	          	  </td>
 		        </tr>

@@ -1,8 +1,19 @@
+"use strict";
+
+/**
+ * [componente que muestra cuantos card widget se mostraran en pantalla]
+ * template: '#card-template [description]
+ * @return {[component]}           [component]
+ */
 const cardWidget = Vue.component("card-widget", {
   props: ["resources"],
   template: "#card-template",
 });
-
+/**
+ * [componente que muestra todo el  card widget]
+ * template: '#widget-template [description]
+ * @return {[component]}           [component]
+ */
 const widget = Vue.component("widget", {
   props: ["resourceId", "index", "length"],
   template: "#widget-template",
@@ -20,9 +31,7 @@ const widget = Vue.component("widget", {
   methods: {
     fetchPage() {
       axios
-        .get(
-          baseUrlApiWidget + "content-page" + "?resourceId=" + this.resourceId
-        )
+        .get(baseUrlApi + "content-page" + "?resourceId=" + this.resourceId)
         .then((response) => {
           if (typeof response === "object") {
             this.contentPage = response.data;
@@ -65,6 +74,12 @@ const widget = Vue.component("widget", {
       }
       return value;
     },
+    setTitleTooltipsInsights: function (value) {
+      if (titleToolTipsInsights[value]) {
+        return titleToolTipsInsights[value];
+      }
+      return value;
+    },
   },
   computed: {
     setLinkTab: function () {
@@ -72,29 +87,29 @@ const widget = Vue.component("widget", {
     },
   },
 });
-
+/**
+ * [componente que muestra el post en el card widget]
+ * template: '#post-template [description]
+ * @return {[component]}           [component]
+ */
 const PostsInsights = Vue.component("posts", {
   props: ["resourceId", "idTab"],
   template: "#post-template",
   data: function () {
     return {
       contentPosts: [],
-      insightsPost: [],
       insightsHeader: [],
     };
   },
-  mounted() {
+  created() {
     this.fetchPost();
   },
   methods: {
     fetchPost() {
       axios
-        .get(
-          baseUrlApiWidget + "posts-insights" + "?resourceId=" + this.resourceId
-        )
+        .get(baseUrlApi + "posts-insights" + "?resourceId=" + this.resourceId)
         .then((response) => {
           this.contentPosts = response.data;
-          // set header
           this.setHeaders();
         });
     },
@@ -108,13 +123,11 @@ const PostsInsights = Vue.component("posts", {
           this.insightsHeader.push(insights[i].title);
         }
       }
-      //console.log(this.insightsHeader);
     },
   },
   filters: {
     stringSubstr: function (value) {
-      if (value != null) return value.slice(0, 20);
-      return `Titulo no disponible`;
+      return value.slice(0, 20);
     },
     isNullValue: function (value) {
       if (!value) {
@@ -128,6 +141,12 @@ const PostsInsights = Vue.component("posts", {
       }
       return value;
     },
+    setHeaderToolTips: function (value) {
+      if (typeof value !== "undefined" && titleInsightsTableTooltips[value]) {
+        return titleInsightsTableTooltips[value];
+      }
+      return value;
+    },
   },
   computed: {
     setidTab: function () {
@@ -135,7 +154,11 @@ const PostsInsights = Vue.component("posts", {
     },
   },
 });
-
+/**
+ * [componente que muestra el storys en el card widget]
+ * template: '#post-template [description]
+ * @return {[component]}           [component]
+ */
 const InsightsStrorys = Vue.component("storys", {
   props: ["resourceId", "idTab"],
   template: "#insights-template",
@@ -153,12 +176,7 @@ const InsightsStrorys = Vue.component("storys", {
   methods: {
     fetchStorys() {
       axios
-        .get(
-          baseUrlApiWidget +
-            "storys-insights" +
-            "?resourceId=" +
-            this.resourceId
-        )
+        .get(baseUrlApi + "storys-insights" + "?resourceId=" + this.resourceId)
         .then((response) => {
           this.contentStorys = response.data;
           //console.log(this.contentStorys);
@@ -172,11 +190,11 @@ const InsightsStrorys = Vue.component("storys", {
         });
     },
     setHeaders() {
-      var insights = this.contentStorys[0].wInsights;
-      for (var i = 0; i < insights.length; i++) {
-        this.storysHeader.push(insights[i].title);
-      }
-      //console.log(this.storysHeader);
+      // var insights = this.contentStorys[0].wInsights;
+      // for (var i = 0; i < insights.length; i++) {
+      //   this.storysHeader.push(insights[i].title);
+      // }
+      this.storysHeader = ["Impresiones", "Alcance", "Respuestas"];
     },
   },
   filters: {
@@ -215,6 +233,10 @@ const InsightsStrorys = Vue.component("storys", {
   },
 });
 
+Vue.filter("formatNumber", function (value) {
+  return value.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+});
+
 var vue = new Vue({
   el: "#insights",
   data: function () {
@@ -228,7 +250,7 @@ var vue = new Vue({
   },
   methods: {
     fetchStatus() {
-      axios.get(baseUrlApiWidget + "numbers-content").then((response) => {
+      axios.get(baseUrlApi + "numbers-content").then((response) => {
         this.resources = response.data;
         if (this.resources.length) {
           this.loaded = true;

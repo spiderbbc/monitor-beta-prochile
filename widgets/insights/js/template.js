@@ -1,9 +1,9 @@
-const originWidget = location.origin;
+const origin = location.origin;
 const root = location.pathname.split("/")[1];
-const appIdWidget = root != "web" ? `${root}/web` : "web";
+const appId = root != "web" ? `${root}/web` : "web";
 
-const baseUrlApiWidget = `${originWidget}/${appIdWidget}/monitor/api/insights/`;
-const baseUrlImg = `${originWidget}/${appIdWidget}/img/`;
+const baseUrlApi = `${origin}/${appId}/monitor/api/insights/`;
+const baseUrlImg = `${origin}/${appId}/img/`;
 
 const titleInsights = {
   //facebook
@@ -64,9 +64,9 @@ const titleInsightsTableTooltips = {
   post_reactions_by_type_total:
     "Número total de reacciones a la publicación por tipo.",
   // Instagram
-  impressions: "Número total de veces que se vio el objeto multimedia",
-  reach: "Número total de cuentas únicas que vieron el objeto multimedia",
-  engagement: "Número total de Me gusta y comentarios en el objeto multimedia",
-  likes: "Numero de Likes del Post",
-  coments: "Numero de Comentarios y respuestas del Post",
+  "Impresiones": "Número total de veces que se vio el objeto multimedia",
+  "Alcance": "Número total de cuentas únicas que vieron el objeto multimedia",
+  "Interacción": "Número total de Me gusta y comentarios en el objeto multimedia",
+  "likes": "Numero de Likes del Post",
+  "coments": "Numero de Comentarios y respuestas del Post",
 };

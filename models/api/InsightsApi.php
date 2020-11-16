@@ -199,7 +199,7 @@ class InsightsApi extends Model
 			$properties = [
 				'message'   => $page['biography'],
 				'permalink' => "https://www.instagram.com/{$page['username']}/",
-				'image_url' => $page['profile_picture_url'],
+				'image_url' => (isset($page['profile_picture_url'])) ? $page['profile_picture_url'] : '-',
 				'timespan'  => \app\helpers\DateHelper::getToday(),
 			];
 
@@ -452,7 +452,7 @@ class InsightsApi extends Model
 
 				$where['content_id'] = $posts[$p]['ig_id'];
 				$properties = [
-					'message'   => $posts[$p]['caption'],
+					'message'   => (isset($posts[$p]['caption'])) ? $posts[$p]['caption'] : '-',
 					'permalink' => $posts[$p]['permalink'],
 					'image_url' => (isset($posts[$p]['media_url'])) ? $posts[$p]['media_url'] : null,
 					'timespan'  => \app\helpers\DateHelper::asTimestamp($posts[$p]['timestamp']),

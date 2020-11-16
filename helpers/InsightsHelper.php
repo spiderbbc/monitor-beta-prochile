@@ -16,9 +16,9 @@ class InsightsHelper
      * @param  [string] $params    [params in the call]
      * @return [array]            [data from the call or null]
      */
-    public static function getData($end_point,$params)
+    public static function getData($end_point,$params,$_baseUrl = '')
     {
-        $_baseUrl = 'https://graph.facebook.com/v6.0'; 
+        $_baseUrl = ($_baseUrl != '') ? $_baseUrl : 'https://graph.facebook.com/v6.0';  
 
         $data = null;
         $client = new yii\httpclient\Client(['baseUrl' => $_baseUrl]);
@@ -371,25 +371,28 @@ class InsightsHelper
     public static function getPostInsightsByResource($posts_content = [],$resourceId)
     {
         $where = [
-            'Facebook Comments' => ['post_impressions','post_engaged_users','post_reactions_by_type_total'],
+            'Facebook Comments' => ['post_reactions_by_type_total','post_engaged_users','post_impressions'],
             'Instagram Comments' => ['impressions','reach','engagement','likes','coments'],
         ];
 
         for ($p=0; $p < sizeof($posts_content) ; $p++) { 
             if (isset($posts_content[$p]['resource']['name'])) {
                 $resourceName = $posts_content[$p]['resource']['name'];
-
                 $insights = \app\models\WInsights::find()->where([
                     'content_id' => $posts_content[$p]['id'],
                 ])->andWhere([
                     'name' => $where[$resourceName],
-                ])->orderBy(['end_time' => SORT_DESC ])->asArray()->limit(sizeof($where[$resourceName]))->all();
+                ])->orderBy([
+                    'end_time' => SORT_DESC,
+                    new \yii\db\Expression('FIELD(name,"post_reactions_by_type_total","post_engaged_users","post_impressions")') 
+                    
+                    ])->asArray()->limit(sizeof($where[$resourceName]))->all();
                 if (!is_null($insights)) {
                     $data = [];
                     for($w=0; $w < sizeof($insights) ; $w++){
                         $index = array_search($insights[$w]['name'],$where[$resourceName]);
-                        if(!is_bool($index)){
-                            $data[$index]= $insights[$w];
+                        if($index !== false){
+                            $data[]= $insights[$w];
                         }
                     }
                     $posts_content[$p]['wInsights'] = $data;
@@ -397,6 +400,6 @@ class InsightsHelper
             }            
         }
         return $posts_content;
-    }    
+    }  
 
 }

@@ -32,7 +32,7 @@ class InsightsAsset extends AssetBundle
     ];
 
     public $publishOptions = [
-        'forceCopy' => false,
+        'forceCopy' => YII_DEBUG,
          //you can also make it work only in debug mode: 'forceCopy' => YII_DEBUG
     ];
 }
