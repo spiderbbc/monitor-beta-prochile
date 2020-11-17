@@ -49,7 +49,7 @@ if(isset(Yii::$app->user->identity->username)){
     }else{
         $menuItems = [
             ['label' => 'Logs', 'url' => ['/user/logs'],'visible' => $condition], 
-            ['label' => 'Menciones', 'url' => ['/topic/']],
+            //  ['label' => 'Menciones', 'url' => ['/topic/']],
             [
                 'label' => 'Monitor',
                 'items' => [
