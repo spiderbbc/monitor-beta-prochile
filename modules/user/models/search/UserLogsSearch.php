@@ -20,7 +20,7 @@ class UserLogsSearch extends UserLogs
         return [
             [['id', 'userId', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
             [['username','message'], 'string'],
-            [['username','message'], 'safe'],
+           // [['username','message'], 'safe'],
         ];
     }
 
@@ -42,7 +42,7 @@ class UserLogsSearch extends UserLogs
      */
     public function search($params)
     {
-        $query = UserLogs::find();
+        $query = UserLogs::find()->orderBy(['log_date' => SORT_ASC]);
 
         // add conditions that should always apply here
 
@@ -52,6 +52,10 @@ class UserLogsSearch extends UserLogs
         $query->joinWith('user');
 
         $this->load($params);
+        $dataProvider->sort->attributes['log_date'] = [
+            'asc' => ['log_date' => SORT_ASC],
+            'desc' => ['log_date' => SORT_DESC],
+        ];
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -71,9 +75,8 @@ class UserLogsSearch extends UserLogs
         ]);
             
         $query->andFilterWhere(['like', 'message', $this->message])
-            ->andFilterWhere(['like', \app\models\Users::tableName() .'.username', $this->username]);
+            ->andFilterWhere(['like', \app\models\Users::tableName() .'.id', $this->username]);
         
-           // $query->andFilterWhere(['like', \app\models\Users::tableName() .'.username', $this->username]); 
 
         return $dataProvider;
     }
