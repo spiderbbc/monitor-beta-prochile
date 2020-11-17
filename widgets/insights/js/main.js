@@ -230,6 +230,12 @@ const InsightsStrorys = Vue.component("storys", {
         date + " " + month + " " + year + " " + hour + ":" + min + ":" + sec;
       return time;
     },
+    setHeaderToolTips: function (value) {
+      if (typeof value !== "undefined" && titleInsightsTableTooltip[value]) {
+        return titleInsightsTableTooltip[value];
+      }
+      return value;
+    },
   },
 });
 

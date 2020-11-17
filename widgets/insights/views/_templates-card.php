@@ -47,7 +47,7 @@ use yii\helpers\Html;
 									<a :href="'#' +idTab+'a'" data-toggle="tab">Posts Insights</a>
 								</li>
 								<li class="active">
-									<a :href="'#' +idTab+'b'" data-toggle="tab">Storys Insights</a>
+									<a :href="'#' +idTab+'b'" data-toggle="tab">Stories Insights</a>
 								</li>
 							</ul>
 							<div class="tab-content clearfix">
@@ -100,7 +100,7 @@ use yii\helpers\Html;
 		      <thead>
 		        <tr v-if="storysHeader">
 		          <th scope="col">Link</th>		
-		          <th align="center" style="text-align: center;" v-for="header in storysHeader" scope="col">{{header}}</th>
+		          <th align="center" style="text-align: center;" v-for="header in storysHeader" data-placement="top" :title="header  | setHeaderToolTips" scope="col">{{header}}</th>
 		          
 		        </tr>
 		      </thead>
