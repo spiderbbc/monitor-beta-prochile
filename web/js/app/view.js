@@ -1000,11 +1000,19 @@ const vm = new Vue({
     alertId: id,
     count: 0,
     isData: false,
-    //retweets: 0,
     resourcescount: [],
     is_change: false,
   },
   mounted() {
+
+    // cheks if localStorage
+    if (localStorage.getItem("alert_count_prochile" + id)) {
+      var count_storage = +localStorage.getItem("alert_count_prochile" + id);
+      if (count_storage > 0) {
+        this.fetchIsData();
+      }
+    }
+
     setInterval(
       function () {
         this.fetchIsData();
@@ -1014,50 +1022,40 @@ const vm = new Vue({
   },
   methods: {
     fetchIsData() {
-      axios
-        .get(baseUrlApi + "count-mentions" + "?alertId=" + this.alertId)
+      getCountMentions(this.alertId)
         .then((response) => {
-          this.count = response.data.data.count;
-          this.resourcescount = response.data.data;
+          if (response.status == 200) {
+            this.count = response.data.data.count;
+            this.getOrSetStorage();
+          }
         })
         .catch((error) => console.log(error));
+    },
+    getOrSetStorage() {
       if (this.count > 0) {
         this.isData = true;
-        if (localStorage.getItem("alert_count_" + id)) {
-          var count_storage = localStorage.getItem("alert_count_" + id);
+        getPropertySourceBox(this.alertId)
+          .then((response) => {
+            if (response.status == 200) {
+              this.resourcescount = response.data.data;
+            }
+          })
+          .catch((error) => console.log(error));
+
+        if (localStorage.getItem("alert_count_prochile" + id)) {
+          var count_storage = localStorage.getItem("alert_count_prochile" + id);
           if (count_storage != this.count) {
-            localStorage.setItem("alert_count_" + id, this.count);
+            localStorage.setItem("alert_count_prochile" + id, this.count);
             this.is_change = true;
-            console.info("Hubo un cambio en el count");
           } else {
             this.is_change = false;
           }
         } else {
-          localStorage.setItem("alert_count_" + id, this.count);
-          console.info("set storage ...");
+          localStorage.setItem("alert_count_prochile" + id, this.count);
         }
       }
     },
-    init() {
-      axios
-        .get(baseUrlApi)
-        .then((response) => console.log("calling cronb tab"))
-        .catch((error) => console.log(error));
-    },
+    
   },
-  components: {
-    report_button,
-    count_mentions,
-    box_sources,
-    count_resources_chat,
-    post_interations_chart,
-    products_interations_chart,
-    count_resources_date_chat,
-    //count_resources,
-    listMentions,
-    cloudWords,
-    tableDate,
-    listEmojis,
-    sweetAlert,
-  },
+  
 });
