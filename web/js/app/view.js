@@ -91,11 +91,9 @@ const statusAlert = Vue.component("status-alert", {
   },
   methods: {
     fetchStatus() {
-      axios
-        .get(baseUrlApi + "status-alert" + "?alertId=" + id)
-        .then((response) => {
-          this.response = response.data.data;
-        });
+      getStatusMentionsResources(id).then((response) => {
+        this.response = response.data.data;
+      });
     },
   },
   computed: {
@@ -138,13 +136,22 @@ const count_mentions = Vue.component("total-mentions", {
       return columnsName[size - 1];
     },
     getClass(resource) {
-      return smallboxProperties[resource].class;
+      var className = false;
+      if (smallboxProperties.hasOwnProperty(resource)) {
+        className = smallboxProperties[resource].class;
+      }
+      return className;
     },
     getTitle(resource) {
       return smallboxProperties[resource].title;
     },
     getIcon(resource) {
       return smallboxProperties[resource].icon;
+    },
+    getLink(resource) {
+      name = smallboxProperties[resource].name;
+      hiperlink = document.getElementById(name);
+      return hiperlink;
     },
   },
 });

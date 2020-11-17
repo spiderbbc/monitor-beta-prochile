@@ -25,40 +25,47 @@ let controllerName = {
 
 // property for each box on resource social
 let smallboxProperties = {
-  count: {
-    title: "Total de Entradas",
+  total_web_records_found: {
+    title: "Total Coincidencias",
     class: "small-box bg-info",
-    icon: "glyphicon glyphicon-hdd",
+    icon: "socicon-internet",
+    name: "Paginas Webs",
   },
-  retweet_count: {
-    title: "Total Retweet",
-    class: "small-box bg-success",
-    icon: "socicon-twitter",
-  },
-  favorite_count: {
-    title: "Total Favoritos",
-    class: "small-box bg-danger",
-    icon: "socicon-twitter",
-  },
-  shares: {
-    title: "Total Post Facebook Share",
+  total_chats: {
+    title: "Total Chats Livechats",
     class: "small-box bg-info",
-    icon: "socicon-facebook",
+    icon: "socicon-twitch",
+    name: "Live Chat Conversations",
   },
-  like_count: {
-    title: "Total Likes Post Instagram",
+  total_tickets: {
+    title: "Total Tickets Livechats",
+    class: "small-box bg-warning",
+    icon: "socicon-googlegroups",
+    name: "Live Chat",
+  },
+  total_tweets: {
+    title: "Total Tweets",
+    class: "small-box bg-info",
+    icon: "socicon-twitter",
+    name: "Twitter",
+  },
+  total_comments_instagram: {
+    title: "Total Comentarios",
     class: "small-box bg-danger",
     icon: "socicon-instagram",
+    name: "Instagram Comments",
   },
-  total_comments: {
+  total_comments_facebook_comments: {
     title: "Total Comentarios",
-    class: "small-box bg-warning",
-    icon: "glyphicon glyphicon-comment",
+    class: "small-box bg-info",
+    icon: "socicon-facebook",
+    name: "Facebook Comments",
   },
-  total_inbox: {
+  total_inbox_facebook: {
     title: "Total Inbox Facebook",
     class: "small-box bg-info",
     icon: "socicon-messenger",
+    name: "Facebook Messages",
   },
 };
 let tableConfigMentions = {
@@ -172,6 +179,7 @@ let tableConfigEmojis = {
   columnDefs: [{ className: "dt-center", targets: "_all" }],
 };
 
+// columns for boxes;
 let columnsName = [
   "col-md-12",
   "col-md-6",
@@ -179,7 +187,7 @@ let columnsName = [
   "col-md-3",
   "col-md-5",
   "col-md-2",
-  "col-sm-1 col-md-1 col-lg-1",
+  "col-md-1",
   "col-xs-4 col-sm-3 col-md-8r",
 ];
 

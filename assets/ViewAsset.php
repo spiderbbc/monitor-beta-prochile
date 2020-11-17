@@ -21,6 +21,7 @@ class ViewAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
        'css/view.css',
+       'css/Socicon/style.css',
        
     ];
     public $js = [
