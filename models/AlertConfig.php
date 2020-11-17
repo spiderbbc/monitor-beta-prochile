@@ -113,6 +113,7 @@ class AlertConfig extends \yii\db\ActiveRecord
             'product_description' => Yii::t('app', 'Product Description'),
             'competitors' => Yii::t('app', 'Competitors'),
             'urls'    => Yii::t('app', 'Urls Web'),
+            'lang' => Yii::t('app', 'Idioma'),
             'country' => Yii::t('app', 'country'),
             'start_date' => Yii::t('app', 'Fecha Inicio'),
             'end_date' => Yii::t('app', 'Fecha Final'),
