@@ -137,13 +137,43 @@ use yii\widgets\ActiveForm;
         <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'export' => true,
         'autoXlFormat'=>true,
         'krajeeDialogSettings' => ['overrideYiiConfirm' => false],
         'toggleDataContainer' => ['class' => 'btn-group mr-2'],
         'export'=>[
-            'showConfirmAlert'=>false,
-            'target'=>GridView::TARGET_BLANK
+          'showConfirmAlert'=>false,
+          'target'=>GridView::TARGET_BLANK
         ],
+        'exportConfig' => [
+          GridView::TEXT => ['label' => 'Guardar como Texto'],
+          GridView::EXCEL => ['label' => 'Guardar como Excel'],
+          GridView::PDF => ['label' => 'Guardar como Pdf'],
+          GridView::JSON => ['label' => 'Guardar como JSON'],
+        ],
+        'toggleDataOptions' =>[
+          'all' => [
+              'icon' => '',
+              'label' => '',
+              'class' => '',
+              'title' => ''
+          ],
+        ],
+        'toolbar' => [
+                '{export}',
+                [
+                  'content'=>
+                    Html::a('<i class="glyphicon glyphicon-export"></i> Exportar todas las Menciones',
+                      ['//monitor/pdf/export-mentions-excel','alertId' => $model->id],
+                      [
+                        'title'=>'Exportar todas las Menciones', 
+                        'target'=>'_blank',
+                        'data-pjax' => 0,
+                        'class'=>'btn btn-outline-secondary btn-default',
+                      ]
+                    ),
+                ]
+              ],
         'columns' => [
           [
                 'label' => Yii::t('app','Recurso Social'),
