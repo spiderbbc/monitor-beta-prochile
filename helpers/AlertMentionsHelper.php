@@ -212,7 +212,7 @@ class AlertMentionsHelper
     public static function getProductInterations($resourceName,$alerts_mention_ids,$alertId)
     {
         $data = [];
-        //$models = \app\models\AlertsMencions::find()->where(['id' => $alerts_mention_ids,'alertId' => $alertId])->all();
+        ini_set('memory_limit', '4G');
         $alertsMentions = \app\models\AlertsMencions::find()->where(
             [
                 'id' => $alerts_mention_ids,

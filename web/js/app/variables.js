@@ -202,6 +202,7 @@ let resourceIcons = {
   "Noticias Webs": "socicon-livejournal",
   "Paginas Webs": "socicon-internet",
 };
+
 // title alert view
 let title_with_data = "<strong>Alerta Activa</strong>";
 let title_not_data = "<strong>Alerta Finalizada</strong>";

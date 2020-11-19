@@ -18,7 +18,9 @@ class highchartsAsset extends AssetBundle
      * @inheritdoc
      */
     public $js = [
-        YII_ENV_DEV ? 'highcharts.js' : 'highcharts.js',
+        'highstock.js',
+        'modules/exporting.js',
+        
     ];
 
 

@@ -56,15 +56,17 @@ use yii\widgets\ActiveForm;
 
 <!-- template chart google -->
 <script type="tex/x-template" id="view-total-resources-chart">
-  <div v-if="loaded">
-    <div id="resources_chart_count"></div>
-    <hr>
-  </div>
-  <div v-else>
-        <div class="loader">
-          <div class="spinner"></div>
-        </div>
-    </div>  
+  <div>
+    <div v-show="loaded">
+      <div id="resources_chart_count"></div>
+      <hr>
+    </div>
+    <div v-show="!loaded">
+      <div class="loader">
+        <div class="spinner"></div>
+      </div>
+    </div> 
+  </div> 
 </script>
 
 <script type="text/x-template" id="view-post-mentions-chart">
@@ -83,17 +85,19 @@ use yii\widgets\ActiveForm;
 
 <!-- chart products interations -->
 <script type="tex/x-template" id="view-products-interations-chart">
-  <div v-if="loaded">
-    <div id="products-interation-chart">
-      
+  <div>
+    <div v-show="loaded">
+      <div id="products-interation-chart">
+        
+      </div>
+      <hr>
     </div>
-    <hr>
-  </div>
-  <div v-else>
-        <div class="loader">
-          <div class="spinner"></div>
-        </div>
-    </div>  
+    <div v-show="!loaded">
+          <div class="loader">
+            <div class="spinner"></div>
+          </div>
+      </div> 
+  </div> 
 </script>
 
 
@@ -305,6 +309,21 @@ use yii\widgets\ActiveForm;
           <div class="spinner"></div>
         </div>
     </div>
+</script>
+<!-- template que muestra las tablas recurso: higchart fecha - total -->
+<script type="text/x-template" id="view-date-chart">
+  <div>
+    <!-- <div id="date"></div>        -->
+    <div v-show="loaded">
+      <div id="date"></div>  
+      <hr>
+    </div>
+    <div v-show="!loaded">
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
+    </div>
+  </div>
 </script>
 <!-- template que muestra la tabla de lista de emojis -->
 <script type="text/x-template" id="emojis-list">

@@ -1,6 +1,9 @@
 // flag to chart line
 let loadedChart = false;
 
+// Load the Visualization API and the corechart package.
+google.charts.load("current", { packages: ["corechart", "line"] });
+
 Vue.filter("formatNumber", function (value) {
   return value.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
 });
@@ -281,42 +284,38 @@ const count_resources_chat = Vue.component("total-resources-chart", {
   },
   mounted() {
     this.response = [this.dataTable];
-    // Load the Visualization API and the corechart package.
-    google.charts.load("current", { packages: ["corechart"] });
     // get firts data
     this.fetchResourceCount();
-    // load chart
-    if (this.loaded) {
-      google.charts.setOnLoadCallback(this.drawColumnChart);
-    }
-
-    setInterval(
-      function () {
-        if (this.loaded) {
-          google.charts.setOnLoadCallback(this.drawColumnChart);
-        }
-        if (this.is_change) {
-          this.fetchResourceCount();
-        }
-      }.bind(this),
-      refreshTime
-    );
+  },
+  watch: {
+    is_change: function (val, oldVal) {
+      if (val) {
+        console.log("cambio en change");
+        this.fetchResourceCount();
+      }
+    },
   },
   methods: {
     fetchResourceCount() {
-      axios
-        .get(baseUrlApi + "count-sources-mentions" + "?alertId=" + this.alertId)
+      getTotalResource(this.alertId)
         .then((response) => {
           if (typeof this.response === "object") {
+            this.loaded = true;
             this.options.colors = response.data.colors;
             this.response.splice(1, response.data.data.length);
             for (let index in response.data.data) {
               this.response.push(response.data.data[index]);
             }
-            this.loaded = true;
+            this.setOnLoadCallback();
           }
         })
         .catch((error) => console.log(error));
+    },
+    setOnLoadCallback() {
+      setTimeout(() => {
+        google.charts.setOnLoadCallback(this.drawColumnChart);
+      }, 1000);
+      // google.charts.setOnLoadCallback(this.drawColumnChart);
     },
     drawColumnChart() {
       var data = google.visualization.arrayToDataTable(this.response);
@@ -392,60 +391,40 @@ const post_interations_chart = Vue.component("post-interation-chart", {
       ],
 
       options: {
-        chart: {
-          title: "",
-          subtitle: "",
-        },
-        theme: "material",
-        bars: "vertical",
+        title: "Gráfico Post con mas interaciones",
         vAxis: { format: "decimal" },
-        colors: [
-          "#1b9e77",
-          "#d95f02",
-          "#7570b3",
-          "#2f1bad",
-          "#bf16ab",
-          "#b5d817",
-        ],
+        width: 1200,
+        height: 400,
+        colors: ["#1b9e77", "#d95f02", "#7570b3", "#2f1bad", "#bf16ab"],
       },
     };
   },
   mounted() {
     this.response = [this.dataTable];
-    // Load the Visualization API and the corechart package.
-    google.charts.load("current", { packages: ["corechart"] });
     // get firts data
     this.fetchResourceCount();
-    // load chart
-    if (this.loaded) {
-      google.charts.setOnLoadCallback(this.drawColumnChart);
-    }
-
-    setInterval(
-      function () {
-        if (this.loaded) {
-          google.charts.setOnLoadCallback(this.drawColumnChart);
-        }
-        if (this.is_change) {
-          this.fetchResourceCount();
-        }
-      }.bind(this),
-      refreshTime
-    );
+  },
+  watch: {
+    is_change: function (val, oldVal) {
+      if (val) {
+        this.fetchResourceCount();
+      }
+    },
   },
   methods: {
     fetchResourceCount() {
-      axios
-        .get(baseUrlApi + "top-post-interation" + "?alertId=" + this.alertId)
+      getPostInterations(this.alertId)
         .then((response) => {
           if (typeof this.response === "object") {
+            this.render = true;
+            this.loaded = true;
             if (response.data.status) {
               this.response.splice(1, response.data.data.length);
               for (let index in response.data.data) {
                 this.response.push(response.data.data[index]);
               }
-              this.render = true;
-              this.loaded = true;
+              // load chart
+              this.setOnLoadCallback();
             }
           }
         })
@@ -463,20 +442,16 @@ const post_interations_chart = Vue.component("post-interation-chart", {
         data_chart["post_mentions"] = chart.getImageURI();
       });
 
-      var options = {
-        title: "Gráfico Post con mas interaciones",
-        vAxis: { format: "decimal" },
-        width: 1200,
-        height: 400,
-        colors: ["#1b9e77", "#d95f02", "#7570b3", "#2f1bad", "#bf16ab"],
-      };
-
-      chart.draw(view, options);
+      chart.draw(view, this.options);
       addLink(data, "post_mentions");
+    },
+    setOnLoadCallback() {
+      setTimeout(() => {
+        google.charts.setOnLoadCallback(this.drawColumnChart);
+      }, 1000);
     },
   },
 });
-
 /**
  * [componente que muestra grafico de productos con mas menciones]
  * template: '#view-products-interations-chart' [description]
@@ -489,16 +464,8 @@ const products_interations_chart = Vue.component("products-interations-chart", {
     return {
       alertId: id,
       response: [],
-      loaded: true,
-      dataTable: [
-        "Producto",
-        "Shares",
-        "Like Post",
-        "Likes",
-        "Retweets",
-        "Likes Twitter",
-        "Total",
-      ],
+      loaded: false,
+      dataTable: ["Producto", "Shares/Retweets", "Likes", "Total"],
       view: null,
       column: [
         0,
@@ -523,66 +490,75 @@ const products_interations_chart = Vue.component("products-interations-chart", {
           type: "string",
           role: "annotation",
         },
-        4,
-        {
-          calc: "stringify",
-          sourceColumn: 4,
-          type: "string",
-          role: "annotation",
-        },
-        5,
-        {
-          calc: "stringify",
-          sourceColumn: 5,
-          type: "string",
-          role: "annotation",
-        },
-        6,
-        {
-          calc: "stringify",
-          sourceColumn: 6,
-          type: "string",
-          role: "annotation",
-        },
+        // 4,
+        // {
+        //   calc: "stringify",
+        //   sourceColumn: 4,
+        //   type: "string",
+        //   role: "annotation",
+        // },
+        // 5,
+        // {
+        //   calc: "stringify",
+        //   sourceColumn: 5,
+        //   type: "string",
+        //   role: "annotation",
+        // },
+        // 6,
+        // {
+        //   calc: "stringify",
+        //   sourceColumn: 6,
+        //   type: "string",
+        //   role: "annotation",
+        // },
       ],
+      options: {
+        focusTarget: "category",
+        title: "Gráfico de número de interacciones por productos",
+        vAxis: { format: "decimal" },
+        hAxis: { titleTextStyle: { color: "Black" }, format: "string" },
+        width: 1200,
+        height: 400,
+        colors: ["#3CAAED", "#EC1F2E", "#3A05BD"],
+        animation: {
+          startup: true,
+          duration: 1500,
+          easing: "out",
+        },
+      },
     };
   },
   mounted() {
     this.response = [this.dataTable];
-    // Load the Visualization API and the corechart package.
-    google.charts.load("current", { packages: ["corechart"] });
-    // first call
     this.fetchResourceCount();
-    // // load chart
-    // if (this.loaded && this.response.length) {
-    //   google.charts.setOnLoadCallback(this.drawColumnChart);
-    // }
-    setInterval(
-      function () {
-        if (this.loaded) {
-          google.charts.setOnLoadCallback(this.drawColumnChart);
-        }
-        if (this.is_change) {
-          this.fetchResourceCount();
-        }
-      }.bind(this),
-      refreshTime
-    );
+  },
+  watch: {
+    is_change: function (val, oldVal) {
+      if (val) {
+        this.fetchResourceCount();
+      }
+    },
   },
   methods: {
     fetchResourceCount() {
-      axios
-        .get(baseUrlApi + "product-interation" + "?alertId=" + this.alertId)
+      getProductInterations(this.alertId)
         .then((response) => {
           if (typeof this.response === "object") {
+            this.options.colors = response.data.colors;
             this.response.splice(1, response.data.data.length);
             for (let index in response.data.data) {
               this.response.push(response.data.data[index]);
             }
             this.loaded = true;
+            this.setOnLoadCallback();
           }
         })
         .catch((error) => console.log(error));
+    },
+    setOnLoadCallback() {
+      setTimeout(() => {
+        google.charts.setOnLoadCallback(this.drawColumnChart);
+      }, 1000);
     },
     drawColumnChart() {
       var data = google.visualization.arrayToDataTable(this.response);
@@ -594,148 +570,173 @@ const products_interations_chart = Vue.component("products-interations-chart", {
 
       google.visualization.events.addListener(chart, "ready", function () {
         data_chart["products_interations"] = chart.getImageURI();
+        //console.log(data_chart["products_interations"]);
       });
 
-      var options = {
-        title: "Gráfico de número de interacciones por terminos",
-        vAxis: { format: "decimal" },
-        hAxis: { titleTextStyle: { color: "Black" }, format: "string" },
-        width: 1200,
-        height: 400,
-        colors: ["#1b9e77", "#d95f02", "#7570b3", "#2f1bad", "#bf16ab"],
-        animation: {
-          startup: true,
-          duration: 1500,
-          easing: "out",
-        },
-      };
-
-      chart.draw(view, options);
+      chart.draw(view, this.options);
     },
   },
 });
-
 /**
- * [componente que muestra grafico de post por fecha (no terminado en el backend)]
+ * [componente que muestra grafico de post por fecha (Higchart)]
  * template: '#view-total-resources-chart' [description]
  * @return {[component]}           [component]
  */
-const count_resources_date_chat = Vue.component("count-date-resources-chart", {
+const date_chart = Vue.component("date-chart", {
   props: ["is_change"],
-  template: "#view-date-resources-chart",
+  template: "#view-date-chart",
   data: function () {
     return {
       alertId: id,
-      response: [],
-      headers: [],
       loaded: false,
-      dataTable: null,
-      view: null,
     };
   },
   mounted() {
-    // Load the Visualization API and the corechart package.
-    google.charts.load("current", { packages: ["corechart", "line"] });
-    // get firts data
-    this.fetchResourceCount();
-    // load chart
-    if (this.loaded) {
-      google.charts.setOnLoadCallback(this.drawColumnChart);
-    }
-
-    setInterval(
-      function () {
-        if (this.loaded) {
-          google.charts.setOnLoadCallback(this.drawColumnChart);
-        }
-        if (this.is_change) {
-          this.fetchResourceCount();
-        }
-      }.bind(this),
-      refreshTime
-    );
+    this.drawColumnChart();
+  },
+  watch: {
+    is_change: function (val, oldVal) {
+      if (val) {
+        this.drawColumnChart();
+      }
+    },
   },
   methods: {
-    fetchResourceCount() {
-      axios
-        .get(baseUrlApi + "mention-on-date" + "?alertId=" + this.alertId)
-        .then((response) => {
-          if (typeof this.response === "object") {
-            this.response = response.data.model;
-            this.headers = response.data.resourceNames;
-            this.loaded = true;
-          }
-        })
-        .catch((error) => console.log(error));
-    },
     drawColumnChart() {
-      var data = new google.visualization.DataTable();
+      this.loaded = true;
+      $.getJSON(
+        `${origin}/${appId}/monitor/api/mentions/mention-on-date?alertId=` + id,
+        function (data) {
+          var chart = Highcharts.stockChart("date", {
+            chart: {
+              type: "column",
+              zoomType: "x",
+            },
+            credits: {
+              enabled: false,
+            },
+            legend: {
+              enabled: true,
+            },
+            rangeSelector: {
+              selected: 4,
+            },
+            // time: {
+            //   useUTC: false,
+            // },
+            // tooltip: {
+            //   split: false,
+            //   shared: true,
+            // },
+            rangeSelector: {
+              enabled: false,
+              selected: 1,
+            },
 
-      data.addColumn("string", "Date");
+            title: {
+              text: "Grafico total de registros por fecha y recurso",
+            },
+            rangeSelector: {
+              buttons: [
+                {
+                  type: "minute",
+                  count: 60,
+                  text: "h",
+                },
+                {
+                  type: "day",
+                  count: 1,
+                  text: "d",
+                },
+                {
+                  type: "week",
+                  count: 1,
+                  text: "w",
+                },
+                {
+                  type: "month",
+                  count: 1,
+                  text: "m",
+                },
+                {
+                  type: "month",
+                  count: 6,
+                  text: "6m",
+                },
+                {
+                  type: "year",
+                  count: 1,
+                  text: "1y",
+                },
+                {
+                  type: "ytd",
+                  text: "YTD",
+                },
+                {
+                  type: "all",
+                  text: "All",
+                },
+              ],
+              //selected: 1,
+              inputEnabled: false,
+            },
+            global: {
+              useUTC: false,
+            },
+            scrollbar: {
+              barBackgroundColor: "grey",
+              barBorderRadius: 7,
+              barBorderWidth: 0,
+              buttonBackgroundColor: "grey",
+              buttonBorderWidth: 0,
+              buttonBorderRadius: 7,
+              trackBackgroundColor: "black",
+              trackBorderWidth: 1,
+              trackBorderRadius: 8,
+              trackBorderColor: "black",
+            },
+            xAxis: {
+              categories: [
+                "Live Chat",
+                "Instagram Comments",
+                "Facebook Comments",
+              ],
+            },
+            tooltip: {
+              pointFormat:
+                '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+              valueDecimals: 1,
+              split: true,
+            },
+            navigator: {
+              basseSeries: 1,
+              series: data.model,
+            },
+            series: data.model,
+          });
+          // var test = chart.exportChart({
+          //   type: "image/png",
+          //   filename: "chart",
+          // });
+          //console.log(test);
+          var svg = chart.getSVG();
+          var data = {
+            options: svg,
+            filename: "test.png",
+            type: "image/png",
+            async: true,
+          };
 
-      for (var i = 0; i < this.headers.length; i++) {
-        data.addColumn("number", this.headers[i]);
-      }
-
-      data.addRows(this.response);
-
-      var view = new google.visualization.DataView(data);
-
-      var column = [0];
-
-      for (var i = 0; i < this.headers.length; i++) {
-        column.push(i + 1);
-        column.push({
-          calc: "stringify",
-          sourceColumn: i + 1,
-          type: "string",
-          role: "annotation",
-        });
-      }
-
-      view.setColumns(column);
-      var options = {
-        title: "Grafico total de registros por fecha y recurso",
-        width: 1200,
-        height: 400,
-        vAxis: {
-          title: "Cantidad",
-          textStyle: {
-            color: "#005500",
-            fontSize: "12",
-            paddingRight: "100",
-            marginRight: "100",
-          },
-        },
-        hAxis: {
-          title: "Fechas",
-          textStyle: {
-            color: "#005500",
-            fontSize: "12",
-            paddingRight: "100",
-            marginRight: "100",
-          },
-        },
-        series: {
-          1: { curveType: "function" },
-        },
-        animation: {
-          startup: true,
-          duration: 1500,
-          easing: "out",
-        },
-      };
-
-      var chart = new google.visualization.AreaChart(
-        document.getElementById("date-resources-chart")
+          var exportUrl = "https://export.highcharts.com/";
+          $.post(exportUrl, data, function (data) {
+            var imageUrl = exportUrl + data;
+            data_chart["date_resources"] = imageUrl;
+            loadedChart = true;
+          });
+          // data_chart["date_resources"] = chart.getSVG();
+          // console.log(data_chart["date_resources"]);
+        }
       );
-
-      google.visualization.events.addListener(chart, "ready", function () {
-        data_chart["date_resources"] = chart.getImageURI();
-      });
-      chart.draw(view, options);
-
-      loadedChart = true;
     },
   },
 });
@@ -754,10 +755,6 @@ const listMentions = Vue.component("list-mentions", {
     };
   },
   mounted() {
-    //$.pjax.reload({ container: "#mentions", async: true });
-    // $.pjax.reload({ container: "#mentions" });
-    //$.pjax.reload({ container: "#mentions" });
-    //jQuery.pjax.reload({ container: "#mentions" });
     $.pjax.reload({ container: "#mentions", async: false });
     setInterval(
       function () {
@@ -931,48 +928,40 @@ const listEmojis = Vue.component("list-emojis", {
  */
 
 const sweetAlert = Vue.component("modal-alert", {
-  props: ["count"],
+  props: ["count", "is_change"],
   template: "#modal-alert",
   data: function () {
     return {
       alertId: id,
       response: null,
       isShowModal: false,
-      //count: 0,
       flag: false,
     };
   },
   mounted() {
-    setInterval(
-      function () {
-        if (this.count) {
-          this.fetchStatus();
-          if (this.isShowModal && !this.flag) {
-            this.modal();
-          }
+    this.fetchStatus();
+    if (this.isShowModal && !this.flag) {
+      this.modal();
+    }
+  },
+  watch: {
+    is_change: function (val, oldVal) {
+      if (val) {
+        this.fetchStatus();
+        if (this.isShowModal && !this.flag) {
+          this.modal();
         }
-      }.bind(this),
-      refreshTime
-    );
+      }
+    },
   },
   methods: {
-    fetchCount() {
-      axios
-        .get(baseUrlApi + "count-mentions" + "?alertId=" + this.alertId)
-        .then((response) => {
-          this.count = response.data.count;
-        })
-        .catch((error) => console.log(error));
-    },
     fetchStatus() {
-      axios
-        .get(baseUrlApi + "status-alert" + "?alertId=" + id)
-        .then((response) => {
-          this.response = response.data.data;
-          if (this.response != undefined || this.response != null) {
-            this.setStatus();
-          }
-        });
+      getStatusMentionsResources(id).then((response) => {
+        this.response = response.data.data;
+        if (this.response != undefined || this.response != null) {
+          this.setStatus();
+        }
+      });
     },
     setStatus() {
       if (this.response != undefined || this.response != null) {

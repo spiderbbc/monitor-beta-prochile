@@ -242,5 +242,22 @@ class MentionsHelper
         
         return $gridColumns;
     }
+
+    public static function getColorResourceByName($resourceName)
+    {
+        $colors = [
+            'Twitter' => '#3245ed',
+            'Facebook Comments' => '#218bed',
+            'Facebook Messages' => '#9ba2e0',
+            'Instagram Comments' => '#e01f56',
+            'Live Chat' => '#eb34e8',
+            'Live Chat Conversations' => '#F18F11',
+            'Paginas Webs' => '#bbc71c',
+            'Noticias Webs' => '#bbc71c',
+            'Excel Document' => '#1ee321'
+            
+        ];
+        return $colors[$resourceName];
+    }
 	
 }

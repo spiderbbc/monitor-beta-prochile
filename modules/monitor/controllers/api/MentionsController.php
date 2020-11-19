@@ -271,7 +271,6 @@ class MentionsController extends Controller
           $data[] = \app\helpers\AlertMentionsHelper::getSocialNetworkInteractions($sources->name,$sources->id,$model->id);
       }
     }
-    
     // chage values to int
     for($d = 0; $d < sizeof($data); $d++){
       if(!is_null($data[$d])){
@@ -346,10 +345,6 @@ class MentionsController extends Controller
     $products = [];
     foreach ($alerts_mentions as $alerts_mention) {
       if($alerts_mention->mentionsCount){
-        /*$product_model =  \app\helpers\AlertMentionsHelper::getProductByTermSearch($alerts_mention->term_searched);
-        if(!is_null($product_model)){
-          $products[$product_model->name][$alerts_mention->resources->name][] = $alerts_mention->id;
-        }//*/
         $products[$alerts_mention->term_searched][$alerts_mention->resources->name][] = $alerts_mention->id;
       }// end if
     }// end foreach
@@ -368,32 +363,26 @@ class MentionsController extends Controller
         $total = 0;
         $shares = null;
         $likes = 0;
-        $like_post = 0;
-        $retweets = 0;
-        $likes_twitter = 0;
         foreach ($values as $value) {
+          // add shares and retweets
           $shares += (isset($value['shares'])) ? $value['shares']: 0;
-          /*if(isset($value['shares'])){
-            if(intval($value['shares'])){
-              $shares += $value['shares'];
-            }
-          }*/
-          $likes  += (isset($value['likes'])) ? $value['likes']: 0;
-          $like_post  += (isset($value['like_post'])) ? $value['like_post']: 0;
-          $retweets  += (isset($value['retweets'])) ? $value['retweets']: 0;
-          $likes_twitter  += (isset($value['likes_twitter'])) ? $value['likes_twitter']: 0;
+          $shares  += (isset($value['retweets'])) ? $value['retweets']: 0;
+          // add likes post and favorites
+          $likes  += (isset($value['like_post'])) ? $value['like_post']: 0;
+          $likes  += (isset($value['likes_twitter'])) ? $value['likes_twitter']: 0;
+          // get total
           $total  += (isset($value['total'])) ? $value['total']: 0;
         }
-        $dataCount[] = array($product,$shares,$like_post,$likes,$retweets,$likes_twitter,$total);
+        if($total >= 2){
+          $dataCount[] = array($product,$shares,$likes,$total);
+        }
     }
-
+    
     if(!count($dataCount)){
-      $dataCount[] = array('Not Found',0,0,0,0,0,0);
+      $dataCount[] = array('Not Found',0,0,0);
     }
-
-
-
-    return array('status'=>true,'resources'=> $data,'data' => $dataCount);
+    $colors = ['#3CAAED','#EC1F2E','#3A05BD'];
+    return array('status'=>true,'data' => $dataCount,'colors' => $colors);
   }
 
 
@@ -621,85 +610,85 @@ class MentionsController extends Controller
 
 
 
+  /**
+   * [actionMentionOnDate return array of date to graph]
+   * @param  [int] $id            [id of alert]
+   * @return [array \ Exception]  [array of date or exception if alert id not exists]
+   */
   public function actionMentionOnDate($alertId){
-   
+    // get models
+    $model = $this->findModel($alertId);
+    // get resources
+    $alertResources = \yii\helpers\ArrayHelper::map($model->config->sources,'id','name');
     //menciones por recurso y fecha
-    $expression = new Expression("created_time,DATE(FROM_UNIXTIME(created_time)) AS date,COUNT(*) AS total");
-    $expressionGroup = new Expression("created_time,DATE(FROM_UNIXTIME(created_time))");
+    $expression = new Expression("r.name,DATE(FROM_UNIXTIME(created_time)) AS date_created,COUNT(*) AS total");
+    // menciones por recurso y fecha para los chats
+    $expressionChats = new Expression("r.name,DATE(FROM_UNIXTIME(created_time)) AS date_created,COUNT( DISTINCT social_id) AS total");
     
-    $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
-    
-    $resourceDateCount = [];
-    $resourceNames = [];
-    
-    foreach ($alertMentions as $alertMention){
-      if($alertMention->mentionsCount){
-        if(!in_array($alertMention->resources,$resourceDateCount)){
-          $rows = (new \yii\db\Query())
-          ->select($expression)
-          ->from('mentions')
-          ->where(['alert_mentionId' => $alertMention->id])
-          ->orderBy('created_time ASC')
-          ->groupBy($expressionGroup)
-          ->all();
-
-          if(!in_array($alertMention->resources->name, $resourceNames)){
-            $resourceNames[] = $alertMention->resources->name;
-          }
-
-          foreach ($rows as $row){
-
-            $date = gmdate("Y-m-d", $row['created_time']);
-            $row['created_time'] = $date;
-            $row['product_searched'] = $alertMention->term_searched;
-            $row['resourceName'] = $alertMention->resources->name;
-            $resourceDateCount[] = $row;  
-          }
-
-          
-        } // end if in_array
-
-      }// is not null 
-      
-    }// end foreach
-
-    \yii\helpers\ArrayHelper::multisort($resourceDateCount, ['created_time'], [SORT_ASC]);
-
-    $data = [];
-    for ($r=0; $r < sizeof($resourceDateCount) ; $r++) { 
-      $data[$resourceDateCount[$r]['created_time']][] = $resourceDateCount[$r];
-    }
-   
-
-    $model = array();
-    $i = 0;
-    foreach ($data as $date => $values) {
-      $model[$i] = array($date);
-      $b = 1;
-      foreach ($resourceNames as $index => $resourceName) {
-        $model[$i][$b] = null;
-        for ($v=0; $v <sizeof($values) ; $v++) { 
-          if ($resourceName == $values[$v]['resourceName']) {
-              if(!empty($model[$i][$b])){
-                $model[$i][$b] += $values[$v]['total'];
-              }else{
-                $model[$i][$b] =  (int) $values[$v]['total'];
-              }
-              
-          }
-        }
-        $b++;
+    // query by target resourceName chats
+    $target = ['Facebook Messages','Live Chat Conversations','Live Chat'];
+    $chatsIds = [];
+    $commentsIds = [];
+    foreach($alertResources as $id => $resourceName){
+      if(in_array($resourceName,$target)){
+        $chatsIds[] = $id;
+      }else{
+        $commentsIds[] = $id;
       }
-      $i ++;
     }
+    
+    $rowsChats = [];
+    if(count($chatsIds)){
+      // get alertMentions and ids
+      $alertMentions = \app\models\AlertsMencions::find()->select('id')->where(['alertId' => $alertId,'resourcesId' => $chatsIds])->orderBy(['resourcesId' => 'ASC'])->asArray()->all();
+      $alertMentionsIds = \yii\helpers\ArrayHelper::getColumn($alertMentions, 'id');
+      $rowsChats = (new \yii\db\Query())
+        ->select($expressionChats)
+        ->from('mentions')
+        ->where(['alert_mentionId' => $alertMentionsIds])
+        ->join('JOIN','alerts_mencions a', 'alert_mentionId = a.id')
+        ->join('JOIN','resources r', 'r.id = a.resourcesId')
+        ->orderBy('date_created ASC')
+        ->groupBy(['date_created','r.name'])
+        ->all(); 
+    }
+    $rowsComments = [];
+    if(count($commentsIds)){
+      // get alertMentions and ids
+      $alertMentions = \app\models\AlertsMencions::find()->select('id')->where(['alertId' => $alertId,'resourcesId' => $commentsIds])->orderBy(['resourcesId' => 'ASC'])->asArray()->all();
+      $alertMentionsIds = \yii\helpers\ArrayHelper::getColumn($alertMentions, 'id');
+      $rowsComments = (new \yii\db\Query())
+        ->select($expression)
+        ->from('mentions')
+        ->where(['alert_mentionId' => $alertMentionsIds])
+        ->join('JOIN','alerts_mencions a', 'alert_mentionId = a.id')
+        ->join('JOIN','resources r', 'r.id = a.resourcesId')
+        ->orderBy('date_created ASC')
+        ->groupBy(['date_created','r.name'])
+        ->all();
 
-
-    return array('status'=>true,'model' => $model,'resourceNames' => $resourceNames);  
+        
+    }
+    // merge both arrays
+    $rows = ArrayHelper::merge($rowsChats, $rowsComments);
+   
+    $result = ArrayHelper::index($rows, null, 'name');
+    // compose array to higchart  
+    $model = array();
+    $index = 0; 
+    foreach ($result as $resourceName => $data){
+      if(count($data)){
+        $model[$index]['name'] = $resourceName;
+        for($d = 0; $d < sizeOf($data); $d++){
+          $date = (int) strtotime($data[$d]['date_created']) * 1000;
+          $model[$index]['data'][] = array((int)$date,(int)$data[$d]['total']);
+        }
+        $model[$index]['color'] = \app\helpers\MentionsHelper::getColorResourceByName($resourceName);
+        $index++;
+      }
+    }
+    return array('status'=>true,'model' => $model);  
   }
-
-
-
-
 
 
   /**
