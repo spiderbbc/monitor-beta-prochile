@@ -218,6 +218,25 @@ class MentionsController extends Controller
           }
       }
     }
+
+    if(in_array('Noticias Webs',array_values($alertResources))){
+      $newId = array_search('Noticias Webs',$alertResources);
+      $db = \Yii::$app->db;
+      $duration = 15; 
+      $where = ['alertId' => $model->id,'resourcesId' => $newId];
+
+      $alertMentions = $db->cache(function ($db) use ($where) {
+          return \app\models\AlertsMencions::find()->where($where)->all();
+      },$duration); 
+      
+      $data['total_web_news_found'] = 0;
+
+      foreach ($alertMentions as $alertMention) {
+          if($alertMention->mentions){
+            $data['total_web_news_found'] += $alertMention->mentionsCount;
+          }
+      }
+    }
     
     return [
       'data' => $data
@@ -340,7 +359,6 @@ class MentionsController extends Controller
    
     $model = \app\models\Alerts::findOne($alertId);
     $alerts_mentions = \app\models\AlertsMencions::find()->where(['alertId' => $model->id])->all();
-
     // get products
     $products = [];
     foreach ($alerts_mentions as $alerts_mention) {
@@ -356,7 +374,6 @@ class MentionsController extends Controller
         $data[$product][] = \app\helpers\AlertMentionsHelper::getProductInterations($resourceName,$alerts_mention_ids,$alertId);
       }
     }
-
     //reorder data
     $dataCount = [];
     foreach ($data as $product => $values) {
@@ -520,8 +537,6 @@ class MentionsController extends Controller
    */
   public function actionListEmojis($alertId){
 
-   
-
     // list mentions: mentions
     $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
     $alertsId = [];
@@ -564,9 +579,9 @@ class MentionsController extends Controller
    */
   public function actionStatusAlert($alertId)
   {
-   
-    $model =  \app\models\HistorySearch::findOne(['alertId' => $alertId]);
-
+    $model = \app\models\HistorySearch::getDb()->cache(function ($db) use ($alertId) {
+      return \app\models\HistorySearch::find()->select('search_data')->where(['alertId' => $alertId])->one();
+    });
     return array('data' => $model);  
   }
 

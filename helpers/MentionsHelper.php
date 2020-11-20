@@ -253,7 +253,7 @@ class MentionsHelper
             'Live Chat' => '#eb34e8',
             'Live Chat Conversations' => '#F18F11',
             'Paginas Webs' => '#bbc71c',
-            'Noticias Webs' => '#bbc71c',
+            'Noticias Webs' => '#1ee321',
             'Excel Document' => '#1ee321'
             
         ];

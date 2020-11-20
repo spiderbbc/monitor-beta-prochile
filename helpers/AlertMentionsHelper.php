@@ -212,158 +212,70 @@ class AlertMentionsHelper
     public static function getProductInterations($resourceName,$alerts_mention_ids,$alertId)
     {
         $data = [];
-        ini_set('memory_limit', '4G');
-        $alertsMentions = \app\models\AlertsMencions::find()->where(
-            [
-                'id' => $alerts_mention_ids,
-                'alertId' => $alertId
-            ]
-        )->with('mentions')->asArray()->all();
-
+        $models = \app\models\AlertsMencions::find()->with('mentions')->where(['id' => $alerts_mention_ids,'alertId' => $alertId])->asArray()->all();
+        
         switch ($resourceName) {
-            case 'Facebook Comments':
-                $data =[
-                    'shares'=> 0,
-                    'likes'=> 0,
-                    'total'=> 0,
-                ];
-                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
-                    $mention_data = json_decode($alertsMentions[$a]['mention_data'],true);
-                    $data['shares'] += $mention_data['shares'];
-                    if(count($alertsMentions[$a]['mentions'])){
-                        $data['total'] += count($alertsMentions[$a]['mentions']);
-                        for ($m=0; $m < sizeOf($alertsMentions[$a]['mentions']) ; $m++) { 
-                            $mention_data = json_decode($alertsMentions[$a]['mentions'][$m]['mention_data'],true);
-                            $data['likes'] += $mention_data['like_count'];
-                        }
-                    }
-                }
-                return $data;                
-                break;
-            
-            case 'Facebook Messages':
-                $data =[
-                    'total'=> 0,
-                ];
-                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
-                    if(count($alertsMentions[$a]['mentions'])){
-                        $data['total'] += count($alertsMentions[$a]['mentions']);
-                    }
-                }
-                return $data;
-                break;
             case 'Instagram Comments':
-                $data =[
-                    'like_post'=> 0,
-                    'total'=> 0,
-                ];
-
-                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
-                    if(count($alertsMentions[$a]['mentions'])){
-                        $data['total'] += count($alertsMentions[$a]['mentions']);
-                        for ($m=0; $m < sizeOf($alertsMentions[$a]['mentions']) ; $m++) { 
-                            $mention_data = json_decode($alertsMentions[$a]['mentions'][$m]['mention_data'],true);
-                            $data['like_post'] += $mention_data['like_count'];
-                        }
+                $like_post = 0;
+                $total = 0;
+                foreach ($models as $model) {
+                    if(count($model['mentions'])){
+                        $total += count($model['mentions']);
+                        $mention_data = json_decode($model['mention_data'],true);
+                        $like_post += $mention_data['like_count'];
                     }
                 }
+                // like post
+                $data['like_post'] = $like_post;
+                // total
+                $data['total'] = $total;
                 return $data; 
             case 'Twitter':
-                $data =[
-                    'likes'=> 0,
-                    'retweets'=> 0,
-                    'total'=> 0,
-                ];
-
-                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
-                    if(count($alertsMentions[$a]['mentions'])){
-                        $data['total'] += count($alertsMentions[$a]['mentions']);
-                        for ($m=0; $m < sizeOf($alertsMentions[$a]['mentions']) ; $m++) { 
-                            $mention_data = json_decode($alertsMentions[$a]['mentions'][$m]['mention_data'],true);
-                            $data['likes'] += $mention_data['favorite_count'];
-                            $data['retweets'] += $mention_data['retweet_count'];
+                $likes = 0;
+                $retweets = 0;
+                $total = 0;
+                foreach ($models as $model) {
+                    if(count($model['mentions'])){
+                        $total += count($model['mentions']);
+                        foreach ($model['mentions'] as $mention) {
+                            $mention_data = json_decode($mention['mention_data'],true);
+                            $likes += $mention_data['favorite_count'];
+                            $retweets += $mention_data['retweet_count'];
                         }
-                    }
-                }
 
-                // count values in document
-                $alertsMencions = new \app\models\AlertsMencions();
-                $alertMentionsDocuments = \app\models\AlertsMencions::find()->with('mentions')->where(['alertId' => $alertId,'type' => 'document'])->asArray()->all();
-                for ($d=0; $d <  sizeOf($alertMentionsDocuments); $d++) { 
-                    if($alertMentionsDocuments[$d]['mentions']){
-                        $data['total'] += $alertsMencions->getCountDocumentByResource('TWITTER',$alertMentionsDocument->id);
                     }
                 }
+                
+                // set
+                $data['total'] = $total;
+                $data['likes_twitter'] = $likes;
+                $data['retweets'] = $retweets;
                 return $data;
                 break;
-            case 'Live Chat':
+            
+            
+            case 'Paginas Webs':
                 $total = 0;
-                $expression = new Expression("`mention_data`->'$.id' AS ticketId");
                 foreach ($models as $model) {
-                    $rows = (new \yii\db\Query())
-                      ->select($expression)
-                      ->from('mentions')
-                      ->where(['alert_mentionId' => $model->id])
-                      ->groupBy('ticketId')
-                      ->count();
-                    $total += intval($rows);  
-                    
-                }
-                // set
-                $data['total'] = $total;
-                return $data; 
-                break;
-
-            case 'Live Chat Conversations':
-                $total = 0;
-                $expression = new \yii\db\Expression("`mention_data`->'$.event_id' AS event_id");
-                foreach ($models as $model) {
-                    $rows = (new \yii\db\Query())
-                      ->select($expression)
-                      ->from('mentions')
-                      ->where(['alert_mentionId' => $model->id])
-                      ->groupBy('event_id')
-                      ->count();
-                    $total += intval($rows);  
-                }
-                // set
-                $data['total'] = $total;
-                return $data; 
-
-                break;
-            case 'Excel Document':
-                $data =[
-                    'total'=> 0,
-                ];
-                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
-                    if(count($alertsMentions[$a]['mentions'])){
-                        $data['total'] += count($alertsMentions[$a]['mentions']);
+                    if (count($model['mentions'])) {
+                        $total += count($model['mentions']);
                     }
                 }
+                // set
+                $data['total'] = $total;
                 return $data; 
                 break;
             case 'Noticias Webs':
-                $data =[
-                    'total'=> 0,
-                ];
-                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
-                    if(count($alertsMentions[$a]['mentions'])){
-                        $data['total'] += count($alertsMentions[$a]['mentions']);
+                $total = 0;
+                foreach ($models as $model) {
+                    if (count($model['mentions'])) {
+                        $total += count($model['mentions']);
                     }
                 }
+                // set
+                $data['total'] = $total;
                 return $data; 
-                break;
-            case 'Paginas Webs':
-                $data =[
-                    'total'=> 0,
-                ];
-                for ($a=0; $a < sizeOf($alertsMentions) ; $a++) { 
-                    if(count($alertsMentions[$a]['mentions'])){
-                        $data['total'] += count($alertsMentions[$a]['mentions']);
-                    }
-                }
-                return $data; 
-                break;
+                break;                 
 
             default:
                 # code...
@@ -630,6 +542,101 @@ class AlertMentionsHelper
         return $count;
     }
 
+
+    /**	 
+	* [getAttributesForDetailView compose detailView array if there url on topic]
+	* @param  [obj] $model [topic  model]
+	* @return [array]              [arraty detailView]
+	*/
+	public static function getAttributesForDetailView($model)
+	{
+		$url_detail_arr = [];
+		if ($model->config->urls != '') {
+            $urls = explode(",",$model->config->urls);
+			$url_detail_arr = [
+				'label' => Yii::t('app','Scraping Paginas Web Urls'),
+                'format'    => 'raw',
+                //'attribute' => 'resourceId',
+                'value' => function() use($urls) {
+                    $html = '';
+                    foreach ($urls as $index => $url) {
+                        $html .= " <span class='label label-success'><a style='color: white;' href='{$url}' target='_blank'>{$url}</a></span>";
+                    }
+                    return $html;
+                }
+
+			];
+		}
+
+		$detail_attributes = [
+            [
+                'label' => Yii::t('app','Estado'),
+                'format'    => 'raw',
+                'attribute' => 'status',
+                'value' => function($model) {
+                    return ($model->status) ? 'Active' : 'Inactive';
+                }
+            ],
+            /*[
+                'label' => Yii::t('app','Usuario'),
+                'attribute' => 'userId',
+                'format' => 'raw',
+                'value' => function($model){
+                    return $model->user->username;
+                }
+            ],*/
+            [
+                'label' => Yii::t('app','Nombre de la Alerta'),
+                'attribute' => 'name',
+                'format' => 'raw',
+                'value' => function($model) {
+                  return $model->name;
+                }
+            ],
+            
+            [
+                'label' => Yii::t('app','Recursos Sociales'),
+                'format'    => 'raw',
+                'attribute' => 'alertResourceId',
+                'value' => function($model) {
+                    $html = '';
+                    foreach ($model->config->configSources as $alert) {
+                        $url = \yii\helpers\Url::to(['/monitor/detail','id' => $model->id,'resourceId' => $alert->alertResource->id]);
+                        $span = "<span class='label label-info'>{$alert->alertResource->name}<status-alert id={$alert->alertResource->id} :resourceids={$alert->alertResource->id}></status-alert></span>";
+                        $hiperLink =  \yii\helpers\Html::a($span,$url,['target'=>'_blank', 'data-pjax'=>"0",'id' => $alert->alertResource->name]);
+                        $html .= $hiperLink;
+                    }
+                    return $html;
+                },
+
+            ],
+            [
+                'label' => Yii::t('app','Terminos a Buscar'),
+                'format'    => 'raw',
+                //'attribute' => 'alertResourceId',
+                'value' => \kartik\select2\Select2::widget([
+                    'name' => 'products',
+                    'size' => \kartik\select2\Select2::SMALL,
+                    'hideSearch' => false,
+                    'data' => $model->products,
+                    'options' => ['placeholder' => 'Terminos...'],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]),
+
+            ],
+            
+            'config.start_date:datetime',
+            'config.end_date:datetime',
+        ];
+
+        if (!empty($url_detail_arr)) {
+        	array_push($detail_attributes, $url_detail_arr);
+        }
+
+        return $detail_attributes;
+    }
 
     public static function print_mem(){
         /* Currently used memory */

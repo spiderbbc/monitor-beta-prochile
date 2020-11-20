@@ -490,31 +490,11 @@ const products_interations_chart = Vue.component("products-interations-chart", {
           type: "string",
           role: "annotation",
         },
-        // 4,
-        // {
-        //   calc: "stringify",
-        //   sourceColumn: 4,
-        //   type: "string",
-        //   role: "annotation",
-        // },
-        // 5,
-        // {
-        //   calc: "stringify",
-        //   sourceColumn: 5,
-        //   type: "string",
-        //   role: "annotation",
-        // },
-        // 6,
-        // {
-        //   calc: "stringify",
-        //   sourceColumn: 6,
-        //   type: "string",
-        //   role: "annotation",
-        // },
+       
       ],
       options: {
         focusTarget: "category",
-        title: "Gráfico de número de interacciones por productos",
+        title: "Gráfico de número de interacciones por terminos",
         vAxis: { format: "decimal" },
         hAxis: { titleTextStyle: { color: "Black" }, format: "string" },
         width: 1200,

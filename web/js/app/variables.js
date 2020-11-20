@@ -26,10 +26,16 @@ let controllerName = {
 // property for each box on resource social
 let smallboxProperties = {
   total_web_records_found: {
-    title: "Total Coincidencias",
-    class: "small-box bg-info",
+    title: "Total Coincidencias Paginas Webs",
+    class: "small-box bg-warning",
     icon: "socicon-internet",
     name: "Paginas Webs",
+  },
+  total_web_news_found: {
+    title: "Total Coincidencias Noticias Webs",
+    class: "small-box bg-info",
+    icon: "socicon-internet",
+    name: "Noticias Webs",
   },
   total_chats: {
     title: "Total Chats Livechats",

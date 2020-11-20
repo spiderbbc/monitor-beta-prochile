@@ -1,8 +1,9 @@
 <?php 
 use yii\helpers\Html;
-//use yii\grid\GridView;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
+use kartik\select2\Select2;
+use kartik\export\ExportMenu;
 use yii\widgets\ActiveForm;
 ?>
 <!-- template que muestra el boton para solicitar el pdf -->
@@ -179,13 +180,25 @@ use yii\widgets\ActiveForm;
                 ]
               ],
         'columns' => [
-          [
+            [
                 'label' => Yii::t('app','Recurso Social'),
                 'attribute' => 'resourceName',
                 'format' => 'raw',
                 'value' => function($model){
                     return $model['recurso'];
-                }
+                },
+                'filter' => Select2::widget([
+                    'data' => \yii\helpers\ArrayHelper::map($model->config->sources,'name','name'),
+                    'name' => 'MentionSearch[resourceName]',
+                    'value' => $searchModel['resourceName'],
+                    'attribute' => 'resourceName',
+                    'options' => ['placeholder' => 'Select resources...','multiple' => false],
+                    'theme' => 'krajee',
+                    'hideSearch' => true,
+                    'pluginOptions' => [
+                          'allowClear' => true,
+                      ],
+                ]),
             ],
             [
                 'label' => Yii::t('app','Término buscado'),
@@ -194,7 +207,19 @@ use yii\widgets\ActiveForm;
                 'format' => 'raw',
                 'value' => function($model){
                     return $model['term_searched'];
-                }
+                },
+                'filter' => Select2::widget([
+                    'data' => $model->termsFind,
+                    'name' => 'MentionSearch[termSearch]',
+                    'value' => $searchModel['termSearch'],
+                    'attribute' => 'termSearch',
+                    'options' => ['placeholder' => 'Select term...','multiple' => false],
+                    'theme' => 'krajee',
+                    'hideSearch' => true,
+                    'pluginOptions' => [
+                          'allowClear' => true,
+                      ],
+                ]),
             ],
             [
                 'label' => Yii::t('app','Fecha'),
