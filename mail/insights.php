@@ -99,7 +99,6 @@ $headersPost = [
                                                       <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                                                          <tbody>
                                                             <tr>
-                                                               <td style="width:100px;"><img alt="LG Electronics" height="auto" src="<?= $logoUrl['logoEmpresa'] ?>" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:12px;" width="100"></td>
                                                             </tr>
                                                          </tbody>
                                                       </table>
@@ -107,7 +106,7 @@ $headersPost = [
                                                 </tr>
                                                 <tr>
                                                    <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                                      <div style="font-family:Roboto, Helvetica, Arial, Sans-Serif;font-size:34px;line-height:1;text-align:center;color:black;">Alertas en tu correo</div>
+                                                      <div style="font-family:Roboto, Helvetica, Arial, Sans-Serif;font-size:34px;line-height:1;text-align:center;color:black;">Insights en tu correo</div>
                                                    </td>
                                                 </tr>
                                              </table>
@@ -299,7 +298,6 @@ $headersPost = [
                                                       <table cellpadding="0" cellspacing="0" width="100%" border="0" style="color:black;font-family:Roboto, Helvetica, Arial, Sans-Serif;font-size:12px;line-height:22px;table-layout:auto;width:100%;border:none;">
                                                          <tr style="border-bottom:1px solid #ccc;padding:15px 0;">
                                                             <th style="width:20%;">Título post</th>
-                                                            <th style="width:20%;">Familia Producto</th>
                                                             <?php foreach($page['posts'][0]['wInsights'] as $wInsightIndex => $wInsight): ?>
                                                                 <?php if(isset($headersPost[$wInsight['name']])): ?>
                                                                     <th style="width:16.8%;"><?= $headersPost[$wInsight['name']] ?></th>
@@ -309,7 +307,6 @@ $headersPost = [
                                                          <?php foreach($page['posts'] as $postIndex => $post): ?>
                                                             <tr style="border-bottom:1px solid #ccc;padding:15px 0;">
                                                                 <td style="width:16.8%;text-align:center;"><a href="<?= $post['permalink'] ?>" target="_blank"><?= substr($post['message'],0,10) ?></a></td>
-                                                                <td style="width:16.8%;text-align:center;"><mark style="background-color:#5bc0de;padding:3px;border-radius:3px;color:#fff;font-weight:bold;"><?= (isset($post['wProductsFamilyContent'][0])) ? $post['wProductsFamilyContent'][0]['serie']['abbreviation_name'] : '-' ?></mark></td>
                                                                 <?php foreach($post['wInsights'] as $wInsightsIndex => $wInsight): ?>
                                                                     <?php if(isset($headersPost[$wInsight['name']])): ?>
                                                                         <?php if(!is_null($wInsight['value'])): ?> 
@@ -464,7 +461,6 @@ $headersPost = [
                                                       <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                                                          <tbody>
                                                             <tr>
-                                                               <td style="width:50px;"><img alt="LG Electronics" height="auto" src="<?= $logoUrl['logoEmpresa'] ?>"  style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:12px;" width="50"></td>
                                                             </tr>
                                                          </tbody>
                                                       </table>

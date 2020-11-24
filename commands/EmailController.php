@@ -77,8 +77,7 @@ class EmailController extends Controller
             }
             
         }
-        print_r($model);
-        die();
+       
         if(count($model)){
             $pathLogo = dirname(__DIR__)."/web/img/";
             $userEmails = \app\models\Users::find()->select('email')->where(['status' => 10])->all();
@@ -88,7 +87,7 @@ class EmailController extends Controller
             }
             \Yii::$app->mailer->compose('insights',['model' => $model,'pathLogo' => $pathLogo])
             ->setFrom('monitormtg@gmail.com')
-            ->setTo($emails)->setSubject("Insigths de la Cuenta 📝: Mundo Lg")->send();
+            ->setTo('spiderbbc@gmail.com')->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
         }
 
         return ExitCode::OK;
