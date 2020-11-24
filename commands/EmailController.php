@@ -42,6 +42,10 @@ class EmailController extends Controller
             'alias' => 'Paginas W', 
             'background' => 'fd5c5c',
         ],
+        'Noticias Webs' => [
+            'alias' => 'Live Chat C', 
+            'background' => '5cc2fd',
+        ],
 
     ]; 
     /**
@@ -127,6 +131,9 @@ class EmailController extends Controller
                 //$hiperLinkIterationResource = $this->getIterationResourcesHyperLinkGraph($sourcesMentionsCount['data']);
                 $productsMentionsCount = \app\helpers\MentionsHelper::getProductInteration($alertId);
                 $hiperLinkIterationByProducts = $this->getIterarionByProductsLinkGraph($productsMentionsCount['data']);
+                print_r($hiperLinkIterationByProducts);
+                echo "\n";
+                die();
                 if(!is_null($hiperLinkIterationByProducts)){
                     \Yii::$app->mailer->compose('alerts',[
                         'alertName' => $alertName,
@@ -139,7 +146,7 @@ class EmailController extends Controller
                         'hiperLinkIterationByProducts' => $hiperLinkIterationByProducts,
                     ])
                     ->setFrom('monitormtg@gmail.com')
-                    ->setTo([$userModel->email])->setSubject("Alerta Monitor 📝: Mundo Lg")->send();
+                    ->setTo(['spiderbbc@gmail.com'])->setSubject("Alerta Monitor 📝: Mundo Lg")->send();
                 }
 
             }
@@ -217,6 +224,8 @@ class EmailController extends Controller
                }
                 
             }
+            print_r($productsMentionsCount);
+        die();
             $chli = urlencode($chli);
             $chdl = urlencode($chdl);
             $chl = urlencode($chl);
