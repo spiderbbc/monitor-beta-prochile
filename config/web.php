@@ -23,6 +23,9 @@ $config = [
         'user' => [
             'class' => 'app\modules\user\Module',
         ],
+        'insights' => [
+            'class' => 'app\modules\insights\Module',
+        ],
         // kartik
         'gridview' => [
             'class' => '\kartik\grid\Module',
