@@ -213,7 +213,7 @@ class AlertMentionsHelper
     {
         $data = [];
         $models = \app\models\AlertsMencions::find()->with('mentions')->where(['id' => $alerts_mention_ids,'alertId' => $alertId])->asArray()->all();
-        
+       
         switch ($resourceName) {
             case 'Instagram Comments':
                 $like_post = 0;
@@ -221,9 +221,9 @@ class AlertMentionsHelper
                 foreach ($models as $model) {
                     if(count($model['mentions'])){
                         $total += count($model['mentions']);
-                        $mention_data = json_decode($model['mention_data'],true);
-                        $like_post += $mention_data['like_count'];
                     }
+                    $mention_data = json_decode($model['mention_data'],true);
+                    $like_post += $mention_data['like_count'];
                 }
                 // like post
                 $data['like_post'] = $like_post;
