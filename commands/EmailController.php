@@ -131,11 +131,11 @@ class EmailController extends Controller
                 //$hiperLinkIterationResource = $this->getIterationResourcesHyperLinkGraph($sourcesMentionsCount['data']);
                 $productsMentionsCount = \app\helpers\MentionsHelper::getProductInteration($alertId);
                 $hiperLinkIterationByProducts = $this->getIterarionByProductsLinkGraph($productsMentionsCount['data']);
-                print_r($hiperLinkIterationByProducts);
-                echo "\n";
-                die();
                 if(!is_null($hiperLinkIterationByProducts)){
+                    // get image of the accounts for image
+                    $wcontent = \app\models\WContent::find()->where(['type_content_id' => 1])->one();
                     \Yii::$app->mailer->compose('alerts',[
+                        'wcontent' => $wcontent,
                         'alertName' => $alertName,
                         'createdAt' => $createdAt,
                         'start_date' => $start_date,
@@ -146,7 +146,7 @@ class EmailController extends Controller
                         'hiperLinkIterationByProducts' => $hiperLinkIterationByProducts,
                     ])
                     ->setFrom('monitormtg@gmail.com')
-                    ->setTo(['spiderbbc@gmail.com'])->setSubject("Alerta Monitor 📝: Mundo Lg")->send();
+                    ->setTo(['spiderbbc@gmail.com'])->setSubject("Alerta Monitor 📝: ProChile")->send();
                 }
 
             }
@@ -224,8 +224,7 @@ class EmailController extends Controller
                }
                 
             }
-            print_r($productsMentionsCount);
-        die();
+            
             $chli = urlencode($chli);
             $chdl = urlencode($chdl);
             $chl = urlencode($chl);

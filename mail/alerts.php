@@ -63,7 +63,6 @@
                                                       <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                                                          <tbody>
                                                             <tr>
-                                                               <td style="width:100px;"><img alt="LG Electronics" height="auto" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Felitegamingcomputers.com%2Fwp-content%2Fuploads%2F2017%2F03%2FLG-Electronics-Logo.png&f=1&nofb=1" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:12px;" width="100"></td>
                                                             </tr>
                                                          </tbody>
                                                       </table>
@@ -111,7 +110,7 @@
                                                       <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                                                          <tbody>
                                                             <tr>
-                                                               <td style="width:550px;"><img alt="" height="auto" src="https://scontent-lga3-1.xx.fbcdn.net/v/t1.0-9/s720x720/121602889_10158680887062248_7906281310339756097_n.jpg?_nc_cat=103&ccb=2&_nc_sid=dd9801&_nc_ohc=paQ8EqqqWY4AX8Rgc3U&_nc_ht=scontent-lga3-1.xx&tp=7&oh=f83814d3d04b477c528a73faf5ac8193&oe=5FD8DD87" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:12px;" width="550"></td>
+                                                               <td style="width:550px;"><img alt="" height="auto" src="<?= $wcontent->image_url ?>" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:12px;" width="550"></td>
                                                             </tr>
                                                          </tbody>
                                                       </table>
@@ -301,7 +300,7 @@
                                              <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#f5f5f5;vertical-align:top;" width="100%">
                                                 <tr>
                                                    <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                                      <div style="font-family:Roboto, Helvetica, Arial, Sans-Serif;font-size:18px;line-height:1;text-align:left;color:black;">Gráfico de número de interacciones por Término</div>
+                                                      <div style="font-family:Roboto, Helvetica, Arial, Sans-Serif;font-size:18px;line-height:1;text-align:left;color:black;">Gráfico de número de interacciones por Terminos</div>
                                                    </td>
                                                 </tr>
                                                 <tr>
@@ -399,7 +398,6 @@
                                                       <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                                                          <tbody>
                                                             <tr>
-                                                               <td style="width:50px;"><img alt="LG Electronics" height="auto" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Felitegamingcomputers.com%2Fwp-content%2Fuploads%2F2017%2F03%2FLG-Electronics-Logo.png&f=1&nofb=1" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:12px;" width="50"></td>
                                                             </tr>
                                                          </tbody>
                                                       </table>
