@@ -91,7 +91,7 @@ class EmailController extends Controller
             }
             \Yii::$app->mailer->compose('insights',['model' => $model,'pathLogo' => $pathLogo])
             ->setFrom('monitormtg@gmail.com')
-            ->setTo('spiderbbc@gmail.com')->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
+            ->setTo($emails)->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
         }
 
         return ExitCode::OK;
@@ -146,7 +146,7 @@ class EmailController extends Controller
                         'hiperLinkIterationByProducts' => $hiperLinkIterationByProducts,
                     ])
                     ->setFrom('monitormtg@gmail.com')
-                    ->setTo(['spiderbbc@gmail.com'])->setSubject("Alerta Monitor 📝: ProChile")->send();
+                    ->setTo([$userModel->email])->setSubject("Alerta Monitor 📝: ProChile")->send();
                 }
 
             }
