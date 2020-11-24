@@ -402,4 +402,102 @@ class InsightsHelper
         return $posts_content;
     }  
 
+    /**
+     * [getNumbersContent get the number of accounts from the client]
+     * @return $page_resource [array with resources ids]
+     */
+    public static function getNumbersContent(){
+        
+        $pageContentId = \app\models\WTypeContent::find()->select(['id'])->where(['name' => 'Page'])->one(); 
+        $page_resource = \app\models\WContent::find()->select('resource_id')->where(['type_content_id' => $pageContentId->id])->groupBy('resource_id')->asArray()->all();
+        
+        return $page_resource;
+    }
+
+    /**
+     * [getContentPage get the content page client
+     * @param $resourceId id from resource ej: Facebook or Instagram
+     * @return $page_content
+     */
+    public static function getContentPage($resourceId){
+        
+        $pageContentId = \app\models\WTypeContent::find()->select(['id'])->where(['name' => 'Page'])->one(); 
+		$page_content = \app\models\WContent::find()->where(
+			[
+				'type_content_id' => $pageContentId->id,
+				'resource_id' => $resourceId
+			]
+		)->with(['resource'])->orderBy(['updatedAt' => SORT_DESC])->asArray()->all();
+
+		for ($p=0; $p < sizeof($page_content) ; $p++) { 
+
+        	$insights = \app\models\WInsights::find()->where(['content_id' => $page_content[$p]['id']])->orderBy(['end_time' => SORT_DESC ])->asArray()->groupBy(['id','name'])->limit(5)->all();
+        	if (!is_null($insights)) {
+        		$page_content[$p]['wInsights'] = $insights;
+        	}
+        }
+		
+		return reset($page_content);
+    }
+
+    /**
+     * [getPostsInsights get the Posts Insights
+     * @param $resourceId id from resource ej: Facebook or Instagram
+     * @return getPostInsightsByResource
+     */
+    public static function getPostsInsights($resourceId){
+        // type posts
+        $postContentId = \app\models\WTypeContent::find()->select(['id'])->where(['name' => 'Post'])->one(); 
+        // last five
+        $posts_content = \app\models\WContent::find()->where(
+            [
+                'type_content_id' => $postContentId->id,
+                'resource_id' => $resourceId // get by source
+            ]
+        )->with(['resource'])->orderBy(['timespan' => SORT_DESC])->asArray()->limit(5)->all();
+
+
+        return \app\helpers\InsightsHelper::getPostInsightsByResource($posts_content,$resourceId);
+    }
+
+    /**
+     * [getStorysInsights get the Stories Insights
+     * @param $resourceId id from resource ej: Facebook or Instagram
+     * @return getPostInsightsByResource
+     */
+    public static function getStorysInsights($resourceId){
+        $storyContentId = \app\models\WTypeContent::find()->select(['id'])->where(['name' => 'Story'])->one();
+
+        $storys_content = \app\models\WContent::find()->where(
+            [
+                'type_content_id' => $storyContentId->id,
+                'resource_id' => $resourceId // get by source
+            ]
+		)->with(['resource'])->orderBy(['timespan' => SORT_DESC])->asArray()->limit(5)->all();
+		
+		$nameInsights =  ['impressions','reach','replies'];
+        
+
+        for ($p=0; $p < sizeof($storys_content) ; $p++) { 
+
+        	$insights = \app\models\WInsights::find()->where(['content_id' => $storys_content[$p]['id']])->orderBy(
+				[
+					'end_time' => SORT_DESC,
+				]
+				)->asArray()->groupBy(['id','name'])->limit(4)->all();
+        	if (!is_null($insights)) {
+				$data = [];
+				for($w=0; $w < sizeof($insights) ; $w++){
+					$index = array_search($insights[$w]['name'],$nameInsights);
+					if($index !== false){
+						$data[$index]= $insights[$w];
+					}
+				}
+        		$storys_content[$p]['wInsights'] = $data;
+        	}
+        }
+
+        return $storys_content;
+    }
+
 }
