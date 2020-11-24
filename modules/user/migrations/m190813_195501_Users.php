@@ -91,7 +91,7 @@ class m190813_195501_Users extends Migration
             'auth_key'      => 'tPwo4kDpN7JAz8Rrm9EwNAQ7q8F1p7FN',
             // ximena123
             'password_hash' => '$2y$13$OyRR9X6eBeeTq0vRDxTjyOQDidsTEQHhzQh.IsHeXqrLRjCNV5eAC',
-            'email'         => 'ximena@social-mediatrends.com',
+            'email'         => 'ximena@mediatrendsgroup.com',
             'status'        => 10,
             'created_at'    => 0,
             'updated_at'    => 0,
