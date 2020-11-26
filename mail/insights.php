@@ -147,7 +147,7 @@ $headersPost = [
                                                       <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                                                          <tbody>
                                                             <tr>
-                                                               <td style="width:550px;"><img alt="" height="auto" src="<?= $page['image_url']?>" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:12px;" width="550"></td>
+                                                               <td style="width:550px;"><img alt="<?= $wcontent->image_url ?>" height="auto" src="<?= $page['image_url']?>" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:12px;" width="550"></td>
                                                             </tr>
                                                          </tbody>
                                                       </table>
