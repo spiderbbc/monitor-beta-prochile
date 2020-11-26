@@ -357,7 +357,7 @@ class MentionsController extends Controller
   {
     $model = \app\models\HistorySearch::getDb()->cache(function ($db) use ($alertId) {
       return \app\models\HistorySearch::find()->select('search_data')->where(['alertId' => $alertId])->one();
-    });
+    },20);
     return array('data' => $model);  
   }
 
