@@ -355,9 +355,7 @@ class MentionsController extends Controller
    */
   public function actionStatusAlert($alertId)
   {
-    $model = \app\models\HistorySearch::getDb()->cache(function ($db) use ($alertId) {
-      return \app\models\HistorySearch::find()->select('search_data')->where(['alertId' => $alertId])->one();
-    },20);
+    $model = \app\models\HistorySearch::find()->select('search_data')->where(['alertId' => $alertId])->one();
     return array('data' => $model);  
   }
 
