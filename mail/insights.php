@@ -17,7 +17,7 @@ $logoUrl = [
     'Instagram' => 'https://www.dropbox.com/s/z0143n809glxsx4/Instagram.png?raw=1',
     'Facebook' => 'https://www.dropbox.com/s/8k0mz9t5t0u9e3k/Facebook.png?raw=1',
     'logo' => 'https://www.dropbox.com/s/ycqnfcyu931x2ov/logo.png?raw=1',
-    'logoEmpresa' => 'https://www.dropbox.com/s/5kpxs768su8i6im/logoEmpresa.png?raw=1'
+    'logoEmpresa' => 'https://www.dropbox.com/s/jsdo36r44wb7ya5/logo_prochile.png?raw=1'
 ];
 $headersPost = [
     //facebook
@@ -147,7 +147,7 @@ $headersPost = [
                                                       <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                                                          <tbody>
                                                             <tr>
-                                                               <td style="width:550px;"><img alt="logo" height="auto" src="<?= $image_url ?>" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:12px;" width="550"></td>
+                                                               <td style="width:550px;"><img alt="logo" height="auto" src="<?= $logoUrl['logoEmpresa'] ?>" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;font-size:12px;" width="550"></td>
                                                             </tr>
                                                          </tbody>
                                                       </table>
