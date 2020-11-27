@@ -1,6 +1,6 @@
 'use strict'
 //var element = $("#productsIds");
-const origin           = location.origin;
+const origin   = location.origin;
 const baseUrl  = `${origin}/${appId}/web/monitor/alert/`;
 
 let message_error_no_dates = "Debe de escojer fecha de Inicio y fecha Final";

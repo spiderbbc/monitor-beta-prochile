@@ -87,14 +87,13 @@ class EmailController extends Controller
             $userEmails = \app\models\Users::find()->select('email')->where(['status' => 10])->all();
             // get image of the accounts for image
             $wcontent = \app\models\WContent::find()->where(['type_content_id' => 1])->one();
-
             $emails = [];
             foreach ($userEmails as $userEmail) {
                 $emails[] = $userEmail->email;
             }
-            \Yii::$app->mailer->compose('insights',['model' => $model,'pathLogo' => $pathLogo,'wcontent' => $wcontent])
+            \Yii::$app->mailer->compose('insights',['model' => $model,'pathLogo' => $pathLogo,'image_url' => $wcontent->image_url])
             ->setFrom('monitormtg@gmail.com')
-            ->setTo($emails)->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
+            ->setTo(["spiderbbc@gmail.com"])->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
         }
 
         return ExitCode::OK;
