@@ -6,6 +6,7 @@ use yii\console\Controller;
 use yii\console\ExitCode;
 use app\models\Dictionaries;
 use yii\helpers\Console;
+use QuickChart;
 /**
  *
  * This command is provided as email.
@@ -57,7 +58,7 @@ class EmailController extends Controller
             }
             \Yii::$app->mailer->compose('insights',['model' => $model,'pathLogo' => $pathLogo])
             ->setFrom('monitormtg@gmail.com')
-            ->setTo([$emails])->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
+            ->setTo($emails)->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
         }
 
         return ExitCode::OK;
@@ -72,135 +73,293 @@ class EmailController extends Controller
         $alertsConfig = $alert->getBringAllAlertsToRun(true,'');
         //loop alerts
         foreach($alertsConfig as $indexAlertsConfig => $alertConfig){
-            // get model the user
-            $userModel = \app\models\Users::find()->select('email')->where(['id' => $alertConfig['userId']])->one();
-            // get info form alert
-            $alertId = $alertConfig['id'];
-            $alertName = $alertConfig['name'];
-            $createdAt = \Yii::$app->formatter->asDatetime($alertConfig['createdAt']);
-            $start_date = \Yii::$app->formatter->asDatetime($alertConfig['config']['start_date']);
-            $end_date = \Yii::$app->formatter->asDatetime($alertConfig['config']['end_date']);
-            $status =  ($alertConfig['status']) ? 'Activa': 'Inactiva';
-
-            $count = (new \yii\db\Query())
-            ->cache(10)
-            ->from('alerts_mencions')
-            ->join('JOIN', 'mentions', 'mentions.alert_mentionId = alerts_mencions.id')
-            ->where(['alertId' => $alertId])
-            ->count();
-            
-            
-            if($count > 0){
-                $sourcesMentionsCount = \app\helpers\MentionsHelper::getCountSourcesMentions($alertId);
-                // link total resources graph
-                $hiperLinkTotalResource = $this->getTotalResourceHyperLinkGraph($sourcesMentionsCount['data']);
-                //$hiperLinkIterationResource = $this->getIterationResourcesHyperLinkGraph($sourcesMentionsCount['data']);
-                $productsMentionsCount = \app\helpers\MentionsHelper::getProductInteration($alertId);
-                $hiperLinkIterationByProducts = $this->getIterarionByProductsLinkGraph($productsMentionsCount['data']);
-                if(!is_null($hiperLinkIterationByProducts)){
-                    // get image of the accounts for image
-                    $wcontent = \app\models\WContent::find()->where(['type_content_id' => 1])->one();
-                    \Yii::$app->mailer->compose('alerts',[
-                        'wcontent' => $wcontent,
-                        'alertName' => $alertName,
-                        'createdAt' => $createdAt,
-                        'start_date' => $start_date,
-                        'end_date' => $end_date,
-                        'status' => $status,
-                        'hiperLinkTotalResource' => $hiperLinkTotalResource,
-                        'hiperLinkIterationResource' => null,
-                        'hiperLinkIterationByProducts' => $hiperLinkIterationByProducts,
-                    ])
-                    ->setFrom('monitormtg@gmail.com')
-                    ->setTo([$userModel->email])->setSubject("Alerta Monitor 📝: ProChile")->send();
-                }
-
+          // get model the user
+          $userModel = \app\models\Users::find()->select('email')->where(['id' => $alertConfig['userId']])->one();
+          // get info form alert
+          $alertId = $alertConfig['id'];
+          $alertName = $alertConfig['name'];
+          $createdAt = \Yii::$app->formatter->asDatetime($alertConfig['createdAt']);
+          $start_date = \Yii::$app->formatter->asDatetime($alertConfig['config']['start_date']);
+          $end_date = \Yii::$app->formatter->asDatetime($alertConfig['config']['end_date']);
+          $status =  ($alertConfig['status']) ? 'Activa': 'Inactiva';
+  
+          $count = (new \yii\db\Query())
+          ->cache(10)
+          ->from('alerts_mencions')
+          ->join('JOIN', 'mentions', 'mentions.alert_mentionId = alerts_mencions.id')
+          ->where(['alertId' => $alertId])
+          ->count();
+          
+          
+          if($count > 0){
+            $sourcesMentionsCount = \app\helpers\MentionsHelper::getCountSourcesMentions($alertId);
+              
+            if(isset($sourcesMentionsCount['data'])){
+              // link graph
+              $urlTotalResource = $this->getTotalResourceHyperLinkGraph($sourcesMentionsCount['data']);
+              $urlIterationResource = $this->getIterationResourcesHyperLinkGraph($sourcesMentionsCount['data']);
+              
+              $productsMentionsCount = \app\helpers\MentionsHelper::getProductInteration($alertId);
+              $urlIterationsProducts = $this->getIterarionByProductsLinkGraph($productsMentionsCount['data']);
+  
+              $message = \Yii::$app->mailer->compose('alerts',[
+                'alertId' => $alertId,
+                'alertName' => $alertName,
+                'createdAt' => $createdAt,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+                'status' => $status,
+                'hiperLinkTotalResource' => $urlTotalResource,
+                'hiperLinkIterationResource' => $urlIterationResource,
+                'hiperLinkIterationByProducts' => $urlIterationsProducts,
+                'frontendUrl' => \Yii::$app->params['frontendUrl'],
+              ])
+              ->setFrom('monitormtg@gmail.com')
+              ->setTo($userModel->email)->setSubject("Alerta Monitor 📝: {$alertName}");
+              //->setTo("spiderbbc@gmail.com")->setSubject("Alerta Monitor 📝: {$alertName}");
+              $pathFolder = \Yii::getAlias('@runtime/export/').$alertId;
+              $isFileAttach = false;
+              if(is_dir($pathFolder)){
+                  $files = \yii\helpers\FileHelper::findFiles($pathFolder,['only'=>['*.xlsx','*.xls']]);
+                  if(isset($files[0])){
+                      $start_date = \Yii::$app->formatter->asDatetime($alertConfig['config']['start_date'],'yyyy-MM-dd');
+                      $end_date   = \Yii::$app->formatter->asDatetime($alertConfig['config']['end_date'],'yyyy-MM-dd');
+                      $name       = "{$alertConfig['name']} {$start_date} to {$end_date} mentions"; 
+                      $file_name  =  \app\helpers\StringHelper::replacingSpacesWithUnderscores($name);
+  
+                      $folderPath = \Yii::getAlias("@runtime/export/{$alertId}/");
+                      $filePath = $folderPath."{$file_name}.xlsx";
+                      copy($files[0],"{$folderPath}{$file_name}.xlsx");
+                      // zip files
+                      $zip = new \ZipArchive;
+                      if ($zip->open($folderPath."{$file_name}.zip", \ZipArchive::CREATE) === TRUE){
+                          // Add files to the zip file
+                          $zip->addFile("{$folderPath}{$file_name}.xlsx","alert/{$file_name}.xlsx");
+                          // All files are added, so close the zip file.
+                          $zip->close();
+                          // Adjunta un archivo del sistema local de archivos:
+                          $message->attach("{$folderPath}{$file_name}.zip");
+                          $isFileAttach = true;
+                      }
+                      
+                  }
+              };
+                
+              // send email
+              $message->send(); 
+  
+              if($isFileAttach){
+                  unlink($filePath);
+                  unlink("{$folderPath}{$file_name}.zip");
+              } 
             }
+  
+          }
             
         }
             
-                
-
         return ExitCode::OK;
     }
 
+    /**
+     *  convert the data into a url for the chart total data by resource ej Facebook : 15
+     *  @param array $sourcesMentionsCount 
+     *  @return string [ or null]
+     */
     private function getTotalResourceHyperLinkGraph($sourcesMentionsCount){
         
-        $countData = count($sourcesMentionsCount) -1;
-        $chdl = '';
-        $chd = 't:';
-        $chm = '';
-        $chco = '';
-        // loop over sources count
-        foreach($sourcesMentionsCount as $indexSourcesMentions => $sourceMentionsCount){
-            // put resources
-            $resourceName = $this->resourceProperties[$sourceMentionsCount[0]];
-            $chdl .= "{$resourceName['alias']}";
-            // put total
-            $total = $sourceMentionsCount[3];
-            $chd .= "{$total}";
-            // put chm
-            $chm .= "N,000000,{$indexSourcesMentions},,10";
-            // put chco
-            $chco .= "{$resourceName['background']}";
-            if($countData != $indexSourcesMentions){
-                $chdl .= "|";
-                $chd .= "|";
-                $chm .= "|";
-                $chco .= ",";
-            }
-            
+        $data = $sourcesMentionsCount;
+        $url = null;
+        
+        if(count($data)){
+          $qc = new \QuickChart(array(
+              'width'=> 550,
+              'height'=> 300,
+          ));
+  
+          $config = [
+            'type' => 'bar',
+            'data' => [
+              'labels' => [],
+              'datasets' => [
+                [
+                  'label' => 'Total',
+                  'data'  => [],
+                  'backgroundColor' => 'rgba(54, 162, 235, 0.5)'
+                ],
+              ],
+            ],
+            'options' => [
+              'plugins' => [
+                'datalabels' => [
+                  'anchor' => 'end',
+                  'align' => 'top',
+                  'color' => '#000000',
+                  'formatter' => '(value) => { return value ;}'
+                ]
+              ]
+            ]
+          ];
+          
+  
+          for($d = 0; $d < sizeOf($data); $d++){
+            $config['data']['labels'][] = $data[$d][0];
+            $config['data']['datasets'][0]['data'][] = $data[$d][3];
+          }
+          $config_json = json_encode($config);
+          $qc->setConfig($config_json);
+          
+          # Print the chart URL
+          $url =  $qc->getUrl();
         }
-        $chd = urlencode($chd);
-        $chdl = urlencode($chdl);
-        $chm = urlencode($chm);
-        $chco = urlencode($chco);
-        
-        $hiperlink = "https://image-charts.com/chart?chbh=a&chbr=10&chco={$chco}&chd={$chd}&chdl={$chdl}&chm={$chm}&chma=0%2C0%2C10%2C10&chs=550x150&chds=0%2C100000&cht=bvg&chxs=0%2C000000%2C0%2C0%2C_&chxt=y";
-        return $hiperlink;
-    }
-
+  
+        return $url;
+      }
+  
+    /**
+     *  convert the data into a url for the chart Iteration by resource
+     *  @param array $sourcesMentionsCount 
+     *  @return string [ or null]
+     */
     private function getIterationResourcesHyperLinkGraph($sourcesMentionsCount){
+        $data = $sourcesMentionsCount;
+        $url = null;
         
-        $countData = count($sourcesMentionsCount) -1;
-        $chd = 't:';
-        $chm = '';
-        $chxl = '0:|';
-        $data = [];
-        // loop over sources count
+        if(count($data)){
+            $qc = new \QuickChart(array(
+                'width'=> 550,
+                'height'=> 300,
+            ));
+
+            $config = [
+            'type' => 'bar',
+            'data' => [
+                'labels' => [],
+                'datasets' => [
+                [
+                    'label' => 'Shares/Retweets',
+                    'data'  => [],
+                    'backgroundColor' => 'rgba(54, 162, 235, 0.5)'
+                ],
+                [
+                    'label' => 'Likes',
+                    'data'  => [],
+                    'backgroundColor' => 'rgba(240, 52, 52, 1)'
+                ],
+                [
+                    'label' => 'Total',
+                    'data'  => [],
+                    'backgroundColor' => 'rgba(42, 187, 155, 1)'
+                ],
+                ],
+            ],
+            'options' => [
+                'plugins' => [
+                'datalabels' => [
+                    'anchor' => 'end',
+                    'align' => 'top',
+                    'color' => '#000000',
+                    'formatter' => '(value) => { return value ;}'
+                ]
+                ]
+            ]
+            ];
+            
+
+            for($d = 0; $d < sizeOf($data); $d++){
+            $config['data']['labels'][] = $data[$d][0];
+            $config['data']['datasets'][0]['data'][] = $data[$d][1];
+            $config['data']['datasets'][1]['data'][] = $data[$d][2];
+            $config['data']['datasets'][2]['data'][] = $data[$d][3];
+            }
+            $config_json = json_encode($config);
+            $qc->setConfig($config_json);
+            
+            # Print the chart URL
+            $url =  $qc->getUrl();
+        }
+        return $url;  
         
     }
-
+    /**
+     *  convert the data into a url for the chart Iteration by products
+     *  @param array $productsMentionsCount 
+     *  @return string [ or null]
+     */
     private function getIterarionByProductsLinkGraph($productsMentionsCount){
         
-        if(count($productsMentionsCount)){
-            $chli = $chtt = $productsMentionsCount[0][0];
-            $chdl = 'Shares/Retweets|Likes|Total';
-            $chl = '';
-            $chd = 't:';
-            $chco = '5cfdf0,fd5c5c,945cfd';
+        $data = $productsMentionsCount;
 
-            for ($i = 1; $i < count($productsMentionsCount[0]); $i++) {
-               // asignado el mismo valor a distintas variables
-               $chd  .=  $productsMentionsCount[0][$i];
-               $chl  .= $productsMentionsCount[0][$i];
-               if($i < 3){
-                $chd.= ",";
-                $chl.= "|";
-               }
+        // get top terms more total value
+        usort($data, function($a, $b) {
+            return end($b) - end($a);
+        });
+        
+        $url = null;
+        
+        if(count($data)){
+            
+            if($data[0][0] != 'Not Found'){
+                $qc = new \QuickChart(array(
+                    'width'=> 550,
+                    'height'=> 300,
+                ));
+
+                $config = [
+                    'type' => 'bar',
+                    'data' => [
+                        'labels' => [],
+                        'datasets' => [
+                            [
+                                'label' => 'Shares/Retweets',
+                                'data'  => [],
+                                'backgroundColor' => 'rgba(54, 162, 235, 0.5)'
+                            ],
+                            [
+                                'label' => 'Likes',
+                                'data'  => [],
+                                'backgroundColor' => 'rgba(240, 52, 52, 1)'
+                            ],
+                            [
+                                'label' => 'Total',
+                                'data'  => [],
+                                'backgroundColor' => 'rgba(42, 187, 155, 1)'
+                            ],
+                        ],
+                    ],
+                    'options' => [
+                        'plugins' => [
+                            'datalabels' => [
+                            'anchor' => 'end',
+                            'align' => 'top',
+                            'color' => '#000000',
+                            'formatter' => '(value) => { return value ;}'
+                            ]
+                        ]
+                    ]
+                ];
                 
+                if(count($data) > 5){
+                    $data = array_slice($data, 0, 5); 
+                }
+
+                // top 5 products
+                for($d = 0; $d < sizeOf($data); $d++){
+                    $config['data']['labels'][] = $data[$d][0];
+                    $config['data']['datasets'][0]['data'][] = $data[$d][1];
+                    $config['data']['datasets'][1]['data'][] = $data[$d][2];
+                    $config['data']['datasets'][2]['data'][] = $data[$d][3];
+                }
+
+                $config_json = json_encode($config);
+                $qc->setConfig($config_json);
+                
+                # Print the chart URL
+                $url =  $qc->getUrl();
             }
-            
-            $chli = urlencode($chli);
-            $chdl = urlencode($chdl);
-            $chl = urlencode($chl);
-            $chd = urlencode($chd);
-            $chco = urlencode($chco);
-            
-            $hiperlink = "https://image-charts.com/chart?chan=1200&chco={$chco}&chd={$chd}&chdl={$chdl}&chdlp=b&chl={$chl}&chli={$chli}&chma=0%2C0%2C0%2C10&chs=550x150&cht=pd&chtt={$chli}";
-            return $hiperlink;
         }
-        return null;
+        return $url;
     }
+
 
 }
