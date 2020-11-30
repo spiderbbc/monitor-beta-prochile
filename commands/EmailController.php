@@ -13,41 +13,7 @@ use yii\helpers\Console;
  */
 class EmailController extends Controller
 {
-    private $resourceProperties = [
-        'Twitter' => [
-            'alias' => 'Twitter',
-            'background' => 'fdb45c'
-        ],
-        'Live Chat' => [
-            'alias' => 'Live Chat T', 
-            'background' => '5cfdf0',
-        ],
-        'Live Chat Conversations' => [
-            'alias' => 'Live Chat C', 
-            'background' => '5cc2fd',
-        ],
-        'Facebook Comments' => [
-            'alias' => 'Facebook C', 
-            'background' => '945cfd',
-        ],
-        'Facebook Messages' => [
-            'alias' => 'Facebook M', 
-            'background' => 'd75cfd',
-        ],
-        'Instagram Comments' => [
-            'alias' => 'Instagram C', 
-            'background' => 'fd5cfd',
-        ],
-        'Paginas Webs' => [
-            'alias' => 'Paginas W', 
-            'background' => 'fd5c5c',
-        ],
-        'Noticias Webs' => [
-            'alias' => 'Live Chat C', 
-            'background' => '5cc2fd',
-        ],
-
-    ]; 
+    
     /**
      * This command echoes what you have entered as the message.
      * @param string $message the message to be echoed.
