@@ -6,15 +6,16 @@ use yii\helpers\Url;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use Box\Spout\Writer\Common\Creator\WriterFactory;
-use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
-use Box\Spout\Common\Entity\Row;
-use Box\Spout\Common\Type;
+
 
 class PdfController extends \yii\web\Controller
 {
 	public $enableCsrfValidation = false;
 
+    /**
+     * Generate document pdf for Alert
+     * @return Array data and url document
+     */
     public function actionDocument()
     {
     	\Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
@@ -76,45 +77,46 @@ class PdfController extends \yii\web\Controller
         $url = Url::to('@web/pdf/'.$model->id.'/'.$file_name);
         return array('data' => $url,'filename' => $file_name); 
     }
-
+    /**
+     * Generate document Excel for Alert
+     * @return Object response
+     */
     public function actionExportMentionsExcel($alertId){
 
-        $writer = WriterEntityFactory::createXLSXWriter();
+        
         $model = \app\models\Alerts::findOne($alertId);
         $start_date = \Yii::$app->formatter->asDatetime($model->config->start_date,'yyyy-MM-dd');
         $end_date   = \Yii::$app->formatter->asDatetime($model->config->end_date,'yyyy-MM-dd');
         $name       = "{$model->name} {$start_date} to {$end_date} mentions"; 
         $file_name  =  \app\helpers\StringHelper::replacingSpacesWithUnderscores($name);
-        $filePath = \Yii::getAlias('@runtime/export/')."{$file_name}.xlsx";
-        $writer->openToFile($filePath); // write data to a file or to a PHP stream
-        
-        $cells = [
-            WriterEntityFactory::createCell('Recurso Social'),
-            WriterEntityFactory::createCell('Término buscado'),
-            WriterEntityFactory::createCell('Date created'),
-            WriterEntityFactory::createCell('Name'),
-            WriterEntityFactory::createCell('Username'),
-            WriterEntityFactory::createCell('Title'),
-            WriterEntityFactory::createCell('Mention'),
-            WriterEntityFactory::createCell('url'),
-
-        ];
-        ini_set('max_execution_time', 600);
-        $data = \app\helpers\MentionsHelper::getDataMentions($model->id);
-        
-        /** add a row at a time */
-        $singleRow = WriterEntityFactory::createRow($cells);
-        $writer->addRow($singleRow);
-        
-        
-        /** Shortcut: add a row from an array of values */
-        for ($v=0; $v < sizeOf($data) ; $v++) {
-            $rowFromValues = WriterEntityFactory::createRowFromArray($data[$v]);
-            $writer->addRow($rowFromValues);
+       
+        $pathFolder = \Yii::getAlias('@runtime/export/').$alertId;
+        if(is_dir($pathFolder)){
+            $files = \yii\helpers\FileHelper::findFiles($pathFolder,['only'=>['*.xlsx','*.xls']]);
+            if(isset($files[0])){
+                $folderPath = \Yii::getAlias("@runtime/export/{$alertId}/");
+                $filePath = $folderPath."{$file_name}.xlsx";
+                copy($files[0],"{$folderPath}{$file_name}.xlsx");
+            }else{
+                $folderPath = \Yii::getAlias("@runtime/export/{$alertId}/");
+                $filePath = $folderPath."{$file_name}.xlsx";
+                $data = \app\helpers\MentionsHelper::getDataMentions($model->id);
+                \app\helpers\DocumentHelper::createExcelDocumentForMentions($filePath,$data);
+                
+            }
+        }else{
+            // set path folder options
+            $folderOptions = [
+                'path' => \Yii::getAlias('@runtime/export/'),
+                'name' => $alertId,
+            ];
+            // create folder
+            $folderPath = \app\helpers\DirectoryHelper::setFolderPath($folderOptions);
+            $folderPath = \Yii::getAlias("@runtime/export/{$alertId}/");
+            $filePath = $folderPath."{$file_name}.xlsx";
+            $data = \app\helpers\MentionsHelper::getDataMentions($model->id);
+            \app\helpers\DocumentHelper::createExcelDocumentForMentions($filePath,$data);
         }
-        
-        $writer->close();
-        
         \Yii::$app->response->sendFile($filePath)->send();
         unlink($filePath);
     }
