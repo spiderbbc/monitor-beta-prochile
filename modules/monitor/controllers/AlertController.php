@@ -46,31 +46,6 @@ class AlertController extends Controller
                     
                 ],
             ],
-          //   [
-          //     'class' => 'yii\filters\PageCache',
-          //     'only' => ['index'],
-          //     'duration' => 180,
-          //     'variations' => [
-          //         \Yii::$app->language,
-          //     ],
-          //     'dependency' => [
-          //         'class' => 'yii\caching\DbDependency',
-          //         'sql' => 'SELECT * FROM alerts WHERE userId='.Yii::$app->user->getId(),
-          //     ],
-          // ],
-          // [
-          //   'enabled' => Yii::$app->request->isGet && !Yii::$app->user->isGuest,
-          //   'class' => 'yii\filters\PageCache',
-          //   'only' => ['view'],
-          //   'duration' => 180,
-          //   'variations' => [
-          //       \Yii::$app->language,
-          //   ],
-          //   'dependency' => [
-          //         'class' => 'yii\caching\DbDependency',
-          //         'sql' => 'SELECT * FROM alerts WHERE userId='.Yii::$app->user->getId().' AND id='.Yii::$app->request->get('id'),
-          //     ],
-          // ],
         ];
     }
 
@@ -136,7 +111,16 @@ class AlertController extends Controller
       // delete mentions
       \app\models\AlertsMencions::deleteAll('alertId = :alertId AND resourcesId = :resourcesId', [':alertId' => $alertId, ':resourcesId' => $resourceId]);
       
-
+      // delete user then no have mention
+      Yii::$app->db
+      ->createCommand(
+          'DELETE FROM users_mentions WHERE users_mentions.id NOT IN ( SELECT distinct origin_id FROM mentions)'
+      )
+      ->execute();
+  
+      // delete document
+      $folderPath = \Yii::getAlias("@runtime/export/{$alertId}/");
+      \yii\helpers\FileHelper::removeDirectory($folderPath);
       return ['status'=>true];
     }
     /**
@@ -152,7 +136,9 @@ class AlertController extends Controller
       \app\models\TermsSearch::deleteAll('alertId = :alertId AND name = :name', [':alertId' => $alert->id,':name' => $termName]);
       // delete mentions
       \app\models\AlertsMencions::deleteAll('alertId = :alertId AND term_searched = :term_searched', [':alertId' => $alertId, ':term_searched' => $termName]);
-
+      // delete document
+      $folderPath = \Yii::getAlias("@runtime/export/{$alertId}/");
+      \yii\helpers\FileHelper::removeDirectory($folderPath);
       return ['status'=>true];
     }
     /**
@@ -202,12 +188,21 @@ class AlertController extends Controller
       }
 
       \app\models\Mentions::deleteAll(['alert_mentionId' => $alertMentionIds]);
-      
+      // delete document
+      $folderPath = \Yii::getAlias("@runtime/export/{$alertId}/");
+      \yii\helpers\FileHelper::removeDirectory($folderPath);
       
       $status = ($isDictionary) ? true: false;
       return ['status'=>$status];
     }
 
+    /**
+     * [actionAddFilterAlert adding dictionaries or filter in update]
+     * @param  [type] $alertId        [description]
+     * @param  [type] $dictionaryName [description]
+     * @param  [type] $filterName     [description]
+     * @return [type]                 [description]
+     */
     public function actionAddFilterAlert($alertId,$dictionaryName,$filterName)
     {
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
@@ -224,7 +219,12 @@ class AlertController extends Controller
       \app\models\Mentions::deleteAll(['alert_mentionId' => $alertMentionIds]);
       return ['status' => true];
     }
-
+    /**
+     * [actionChangeLangAlert change languaje to alert ]
+     * @param  [int] $alertId        [alert Id]
+     * @param  [int] $lang [description]
+     * @return [Array]                 [description]
+     */
     public function actionChangeLangAlert($alertId,$lang)
     {
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
@@ -245,6 +245,12 @@ class AlertController extends Controller
       return ['status' => $status];
     }
 
+    /**
+     * [actionDeleteUrlAlert delete url form the alert]
+     * @param  [type] $alertId        [id alert]
+     * @param  [type] $urlName [url to delete]
+     * @return [type]                
+     */
     public function actionDeleteUrlAlert($alertId,$urlName)
     {
       \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
@@ -256,6 +262,9 @@ class AlertController extends Controller
       \app\models\AlertsMencions::deleteAll('alertId = :alertId  AND  resourcesId = :resourcesId AND type = :type AND url = :url', 
         [':alertId' => $alertId,':resourcesId' => $resourceId, ':type' => $type, ':url' => $urlName]);
 
+      // delete document
+      $folderPath = \Yii::getAlias("@runtime/export/{$alertId}/");
+      \yii\helpers\FileHelper::removeDirectory($folderPath);  
       return ['status' => true];
     }
     /**

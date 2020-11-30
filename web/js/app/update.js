@@ -1,5 +1,6 @@
 
-
+var root = location.pathname.split("/")[1];
+var appId = root != "web" ? `${root}/web` : "web";
 /**
  * [description] event unselecting of select2 reourceId when is fire delete resource from alert and his results
  * @param  {[type]} e) [even when is click on delete resource]
@@ -97,7 +98,7 @@ function swal_modal_info_resource(resource,id) {
 				// delete result
 				var data = {alertId: alertId,resourceId: resource.id};
 				$.ajax({
-			        url: origin + `/web/monitor/alert/delete-resource-alert`,
+			        url: origin + `/${appId}/monitor/alert/delete-resource-alert`,
 			        data: data,
 			        type: "GET",
 			        dataType: "json",
@@ -157,7 +158,7 @@ function swal_modal_info_term(term,id) {
 				// delete result
 				var data = {alertId: alertId,termName: term.text};
 				$.ajax({
-			        url: origin + `/web/monitor/alert/delete-term-alert`,
+			        url: origin + `/${appId}/monitor/alert/delete-term-alert`,
 			        data: data,
 			        type: "GET",
 			        dataType: "json",
@@ -218,7 +219,7 @@ function swal_modal_filter_delete(filter,id,dictionaryName) {
 				var data = {alertId: alertId,dictionaryName:dictionaryName,filterName: filter.text};
 				
 				$.ajax({
-			        url: origin + `/web/monitor/alert/delete-filter-alert`,
+			        url: origin + `/${appId}/monitor/alert/delete-filter-alert`,
 			        data: data,
 			        type: "GET",
 			        dataType: "json",
@@ -279,7 +280,7 @@ function swal_modal_url_delete(unselecting_url,id) {
 				var data = {alertId: alertId,urlName: unselecting_url.text};
 				
 				$.ajax({
-			        url: origin + `/web/monitor/alert/delete-url-alert`,
+			        url: origin + `/${appId}/monitor/alert/delete-url-alert`,
 			        data: data,
 			        type: "GET",
 			        dataType: "json",
@@ -320,17 +321,17 @@ function swal_modal_filter_add(term,id,dictionaryName) {
 	  confirmButtonText: `Si, Deseo conservar "${term}"!`,
 	  cancelButtonText: `Quitar "${term}" como filtro!`
 	}).then((result) => {
-		console.log(result);
+		//console.log(result);
 		// checks if a action user
 		if ('value' in result) {
 			// click button info 
 			if(result.value){
 
 				var data = {alertId: alertId,dictionaryName:dictionaryName,filterName: term};
-				console.log(data);
+				//console.log(data);
 				
 				$.ajax({
-			        url: origin + `/web/monitor/alert/add-filter-alert`,
+			        url: origin + `/${appId}/monitor/alert/add-filter-alert`,
 			        data: data,
 			        type: "GET",
 			        dataType: "json",
@@ -391,10 +392,10 @@ function swal_modal_change_language(lang,id){
 			// click button info 
 			if(result.value){
 				var data = {alertId: alertId,lang:lang.id};
-				console.log(data);
+				//console.log(data);
 				
 				$.ajax({
-			        url: origin + `/web/monitor/alert/change-lang-alert`,
+			        url: origin + `/${appId}/monitor/alert/change-lang-alert`,
 			        data: data,
 			        type: "GET",
 			        dataType: "json",
