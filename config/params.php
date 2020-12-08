@@ -21,7 +21,7 @@ return [
 	'senderEmail' => 'eduardo@montana-studio.com',
 	'senderName'  => 'monitor-beta',
 	'scraping'    =>[
-		'time_min_sleep'  => 10, 
+		'time_min_sleep'  => 1, 
 	],
 	'newsApi'     => [
 		'time_hours_sleep' => 8,
