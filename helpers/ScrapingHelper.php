@@ -250,7 +250,7 @@ class ScrapingHelper{
         		}// end loop crawler
         	}// end loop links
         }// end loop crawlers
-		print_r($content);
+		print_r($contents);
       	return $contents;
 	}
 
