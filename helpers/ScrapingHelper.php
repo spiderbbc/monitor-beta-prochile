@@ -211,7 +211,7 @@ class ScrapingHelper{
 						        }// if domain
 						    }// end if status code    
 						} catch (\GuzzleHttp\Exception\ConnectException $e) {
-						    // var_dump($e);
+						     var_dump($e);
 						     continue;
 						}
                     }// end loop for links
@@ -250,7 +250,7 @@ class ScrapingHelper{
         		}// end loop crawler
         	}// end loop links
         }// end loop crawlers
-
+		print_r($content);
       	return $contents;
 	}
 
