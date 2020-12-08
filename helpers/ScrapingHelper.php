@@ -166,7 +166,6 @@ class ScrapingHelper{
             
 		}
 		
-		print_r($new_url);
 	
 		$cache->set("{$key}_{$id}", $data, $time_expired);
 		return $new_url;
