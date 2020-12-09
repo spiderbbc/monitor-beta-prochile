@@ -51,13 +51,16 @@ class EmailController extends Controller
        
         if(count($model)){
             $pathLogo = dirname(__DIR__)."/web/img/";
+            $imagePath = "https://prochile.mediatrendsgroup.com/web/img/";
+            
             $userEmails = \app\models\Users::find()->select('email')->where(['status' => 10])->all();
             $emails = [];
             foreach ($userEmails as $userEmail) {
                 $emails[] = $userEmail->email;
             }
-            \Yii::$app->mailer->compose('insights',['model' => $model,'pathLogo' => $pathLogo])
+            \Yii::$app->mailer->compose('insights',['model' => $model,'imagePath' => $imagePath])
             ->setFrom('monitormtg@gmail.com')
+            //->setTo("spiderbbc@gmail.com")->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
             ->setTo($emails)->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
         }
 

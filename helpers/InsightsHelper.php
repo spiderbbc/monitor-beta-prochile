@@ -428,12 +428,19 @@ class InsightsHelper
 				'resource_id' => $resourceId
 			]
 		)->with(['resource'])->orderBy(['updatedAt' => SORT_DESC])->asArray()->all();
-
+        
+        $instagram = ['reach','follower_count','impressions','profile_views','followers_count'];
 		for ($p=0; $p < sizeof($page_content) ; $p++) { 
 
         	$insights = \app\models\WInsights::find()->where(['content_id' => $page_content[$p]['id']])->orderBy(['end_time' => SORT_DESC ])->asArray()->groupBy(['id','name'])->limit(5)->all();
         	if (!is_null($insights)) {
-        		$page_content[$p]['wInsights'] = $insights;
+                // re index insigths
+                $result = \yii\helpers\ArrayHelper::index($insights, 'name');
+                foreach($instagram as $index => $value){
+                    if(isset($result[$value])){
+                        $page_content[$p]['wInsights'][] = $result[$value];
+                    }
+                }
         	}
         }
 		
@@ -487,13 +494,13 @@ class InsightsHelper
 				)->asArray()->groupBy(['id','name'])->limit(4)->all();
         	if (!is_null($insights)) {
 				$data = [];
-				for($w=0; $w < sizeof($insights) ; $w++){
-					$index = array_search($insights[$w]['name'],$nameInsights);
-					if($index !== false){
-						$data[$index]= $insights[$w];
-					}
-				}
-        		$storys_content[$p]['wInsights'] = $data;
+                $result = \yii\helpers\ArrayHelper::index($insights, 'name');
+                foreach($nameInsights as $index => $value){
+                    if(isset($result[$value])){
+                        $storys_content[$p]['wInsights'][] = $result[$value];
+                    }
+                }
+        		
         	}
         }
 
