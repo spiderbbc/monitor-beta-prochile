@@ -60,8 +60,8 @@ class EmailController extends Controller
             }
             \Yii::$app->mailer->compose('insights',['model' => $model,'imagePath' => $imagePath])
             ->setFrom('monitormtg@gmail.com')
-            ->setTo("spiderbbc@gmail.com")->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
-            //->setTo($emails)->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
+            //->setTo("spiderbbc@gmail.com")->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
+            ->setTo($emails)->setSubject("Insigths de la Cuenta 📝: ProChile")->send();
         }
 
         return ExitCode::OK;
