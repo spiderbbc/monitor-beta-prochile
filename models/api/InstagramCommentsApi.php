@@ -41,6 +41,7 @@ class InstagramCommentsApi extends Model {
 	//private $_access_secret_token;
 	private $resourceName = 'Instagram Comments';
 	private $_page_access_token;
+	private $_bussinesId;
 	private $_business_account_id;
 	private $_appsecret_proof;
 
@@ -62,6 +63,7 @@ class InstagramCommentsApi extends Model {
 			$this->userId     = $alert['userId'];
 			$this->start_date = $alert['config']['start_date'];
 			$this->end_date   = $alert['config']['end_date'];
+			$this->_bussinesId = (empty($alert['config']['product_description'])) ? Yii::$app->params['facebook']['business_id'] : $alert['config']['product_description'];
 			// reset data
 			$this->data = [];
 
@@ -608,7 +610,8 @@ class InstagramCommentsApi extends Model {
         		// error send email with $data['error']['message']
         		return null;
         	}
-        	$page_access_token = ArrayHelper::getColumn($data['data'],'access_token')[0]; 
+			$page_access_token = ArrayHelper::getColumn($data['data'],'access_token')[0]; 
+			
 
         }catch(\yii\httpclient\Exception $e){
         	// problem conections
@@ -681,7 +684,8 @@ class InstagramCommentsApi extends Model {
 	 */
 	private function _getBusinessAccountId($user_credential){
 		
-		$bussinessId = Yii::$app->params['facebook']['business_id'];
+		//$bussinessId = Yii::$app->params['facebook']['business_id'];
+		$bussinessId = $this->_bussinesId;
 		$appsecret_proof = $this->_getAppsecretProof($user_credential->access_secret_token);
 
 		$params = [
@@ -697,10 +701,11 @@ class InstagramCommentsApi extends Model {
         	$data = $accounts->getData();
         	if(isset($data['error'])){
         		// to $user_credential->user->username and $user_credential->name_app
-        		// error send email with $data['error']['message']
+				// error send email with $data['error']['message']
+				
         		return null;
         	}
-      
+			
         	$BusinessAccountId = $data['instagram_business_account']['id']; 
 
         }catch(\yii\httpclient\Exception $e){

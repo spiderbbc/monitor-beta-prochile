@@ -23,6 +23,9 @@ if (!$alert->isNewRecord) {
 ?>
 <div id="views-alert" class="modules-monitor-views-alert">
     <?php $form = ActiveForm::begin(); ?>
+    <?= 
+        $form->field($config, 'product_description')->hiddenInput(['id' => 'product_description'])->label(false);
+    ?>
         <div class="row">
             <div class="row">
                 <div class="col-md-12">
@@ -196,17 +199,11 @@ if (!$alert->isNewRecord) {
     <?php ActiveForm::end(); ?>
 </div><!-- modules-monitor-views-alert -->
 
-<!-- template que muestra las nubes de palabras -->
-<script type="text/x-template" id="sync-product-id">
-    <div class="col-md-1">
-        <div class="form-group field-alerts-productsids">
-            <button style="margin-top: 25px"  v-on:click.prevent="reload">{{msg}}</button>
-        </div>
-    </div>
-</script>
+
 
 <?php 
-Yii::$app->view->registerJs('var appId = "'. Yii::$app->id.'"',  \yii\web\View::POS_HEAD);
+$userId = Yii::$app->user->id;
+Yii::$app->view->registerJs('var userId = "'. $userId.'";var appId = "'. Yii::$app->id.'" ',  \yii\web\View::POS_HEAD);
 $this->registerJsFile(
     '@web/js/app/form.js',
     ['depends' => [

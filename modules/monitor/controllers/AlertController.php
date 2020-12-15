@@ -91,6 +91,13 @@ class AlertController extends Controller
 
       return ['status'=>true];
     }
+
+    public function actionGetCredentials($userId){
+      \Yii::$app->response->format = \yii\web\Response:: FORMAT_JSON;
+      $user = \app\models\Users::findOne($userId);
+      $credential = $user->getCredencialsApis()->where(['name_app' => 'pro_chile_monitor'])->one();
+      return ['credential'=>$credential];
+    }
     /**
      * [actionDeleteResourceAlert delete resource for alert]
      * @param  [type] $alertId    [alertId from aler]
@@ -332,6 +339,8 @@ class AlertController extends Controller
           $config->alertId = $alert->id;
           $config->start_date = Yii::$app->request->post('start_date');
           $config->end_date = Yii::$app->request->post('end_date');
+          // accounts
+          $config->product_description = (empty(Yii::$app->request->post('AlertConfig')['product_description'])) ? Yii::$app->params['facebook']['business_id'] : Yii::$app->request->post('AlertConfig')['product_description'];
           //languaje
           $config->lang = (empty(Yii::$app->request->post('AlertConfig')['lang']))? 0 : Yii::$app->request->post('AlertConfig')['lang'];
 
@@ -362,11 +371,11 @@ class AlertController extends Controller
             \app\models\Dictionaries::saveFreeWords($free_words,$alert->id,$dictionaryName);
           }
           // product_description
-          if($config->product_description){
-            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_PRODUCT;
-            $words = explode(',', $config->product_description);
-            \app\models\Dictionaries::saveFreeWords($words,$alert->id,$dictionaryName);
-          }
+          // if($config->product_description){
+          //   $dictionaryName = \app\models\Dictionaries::FREE_WORDS_PRODUCT;
+          //   $words = explode(',', $config->product_description);
+          //   \app\models\Dictionaries::saveFreeWords($words,$alert->id,$dictionaryName);
+          // }
           // tag competitors
           if($config->competitors){
             $dictionaryName = \app\models\Dictionaries::FREE_WORDS_COMPETITION;
@@ -429,21 +438,23 @@ class AlertController extends Controller
        
         $alert = $this->findModel($id);
         $config = $alert->config;
+        
         $drive   = new \app\models\api\DriveApi();
         
         //set date
         $config->start_date = DateHelper::asDatetime($config->start_date);
         $config->end_date = DateHelper::asDatetime($config->end_date);
+        
         //free words
         $alert->free_words = $alert->freeKeywords;
-
+        
         // set productIds
         //$alert->productsIds  = $alert->products;
        
         $alert->productsIds  = \yii\helpers\ArrayHelper::map(\app\models\TermsSearch::find()->where(['alertId' => $alert->id])->all(),'id','name');
        
         // set tag 
-        $config->product_description = explode(",",$config->product_description);
+        //$config->product_description = explode(",",$config->product_description);
         $config->competitors = explode(",",$config->competitors);
         // covert reade
         $config->urls = explode(",",$config->urls);
@@ -465,6 +476,7 @@ class AlertController extends Controller
         }
 
         if (Yii::$app->request->post() && $alert->load(Yii::$app->request->post()) && $config->load(Yii::$app->request->post())) {
+          
           $error = false;
           $messages;
           
@@ -483,6 +495,9 @@ class AlertController extends Controller
           $config->lang = Yii::$app->request->post('AlertConfig')['lang'];
           $config->urls = (Yii::$app->request->post('AlertConfig')['urls']) ?
                           implode(',', Yii::$app->request->post('AlertConfig')['urls']) : null;
+
+          // accounts
+          $config->product_description = (empty(Yii::$app->request->post('AlertConfig')['product_description'])) ? Yii::$app->params['facebook']['business_id'] : Yii::$app->request->post('AlertConfig')['product_description'];                          
           $config->save();
 
           // add resource alert
@@ -554,23 +569,23 @@ class AlertController extends Controller
 
 
           // if product_description
-          $dictionaryName = \app\models\Dictionaries::FREE_WORDS_PRODUCT;
-          $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
+          // $dictionaryName = \app\models\Dictionaries::FREE_WORDS_PRODUCT;
+          // $dictionary = \app\models\Dictionaries::find()->where(['name' => $dictionaryName])->one();
 
-          if($config->product_description){
-            $words = explode(',', $config->product_description);
-            \app\models\Dictionaries::saveOrUpdateWords($words,$alert->id,$dictionary->id);
-          }else{
-            $words = \app\models\Keywords::find()->where(['alertId' => $alert->id,'dictionaryId' => $dictionary->id ])->select(['name','id'])->all();
-            foreach($words as $word){
-                \app\models\Keywords::deleteAll([
-                  'id'           => $word->id,
-                  'alertId'      => $alert->id,
-                  'dictionaryId' => $dictionary->id,
-                  'name'         => $word->name
-                ]);
-            }
-          }
+          // if($config->product_description){
+          //   $words = explode(',', $config->product_description);
+          //   \app\models\Dictionaries::saveOrUpdateWords($words,$alert->id,$dictionary->id);
+          // }else{
+          //   $words = \app\models\Keywords::find()->where(['alertId' => $alert->id,'dictionaryId' => $dictionary->id ])->select(['name','id'])->all();
+          //   foreach($words as $word){
+          //       \app\models\Keywords::deleteAll([
+          //         'id'           => $word->id,
+          //         'alertId'      => $alert->id,
+          //         'dictionaryId' => $dictionary->id,
+          //         'name'         => $word->name
+          //       ]);
+          //   }
+          // }
 
           // if competitors
           $dictionaryName = \app\models\Dictionaries::FREE_WORDS_COMPETITION;

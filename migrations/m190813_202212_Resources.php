@@ -47,26 +47,7 @@ class m190813_202212_Resources extends Migration
             'updatedBy'   => '1',
         ]);
 
-        // 2
-        /*$this->insert('{{%resources}}', [
-            'name'        => 'Live Chat',
-            'resourcesId' => '1',
-            'createdAt'   => '1488153462',
-            'updatedAt'   => '1488153462',
-            'createdBy'   => '1',
-            'updatedBy'   => '1',
-        ]);*/
-        // 3
-        /*$this->insert('{{%resources}}', [
-            'name'        => 'Live Chat Conversations',
-            'resourcesId' => '1',
-            'createdAt'   => '1488153462',
-            'updatedAt'   => '1488153462',
-            'createdBy'   => '1',
-            'updatedBy'   => '1',
-        ]);*/
-        
-        // 4
+      
         $this->insert('{{%resources}}', [
             'name'        => 'Noticias Webs',
             'resourcesId' => '2',
@@ -75,6 +56,7 @@ class m190813_202212_Resources extends Migration
             'createdBy'   => '1',
             'updatedBy'   => '1',
         ]);
+
         $this->insert('{{%resources}}', [
             'name'        => 'Paginas Webs',
             'resourcesId' => '5',
@@ -83,28 +65,7 @@ class m190813_202212_Resources extends Migration
             'createdBy'   => '1',
             'updatedBy'   => '1',
         ]);
-        // 5
-        /*$this->insert('{{%resources}}', [
-            'name'        => 'Facebook Comments',
-            'resourcesId' => '1',
-            'createdAt'   => '1488153462',
-            'updatedAt'   => '1488153462',
-            'createdBy'   => '1',
-            'updatedBy'   => '1',
-        ]);*/
-        // 6
-        
-        // 7
-        /*$this->insert('{{%resources}}', [
-            'name'        => 'Facebook Messages',
-            'resourcesId' => '1',
-            'createdAt'   => '1488153462',
-            'updatedAt'   => '1488153462',
-            'createdBy'   => '1',
-            'updatedBy'   => '1',
-        ]);*/
 
-        // 8
         $this->insert('{{%resources}}', [
             'name'        => 'Excel Document',
             'resourcesId' => '3',
@@ -122,6 +83,47 @@ class m190813_202212_Resources extends Migration
             'createdBy'   => '1',
             'updatedBy'   => '1',
         ]);
+
+        /*$this->insert('{{%resources}}', [
+            'name'        => 'Live Chat',
+            'resourcesId' => '1',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
+        ]);*/
+        // 3
+        /*$this->insert('{{%resources}}', [
+            'name'        => 'Live Chat Conversations',
+            'resourcesId' => '1',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
+        ]);*/
+
+        $this->insert('{{%resources}}', [
+            'name'        => 'Facebook Comments',
+            'resourcesId' => '1',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
+        ]);
+        // 6
+        
+        // 7
+        /*$this->insert('{{%resources}}', [
+            'name'        => 'Facebook Messages',
+            'resourcesId' => '1',
+            'createdAt'   => '1488153462',
+            'updatedAt'   => '1488153462',
+            'createdBy'   => '1',
+            'updatedBy'   => '1',
+        ]);*/
+
+        // 8
+       
 
         // creates index for column `resourcesId`
         $this->createIndex(

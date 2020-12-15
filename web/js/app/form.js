@@ -6,6 +6,8 @@ const baseUrl  = `${origin}/${appId}/web/monitor/alert/`;
 let message_error_no_dates = "Debe de escojer fecha de Inicio y fecha Final";
 let message_more_than_one_month= "Consultar las paginas web tiene que ser un rango menor de <b>1 mes</b>";
 
+var product_description = document.getElementById('product_description');
+var inputOptions = null;
 
 $('#urls').on('select2:unselecting', function (e) {
     var urls = $(this).val();
@@ -13,6 +15,13 @@ $('#urls').on('select2:unselecting', function (e) {
     	remove_value_selector('social_resourcesId','4');
     }
     
+});
+
+$('#social_resourcesId').on('select2:unselecting', function (e) {
+	var resourceNameId = $(this).val();
+	if(resourceNameId.indexOf("2") < 0 && resourceNameId.indexOf("7") < 0 && resourceNameId.indexOf("8") < 0){
+		product_description.value = '';
+	}
 });
 
 /**
@@ -107,8 +116,29 @@ function modalReosurces(resourceName) {
 			swal_modal('error','Opps',message_error_no_dates);
 			clean_select2(social,resource);
 		}
-
 		break;
+		case "Instagram Comments":
+			if(product_description.value == ''){
+				swal_modal_options_accounts(social,resource);
+			}
+			
+		break;
+		
+		case "Facebook Comments":
+			if(product_description.value == ''){
+				swal_modal_options_accounts(social,resource);
+			}
+			
+		break;
+
+		case "Facebook Messages":
+			if(product_description.value == ''){
+				swal_modal_options_accounts(social,resource);
+			}
+			
+		break;
+
+		
 	}
 }
 
@@ -149,6 +179,47 @@ function swal_modal(icon,title,message) {
 	});
 }
 
+
+function swal_modal_options_accounts(social,resource){
+	var inputOptions = {
+		'101330848134001': 'Prochile USA',
+		'169441517247': 'Mundo LG',
+		//'HRV': 'Croatia'
+	};
+	
+	
+	Swal.fire({
+		icon: "warning",
+		title: 'Select Account',
+		input: 'select',
+		inputOptions: inputOptions,
+		inputPlaceholder: 'Select Account',
+		showCancelButton: true,
+		inputValidator: function (value) {
+		  return new Promise(function (resolve, reject) {
+			if (value) {
+			  resolve()
+			} else {
+			  //reject('You need to select one Account :)')
+			  //clean_select2(social,resource);
+			}
+		  })
+		}
+	  }).then(function (result) {
+		//console.log(result);    
+		if(result.isDismissed){
+			
+			clean_select2(social,resource);
+		}else{
+			
+			product_description.value = result.value;
+			Swal.fire({
+				icon: 'success',
+				html: 'You selected: ' + inputOptions[result.value],
+			  })
+		} 
+	  })
+}
 
 /**
  * [validator_date change the end date based on the start date ]
@@ -254,4 +325,26 @@ function remove_value_selector(selectId,termId) {
 		}
 	}
 	$(selectId).val(value).trigger('change');
+}
+
+function get(edge,accessToken) {
+	var urlEndPoint = "https://graph.facebook.com";
+	var apiVersion = "v9.0";
+    var url = urlEndPoint + "/" + apiVersion + "/" + edge;
+    
+	//var response = UrlFetchApp.fetch(encodeURI("" + url)).getContentText();
+	var response_data = null;
+	var response =  fetch(encodeURI("" + url), {
+	method: "GET",
+	headers: { Authorization: 'Bearer ' + accessToken}
+	})
+	.then(response => response.json()) 
+	.then(function(data){
+		response_data = data;
+	}) 
+	.catch(err => console.log(err));
+
+	
+	console.log(response_data);
+    //return JSON.parse(response);
 }

@@ -338,11 +338,9 @@ class BaseApi extends Model {
 	 */
 	public function readDataInstagramCommentsApi($alertId,$data){
 		$searchInstagramApi = new \app\models\search\InstagramSearch();
-		$params = [$alertId,$data];
+		$searchInstagramApi->alertId = $alertId;
 
-		$searchInstagramApi->load($params);
-
-
+		$searchInstagramApi->load($data);
 		if($searchInstagramApi->search()){
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Instagram Comments');
 

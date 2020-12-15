@@ -40,7 +40,7 @@ class FacebookMessagesApi extends Model {
 	
 	private $resourceName = 'Facebook Messages';
 	private $_page_access_token;
-	private $_business_account_id;
+	private $_bussinesId;
 	private $_appsecret_proof;
 
 	private $_client;
@@ -60,6 +60,7 @@ class FacebookMessagesApi extends Model {
 			$this->userId     = $alert['userId'];
 			$this->start_date = $alert['config']['start_date'];
 			$this->end_date   = $alert['config']['end_date'];
+			$this->_bussinesId = (empty($alert['config']['product_description'])) ? Yii::$app->params['facebook']['business_id'] : $alert['config']['product_description'];
 			// reset data
 			$this->data = [];
 			
@@ -396,8 +397,8 @@ class FacebookMessagesApi extends Model {
 
 
 	private function _messageSimpleQuery(){
-		$bussinessId = Yii::$app->params['facebook']['business_id'];
-		
+		//$bussinessId = Yii::$app->params['facebook']['business_id'];
+		$bussinessId = $this->_bussinesId;
 		$message_query = "{$bussinessId}/conversations?fields=link,message_count,name,updated_time,messages{message,from,created_time,updated_time}&limit={$this->_limit_message}";
 
 		return $message_query;
@@ -426,7 +427,8 @@ class FacebookMessagesApi extends Model {
         		// error send email with $data['error']['message']
         		return null;
         	}
-        	$page_access_token = ArrayHelper::getColumn($data['data'],'access_token')[0]; 
+			$page_access_token = ArrayHelper::getColumn($data['data'],'access_token')[0]; 
+			
 
         }catch(\yii\httpclient\Exception $e){
         	// problem conections

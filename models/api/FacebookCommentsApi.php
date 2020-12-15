@@ -45,6 +45,7 @@ class FacebookCommentsApi extends Model {
 	
 	private $_page_access_token;
 	private $_appsecret_proof;
+	private $_bussinesId;
 	private $_client;
 	private $resourceName = 'Facebook Comments';
 	
@@ -62,6 +63,7 @@ class FacebookCommentsApi extends Model {
 			$this->userId     = $alert['userId'];
 			$this->start_date = $alert['config']['start_date'];
 			$this->end_date   = $alert['config']['end_date'];
+			$this->_bussinesId = (empty($alert['config']['product_description'])) ? Yii::$app->params['facebook']['business_id'] : $alert['config']['product_description'];
 			// reset data
 			$this->data = [];
 
@@ -741,7 +743,8 @@ class FacebookCommentsApi extends Model {
         		// error send email with $data['error']['message']
         		return null;
         	}
-        	$page_access_token = ArrayHelper::getColumn($data['data'],'access_token')[0]; 
+			$page_access_token = ArrayHelper::getColumn($data['data'],'access_token')[0]; 
+			 
 
         }catch(\yii\httpclient\Exception $e){
         	// problem conections
@@ -765,7 +768,8 @@ class FacebookCommentsApi extends Model {
 	 */
 	private function _postCommentsSimpleQuery(){
 
-		$bussinessId = Yii::$app->params['facebook']['business_id'];
+		//$bussinessId = Yii::$app->params['facebook']['business_id'];
+		$bussinessId = $this->_bussinesId;
 		$end_date = strtotime(\app\helpers\DateHelper::add($this->end_date,'+1 day'));
 		
 

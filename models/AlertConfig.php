@@ -64,11 +64,7 @@ class AlertConfig extends \yii\db\ActiveRecord
             // normalize "start_date" and "end_date" using the function "normalizeDate"
             [['start_date','end_date'], 'filter', 'filter' => [$this, 'normalizeDate']],
             // normalize "phone" using the function "normalizeTags"
-            [['product_description','competitors'], 'filter', 'filter' => [$this, 'normalizeTags']],
-            // start_date not greater than end date
-            // [['end_date'], 'validateDates'],
-           // ['end_date', 'compare', 'compareAttribute'=> 'start_date', 'operator' => '>=', 'enableClientValidation' =>true],
-            
+            [['competitors'], 'filter', 'filter' => [$this, 'normalizeTags']],
             [['start_date','end_date'], 'date','format' => 'php:U'],
             
             [['alertId'], 'exist', 
