@@ -11,7 +11,7 @@ class AlertFacebook extends \yii\bootstrap\Widget
 {
     public $resourceId;
     
-    public $logout = true;
+    public $logout = false;
 
     public $logoutCallback;
     /**
@@ -105,6 +105,22 @@ class AlertFacebook extends \yii\bootstrap\Widget
                     }
                 }
             }
+
+
+            // only test for logout
+            if($user_facebook->status && !$is_expired){
+                $message = Yii::t('app','¿ Desea renovar los permisos con Facebook ? : '.$url_link);
+                echo "<div class='container'>";
+                echo \yii\bootstrap\Alert::widget([
+                        'body' => $message,
+                        'closeButton' => $this->closeButton,
+                        'options' => array_merge($this->options, [
+                            'id' => $this->getId(),
+                            'class' => $this->alertTypes['info'],
+                        ]),
+                ]);
+                echo "</div>";
+            }
         }
 
         
@@ -115,15 +131,8 @@ class AlertFacebook extends \yii\bootstrap\Widget
      * [_setResourceId return the id from resource]
      */
     private function _setResourceId(){
-        
-        $resourcesId = (new \yii\db\Query())
-            ->select('id')
-            ->from('resources')
-            ->where(['name' => 'Instagram Comments','resourcesId' => 1])
-            ->one();
-        
 
-        return $resourcesId['id'];    
+        return \app\helpers\AlertMentionsHelper::getResourceIdByName("Instagram Comments");
     }
 
 }

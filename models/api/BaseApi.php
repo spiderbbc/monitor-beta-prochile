@@ -303,9 +303,9 @@ class BaseApi extends Model {
 	 */
 	public function readDataFacebookCommentsApi($alertId,$data){
 		$searchFacebookApi = new \app\models\search\FacebookSearch();
-		$params = [$alertId,$data];
+		$searchFacebookApi->alertId = $alertId;
 
-		$searchFacebookApi->load($params);
+		$searchFacebookApi->load($data);
 
 		if($searchFacebookApi->search()){
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Facebook Comments');
@@ -320,13 +320,13 @@ class BaseApi extends Model {
 	 */
 	public function readDataFacebookMessagesApi($alertId,$data){
 		$searchFacebookMessagesApi = new \app\models\search\FacebookMessagesSearch();
-		$params = [$alertId,$data];
+		$searchFacebookMessagesApi->alertId = $alertId;
 
-		$searchFacebookMessagesApi->load($params);
-		$searchFacebookMessagesApi->search();
+		$searchFacebookMessagesApi->load($data);
 		if ($searchFacebookMessagesApi->search()) {
 			\app\helpers\DocumentHelper::moveFilesToProcessed($alertId,'Facebook Messages');
 		}
+		
 		
 		
 	}

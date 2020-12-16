@@ -22,45 +22,19 @@ class FacebookMessagesSearch {
      * @param  [array] $params [product [tweets]]
      * @return [boolean]
      */
-    public function load($params){
+    public function load($data){
         
-        if(empty($params)){
+        if(empty($data)){
            return false;     
         }
 
-        $this->alertId = ArrayHelper::getValue($params, 0);
-        // is isDictionaries
-        $this->isDictionaries = $this->_isDictionaries();
-        // set resourcesId
-        $this->resourcesId    = $this->_setResourceId();
+        $this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName('Facebook Messages');
+        $this->isDictionaries = \app\helpers\AlertMentionsHelper::isAlertHaveDictionaries($this->alertId);
 
-        // loop data
-        for($p = 1; $p < sizeof($params); $p++){
-            // loop with json file
-            for($j = 0; $j < sizeof($params[$p]); $j++){
-                $model = $params[$p][$j][0];
-                foreach ($model as $product => $comments_ids){
-                    
-                    if(!ArrayHelper::keyExists($product, $this->data, false)){
-                        $this->data[$product] = [];
-                    }// end if keyExists
-
-                    // for each comments_ids 
-                    foreach($comments_ids as $comment_id => $comments){
-
-                        if(!ArrayHelper::keyExists($comment_id, $this->data[$product], false)){
-                            $this->data[$product][$comment_id][] = $comments;
-                        }
-
-                    } // end foreach comments_ids
-                }// end foreach model
-                
-            } // end loop json
-        }
-
-        return true;
+        $this->data = current($data);
+        unset($data);
+        return (count($this->data)) ? true : false;
     }
-    
 
 
      /**
@@ -120,16 +94,14 @@ class FacebookMessagesSearch {
 
         $error = [];
 
-
-
         if(!is_null($model)){
             foreach($model as $product => $ids_messages){
                 foreach ($ids_messages as $id_message => $data){
                     $alertsMencionsModel = $this->_findAlertsMencions($product,$id_message);
-                    //echo $alertsMencionsModel->id . "\n";
                     foreach ($data as $index => $messages){
                         if(!is_null($alertsMencionsModel) && !empty($messages)){
                             for($m = 0; $m < sizeof($messages); $m++){
+                                echo $messages[$m]['message'];
                                 if(!empty($messages[$m]['message'])){
                                     $user = $this->saveUserMencions($messages[$m]['from']);
                                     if($user->errors){
@@ -243,7 +215,7 @@ class FacebookMessagesSearch {
                 'domain_url'     => $url,
             ]
         );
-
+        
         return $mention;
         
     }

@@ -180,7 +180,7 @@ class FacebookCommentsApi extends Model {
 					
 					$responseHeaders = $posts->headers->get('x-business-use-case-usage'); // get headers
 					// is over the limit
-					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders)){
+					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders,$this->_bussinesId)){
 						break;
 					}
 
@@ -285,7 +285,7 @@ class FacebookCommentsApi extends Model {
 	                            } 
 
 	                            // is over the limit
-	                            $is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders);
+	                            $is_usage_limit = \app\helpers\FacebookHelper::isCaseUsage($responseHeaders,$this->_bussinesId);
 
 
 	                            if($is_usage_limit){
@@ -442,7 +442,7 @@ class FacebookCommentsApi extends Model {
 
 		                            $responseHeaders = $commentsResponse->headers->get('x-business-use-case-usage'); // get headers
 		                            // if over the limit
-		                            if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders)){
+		                            if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders,$this->_bussinesId)){
 		                            	break;
 		                            }
 

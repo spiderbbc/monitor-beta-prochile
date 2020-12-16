@@ -13,6 +13,8 @@ use kartik\date\DatePicker;
 use kartik\file\FileInput;
 use mludvik\tagsinput\TagsInputWidget;
 
+\app\assets\AxiosAsset::register($this);
+
 /* @var $this yii\web\View */
 /* @var $model app\models\form\AlertForm */
 /* @var $form ActiveForm */

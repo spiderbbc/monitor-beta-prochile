@@ -108,7 +108,9 @@ function swal_modal_info_resource(resource,id) {
 					      `${resource.text} Eliminado`,
 					      'La Alerta cambio sus Redes Sociales',
 					      'success'
-					    );
+						);
+						var product_description = document.getElementById('product_description');
+						product_description.value = '';
 		            }else{
 		            	Swal.fire(
 					      'Opss',

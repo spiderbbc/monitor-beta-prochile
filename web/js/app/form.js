@@ -3,11 +3,14 @@
 const origin   = location.origin;
 const baseUrl  = `${origin}/${appId}/web/monitor/alert/`;
 
+var root = location.pathname.split("/")[1];
+var appId = root != "web" ? `${root}/web` : "web";
+
 let message_error_no_dates = "Debe de escojer fecha de Inicio y fecha Final";
 let message_more_than_one_month= "Consultar las paginas web tiene que ser un rango menor de <b>1 mes</b>";
 
 var product_description = document.getElementById('product_description');
-var inputOptions = null;
+var inputOptions = {};
 
 $('#urls').on('select2:unselecting', function (e) {
     var urls = $(this).val();
@@ -17,12 +20,7 @@ $('#urls').on('select2:unselecting', function (e) {
     
 });
 
-$('#social_resourcesId').on('select2:unselecting', function (e) {
-	var resourceNameId = $(this).val();
-	if(resourceNameId.indexOf("2") < 0 && resourceNameId.indexOf("7") < 0 && resourceNameId.indexOf("8") < 0){
-		product_description.value = '';
-	}
-});
+
 
 /**
  * [event when selecting select2 of urls: adding web page to select2 resourceID]
@@ -44,7 +42,11 @@ $('#social_resourcesId').on('select2:unselecting', function (e) {
     if(resource.text == "Paginas Webs"){
     	var urls = $('#urls')
     	urls.val(null).trigger('change'); // Select the option with a value of '1'
-    }
+	}
+	var resourceNameId = $(this).val();
+	if(resourceNameId.indexOf("2") < 0 && resourceNameId.indexOf("7") < 0 && resourceNameId.indexOf("8") < 0){
+		product_description.value = '';
+	}
 });
 
 /**
@@ -181,13 +183,59 @@ function swal_modal(icon,title,message) {
 
 
 function swal_modal_options_accounts(social,resource){
-	var inputOptions = {
-		'101330848134001': 'Prochile USA',
-		'169441517247': 'Mundo LG',
-		//'HRV': 'Croatia'
-	};
+	// var inputOptions = {
+	// 	'101330848134001': 'Prochile USA',
+	// 	'169441517247': 'Mundo LG',
+	// };
 	
+	if(Object.entries(inputOptions).length === 0){
+		var data = {userId: userId};
+		$.ajax({
+			url: origin + `/${appId}/monitor/alert/get-credentials`,
+			data: data,
+			type: "GET",
+			dataType: "json",
+		  }).done(function(data) {
+			if(data.credential){
+				if(data.credential.hasOwnProperty('access_secret_token')){
+					var accessToken = data.credential.access_secret_token;
+					var accounts = makeRequestFacebook("me?fields=accounts{id,name}",accessToken);
+					accounts.then(function(result){
+						result.accounts.data.forEach(function(element){
+							inputOptions[element.id] = element.name;
+						});
+						swalmodalAccounts(inputOptions,social,resource);
+					},function(e){
+						swal_modal("error","Error","bueno, esto es embarazoso tenemos un problema con facebook");
+						clean_select2(social,resource);
+					});
+					 
+				}else{
+					Swal.fire(
+						'Opss',
+						'No se pudo realizar la operacion',
+						'error'
+					);	
+				}
+			}else{
+				Swal.fire(
+				  'Opss',
+				  'No se pudo realizar la operacion',
+				  'error'
+				);
+			  
+			}
+		});
+	}else{
+		swalmodalAccounts(inputOptions,social,resource);
+	}
+
+
+
 	
+}
+
+function swalmodalAccounts(inputOptions,social,resource){
 	Swal.fire({
 		icon: "warning",
 		title: 'Select Account',
@@ -219,6 +267,7 @@ function swal_modal_options_accounts(social,resource){
 			  })
 		} 
 	  })
+
 }
 
 /**
@@ -328,23 +377,43 @@ function remove_value_selector(selectId,termId) {
 }
 
 function get(edge,accessToken) {
-	var urlEndPoint = "https://graph.facebook.com";
-	var apiVersion = "v9.0";
-    var url = urlEndPoint + "/" + apiVersion + "/" + edge;
+	
+	// var urlEndPoint = "https://graph.facebook.com";
+	// var apiVersion = "v9.0";
+    // var url = urlEndPoint + "/" + apiVersion + "/" + edge;
     
 	//var response = UrlFetchApp.fetch(encodeURI("" + url)).getContentText();
-	var response_data = null;
-	var response =  fetch(encodeURI("" + url), {
-	method: "GET",
-	headers: { Authorization: 'Bearer ' + accessToken}
-	})
-	.then(response => response.json()) 
-	.then(function(data){
-		response_data = data;
-	}) 
-	.catch(err => console.log(err));
+	// var response_data = null;
+	// var response =  fetch(encodeURI("" + url), {
+	// method: "GET",
+	// headers: { Authorization: 'Bearer ' + accessToken}
+	// })
+	// .then(response => response.json()) 
+	// .then(function(data){
+	// 	response_data = data;
+	// }) 
+	// .catch(err => console.log(err));
 
 	
-	console.log(response_data);
+	// console.log(response_data);
     //return JSON.parse(response);
+}
+
+
+
+async function makeRequestFacebook(edge,accessToken) {
+
+	var urlEndPoint = "https://graph.facebook.com";
+	var apiVersion = "v9.0";
+	var url = urlEndPoint + "/" + apiVersion + "/" + edge;
+	
+    const config = {
+        method: 'get',
+        url: url,
+        headers: { Authorization: 'Bearer ' + accessToken}
+    }
+
+    let res = await axios(config)
+
+    return res.data;
 }

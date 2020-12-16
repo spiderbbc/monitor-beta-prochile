@@ -176,21 +176,23 @@ class FacebookHelper
 	 */
 	public static function isCaseUsage($header_business,$business_id = ""){
 
+		
+		if(!is_null($header_business)){
+			$headers_decode = json_decode($header_business,true);
+		
+			$business_id = (empty($business_id)) ? Yii::$app->params['facebook']['business_id'] : $business_id;
+			$call_count = (int) $headers_decode[$business_id][0]['call_count'];
 
-        $headers_decode = json_decode($header_business,true);
-
-        $business_id = (empty($business_id)) ? Yii::$app->params['facebook']['business_id'] : $business_id;
-        $call_count = (int) $headers_decode[$business_id][0]['call_count'];
-
-        if($call_count > 85){
-        	return true;
-        }
-        $total_cputime = (int) $headers_decode[$business_id][0]['total_cputime'];
+			if($call_count > 85){
+				return true;
+			}
+			$total_cputime = (int) $headers_decode[$business_id][0]['total_cputime'];
 
 
-        if($total_cputime > 85){
-        	return true;
-        }
+			if($total_cputime > 85){
+				return true;
+			}
+		}
 
         return false;
 

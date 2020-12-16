@@ -61,6 +61,7 @@ class FacebookMessagesApi extends Model {
 			$this->start_date = $alert['config']['start_date'];
 			$this->end_date   = $alert['config']['end_date'];
 			$this->_bussinesId = (empty($alert['config']['product_description'])) ? Yii::$app->params['facebook']['business_id'] : $alert['config']['product_description'];
+			
 			// reset data
 			$this->data = [];
 			
@@ -196,7 +197,7 @@ class FacebookMessagesApi extends Model {
 					}
 
 					// is over the limit
-					if(\app\helpers\FacebookHelper::isCaseUsage($messagesResponse)){
+					if(\app\helpers\FacebookHelper::isCaseUsage($responseHeaders,$this->_bussinesId)){
 						break;
 					}
 
@@ -209,7 +210,6 @@ class FacebookMessagesApi extends Model {
 					} 
 
 					$data =  $messagesResponse->getData(); // get all post and comments
-
 
 					if(isset($data['data'][0]['messages']['data'][0]['created_time'])){
 						
@@ -400,7 +400,6 @@ class FacebookMessagesApi extends Model {
 		//$bussinessId = Yii::$app->params['facebook']['business_id'];
 		$bussinessId = $this->_bussinesId;
 		$message_query = "{$bussinessId}/conversations?fields=link,message_count,name,updated_time,messages{message,from,created_time,updated_time}&limit={$this->_limit_message}";
-
 		return $message_query;
 	}
 
