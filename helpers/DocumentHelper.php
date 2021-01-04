@@ -178,4 +178,53 @@ class DocumentHelper
         
         $writer->close();
     }
+
+    /**
+     * create a graph images with total mentions with sources
+     * @param  int $alertId [id alert]
+     * @param  string   url for image graph
+     */ 
+    public static function GraphCountSourcesMentions($alertId){
+
+        $data = \app\helpers\MentionsHelper::getCountSourcesMentions($alertId);
+        
+        $config = [
+            'type' => 'doughnut',
+            'data' => [
+              'labels' => [],
+                'datasets' => [
+                    [
+                        "backgroundColor" => [],
+                        "data" => []
+                    ]
+                ],
+            ],
+            
+        ];
+        
+        for($i = 0; $i < sizeOf($data['data']); $i ++){
+            $resourceName = $data['data'][$i][0];
+            $total = $data['data'][$i][3];
+            if($total){
+                $config['data']['labels'][] = \Yii::$app->params['resourcesName'][$resourceName];
+                $config['data']['datasets'][0]['backgroundColor'][] = \app\helpers\MentionsHelper::getColorResourceByName($resourceName);
+                $config['data']['datasets'][0]['data'][] = $total;
+            }
+            
+        }
+
+        $qc = new \QuickChart(array(
+            'width'=> 300,
+            'height'=> 280,
+        ));
+
+
+        $config_json = json_encode($config);
+        $qc->setConfig($config_json);
+        
+        # Print the chart URL
+        $url =  $qc->getShortUrl();
+        return $url;
+    }
+
 }

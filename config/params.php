@@ -53,5 +53,16 @@ return [
 		'app_secret'      => $_SERVER['APP_SECRET']
 
 	],
+	// alias for resources
+	'resourcesName' => [
+		"Twitter" => "Twitter",
+		"Live Chat" => "Live Chat (Tickets)",
+		"Live Chat Conversations" => "Live Chat (Chats)",
+		"Facebook Comments" => "Facebook Commentarios",
+		"Instagram Comments" => "Instagram Commentarios",
+		"Facebook Messages" => "Facebook Inbox",
+		"Excel Document" => "Excel Documento",
+		"Paginas Webs" => "Paginas Webs",
+	],
 ];
 
