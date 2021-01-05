@@ -60,6 +60,11 @@ class DirectoryHelper{
         if (is_dir($path)) {
             FileHelper::removeDirectory($path);
         }
+        // delete folder export to file excel
+        $path = \Yii::getAlias("@runtime{$s}export{$s}{$id}{$s}");
+        if (is_dir($path)) {
+            FileHelper::removeDirectory($path);
+        }
     }
 
 

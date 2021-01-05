@@ -63,6 +63,7 @@ return [
 		"Facebook Messages" => "Facebook Inbox",
 		"Excel Document" => "Excel Documento",
 		"Paginas Webs" => "Paginas Webs",
+		"Noticias Webs" => "Noticias Webs",
 	],
 ];
 

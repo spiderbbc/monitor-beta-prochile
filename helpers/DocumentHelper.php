@@ -199,6 +199,19 @@ class DocumentHelper
                     ]
                 ],
             ],
+            'options' => [
+            
+                'plugins' => [
+                  'datalabels' => [
+                    'anchor' => 'center',
+                    'align' => 'center',
+                    'color' => '#fff',
+                    'font' => [
+                        'weight' => 'bold'
+                    ]
+                  ]
+                ]
+              ]
             
         ];
         
@@ -435,7 +448,7 @@ class DocumentHelper
                 'datalabels' => [
                   'anchor' => 'center',
                   'align' => 'center',
-                  'color' => '#fff',
+                  'color' => '#4d4d4d',
                   'font' => [
                       'weight' => 'bold'
                   ]

@@ -98,12 +98,12 @@ class MentionSearch extends Mentions
         if(isset($params['MentionSearch']['resourceId'])){
             $where['resourcesId'] = $params['MentionSearch']['resourceId'];
         }
-    
+        
         $alertMentions = $db->cache(function ($db) use ($where) {
           return (new \yii\db\Query())
             ->select('id')
             ->from('alerts_mencions')
-            ->where(['alertId' => $where])
+            ->where($where)
             ->orderBy(['resourcesId' => 'ASC'])
             ->all();
         },$duration); 
