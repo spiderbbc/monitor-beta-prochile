@@ -178,4 +178,299 @@ class DocumentHelper
         
         $writer->close();
     }
+
+    /**
+     * create a graph images with total mentions with sources
+     * @param  int $alertId [id alert]
+     * @param  string   url for image graph
+     */ 
+    public static function GraphCountSourcesMentions($alertId){
+
+        $data = \app\helpers\MentionsHelper::getCountSourcesMentions($alertId);
+        
+        $config = [
+            'type' => 'doughnut',
+            'data' => [
+              'labels' => [],
+                'datasets' => [
+                    [
+                        "backgroundColor" => [],
+                        "data" => []
+                    ]
+                ],
+            ],
+            'options' => [
+            
+                'plugins' => [
+                  'datalabels' => [
+                    'anchor' => 'center',
+                    'align' => 'center',
+                    'color' => '#fff',
+                    'font' => [
+                        'weight' => 'bold'
+                    ]
+                  ]
+                ]
+              ]
+            
+        ];
+        
+        for($i = 0; $i < sizeOf($data['data']); $i ++){
+            $resourceName = $data['data'][$i][0];
+            $total = $data['data'][$i][3];
+            if($total){
+                $config['data']['labels'][] = \Yii::$app->params['resourcesName'][$resourceName];
+                $config['data']['datasets'][0]['backgroundColor'][] = \app\helpers\MentionsHelper::getColorResourceByName($resourceName);
+                $config['data']['datasets'][0]['data'][] = $total;
+            }
+            
+        }
+
+        $qc = new \QuickChart(array(
+            'width'=> 300,
+            'height'=> 280,
+        ));
+
+
+        $config_json = json_encode($config);
+        $qc->setConfig($config_json);
+        
+        # Print the chart URL
+        $url =  $qc->getShortUrl();
+        return $url;
+    }
+
+    /**
+     * create a graph images with total by dates
+     * @param  int $alertId [id alert]
+     * @param  array   properties for image graph
+     */ 
+    public static function GraphResourceOnDate($alertId,$properties = []){
+       
+        $width = (isset($properties['width'])) ? $properties['width'] : 400;
+        $height = (isset($properties['height'])) ? $properties['height'] : 280;
+
+        $data = \app\helpers\MentionsHelper::getMentionOnDate($alertId,false);  
+        
+        if(isset($data['model']) && count($data['model'])){
+
+            $config = [
+                'type' => 'line',
+                'data' => [
+                    'datasets' => [],
+                ],
+                'options' => [
+                    "responsive"=> true,
+                    //"legend" => $leyend,
+                    "scales" =>[
+                        "xAxes" => [
+                            [
+                                "type" => "time",
+                                "display" => true,
+                                "scaleLabel" => [
+                                    "display"=> true,
+                                    "labelString"=> "Fecha"
+                                ],
+                                "ticks" => [
+                                    "major" => [
+                                        "enabled"=> true
+                                    ],
+                                ]
+                            ]
+                        ],
+                        "yAxes" => [
+                            [
+                                "display" => true,
+                                "scaleLabel" => [
+                                    "display"=> true,
+                                    "labelString"=> "Valor"
+                                ],
+                                "ticks" => [
+                                    "min" => 1
+                                ]
+                            ]
+                        ]
+                    ]
+                    
+                ]
+            ];
+            
+
+            if(isset($properties['leyend'])){
+                $config['options']['leyend'] = $properties['leyend'];
+            }
+
+            $dataset = [];
+            for($m = 0; $m < sizeOf($data['model']); $m++){
+                $dataset[$m]['label'] = (isset(\Yii::$app->params['resourcesName'][$data['model'][$m]['name']])) ?
+                            \Yii::$app->params['resourcesName'][$data['model'][$m]['name']] : 
+                            $data['model'][$m]['name'] ;
+               
+                $dataset[$m]['backgroundColor'] = $data['model'][$m]['color'];
+                $dataset[$m]['borderColor'] = $data['model'][$m]['color'];
+                $dataset[$m]['fill'] = false;
+                if(count($data['model'][$m]['data'])){
+                    $tmp = [];
+                    for($d = 0; $d < sizeOf($data['model'][$m]['data']); $d++){
+                        $tmp[] = [
+                            "x" => \app\helpers\DateHelper::asDatetime($data['model'][$m]['data'][$d][0],"Y-m-d"),
+                            "y" => $data['model'][$m]['data'][$d][1]
+                        ];
+                    }
+                    $dataset[$m]['data'] = $tmp;
+                }
+            }
+            $config['data']['datasets'] = $dataset;
+            $qc = new \QuickChart(array(
+                'width'=> $width,
+                'height'=> $height,
+            ));
+            
+            $config_json = json_encode($config);
+            $qc->setConfig($config_json);
+            
+            # Print the chart URL
+            $url =  $qc->getShortUrl();
+            return $url;
+
+        }
+        
+        
+        return null;
+    }
+
+
+    /**
+     * create a graph images with total by resources
+     * @param  int $alertId [id alert]
+     * @param  array   properties for image graph
+     */ 
+    public static function actionGraphDataTermsByResourceId($alertId,$resourceId){
+
+        $data = \app\helpers\MentionsHelper::getProductInteration($alertId,$resourceId);
+        $terms = [];
+        $totals = [];
+        
+        $labels = [];
+        $datasets = [
+            [
+                'label' => 'total',
+                'data'  => [],
+                'backgroundColor' => 'rgba(6, 119, 58, 0.5)'
+            ],
+        ];
+        
+        
+        switch($resourceId){
+            case 1: // twitter
+                $datasets = [
+                    [
+                        'label' => 'retweets',
+                        'data'  => [],
+                        'backgroundColor' => 'rgba(15, 66, 226, 0.5)'
+                    ],
+                    [
+                        'label' => 'favorites',
+                        'data'  => [],
+                        'backgroundColor' => 'rgba(226, 15, 37, 0.5)'
+                    ],
+                    [
+                        'label' => 'total',
+                        'data'  => [],
+                        'backgroundColor' => 'rgba(6, 119, 58, 0.5)'
+                    ],
+                ];
+                for($i = 0; $i < sizeOf($data['data']); $i ++){
+                    $labels[] = $data['data'][$i][0];
+                    $datasets[0]['data'][] = $data['data'][$i][1];
+                    $datasets[1]['data'][] = $data['data'][$i][2];
+                    $datasets[2]['data'][] = $data['data'][$i][3];
+                }
+            break;
+            case 2: // instagram C
+                $datasets = [
+                    [
+                        'label' => 'likes',
+                        'data'  => [],
+                        'backgroundColor' => 'rgba(226, 15, 37, 0.5)'
+                    ],
+                    [
+                        'label' => 'total',
+                        'data'  => [],
+                        'backgroundColor' => 'rgba(6, 119, 58, 0.5)'
+                    ],
+                ];
+                for($i = 0; $i < sizeOf($data['data']); $i ++){
+                    $labels[] = $data['data'][$i][0];
+                    $config['data']['datasets'][0]['data'][] = $data['data'][$i][2];
+                    $config['data']['datasets'][1]['data'][] = $data['data'][$i][3];
+                }
+            break;
+            case 7: // facebook C
+                $datasets = [
+                    [
+                        'label' => 'shares',
+                        'data'  => [],
+                        'backgroundColor' => 'rgba(6, 15, 119, 0.5)'
+                    ],
+                    [
+                        'label' => 'total',
+                        'data'  => [],
+                        'backgroundColor' => 'rgba(6, 119, 58, 0.5)'
+                    ],
+                ];
+                for($i = 0; $i < sizeOf($data['data']); $i ++){
+                    $labels[] = $data['data'][$i][0];
+                    $datasets[0]['data'][] = $data['data'][$i][1];
+                    $datasets[1]['data'][] = $data['data'][$i][3];
+                }
+            break;
+            
+            default: // livechat , scraping
+            for($i = 0; $i < sizeOf($data['data']); $i ++){
+                    $labels[] = $data['data'][$i][0];
+                    $datasets[0]['data'][] = $data['data'][$i][3];
+                }
+            break;
+
+        }
+
+        
+        $config = [
+            'type' => 'bar',
+            'data' => [
+              'labels' => $labels,
+              'datasets' => $datasets,
+            ],
+            'options' => [
+            
+              'plugins' => [
+                'datalabels' => [
+                  'anchor' => 'center',
+                  'align' => 'center',
+                  'color' => '#4d4d4d',
+                  'font' => [
+                      'weight' => 'bold'
+                  ]
+                ]
+              ]
+            ]
+          ];
+        
+
+        $qc = new \QuickChart(array(
+            'width'=> 300,
+            'height'=> 280,
+        ));
+
+
+        $config_json = json_encode($config);
+        $qc->setConfig($config_json);
+        
+        # Print the chart URL
+        $url =  $qc->getShortUrl();
+
+        return $url;
+    }
+
 }

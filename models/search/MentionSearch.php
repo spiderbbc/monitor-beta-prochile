@@ -83,12 +83,27 @@ class MentionSearch extends Mentions
         
         $db = \Yii::$app->db;
         $duration = 60;  
-    
-        $alertMentions = $db->cache(function ($db) use ($alertId) {
+
+       
+        $where['alertId'] = $alertId;
+        if(isset($params['resourceId'])){
+            $where['resourcesId'] = $params['resourceId'];
+        }
+        // if limit for pdf
+        if(isset($params['limits'])){
+            $limits = $params['limits'];
+        }
+
+        // if resourceId if not firts level on params
+        if(isset($params['MentionSearch']['resourceId'])){
+            $where['resourcesId'] = $params['MentionSearch']['resourceId'];
+        }
+        
+        $alertMentions = $db->cache(function ($db) use ($where) {
           return (new \yii\db\Query())
             ->select('id')
             ->from('alerts_mencions')
-            ->where(['alertId' => $alertId])
+            ->where($where)
             ->orderBy(['resourcesId' => 'ASC'])
             ->all();
         },$duration); 
@@ -111,6 +126,8 @@ class MentionSearch extends Mentions
         ->join('JOIN','alerts_mencions a', 'm.alert_mentionId = a.id')
         ->join('JOIN','resources r', 'r.id = a.resourcesId')
         ->join('JOIN','users_mentions u', 'u.id = m.origin_id')
+        ->orderBy(['m.created_time' => 'ASC'])
+        ->limit((isset($limits)) ? $limits : -1)
         ->all();
 
         if ($this->load($params)) {

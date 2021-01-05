@@ -56,7 +56,8 @@
         "yooper/php-text-analysis": "^1.5",
         "vlucas/phpdotenv": "^5.2",
         "box/spout": "^3.1",
-        "ianw/quickchart": "^1.0"
+        "ianw/quickchart": "^1.0",
+        "kartik-v/yii2-mpdf": "^1.0"
 
     },
     "require-dev": {

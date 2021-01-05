@@ -85,4 +85,99 @@ class DocumentController extends Controller
       }
       return ExitCode::OK;
     }
+
+    /**
+     * This command create document pdf of the alert.
+     * @return int Exit code
+     */
+    public function actionPdf()
+    {
+      $alerts = \app\models\Alerts::find()->all();
+
+      if (!empty($alerts))
+      {
+          // loop alerts
+          foreach ($alerts as $index => $alert)
+          {
+              // if there mentions
+              $alertsMentions = \app\helpers\AlertMentionsHelper::getAlersMentions(['alertId' => $alert->id]);
+              if (!is_null($alertsMentions))
+              {
+                  // get alertMentios ids
+                  $alertsMentionsIds = \yii\helpers\ArrayHelper::getColumn($alertsMentions, 'id');
+                  // get mentions order by created_at
+                  $mentions = \app\models\Mentions::find()->select('createdAt')
+                      ->where(['alert_mentionId' => $alertsMentionsIds])->orderBy(['createdAt' => SORT_ASC])
+                      ->asArray()
+                      ->all();
+                  // if there mentions
+                  if (count($mentions))
+                  {
+                      // recent registration
+                      $record = end($mentions);
+                      $createdAt = $record['createdAt'];
+                      // if dir folder
+                      $pathFolder = \Yii::getAlias("@pdf/{$alert->id}");
+                      $fileIsCreated = false;
+                      if (!is_dir($pathFolder))
+                      {
+                          // set path folder options
+                          $folderOptions = ['path' => \Yii::getAlias('@pdf/') , 'name' => $alert->id];
+                          // create folder
+                          $folderPath = \app\helpers\DirectoryHelper::setFolderPath($folderOptions);
+                          $fileIsCreated = true;
+                      }
+                      else
+                      {
+                          $files = \yii\helpers\FileHelper::findFiles($pathFolder, ['only' => ['*.pdf']]);
+                          // get the name the file
+                          if (isset($files[0]))
+                          {
+                              $path_explode = explode('/', $files[0]);
+                              $filename = explode('.', end($path_explode));
+
+                              if ($filename[0] != $createdAt)
+                              {
+                                  unlink($files[0]);
+                                  $fileIsCreated = true;
+                              }
+                          }
+                          else
+                          {
+                              $fileIsCreated = true;
+                          }
+                      }
+
+                      if ($fileIsCreated)
+                      {
+                          $resourcesSocialData = \app\helpers\PdfHelper::getDataForPdf($alert); 
+                          if (count($resourcesSocialData))
+                          {
+                              $folderPath = \Yii::getAlias("@pdf/{$alert->id}/");
+                              $filePath = $folderPath . "{$createdAt}.pdf";
+
+                                // load images
+                              $url_logo_small = \yii\helpers\Url::to('web/img/logo_small.png',true);
+                              $url_logo = \yii\helpers\Url::to('web/img/logo.png',true);
+                              
+                              $html = $this->renderPartial('_document',[
+                                  'model' => $alert,
+                                  'resourcesSocialData' => $resourcesSocialData,
+                                  'url_logo_small' => $url_logo_small,
+                                  'url_logo' =>$url_logo,
+                              ]);
+
+                              $pdf = \app\helpers\PdfHelper::getKartikMpdf($filePath,$html,$alert);
+                              //$pdf->in_charset='UTF-8';
+                              // return the pdf output as per the destination setting
+                              $pdf->render(); 
+                              unset($pdf);
+                          }
+                      }
+                  }
+              }
+          }
+      }
+      return ExitCode::OK;
+    }
 }

@@ -40,7 +40,7 @@ $input = "<input type='text' v-model='test' value='".$model->id."'>";
                 'method' => 'post',
             ],
         ]) ?>
-        <!-- <button-report :count="count"> -->
+        <button-report :count="count">
     </p>
 
     <?= DetailView::widget([

@@ -54,6 +54,10 @@ $config = [
             ],
         ],
         'db' => $db,
+        'urlManager' => [
+            'class' => 'yii\web\UrlManager',
+            'hostInfo' => 'https://prochile.mediatrendsgroup.com/'
+        ]
     ],
     'params' => $params,
     /*

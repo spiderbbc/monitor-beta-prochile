@@ -3,6 +3,7 @@
 use yii\db\Migration;
 
 /**
+ * ./yii migrate --migrationPath=@app/modules/topic/migrations  --interactive=0
  * Class m200423_143348_mTopics
  */
 class m200423_143348_mTopics extends Migration
@@ -46,7 +47,7 @@ class m200423_143348_mTopics extends Migration
          // creates index for column `userId`
         $this->createIndex(
             'idx-usertopic_userId_topic',
-            'alerts',
+            'm_topics',
             'userId'
         );
 
@@ -56,8 +57,8 @@ class m200423_143348_mTopics extends Migration
             'userId',
             'users',
             'id',
-            'CASCADE',
-            'CASCADE'
+            // 'CASCADE',
+            // 'CASCADE'
         );
 
     }
