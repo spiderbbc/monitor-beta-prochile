@@ -69,7 +69,7 @@ class PdfHelper{
 
         $data = [];
         foreach($model->config->configSources as $source){
-            if(\app\helpers\AlertMentionsHelper::getCountAlertMentionsByResourceId($model->id,$source->alertResource->id)){
+            if(\app\helpers\AlertMentionsHelper::getCountMentionsByresourceId($model->id,$source->alertResource->id)){
                 $data['alertResource'][$source->alertResource->name] =  $source->alertResource->id;
             }
         }
@@ -77,10 +77,10 @@ class PdfHelper{
         if(count($data['alertResource'])){
             $data = \app\helpers\PdfHelper::getGraphCountSourcesMentions($model,$data);
             $data = \app\helpers\PdfHelper::getGraphResourceOnDate($model,$data);
-            // $data = \app\helpers\PdfHelper::getTermsFindByResources($model,$data);
-            // $data = \app\helpers\PdfHelper::getGraphDataTermsByResourceId($model,$data);
+            $data = \app\helpers\PdfHelper::getTermsFindByResources($model,$data);
+            $data = \app\helpers\PdfHelper::getGraphDataTermsByResourceId($model,$data);
             // $data =  \app\helpers\PdfHelper::getGraphCommonWordsByResourceId($model,$data);
-            // $data =  \app\helpers\PdfHelper::getMentionsByResourceId($model,$data);
+            $data =  \app\helpers\PdfHelper::getMentionsByResourceId($model,$data);
         }
         return $data;
 
@@ -93,7 +93,7 @@ class PdfHelper{
     }
 
     public static function getGraphResourceOnDate($model,$alertResource){
-        $url = \app\helpers\DocumentHelper::GraphResourceOnDate($model->id,false);
+        $url = \app\helpers\DocumentHelper::GraphResourceOnDate($model->id);
         if(!is_null($url)){
             $alertResource['url_graph_date_sources'] = $url;
         }
@@ -134,11 +134,9 @@ class PdfHelper{
 
     public static function getMentionsByResourceId($model,$alertResource){
         
-        $searchModel = new  \app\models\grid\MentionSearch();
+        $searchModel = new  \app\models\search\MentionSearch();
         foreach($alertResource['alertResource'] as $resourceName => $resourceId){
             $data = $searchModel->getData(['resourceId' => $resourceId,'limits' => 10],$model->id);
-            // print_r($data);
-            // die();
             if(!is_null($data) && count($data)){
                 $provider = new \yii\data\ArrayDataProvider([
                     'allModels' => $data,

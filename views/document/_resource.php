@@ -13,12 +13,14 @@ use yii\widgets\ListView;
                 <p><?= $term ?></p>
             <?php endforeach; ?>
 
-            <?php $url = $values['url_graph_data_terms'];?>
-            <h4 style="font-family: 'Helvetica', sans-serif;">Totales por terminos</h4>
-            <br><br>
-            <div class="chart">
-                <img src="<?= $url ?>" alt="Static Chart"/>
-            </div>
+            <?php if(isset($values['url_graph_data_terms'])): ?>     
+                <?php $url = $values['url_graph_data_terms'];?>
+                <h4 style="font-family: 'Helvetica', sans-serif;">Totales por terminos</h4>
+                <br><br>
+                <div class="chart">
+                    <img src="<?= $url ?>" alt="Static Chart"/>
+                </div>
+            <?php endif; ?> 
             <?php if(isset($values['url_graph_common_words'])): ?> 
                 <!-- break to another page -->
                 <div style='page-break-after:always'></div>

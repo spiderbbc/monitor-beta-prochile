@@ -542,6 +542,19 @@ class AlertMentionsHelper
         return $count;
     }
 
+    public static function getCountMentionsByresourceId($alertId,$resourceId){
+        $db = \Yii::$app->db;
+        $models = $db->cache(function ($db) use($alertId,$resourceId){
+            return \app\models\AlertsMencions::find()->with('mentions')->where(['alertId' => $alertId,'resourcesId' => $resourceId])->all();
+        },60);
+        $count = 0;
+        foreach($models as $model){
+            if(count($model->mentions)){
+                $count++;
+            }
+        }
+        return $count;
+    }
 
     /**	 
 	* [getAttributesForDetailView compose detailView array if there url on topic]
