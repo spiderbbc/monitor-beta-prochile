@@ -8,6 +8,7 @@ use yii\widgets\DetailView;
 \app\assets\JqcloudAsset::register($this);
 //\app\assets\highmapsAsset::register($this);
 \app\assets\DetailAsset::register($this);
+
 ?>
 <div id="alerts-detail" class="alerts-detail" style="padding-top: 10px">
     <div class="container">

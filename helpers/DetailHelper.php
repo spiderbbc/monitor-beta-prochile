@@ -732,7 +732,7 @@ class DetailHelper {
      * return group columns for mentions grid index detail
      */
     public static function setGridMentionsColumnsOnDetailView($resourceName,$searchModel){
-
+        
         $columns = [
             [
                 'label' => Yii::t('app','Fecha'),

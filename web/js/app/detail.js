@@ -675,11 +675,10 @@ const gridMentions = Vue.component("grid-detail", {
       // get resource name
       var resourceName = document.querySelector(".resourceName");
       $("#mentionsearch-resourcename").attr("value", resourceName.innerText);
-
+      console.log(this.resourceid);
       if (
-        this.resourceid == 5 ||
-        this.resourceid == 6 ||
-        this.resourceid == 7
+        this.resourceid == 7 || // Facebook Comments
+        this.resourceid == 2  // Instagram Comments
       ) {
         $("#mentionsearch-publication_id").attr("value", this.socialId);
       } else {

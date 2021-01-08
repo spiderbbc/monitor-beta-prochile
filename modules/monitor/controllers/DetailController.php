@@ -1,7 +1,7 @@
 <?php
 
 namespace app\modules\monitor\controllers;
-
+use yii\web\NotFoundHttpException;
 class DetailController extends \yii\web\Controller
 {
     /**

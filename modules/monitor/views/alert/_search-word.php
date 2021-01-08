@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
+$action = (isset($view)) ? $view : 'view';
+
 ?>
 
 <div class="">
@@ -10,7 +12,7 @@ use yii\widgets\ActiveForm;
     $form = ActiveForm::begin(
         [
           'id' => 'mentions-search',
-          'action' => ['view'],
+          'action' => [$action],
           'method' => 'get',
           'options' => [
               'data-pjax' => 1,
@@ -19,9 +21,16 @@ use yii\widgets\ActiveForm;
             ],
         ]);
     ?>
+    
+    <?= Html::hiddenInput('sort',null,['id' => 'mentionsearch-sort']); ?>
 
-    <?= Html::hiddenInput('id','') ?>
+    <?= $form->field($model, 'id',['inputOptions' => ['name' => 'id']])  ?>
+    
+    <?= $form->field($model, 'resourceId')?>
 
+    <?= $form->field($model, 'publication_id') ?>
+
+    <?= $form->field($model, 'social_id') ?>
 
     <?= $form->field($model, 'resourceName') ?>
 
@@ -34,6 +43,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'subject') ?>
 
     <?= $form->field($model, 'message_markup') ?>
+
+    <?= $form->field($model, 'status') ?>
 
 
     <div class="form-group">

@@ -43,13 +43,13 @@ use yii\widgets\ActiveForm;
     :socialId="socialId"
     :isChange="isChange"/> -->
     
-    <!-- <grid-detail
+    <grid-detail
     :alertid="alertid" 
     :resourceid="resourceid" 
     :term="term" 
     :socialId="socialId"
     :isChange="isChange" 
-    ></grid-detail> -->
+    ></grid-detail>
   
   </div>
   <div v-else-if="loading">
