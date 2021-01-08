@@ -9,6 +9,7 @@ const appId = root != "web" ? `${root}/web` : "web";
 const baseUrlApi = `${origin}/${appId}/monitor/api/mentions/`;
 const baseUrlDocument = `${origin}/${appId}/monitor/pdf/`;
 const baseUrlView = `${origin}/${appId}/monitor/alert/`;
+const baseDetailApi = `${origin}/${appId}/monitor/api/detail/`;
 // 1000 = 1 seg
 
 let refreshTime = 15000;

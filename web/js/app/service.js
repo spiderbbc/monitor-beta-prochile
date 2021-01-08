@@ -1,6 +1,5 @@
+"use strict";
 
-
-const baseDetailApi = `${origin}/${appId}/monitor/api/detail/`;
 
 const apiClientView = axios.create({
   baseURL: baseUrlApi,

@@ -1,9 +1,54 @@
 <?php
 /* @var $this yii\web\View */
-?>
-<h1>detail/index</h1>
+use yii\helpers\Html;
+use yii\widgets\DetailView;
 
-<p>
-    You may change the content of this page by modifying
-    the file <code><?= __FILE__; ?></code>.
-</p>
+\app\assets\AxiosAsset::register($this);
+\app\assets\VueAsset::register($this);
+\app\assets\JqcloudAsset::register($this);
+//\app\assets\highmapsAsset::register($this);
+\app\assets\DetailAsset::register($this);
+?>
+<div id="alerts-detail" class="alerts-detail" style="padding-top: 10px">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+            <?= Html::tag('h1', Html::encode($resource->name), ['class' => 'resourceName']) ?>
+            <?= Html::hiddenInput('alertId', $model->id,['id' => 'alertId']); ?>
+
+            <p>
+                <?= Html::a('Actualizar', ['/monitor/alert/update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                <?= Html::a('Eliminar', ['/monitor/alert/delete', 'id' => $model->id], [
+                    'class' => 'btn btn-danger',
+                    'data' => [
+                        'confirm' => 'Are you sure you want to delete this item?',
+                        'method' => 'post',
+                    ],
+                ]) ?>
+                <?= Html::a('Regresar', ['alert/view', 'id' => $model->id], ['class' => 'btn btn-default']) ?>
+            </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <?= DetailView::widget([
+                    'model' => $model,
+                    'attributes' => \app\helpers\DetailHelper::setGridDetailColumnsOnDetailView($model,$resource),
+                ]) ?>
+            </div>
+        </div>
+        <div class="row">
+            <detail 
+            :alertid= <?= $model->id ?> 
+            :resourceid= <?= $resource->id ?>
+            >
+        </div>
+    </div>
+</div>
+<?= $this->render('_templates-vue',[
+    'searchModel' => $searchModel,
+    'dataProvider' => $dataProvider,
+    'view' => 'index',
+    'resource' => $resource
+]);  
+?>

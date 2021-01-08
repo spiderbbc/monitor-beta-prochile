@@ -60,6 +60,21 @@ class AlertMentionsHelper
     }
 
     /**
+     * [getResourceNameById get name of resource by id]
+     * @param  [int] $resourceName [Ej:1]
+     * @return [string]               [nae Twiiter]
+     */
+    public static function getResourceNameById($resourceId)
+    {
+        $resourceName = (new \yii\db\Query())
+            ->select('name')
+            ->from('resources')
+            ->where(['id' => $resourceId])
+            ->one();
+        return $resourceName['name'];
+    }
+
+    /**
      * [isAlertsMencionsExists if a mention alert exits]
      * @param  [type]  $publication_id [description]
      * @return boolean                 [description]
