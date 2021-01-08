@@ -25,7 +25,7 @@ use yii\widgets\ActiveForm;
             <div class="icon">
               <i :class="getIcon(resource)"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="glyphicon glyphicon-chevron-right"></i></a>
+            <a  :href="getLink(resource)" target="_blank" class="small-box-footer">More info <i class="glyphicon glyphicon-chevron-right"></i></a>
           </div>
         </div>
         

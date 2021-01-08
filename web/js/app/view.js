@@ -152,7 +152,7 @@ const count_mentions = Vue.component("total-mentions", {
       return smallboxProperties[resource].icon;
     },
     getLink(resource) {
-      name = smallboxProperties[resource].name;
+      var name = smallboxProperties[resource].name;
       hiperlink = document.getElementById(name);
       return hiperlink;
     },
