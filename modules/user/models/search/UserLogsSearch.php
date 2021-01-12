@@ -42,7 +42,7 @@ class UserLogsSearch extends UserLogs
      */
     public function search($params)
     {
-        $query = UserLogs::find()->orderBy(['log_date' => SORT_ASC]);
+        $query = UserLogs::find()->orderBy(['log_date' => SORT_DESC]);
 
         // add conditions that should always apply here
 
