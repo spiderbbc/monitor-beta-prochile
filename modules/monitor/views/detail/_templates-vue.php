@@ -22,26 +22,12 @@ use yii\widgets\ActiveForm;
     :isChange="isChange"
     ></box-detail>
     
-    <!-- <common-words-detail
-    :alertid="alertid" 
-    :resourceid="resourceid" 
-    :term="term" 
-    :socialId="socialId"
-    :isChange="isChange"/> -->
-
-    <!-- <graph-common-words-detail
+    <graph-count-domains-detail
     :alertid="alertid" 
     :resourceid="resourceid" 
     :term="term" 
     :socialId="socialId"
     :isChange="isChange"/>
-    
-    <map-user-detail
-    :alertid="alertid" 
-    :resourceid="resourceid" 
-    :term="term" 
-    :socialId="socialId"
-    :isChange="isChange"/> -->
     
     <grid-detail
     :alertid="alertid" 
@@ -125,10 +111,17 @@ use yii\widgets\ActiveForm;
   </div> 
 </script>
 
-<script type="text/x-template" id="map-user-detail">
-  <div>
-    <div id="map-user"></div>
-  </div>
+
+
+<!-- graph common words mentions -->
+<script type="text/x-template" id="graph-count-domains-detail">
+<div  class="row">
+    <div class="col-md-12">
+      <div v-show="domains.length">
+        <div id="view-count-domains-chart"></div>
+      </div>
+    </div>
+  </div> 
 </script>
 
 <!-- grid mentions -->

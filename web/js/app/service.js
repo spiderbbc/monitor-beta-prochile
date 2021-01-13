@@ -170,6 +170,21 @@ function getBoxCommonWordsDetail(alertid, resourceid, term, socialId) {
 
 /**
  * View: Detail
+ * Vue Component: graph-count-domains-detail
+ *  call api to return domains
+ * @param {Number} id
+ * @param {Number} resourceId
+ * @param {String} term
+ * @param {String} socialId
+ */
+function getUrlsDomainsDetail(alertid, resourceid, term,socialId) {
+  return apiClientDetail.get(
+    `urls-domains?alertId=${alertid}&resourceId=${resourceid}&term=${term}&socialId=${socialId}`
+  );
+}
+
+/**
+ * View: Detail
  * Vue Component: map-user
  *  call api to regions count on users
  * @param {Number} id

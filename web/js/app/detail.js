@@ -1,4 +1,4 @@
-
+var resourceName = document.querySelector(".resourceName");
 
 Vue.filter("formatNumber", function (value) {
   return value.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
@@ -438,6 +438,144 @@ const graphCommonWordsComponent = Vue.component("graph-common-words-detail", {
     }
   },
 });
+
+/**
+ * countRetailsChart: send call to api and display domains graph
+ */
+const countRetailsChart = Vue.component("graph-count-domains-detail",{
+  props: {
+    alertid: {
+      type: Number,
+      required: true,
+    },
+    resourceid: {
+      type: Number,
+      required: true,
+    },
+    term: {
+      type: String,
+      required: true,
+    },
+    socialId: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    isChange: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+  },
+  template: "#graph-count-domains-detail",
+  data: function () {
+    return {
+      domains: [],
+      excludeIds: [1,2,5,7,6], // exclude twitter,facebook, Instagram and document
+    };
+  },
+   watch: {
+    isChange: function (val, oldVal) {
+      if (val) {
+        this.fetchDomains();
+      }
+    },
+    socialId: function (val, oldVal) {
+      if (val || val == "") {
+        this.fetchDomains();
+      }
+    },
+  },
+  mounted() {
+    this.fetchDomains();
+  },
+  methods: {
+    fetchDomains() {
+      if(this.excludeIds.indexOf(this.resourceid) === -1){
+        getUrlsDomainsDetail(
+          this.alertid,
+          this.resourceid,
+          this.term,
+          this.socialId
+        )
+        .then((response) => {
+          this.domains = [];
+          if (response.status == 200) {
+            // order data to the graph
+            for(var key in response.data){
+              var tmp = {
+                'name': key,
+                'y': parseInt(response.data[key]),
+              };
+              this.domains.push(tmp);
+            }
+  
+            if(this.domains.length > 0){
+              this.drawPieGraph();
+            }
+          }
+        })
+        .catch((error) => {
+          // see error by dialog
+        });
+      }
+    },
+    drawPieGraph(){
+      // Build the chart
+      Highcharts.chart('view-count-domains-chart', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: `Dominios de Paginas Webs en ${resourceName.innerText}`,
+        },
+        credits: {
+            enabled: false
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        accessibility: {
+            point: {
+                valueSuffix: '%'
+            }
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    connectorColor: 'silver'
+                }
+            }
+        },
+        colors: Highcharts.getOptions().colors.map(function(color) {
+          return {
+            radialGradient: {
+              cx: 0.5,
+              cy: 0.5,
+              r: 0.7
+            },
+            stops: [
+              [0, color],
+              [1, Highcharts.color(color).brighten(-0.3).get('rgb')] // darken
+            ]
+          }
+        }),
+        series: [{
+            name: 'Total',
+            data: this.domains
+        }]
+      });
+    },
+    
+  },
+});
 /**
  * mapUserComponent: send call to api and display user map
  */
@@ -675,7 +813,6 @@ const gridMentions = Vue.component("grid-detail", {
       // get resource name
       var resourceName = document.querySelector(".resourceName");
       $("#mentionsearch-resourcename").attr("value", resourceName.innerText);
-      console.log(this.resourceid);
       if (
         this.resourceid == 7 || // Facebook Comments
         this.resourceid == 2  // Instagram Comments

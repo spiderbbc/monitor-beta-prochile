@@ -269,6 +269,7 @@ class DetailHelper {
         $db = \Yii::$app->db;
         $duration = 5;
         $alertMentions = \app\models\AlertsMencions::find()->with(['mentions'])->where($where)->asArray()->all();
+        
         for ($m=0; $m < sizeOf($alertMentions) ; $m++) { 
             if(count($alertMentions[$m]['mentions'])){
                 // total web pages
