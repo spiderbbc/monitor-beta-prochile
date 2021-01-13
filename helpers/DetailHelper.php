@@ -911,8 +911,35 @@ class DetailHelper {
         }
 
         
-        if($resourceName == 'Paginas Webs'){
+        if($resourceName == 'Paginas Webs' ){
             array_push($columns,
+
+                self::composeColum("Nombre","name","raw",function($model){
+                    return \yii\helpers\Html::encode($model['name']);
+                }),
+
+                self::composeColum("Username","screen_name","raw",function($model){
+                    return \yii\helpers\Html::encode($model['screen_name']);
+                }),
+
+                self::composeColum("Mencion","message_markup","raw",function($model){
+                    return $model['message_markup'];
+                }),
+
+               
+            );
+        }
+
+        if($resourceName == 'Noticias Webs' ){
+            array_push($columns,
+
+                self::composeColum("Autor","name","raw",function($model){
+                    return $model['name'];
+                }),
+
+                self::composeColum("Titulo","title","raw",function($model){
+                    return $model['subject'];
+                }),
 
                 self::composeColum("Mencion","message_markup","raw",function($model){
                     return $model['message_markup'];
