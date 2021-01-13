@@ -60,7 +60,6 @@ $escape = new JsExpression("function(m) { return m; }");
                   //  'style' => 'vertical-align: middle;'
                 ]
             ],
-
             [
                 'label' => Yii::t('app','Usuario'),
                 'attribute' => 'userId',
@@ -177,7 +176,7 @@ $escape = new JsExpression("function(m) { return m; }");
             
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{update} {delete} {view}',
+                'template' => '{update} {view} {delete} {report}',
                 'contentOptions' => ['style' => 'width: 10%;min-width: 20px'], 
                 'buttons' => [
                     'delete' => function($url, $model){
@@ -192,6 +191,15 @@ $escape = new JsExpression("function(m) { return m; }");
                     'update' => function($url, $model){
                         return Html::a('<span class="glyphicon glyphicon-pencil"></span>', ['update', 'id' => $model->id], [
                             'style' => ($model->userId != \Yii::$app->user->getId()) ? 'display: none;': '',
+                        ]);
+                    },
+                    'report' => function($url, $model){
+                        $mentionCount = \app\helpers\MentionsHelper::getCountMentions($model);
+                        return Html::a('<span class="glyphicon glyphicon-export"></span>', ['/monitor/pdf/document', 'alertId' => $model->id], [
+                            'style' => (!$mentionCount['data']['count']) ? 'display: none;': '',
+                            'title' => 'Descargar el Reporte',
+                            'target' => '_blank',
+                            'data-pjax'=>"0"
                         ]);
                     }
                 ]

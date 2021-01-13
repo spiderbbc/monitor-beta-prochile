@@ -41,19 +41,6 @@ class MentionsController extends Controller
         ],
     ];
   }
-  /**
-   * [actionIndex action to the index view]
-   * @param  [type] $alertId [description]
-   * @return [type]          [description]
-   */
-  public function actionIndex(){
-   
-    $basePath = \yii::$app->basePath;
-    // shell_exec("php {$basePath}/yii daemon/alerts-run 2>&1");
-    // shell_exec("php {$basePath}/yii daemon/data-search 2>&1");
-    return array('status'=>true);
-
-  }
 
   /**
    * [actionCountMentions return count the total mentions / call component vue: total-mentions]
@@ -63,23 +50,8 @@ class MentionsController extends Controller
   public function actionCountMentions($alertId){
    
     $model = $this->findModel($alertId);
-    $data = [];
-
-    if($model){
-      $count = (new \yii\db\Query())
-      ->cache(10)
-      ->from('alerts_mencions')
-      ->join('JOIN', 'mentions', 'mentions.alert_mentionId = alerts_mencions.id')
-      ->where(['alertId' => $alertId])
-      ->count();
-      
-      // total register
-      $data['count'] = (int)$count;
-    }
+    return \app\helpers\MentionsHelper::getCountMentions($model);
     
-    return [
-      'data' => $data,
-    ];
   }
 
   public function actionPropertiesSourceBox($alertId){
