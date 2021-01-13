@@ -79,6 +79,7 @@ class PdfHelper{
             $data = \app\helpers\PdfHelper::getGraphResourceOnDate($model,$data);
             $data = \app\helpers\PdfHelper::getTermsFindByResources($model,$data);
             $data = \app\helpers\PdfHelper::getGraphDataTermsByResourceId($model,$data);
+            $data = \app\helpers\PdfHelper::getGraphDomainsByResourceId($model,$data);
             // $data =  \app\helpers\PdfHelper::getGraphCommonWordsByResourceId($model,$data);
             $data =  \app\helpers\PdfHelper::getMentionsByResourceId($model,$data);
         }
@@ -107,6 +108,22 @@ class PdfHelper{
             for($t = 0; $t < sizeOf($termsFind['data']); $t++){
                 $alertResource['resources'][$resourceName]['terms'][] =$termsFind['data'][$t][0];
             }
+        }
+        return $alertResource;
+    }
+
+    public static function getGraphDomainsByResourceId($model,$alertResource){
+        $excludeResources = [1,2,5,7,6];
+        foreach($alertResource['alertResource'] as $resourceName => $resourceId){
+            $url = (!in_array($resourceId,$excludeResources)) 
+                ? 
+                \app\helpers\DocumentHelper::actionGraphDomainsByResourceId($model->id,$resourceId)
+                :
+                null;
+            if(!is_null($url)){
+                $alertResource['resources'][$resourceName]['url_graph_domains'] = $url;
+            }
+            
         }
         return $alertResource;
     }

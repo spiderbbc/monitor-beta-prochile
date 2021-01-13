@@ -40,6 +40,7 @@ class PdfController extends \yii\web\Controller
         // resources social data
         $resourcesSocialData = \app\helpers\PdfHelper::getDataForPdf($model); 
         
+        
         if(count($resourcesSocialData)){
             // create folder
             $path = \app\helpers\DirectoryHelper::setFolderPath([
