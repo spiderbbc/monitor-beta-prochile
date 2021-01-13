@@ -678,7 +678,7 @@ class MentionsHelper
             ->all();
            
             foreach($urls as $index => $values){
-                $domain = $values['domain_url'];
+                $domain = \app\helpers\StringHelper::getDomain($values['domain_url']);
                 if(!in_array($domain,array_keys($totalDomains))){
                     $totalDomains[$domain] = 1;
                 }else{
