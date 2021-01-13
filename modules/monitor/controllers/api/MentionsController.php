@@ -25,6 +25,7 @@ class MentionsController extends Controller
               'top-post-interation',
               'product-interation',
               'mention-on-date',
+              'web-page-domains',
               'list-mentions',
               'list-words',
               'list-emojis'
@@ -337,6 +338,15 @@ class MentionsController extends Controller
    */
   public function actionMentionOnDate($alertId){
     return  \app\helpers\MentionsHelper::getMentionOnDate($alertId);   
+  }
+
+  /**
+   * [actionWebPageRetails return array web page retails
+   * @param  [int] $id            [id of alert]
+   * @return [array \ Exception]  [array of date or exception if alert id not exists]
+   */
+  public function actionWebPageDomains($alertId){
+    return  \app\helpers\MentionsHelper::getDomainsFromMentionsOnUrls($alertId);
   }
 
 

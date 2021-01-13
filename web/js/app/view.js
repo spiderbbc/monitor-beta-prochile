@@ -557,6 +557,109 @@ const products_interations_chart = Vue.component("products-interations-chart", {
     },
   },
 });
+
+/**
+ * [componente que muestra grafico de retail para LiveChat Tickets]
+ * template: '#view-products-interations-chart' [description]
+ * @return {[component]}           [component]
+ */
+const count_retails_chart = Vue.component("count-domains-chart",{
+  props: ["is_change"],
+  template: "#view-count-domains-chart",
+  data: function(){
+    return {
+      alertId: id,
+      loaded: false,
+    };
+  },
+  mounted() {
+    this.drawPieChart();
+  },
+  watch: {
+    is_change: function (val, oldVal) {
+      if (val) {
+        this.drawPieChart();
+      }
+    },
+  },
+  methods:{
+    drawPieChart() {
+     
+      let retails = [];
+      this.loaded = true;
+      $.getJSON(`${origin}/${appId}/monitor/api/mentions/web-page-domains?alertId=` + id,
+      function(response){
+        // order data to the graph
+        for(var key in response){
+          var tmp = {
+            'name': key,
+            'y': parseInt(response[key]),
+          };
+          retails.push(tmp);
+        }
+        
+        if(retails.length > 0){
+          // Build the chart
+          Highcharts.chart('view-count-domains-chart', {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: 'Dominios de Paginas Webs'
+            },
+            credits: {
+                enabled: false
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            accessibility: {
+                point: {
+                    valueSuffix: '%'
+                }
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        connectorColor: 'silver'
+                    }
+                }
+            },
+            colors: Highcharts.getOptions().colors.map(function(color) {
+              return {
+                radialGradient: {
+                  cx: 0.5,
+                  cy: 0.5,
+                  r: 0.7
+                },
+                stops: [
+                  [0, color],
+                  [1, Highcharts.color(color).brighten(-0.3).get('rgb')] // darken
+                ]
+              }
+            }),
+            series: [{
+                name: 'Total',
+                data: retails
+            }]
+          });
+
+        }
+
+      });
+    }
+    
+  }
+  
+});
+
 /**
  * [componente que muestra grafico de post por fecha (Higchart)]
  * template: '#view-total-resources-chart' [description]

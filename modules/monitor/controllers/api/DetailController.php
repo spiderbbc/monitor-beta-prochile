@@ -267,6 +267,19 @@ class DetailController extends Controller {
 
         return $query;
     }
+
+    /**
+     * return domains
+     * @param integer $id
+     * @param integer $resourceId
+     * @param string $term
+     * @return $data domains
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUrlsDomains($alertId,$resourceId,$term = '',$socialId = ''){
+        
+        return  \app\helpers\MentionsHelper::getDomainsFromMentionsOnUrls($alertId,$resourceId,$term,$socialId);
+    }
     /**
      * Finds the Alerts model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

@@ -648,6 +648,50 @@ class MentionsHelper
         return array('status'=>true,'model' => $model);  
     }
 
+
+    public static function getDomainsFromMentionsOnUrls($alertId,$resourceId = null,$term = null,$socialId = null){
+
+        $properties['alertId'] = $alertId;
+        if(!is_null($resourceId)){
+            $properties['resourcesId'] = $resourceId;
+        }
+
+        if($term != ''){
+            $properties['term_searched'] = $term;
+        }
+       
+        $alertMentions = \app\helpers\AlertMentionsHelper::getAlersMentions($properties);
+        $totalDomains = [];
+        
+        if(!is_null($alertMentions)){
+            
+            $alertMentionsIds = \yii\helpers\ArrayHelper::getColumn($alertMentions,'id');
+            $where['alert_mentionId'] = $alertMentionsIds;
+            if($socialId != ''){
+                $where['social_id'] = $socialId;
+            }
+
+            $urls = \app\models\Mentions::find()->select(['domain_url'])->where($where)
+            //->cache(20)
+            ->Andwhere(['IS NOT', 'domain_url', null])
+            ->asArray()
+            ->all();
+           
+            foreach($urls as $index => $values){
+                $domain = $values['domain_url'];
+                if(!in_array($domain,array_keys($totalDomains))){
+                    $totalDomains[$domain] = 1;
+                }else{
+                    $count = $totalDomains[$domain];
+                    $totalDomains[$domain] = $count + 1;
+                }
+            }
+            arsort($totalDomains);
+
+        }
+        return $totalDomains;
+    }
+
     public static function getCountMentions($model){
         $data = [];
         if($model){

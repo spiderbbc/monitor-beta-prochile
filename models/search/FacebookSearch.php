@@ -265,7 +265,7 @@ class FacebookSearch
                 'message'        => $message,
                 'message_markup' => $message_markup,
                 'url' => $url,
-                'domain_url' => $url,
+              //  'domain_url' => $url,
             ]
         );
 

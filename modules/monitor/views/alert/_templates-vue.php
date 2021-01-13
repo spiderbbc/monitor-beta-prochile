@@ -101,6 +101,13 @@ use yii\widgets\ActiveForm;
   </div> 
 </script>
 
+<!-- chart retails -->
+<script type="tex/x-template" id="view-count-domains-chart">
+  <div v-show="loaded">
+    <div id="view-count-domains-chart"></div>
+    
+  </div>
+</script>
 
 <!-- template chart by date google chart -->
 <script type="tex/x-template" id="view-date-resources-chart">
