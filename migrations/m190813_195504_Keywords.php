@@ -20,9 +20,8 @@ class m190813_195504_Keywords extends Migration
 
         $this->createTable('{{%keywords}}', [
             'id'                    => $this->primaryKey(),
-            'alertId'               => $this->integer(),
             'dictionaryId'          => $this->integer(),
-            'name'                  => $this->string(),
+            'name'                  => $this->string()->notNull()->unique(),
             'createdAt'             => $this->integer(),
             'updatedAt'             => $this->integer(),
             'createdBy'             => $this->integer(),
@@ -30,53 +29,6 @@ class m190813_195504_Keywords extends Migration
 
         ], $tableOptions);
 
-        $this->insert('{{%keywords}}', [
-            'alertId'               => 1,
-            'dictionaryId'          => 1,
-            'name'                  => 'Good',
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
-        ]);
-
-        $this->insert('{{%keywords}}', [
-            'alertId'               => 1,
-            'dictionaryId'          => 2,
-            'name'                  => 'Bad',
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
-        ]);
-
-        $this->insert('{{%keywords}}', [
-            'alertId'               => 1,
-            'dictionaryId'          => 3,
-            'name'                  => 'not bad and not so good',
-            'createdAt'             => '1488153462',
-            'updatedAt'             => '1488153462',
-            'createdBy'             => '1',
-            'updatedBy'             => '1',
-        ]);
-
-         // creates index for column `alertId`
-        $this->createIndex(
-            'idx-dictionary-alertId',
-            'keywords',
-            'alertId'
-        );
-
-        // add foreign key for table `dictionaries`
-        $this->addForeignKey(
-            'fk-dictionary-alertId',
-            'keywords',
-            'alertId',
-            'alerts',
-            'id',
-            'CASCADE',
-            'CASCADE'
-        );
 
         // creates index for column `dictionaryId`
         $this->createIndex(
