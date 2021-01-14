@@ -660,7 +660,9 @@ class MentionsHelper
             $properties['term_searched'] = $term;
         }
        
-        $alertMentions = \app\helpers\AlertMentionsHelper::getAlersMentions($properties);
+        $alertMentions = \app\models\AlertsMencions::find()->where($properties)
+        ->Andwhere(['NOT IN', 'resourcesId', [1,5,6,7,8]])
+        ->asArray()->all();
         $totalDomains = [];
         
         if(!is_null($alertMentions)){
@@ -678,13 +680,14 @@ class MentionsHelper
             ->all();
            
             foreach($urls as $index => $values){
-                $domain = \app\helpers\StringHelper::getDomain($values['domain_url']);
+                $domain = $values['domain_url'];
                 if(!in_array($domain,array_keys($totalDomains))){
                     $totalDomains[$domain] = 1;
                 }else{
                     $count = $totalDomains[$domain];
                     $totalDomains[$domain] = $count + 1;
                 }
+                
             }
             arsort($totalDomains);
 
@@ -696,7 +699,7 @@ class MentionsHelper
         $data = [];
         if($model){
             $count = (new \yii\db\Query())
-            ->cache(10)
+            ->cache(20)
             ->from('alerts_mencions')
             ->join('JOIN', 'mentions', 'mentions.alert_mentionId = alerts_mencions.id')
             ->where(['alertId' => $model->id])
