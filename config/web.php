@@ -26,6 +26,9 @@ $config = [
         'insights' => [
             'class' => 'app\modules\insights\Module',
         ],
+        'wordlists' => [
+            'class' => 'app\modules\wordlists\Module',
+        ],
         // kartik
         'gridview' => [
             'class' => '\kartik\grid\Module',
@@ -79,6 +82,12 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                 // rule for wordlists
+                 'wordlists' => 'wordlists/default/index',
+                 'wordlists/create' => 'wordlists/default/create',
+                 'wordlists/view' => 'wordlists/default/view',
+                 'wordlists/update' => 'wordlists/default/update',
+                 // end rules module wordlists
             ],
         ],
         

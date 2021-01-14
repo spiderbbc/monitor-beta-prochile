@@ -104,6 +104,36 @@ class DaemonController extends Controller
 
         return ExitCode::OK;
     }
+
+     /**
+     *  run terminal ./yii daemon/sync-dictionaries
+     * [actionSyncProducts sync products to drive documents]
+     * @return [type] [description]
+     */
+    public function actionSyncDictionaries(){
+        $drive = new DriveApi();
+        $dictionariesNames = $drive->getDictionaries();
+        $Dictionarieskeywords = $drive->getContentDictionaryByTitle($dictionariesNames);
+        
+        foreach($Dictionarieskeywords as $dictionariesName => $keywords){
+            $dictionaryModel = \app\modules\wordlists\models\Dictionaries::findOne(['name' => $dictionariesName]);
+            if(!is_null($dictionaryModel)){
+                
+                for ($k=0; $k < sizeOf($keywords) ; $k++) { 
+                    $isKeywordExists = \app\modules\wordlists\models\Keywords::find()->where(['name' => $keywords[$k]])->exists();
+                    if(!$isKeywordExists){
+                        $keywordModel = new \app\modules\wordlists\models\Keywords();
+                        $keywordModel->dictionaryId = $dictionaryModel->id;
+                        $keywordModel->name = $keywords[$k];
+                        if(!$keywordModel->save()){
+                            var_dump($keywordModel->errors);
+                        }
+                    }
+                }
+            }
+        }
+        return ExitCode::OK;
+    }
     /**
      * [only development function]
      * @return [type] [description]

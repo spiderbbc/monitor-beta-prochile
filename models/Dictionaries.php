@@ -174,6 +174,28 @@ class Dictionaries extends \yii\db\ActiveRecord
       ]);
 
     }
+
+    /**
+     * saveDictionary: save keywords dictionaries on table alerts_keywords for relations with alert
+     * @param array $dictionaryIds [ids for dictionaries]
+     * @param integer $alertId [id for alert ]
+     */
+    public static function saveDictionary($dictionaryIds, $alertId){
+      if($dictionaryIds){
+         $keywordsIds = \app\modules\wordlists\models\Keywords::find()->select('id')->where(['dictionaryId' => $dictionaryIds])->asArray()->all(); 
+         $ids = \yii\helpers\ArrayHelper::getColumn($keywordsIds, 'id');
+          if(!empty($ids)){
+            $models = [];
+            for ($i=0; $i < sizeOf($ids) ; $i++) { 
+              $models[] = [$alertId,$ids[$i]];
+            }
+            if(count($models)){
+              Yii::$app->db->createCommand()->batchInsert('alerts_keywords', ['alertId','keywordId'],$models)
+              ->execute();
+            }
+          }
+      }
+  }
     /**
      * @return \yii\db\ActiveQuery
      */
