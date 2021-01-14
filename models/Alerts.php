@@ -7,6 +7,9 @@ use Yii\helpers\ArrayHelper;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
+use app\modules\wordlists\models\Dictionaries;
+use app\modules\wordlists\models\Keywords;
+use app\modules\wordlists\models\AlertsKeywords;
 /**
  * This is the model class for table "alerts".
  *
@@ -171,21 +174,18 @@ class Alerts extends \yii\db\ActiveRecord
     public function getFreeKeywords()
     {
         $words = [];
-        $dictionary = \app\models\Dictionaries::find()->where(['name' => \app\models\Dictionaries::FREE_WORDS_NAME])->one();
-        
-        if ($dictionary) {
-            $keywords =  $this->hasMany(Keywords::className(), ['alertId' => 'id'])
-                ->where(['dictionaryId' => $dictionary->id])
-                 ->select('name')
-                 ->orderBy('id')
-                 ->all();
-            $words = [];     
+        $dictionary = Dictionaries::find()->where(['name' => Dictionaries::FREE_WORDS_NAME])->one();
+        if(!is_null($dictionary)){
+            $keywords =  $this->getKeywords()->where(['dictionaryId' => $dictionary->id])->orderBy('id')->all();
+             
             if($keywords){
-              foreach ($keywords as $keyword){
-                $words[] = $keyword->name;
-              }
+                foreach ($keywords as $keyword){
+                    $words[] = $keyword->name;
+                }
             }
+
         }
+        
         return $words;     
     }
    
@@ -263,7 +263,34 @@ class Alerts extends \yii\db\ActiveRecord
      */
     public function getKeywords()
     {
-        return $this->hasMany(Keywords::className(), ['alertId' => 'id']);
+        //return $this->hasMany(Keywords::className(), ['alertId' => 'id']);
+        return $this->hasMany(Keywords::className(), ['id' => 'keywordId'])
+            ->viaTable('alerts_keywords', ['alertId' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAlertsKeywords(){
+        return $this->hasMany(AlertsKeywords::className(), ['alertId' => 'id']); 
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDictionariesIdsByAlert()
+    {
+        // set resources id select2
+        $selectIds = [];
+        $exclude = ['Free Words','Product Competition'];
+        
+        foreach ($this->alertsKeywords as $alertkeyword) {
+          if(!in_array($alertkeyword->keyword->dictionary->name,$selectIds) && !in_array($alertkeyword->keyword->dictionary->name,$exclude)){
+            $selectIds[] =  $alertkeyword->keyword->dictionary->id;
+          }  
+          
+        }   
+        return $selectIds;                  
     }
 
     /**

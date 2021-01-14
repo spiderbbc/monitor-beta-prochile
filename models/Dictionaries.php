@@ -195,7 +195,32 @@ class Dictionaries extends \yii\db\ActiveRecord
             }
           }
       }
-  }
+    }
+
+    /**
+     * updateDictionaries: update keywords dictionaries on table alerts_keywords for relations with alert
+     * @param array $dictionariesIds [ids for dictionaries]
+     * @param integer $alertId [id for alert ]
+     */
+    public static function updateDictionaries($dictionariesIds,$alertId){
+
+      if(!empty($dictionariesIds)){
+        $keywordsIds = \app\modules\wordlists\models\Keywords::find()->select('id')->where(['dictionaryId' => $dictionariesIds])->all();
+        $ids = \yii\helpers\ArrayHelper::getColumn($keywordsIds, 'id');
+        // delete olds
+        \app\modules\wordlists\models\AlertsKeywords::deleteAll([
+          'alertId' => $alertId,
+        ]);
+
+        self::saveDictionary($dictionariesIds,$alertId);
+        
+      }else{
+        // delete olds
+        \app\modules\wordlists\models\AlertsKeywords::deleteAll([
+          'alertId' => $alertId,
+        ]);
+      }
+    }
     /**
      * @return \yii\db\ActiveQuery
      */

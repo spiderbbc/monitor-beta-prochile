@@ -22,6 +22,8 @@ $pluginOptions = [ 'allowClear' =>  true];
 if (!$alert->isNewRecord) {
     $pluginOptions = [ 'allowClear' =>  false];
 }
+
+
 ?>
 <div id="views-alert" class="modules-monitor-views-alert">
     <?php $form = ActiveForm::begin(); ?>
