@@ -223,7 +223,7 @@ class MentionsController extends Controller
   public function actionListWords($alertId){
   
 
-    $keywords = \app\models\Keywords::find()->where(['alertId' => $alertId])->all();
+    $keywords = \app\modules\wordlists\models\AlertsKeywords::find()->where(['alertId' => $alertId])->all();
 
     $wordsModel = [];
     $index = 0;

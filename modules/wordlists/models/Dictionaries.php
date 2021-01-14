@@ -181,10 +181,13 @@ class Dictionaries extends \yii\db\ActiveRecord
           }else{
             $model = \app\modules\wordlists\models\Keywords::find()->where(['dictionaryId' => $dictionaryId,'name' => $free_words[$w] ])->one();
           }
-          $models[] = [$alertId,$model->id];
+         
+          if(!is_null($model->id)){
+            $models[] = [$alertId,$model->id];
+          }
 
       }
-
+     
       if(count($models)){
         Yii::$app->db->createCommand()->batchInsert('alerts_keywords', ['alertId','keywordId'],$models)
         ->execute();

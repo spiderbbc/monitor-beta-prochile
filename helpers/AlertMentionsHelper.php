@@ -494,14 +494,26 @@ class AlertMentionsHelper
         return \yii\helpers\ArrayHelper::getColumn($resourcesId,'id')[0];
     }
 
-
+    /**
+     * [isAlertHaveDictionaries get id of resource by name]
+     * @param  [alertID]           [id for alert]
+     * @return [boolean] 
+     */
     public static function isAlertHaveDictionaries($alertId)
     {
-        if(!is_null($alertId)){
-            $keywords = \app\models\Keywords::find()->where(['alertId' => $alertId])->exists();
-            return $keywords;
-        }
-        return false;
+        $is_dictionaries = \app\modules\wordlists\models\AlertsKeywords::find()->where(['alertId' => $alertId])->exists();
+        return $is_dictionaries;
+    }
+
+    /**
+     * [getDictionariesWords get words of the dictionaries]
+     * @param  [alertID]           [id for alert]
+     * @return [array] 
+     */
+    public static function getDictionariesWords($alertId){
+        $model = \app\models\Alerts::findOne($alertId);
+        $words = $model->getKeywords()->select(['name','id'])->asArray()->all();
+        return $words;
     }
 
     public static function getAlertsMentionsIdsByAlertIdAndResourcesIds($alertId,$resourceSocialIds = [])
