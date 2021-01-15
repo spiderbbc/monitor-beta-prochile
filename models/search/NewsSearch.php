@@ -27,11 +27,9 @@ class NewsSearch
        return false;     
     }
     $this->alertId        = ArrayHelper::getValue($params, 0);
-    $this->resourcesId    = $this->_setResourceId();
-    $this->isDictionaries = $this->_isDictionaries();
+    $this->resourcesId    = \app\helpers\AlertMentionsHelper::getResourceIdByName('Noticias Webs');
+    $this->isDictionaries = \app\helpers\AlertMentionsHelper::isAlertHaveDictionaries($this->alertId);
 
-    // print_r($params);
-    // die();
     for($p = 1 ; $p < sizeof($params); $p++){
         foreach($params[$p] as $data => $values){
           foreach($values as $term => $news){
@@ -219,7 +217,7 @@ class NewsSearch
    * @return [array]       [description]
    */
   private function searchDataByDictionary($data){
-    $words = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->select(['name','id'])->asArray()->all();
+    $words = \app\helpers\AlertMentionsHelper::getDictionariesWords($this->alertId);
     
     $model = [];  
     
@@ -274,39 +272,5 @@ class NewsSearch
 
   }
 	
-	/**
-  * [_isDictionaries is the alert hace dictionaries]
-  * @return boolean [description]
-  */
-  private function _isDictionaries(){
-    if(!is_null($this->alertId)){
-        $keywords = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->exists();
-        return $keywords;
-    }
-    return false;
-  }
-
-  /**
-   * [_setResourceId return the id from resource]
-   */
-  private function _setResourceId(){
-      
-    $socialId = (new \yii\db\Query())
-        ->select('id')
-        ->from('type_resources')
-        ->where(['name' => 'Web'])
-        ->one();
-    
-    
-    $resourcesId = (new \yii\db\Query())
-        ->select('id')
-        ->from('resources')
-        ->where(['name' => 'Noticias Webs','resourcesId' => $socialId['id']])
-        ->all();
-    
-
-    return ArrayHelper::getColumn($resourcesId,'id')[0];
-
-  }
     
 }
