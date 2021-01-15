@@ -243,7 +243,7 @@ class InstagramSearch
      * @return [array] [$mentions]
      */
     private function searchDataByDictionary($mentions){
-        $words = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->select(['name','id'])->asArray()->all();
+        $words = \app\helpers\AlertMentionsHelper::getDictionariesWords($this->alertId);
 
 
         foreach($mentions as $product => $feeds){
@@ -252,8 +252,8 @@ class InstagramSearch
                     for($c = 0; $c <  sizeof($feeds[$f]['comments']); $c++){
                         $wordsId = [];
                         for($w = 0; $w < sizeof($words); $w++){
-                            $sentence = $mentions[$product][$f]['comments'][$c]['message_markup'];
-                            $word = " {$words[$w]['name']} ";
+                            $sentence = \app\helpers\StringHelper::lowercase($mentions[$product][$f]['comments'][$c]['message_markup']);
+                            $word = \app\helpers\StringHelper::lowercase($words[$w]['name']);
                             $containsCount = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence, $word);
                             if($containsCount){
                                 $wordsId[$words[$w]['id']] = $containsCount;
@@ -267,22 +267,23 @@ class InstagramSearch
                                     $wordsIdReplies = [];
                                     for($w = 0; $w < sizeof($words); $w++){
                                         if(isset($mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup'])){
-                                            $sentence_replies = $mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup'];
+                                            $sentence_replies = \app\helpers\StringHelper::lowercase($mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup']);
                                             $containsCount = \app\helpers\StringHelper::containsCountIncaseSensitive($sentence_replies, $word);
                                             if($containsCount){
                                                 $wordsIdReplies[$words[$w]['id']] = $containsCount;
                                                 $word_replies = $words[$w]['name'];
                                                 $mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['message_markup']  = \app\helpers\StringHelper::replaceIncaseSensitive($sentence_replies,$word_replies,"<strong>{$word_replies}</strong>");
+                                                $mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['wordsId'] = $wordsIdReplies;
+                                                array_push($mentions[$product][$f]['comments'],$mentions[$product][$f]['comments'][$c]['replies']['data'][$r]);
                                             }
-
+                        
                                         }
                                     }// end loop words
-                                    if(!empty($wordsIdReplies)){
-                                        $mentions[$product][$f]['comments'][$c]['replies']['data'][$r]['wordsId'] = $wordsIdReplies;
+                                    if(empty($wordsIdReplies)){
+                                        unset($mentions[$product][$f]['comments'][$c]['replies']['data'][$r]);
                                     }
                                 } // end loop replies
-                            }else{
-                                unset($mentions[$product][$f]['comments'][$c]);
+                                $mentions[$product][$f]['comments'][$c]['replies']['data'] = array_values($mentions[$product][$f]['comments'][$c]['replies']['data']);
                             } // end if count replies data
                         } // end if replies
                         if(!empty($wordsId)){
@@ -291,26 +292,14 @@ class InstagramSearch
                             unset($mentions[$product][$f]['comments'][$c]);
                         }
                     }// end loop comments
-                }else{
-                    unset($mentions[$product][$f]['comments'][$c]);
+                    $mentions[$product][$f]['comments'] = array_values($mentions[$product][$f]['comments']);
                 }// end if keyExists && !empty
             }// end loop feeds
         }// for each
-        
+       // var_dump($mentions);
         return $mentions;
     }
 
-    /**
-     * [_isDictionaries is the alert hace dictionaries]
-     * @return boolean [description]
-     */
-    private function _isDictionaries(){
-        if(!is_null($this->alertId)){
-            $keywords = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->exists();
-            return $keywords;
-        }
-        return false;
-    }
 
     /**
      * Finds the AlertsMencions model based on product key value.

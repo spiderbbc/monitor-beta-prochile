@@ -382,10 +382,14 @@ class AlertController extends Controller
         }
           // if free words is
           $free_words = Yii::$app->request->post('Alerts')['free_words'];
-          if ($free_words){
-            $dictionaryName = \app\models\Dictionaries::FREE_WORDS_NAME;
-            \app\models\Dictionaries::saveFreeWords($free_words,$alert->id,$dictionaryName);
-          }
+          if ($free_words) {
+            $dictionaryName = \app\modules\wordlists\models\Dictionaries::FREE_WORDS_NAME;
+            \app\modules\wordlists\models\Dictionaries::saveFreeWords(
+                $free_words,
+                $alert->id,
+                $dictionaryName
+            );
+        }
           
           // set product/models
           $products_models = Yii::$app->request->post('Alerts')['productsIds'];

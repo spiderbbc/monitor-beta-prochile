@@ -142,21 +142,11 @@ class FacebookSearch
         return (empty($error)) ? true : false;
     }
 
-    /**
-     * [_isDictionaries is the alert hace dictionaries]
-     * @return boolean [description]
-     */
-    private function _isDictionaries(){
-        if(!is_null($this->alertId)){
-            $keywords = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->exists();
-            return $keywords;
-        }
-        return false;
-    }
+   
 
 
     private function searchDataByDictionary($feeds){
-        $words = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->select(['name','id'])->asArray()->all();
+        $words = \app\helpers\AlertMentionsHelper::getDictionariesWords($this->alertId);
         
 
         foreach($feeds as $product => $posts){
