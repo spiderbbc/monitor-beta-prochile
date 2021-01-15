@@ -212,7 +212,7 @@ class ScrapingSearch
 	* @return [array]       [description]
 	*/
 	private function searchDataByDictionary($data){
-		$words = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->select(['name','id'])->asArray()->all();
+		$words = \app\helpers\AlertMentionsHelper::getDictionariesWords($this->alertId);
 
 		$model = [];  
 

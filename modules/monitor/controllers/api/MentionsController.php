@@ -222,15 +222,15 @@ class MentionsController extends Controller
    */
   public function actionListWords($alertId){
   
-
-    $keywords = \app\modules\wordlists\models\AlertsKeywords::find()->where(['alertId' => $alertId])->all();
+    $AlertsKeywords = \app\modules\wordlists\models\AlertsKeywords::find()->where(['alertId' => $alertId])->all();
 
     $wordsModel = [];
     $index = 0;
-    foreach ($keywords as $keyword){
-      if($keyword->keywordsMentions){
-        $wordsModel[$index]['text']      = $keyword->name;
-        $wordsModel[$index]['weight']    = $keyword->getKeywordsMentions()->count();
+
+    foreach($AlertsKeywords as $AlertKeyword){
+      if($AlertKeyword->keyword->keywordsMentions){
+        $wordsModel[$index]['text']      = $AlertKeyword->keyword->name;
+        $wordsModel[$index]['weight']    = $AlertKeyword->keyword->getKeywordsMentions()->count();
         $index++; 
       }
     }
