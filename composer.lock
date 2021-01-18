@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00102fa7ca00b4b8f4fac3168b2577c1",
+    "content-hash": "2bb31df94b2c72a5fea7d232fa0fa369",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -68,7 +68,7 @@
             "version": "v3.4.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:twbs/bootstrap.git",
+                "url": "https://github.com/twbs/bootstrap.git",
                 "reference": "68b0d231a13201eb14acd3dc84e51543d16e5f7e"
             },
             "dist": {
@@ -6498,29 +6498,29 @@
         },
         {
             "name": "yooper/php-text-analysis",
-            "version": "1.5.6",
+            "version": "1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yooper/php-text-analysis.git",
-                "reference": "ac33de1285adef9d22f9ff6f640014989cca0b3d"
+                "reference": "7e5e484a68c3fe8f73e5bece906a502397b0187f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yooper/php-text-analysis/zipball/ac33de1285adef9d22f9ff6f640014989cca0b3d",
-                "reference": "ac33de1285adef9d22f9ff6f640014989cca0b3d",
+                "url": "https://api.github.com/repos/yooper/php-text-analysis/zipball/7e5e484a68c3fe8f73e5bece906a502397b0187f",
+                "reference": "7e5e484a68c3fe8f73e5bece906a502397b0187f",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1",
-                "symfony/console": "~4.0 || ~5.0",
-                "vanderlee/php-sentence": "~1.0",
+                "php": "~7.4",
+                "symfony/console": ">= 4.4",
+                "vanderlee/php-sentence": "~1",
                 "wamania/php-stemmer": "~1",
                 "yooper/nicknames": "~1",
                 "yooper/stop-words": "~1"
             },
             "require-dev": {
                 "mockery/mockery": "^1",
-                "phpunit/phpunit": "^8"
+                "phpunit/phpunit": "^9"
             },
             "bin": [
                 "textconsole",
@@ -6557,7 +6557,7 @@
                 "text analysis",
                 "text classification"
             ],
-            "time": "2020-05-02T10:05:40+00:00"
+            "time": "2020-12-20T01:48:43+00:00"
         },
         {
             "name": "yooper/stop-words",
