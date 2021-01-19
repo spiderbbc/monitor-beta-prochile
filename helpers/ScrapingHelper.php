@@ -283,33 +283,50 @@ class ScrapingHelper{
 
 	public static function sendTextAnilysis($content,$link = null)
 	{
-		
+		// filter stop words
+		$data = [];
+		// analisis if web page
+		$analysis = [];
 		// Create a tokenizer object to parse the book into a set of tokens
 		$tokenizer = new \TextAnalysis\Tokenizers\GeneralTokenizer();
 		// set tokens
 		$tokens = $tokenizer->tokenize($content);
-		// set anilisis
-		$freqDist = new \TextAnalysis\Analysis\FreqDist($tokens);
-		//Get all words
-		$allwords = $freqDist->getKeyValuesByFrequency();
-		//Get the top 10 most used words in Tom Sawyer 
-		$words = array_splice($allwords, 0, 50);
-		// get all stop words spanish
-		$stop_factory = StopWordFactory::get('stop-words_spanish_es.txt');
-		$stopWord_es = new StopWordsFilter($stop_factory);
-		// get alll words english
-		$stop_factory_en = StopWordFactory::get('stop-words_english.txt');
-		$stopWord_en = new StopWordsFilter($stop_factory_en);
-		// filter stop words
-		$data = [];
-		// limit from ten words
-		$limit = 10;
-		foreach ($words as $word => $value) {
-			if(!is_null($stopWord_en->transform($word)) && !is_null($stopWord_es->transform($word)) && count($data) < $limit){
-				$data[$word] = $value;
+		if(count($tokens)){
+			// set anilisis
+			$freqDist = new \TextAnalysis\Analysis\FreqDist($tokens);
+			//Get all words
+			$allwords = $freqDist->getKeyValuesByFrequency();
+			//Get the top 50 most used wordsr 
+			$words = array_splice($allwords, 0, 50);
+			// get all stop words spanish
+			$path = \Yii::getAlias('@stopwords').'/stop-words_spanish_es.txt';
+			$stop_factory = array_map('trim', file($path));
+			$stopWord_es = new StopWordsFilter($stop_factory);
+			// get alll words english
+			$path = \Yii::getAlias('@stopwords').'/stop-words_english.txt';
+			$stop_factory = array_map('trim', file($path));
+			$stopWord_en = new StopWordsFilter($stop_factory);
+			
+			// limit from ten words
+			$limit = 10;
+			foreach ($words as $word => $value) {
+				$word_remove = \app\helpers\StringHelper::replacingPeriodsCommasAndExclamationPoints($word);
+				$word_remove_emoji = \app\helpers\StringHelper::remove_emoji($word_remove);
+				$word_remove_tags = \app\helpers\StringHelper::stripTags($word_remove_emoji);
+				if(!\app\helpers\StringHelper::isEmpty($word_remove_tags) && !is_numeric($word_remove_tags) && \app\helpers\StringHelper::isAscii($word_remove_tags)){
+					$word_lower = \app\helpers\StringHelper::lowercase($word_remove_tags);
+					if(!is_null($stopWord_en->transform($word_lower)) && !is_null($stopWord_es->transform($word_lower)) && count($data) < $limit){
+						$word_encode = \yii\helpers\Html::encode($word_lower);
+						$data[$word_encode] = $value;
+						unset($word_encode);
+					}
+				}
+			}
+			if(count($data) && !is_null($link)){
+				$analysis = \app\helpers\StringHelper::sortDataAnalysis($data,$link);
 			}
 		}
-		$analysis = \app\helpers\StringHelper::sortDataAnalysis($data,$link);
+		
 		return (is_null($link)) ? $data : $analysis;
 		
 	}

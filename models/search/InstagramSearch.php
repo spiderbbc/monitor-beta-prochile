@@ -197,6 +197,10 @@ class InstagramSearch
                 $mention->message_markup = $comment['message_markup'];
                 $mention->url = (!empty($comment['permalink'])) ? $comment['permalink']: null;
                // $mention->domain_url = (!is_null($mention->url)) ? \app\helpers\StringHelper::getDomain($mention->url): null;
+               // most repeated words
+                if(strlen($mention->message) > 2){
+                    \app\helpers\StringHelper::saveOrUpdatedCommonWords($mention,$alertsMencions->id);
+                } 
             }
             unset($mention_data);
             if(!$mention->save()){ throw new \Exception('Error mentions Save');}

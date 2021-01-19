@@ -187,25 +187,51 @@ class NewsSearch
     $new['source']['urlToImage'] =  $new['urlToImage'];
     $mention_data['source'] = $new['source'];
 
-    $mention = \app\helpers\MentionsHelper::saveMencions(
-        [
-            'alert_mentionId'     => $alertsMencionsId,
-            'origin_id'           => $originId ,
-            //'created_time'        => $created_time,
-            'subject'             => $subject,
-        ],
-        [
-            'created_time'   => $created_time,
-            'mention_data'   => $mention_data,
-            'subject'        => $subject,
-            'message'        => $message,
-            'message_markup' => $message_markup,
-            'url'            => $url ,
-            'domain_url'     => $domain_url ,
-            'location'       => '-' ,
-            
-        ]
-    );
+    $where = [
+      'alert_mentionId'     => $alertsMencionsId,
+      'origin_id'           => $originId ,
+      //'created_time'        => $created_time,
+      'subject'             => $subject,
+    ];
+    $properties = [
+      'created_time'   => $created_time,
+      'mention_data'   => $mention_data,
+      'subject'        => $subject,
+      'message'        => $message,
+      'message_markup' => $message_markup,
+      'url'            => $url ,
+      'domain_url'     => $domain_url ,
+      'location'       => '-' ,
+    ];
+
+    $is_mention = \app\models\Mentions::find()->where($where)->one();
+    // if there a record 
+    if($is_mention){
+        $mention = \app\models\Mentions::find()->where($where)->one();
+        foreach($properties as $property => $value){
+            $mention->$property = $value;
+        }
+    }
+
+    // if not there a record
+    if(is_null($is_mention)){
+      $mention = new  \app\models\Mentions();
+
+      foreach($where as $property => $value){
+          $mention->$property = $value;
+      }
+
+      foreach($properties as $property => $value){
+          $mention->$property = $value;
+      }
+
+      if(strlen($mention->message) > 2){
+        \app\helpers\StringHelper::saveOrUpdatedCommonWords($mention,$alertsMencionsId);
+      } 
+    }
+    
+    // save or update
+    $mention->save();
 
     return $mention;
 

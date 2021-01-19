@@ -231,7 +231,7 @@ class FacebookSearch
         return $origin;
     }
 
-    public function saveComments($comment,$alertId,$originId){
+    public function saveComments($comment,$alertMentionId,$originId){
 
         $created_time = \app\helpers\DateHelper::asTimestamp($comment['created_time']);
 
@@ -242,28 +242,44 @@ class FacebookSearch
         $message_markup = $comment['message_markup'];
         $url = (isset($comment['permalink_url'])) ? $comment['permalink_url'] : '-';
 
+        $where = [
+            'alert_mentionId' => $alertMentionId,
+            'origin_id'       => $originId, // url is unique
+            'social_id'       => $id,
+        ];
+        $properties = [
+            'created_time'   => $created_time,
+            'mention_data'   => $mention_data,
+            'message'        => $message,
+            'message_markup' => $message_markup,
+            'url' => $url,
+        ];
         
-        $mention = \app\helpers\MentionsHelper::saveMencions(
-            [
-                'alert_mentionId' => $alertId,
-                'origin_id'       => $originId, // url is unique
-                'social_id'       => $id,
-            ],
-            [
-                'created_time'   => $created_time,
-                'mention_data'   => $mention_data,
-                'message'        => $message,
-                'message_markup' => $message_markup,
-                'url' => $url,
-              //  'domain_url' => $url,
-            ]
-        );
 
-        if($mention->errors){
-            /* var_dump($originId);
-             var_dump($comment);*/
-             var_dump($mention->errors);
-             die();
+        $is_mention = \app\models\Mentions::find()->where($where)->one();
+        // if there a record 
+        if($is_mention){
+            $mention = \app\models\Mentions::find()->where($where)->one();
+            foreach($properties as $property => $value){
+                $mention->$property = $value;
+            }
+        }
+
+        // if not there a record
+        if(is_null($is_mention)){
+          $mention = new  \app\models\Mentions();
+
+          foreach($where as $property => $value){
+              $mention->$property = $value;
+          }
+
+          foreach($properties as $property => $value){
+              $mention->$property = $value;
+          }
+
+          if(strlen($mention->message) > 2){
+            \app\helpers\StringHelper::saveOrUpdatedCommonWords($mention,$alertMentionId);
+          } 
         }
 
         return $mention;

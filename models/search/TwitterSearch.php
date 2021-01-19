@@ -194,6 +194,9 @@ class TwitterSearch
                 $mention->created_time = $created_time;
                 $mention->message_markup  = $message_markup;
                 $mention->alert_mentionId = $alertsMencions->id;
+                if(strlen($mention->message) > 2){
+                    \app\helpers\StringHelper::saveOrUpdatedCommonWords($mention,$mention->alert_mentionId);
+                }
             }
             unset($mention_data);
             if(!$mention->save()){ throw new \Exception('Error mentions Save');}
@@ -390,6 +393,6 @@ class TwitterSearch
         }
 
     }
-
+    
 
 }
