@@ -477,7 +477,7 @@ class MentionsHelper
             $data[$product][] = \app\helpers\AlertMentionsHelper::getProductInterations($resourceName,$alerts_mention_ids,$alertId);
         }
         }
-      
+        
         //reorder data
         $dataCount = [];
         foreach ($data as $product => $values) {
@@ -646,6 +646,36 @@ class MentionsHelper
         }
         }
         return array('status'=>true,'model' => $model);  
+    }
+
+    public static function getCommonWordsByAlertId($alertId){
+        
+        $model = \app\models\Alerts::findOne($alertId);
+        $where = ['alertId' => $alertId];
+
+        $alertsMentionsIds = \app\models\AlertsMencions::find()->select('id')->where($where)->asArray()->all();
+
+        // SELECT name,SUM(weight) as total FROM `alerts_mencions_words` WHERE  alert_mentionId IN (166,171,175,177,181,170,172,182) AND weight > 2 GROUP BY name  
+        // ORDER BY `total`  DESC
+        $ids = \yii\helpers\ArrayHelper::getColumn($alertsMentionsIds, 'id');
+        $where_alertMentions['alert_mentionId'] = $ids;
+        
+        $rows = (new \yii\db\Query())
+        ->select(['name','total' => 'SUM(weight)'])
+        ->from('alerts_mencions_words')
+        ->where($where_alertMentions)
+        ->groupBy('name')
+        ->orderBy(['total' => SORT_DESC])
+        ->limit(10)
+        ->all();
+        
+        $data = [];
+        for ($r=0; $r < sizeOf($rows) ; $r++) { 
+            if($rows[$r]['total'] >= 2){
+                $data[]= $rows[$r];
+            }
+        }
+        return ['words' => $data];
     }
 
 

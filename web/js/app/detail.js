@@ -229,6 +229,7 @@ const boxComponent = Vue.component("box-detail", {
     },
   },
 });
+
 /**
  * boxCommonWordsComponent: send call to api and display content words most repeated
  */
@@ -292,7 +293,6 @@ const boxCommonWordsComponent = Vue.component("common-words-detail", {
         }
       })
       .catch((error) => {
-        console.error(error);
         // see error by dialog
       });
     },

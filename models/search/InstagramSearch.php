@@ -194,7 +194,7 @@ class InstagramSearch
                 $mention->created_time = \app\helpers\DateHelper::asTimestamp($comment['timestamp']);
                 $mention->mention_data = $mention_data;
                 $mention->message = $comment['text'];
-                $mention->message_markup = $comment['message_markup'];
+                $mention->message_markup = (isset($comment['message_markup'])) ? $comment['message_markup']:$comment['text'];
                 $mention->url = (!empty($comment['permalink'])) ? $comment['permalink']: null;
                // $mention->domain_url = (!is_null($mention->url)) ? \app\helpers\StringHelper::getDomain($mention->url): null;
                // most repeated words

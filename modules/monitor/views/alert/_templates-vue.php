@@ -101,6 +101,14 @@ use yii\widgets\ActiveForm;
   </div> 
 </script>
 
+<!-- chart common words -->
+<script type="tex/x-template" id="view-count-common-words-chart">
+  <div v-show="loaded">
+    <div id="container-common-words"></div>
+    
+  </div>
+</script>
+
 <!-- chart retails -->
 <script type="tex/x-template" id="view-count-domains-chart">
   <div v-show="loaded">

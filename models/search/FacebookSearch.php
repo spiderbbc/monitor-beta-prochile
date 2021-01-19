@@ -281,6 +281,8 @@ class FacebookSearch
             \app\helpers\StringHelper::saveOrUpdatedCommonWords($mention,$alertMentionId);
           } 
         }
+       
+        $mention->save();
 
         return $mention;
         

@@ -21,6 +21,13 @@ use yii\widgets\ActiveForm;
     :socialId="socialId"
     :isChange="isChange"
     ></box-detail>
+
+    <graph-common-words-detail
+    :alertid="alertid" 
+    :resourceid="resourceid" 
+    :term="term" 
+    :socialId="socialId"
+    :isChange="isChange"/>
     
     <graph-count-domains-detail
     :alertid="alertid" 
@@ -111,9 +118,7 @@ use yii\widgets\ActiveForm;
   </div> 
 </script>
 
-
-
-<!-- graph common words mentions -->
+<!-- graph domains -->
 <script type="text/x-template" id="graph-count-domains-detail">
 <div  class="row">
     <div class="col-md-12">

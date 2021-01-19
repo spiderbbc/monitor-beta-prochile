@@ -523,6 +523,7 @@ const products_interations_chart = Vue.component("products-interations-chart", {
     fetchResourceCount() {
       getProductInterations(this.alertId)
         .then((response) => {
+         
           if (typeof this.response === "object") {
             this.options.colors = response.data.colors;
             this.response.splice(1, response.data.data.length);
@@ -558,6 +559,117 @@ const products_interations_chart = Vue.component("products-interations-chart", {
   },
 });
 
+/**
+ * [componente que muestra grafico de productos con mas menciones]
+ * template: '#view-products-interations-chart' [description]
+ * @return {[component]}           [component]
+ */
+const count_common_words_chart = Vue.component("count-common-words-chart",{
+  props: ["is_change"],
+  template: "#view-count-common-words-chart",
+  data: function(){
+    return {
+      alertId: id,
+      loaded: false,
+    };
+  },
+  mounted() {
+    this.drawPieChart();
+  },
+  watch: {
+    is_change: function (val, oldVal) {
+      if (val) {
+        this.drawPieChart();
+      }
+    },
+  },
+  methods:{
+    getColors(){
+      var colors = [], base = Highcharts.getOptions().colors[0],i;
+
+      for (i = 0; i < 10; i += 1) {
+          // Start out with a darkened base color (negative brighten), and end
+          // up with a much brighter color
+          colors.push(Highcharts.color(base).brighten((i - 3) / 7).get());
+      }
+      return colors;
+    },
+   
+    drawPieChart() {
+      let colors = this.getColors();
+      this.loaded = true;
+      $.getJSON(`${origin}/${appId}/monitor/api/mentions/common-words?alertId=` + id,
+        function(response){
+          
+          // order data to the graph
+          var getData = function (response){
+            var data = [];
+            response.words.forEach(function(value){
+              var tmp = {
+                'name': value.name,
+                'y': parseInt(value.total),
+              };
+              data.push(tmp);
+            });
+            return data;
+          };
+
+          let data = getData(response);
+          if(data.length > 0){
+            Highcharts.chart('container-common-words', {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Palabras mas comunes en las menciones'
+                },
+                credits: {
+                    enabled: false
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        colors: colors,
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b><br>{point.percentage:.1f} %',
+                            distance: -50,
+                            filter: {
+                                property: 'percentage',
+                                operator: '>',
+                                value: 4
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Total',
+                    data: data
+                }]
+            });
+
+          }
+
+          if(data.length === 0){
+            this.loaded = false;
+          }
+      });
+    }
+    
+  }
+});
 /**
  * [componente que muestra grafico de retail para LiveChat Tickets]
  * template: '#view-products-interations-chart' [description]

@@ -990,6 +990,15 @@ class DetailHelper {
         return $column;
     }
 
+    /** 
+     * get Common Words from the alert
+     * @param int $alertId
+     * @param int $resourceId
+     * @param string $term
+     * @param string $socialId
+     * @return  array words
+     * 
+     */
     public static function CommonWords($alertId,$resourceId,$term = '',$socialId = ''){
         
         $model = self::findModel($alertId,$resourceId);

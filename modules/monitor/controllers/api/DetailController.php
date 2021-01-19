@@ -109,6 +109,7 @@ class DetailController extends Controller {
         }
         return ['propertyBoxs' => $propertyBoxs];
     }
+
     /**
      * return common words and his weight on view common-words-detail
      * @param integer $id

@@ -19,7 +19,7 @@ class MentionsController extends Controller
               'status-alert',
               'count-mentions',
               'properties-source-box',
-              
+              'common-words', 
               'box-sources-count',
               'count-sources-mentions',
               'top-post-interation',
@@ -236,6 +236,15 @@ class MentionsController extends Controller
     }
 
     return array('status'=>true,'wordsModel' => $wordsModel);
+  }
+
+  /**
+   * [actionCommonWords return array of commons words
+   * @param  [int] $id            [id of alert]
+   * @return [array \ Exception]  [array of date or exception if alert id not exists]
+   */
+  public function actionCommonWords($alertId){
+    return  \app\helpers\MentionsHelper::getCommonWordsByAlertId($alertId);
   }
 
     /**
