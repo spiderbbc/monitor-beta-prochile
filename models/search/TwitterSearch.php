@@ -112,13 +112,13 @@ class TwitterSearch
         $error = [];
         if(!is_null($data)){
             foreach($data as $product => $tweets){
-                $alertsMencions =  $this->findAlertsMencionsByProducts($product);
-                if(!is_null($alertsMencions)){
+                $alertsMencion =  $this->findAlertsMencionsByProducts($product);
+                if(!is_null($alertsMencion)){
                     // loop over tweets
                     for($t = 0; $t < sizeof($tweets); $t++){
                         if(!\app\helpers\StringHelper::isEmpty($tweets[$t]['message'])){
                            // save mentions                    
-                           $this->savePropertyMentions($tweets[$t],$alertsMencions);
+                           $this->savePropertyMentions($tweets[$t],$alertsMencion);
                         }
                     }
                 }
@@ -128,7 +128,7 @@ class TwitterSearch
         return (empty($error)) ? true : false;
     }
 
-    private function savePropertyMentions($tweet,$alertsMencions){
+    private function savePropertyMentions($tweet,$alertsMencion){
 
         $transaction = \Yii::$app->db->beginTransaction();
        
@@ -193,9 +193,9 @@ class TwitterSearch
                 $mention->mention_data = $mention_data;
                 $mention->created_time = $created_time;
                 $mention->message_markup  = $message_markup;
-                $mention->alert_mentionId = $alertsMencions->id;
+                $mention->alert_mentionId = $alertsMencion->id;
                 if(strlen($mention->message) > 2){
-                    \app\helpers\StringHelper::saveOrUpdatedCommonWords($mention,$mention->alert_mentionId);
+                    \app\helpers\StringHelper::saveOrUpdatedCommonWords($mention,$alertsMencion);
                 }
             }
             unset($mention_data);

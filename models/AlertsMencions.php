@@ -68,7 +68,6 @@ class AlertsMencions extends \yii\db\ActiveRecord
         return [
             [['alertId', 'resourcesId'], 'required'],
             [['alertId', 'resourcesId','since_id','max_id', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy'], 'integer'],
-          //  [['product_obj'], 'safe'],
             [['title', 'url'], 'string'],
             [['condition', 'type','publication_id','term_searched'], 'string', 'max' => 255],
             [['alertId'], 'exist', 'skipOnError' => true, 'targetClass' => Alerts::className(), 'targetAttribute' => ['alertId' => 'id']],
@@ -87,7 +86,6 @@ class AlertsMencions extends \yii\db\ActiveRecord
             'resourcesId' => Yii::t('app', 'Resources ID'),
             'condition' => Yii::t('app', 'Condition'),
             'type' => Yii::t('app', 'Type'),
-            'product_obj' => Yii::t('app', 'Product Obj'),
             'createdAt' => Yii::t('app', 'Created At'),
             'updatedAt' => Yii::t('app', 'Updated At'),
             'createdBy' => Yii::t('app', 'Created By'),

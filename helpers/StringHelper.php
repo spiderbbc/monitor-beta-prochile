@@ -369,34 +369,32 @@ class StringHelper
         }
     }
 
-    /**
-     * [saveOrUpdatedCommonWords save or update  the common words on mentions]
-     * @param  Mentions $mention   
-     * @param  [int] $alertsMencionId   [id  alert mention]
+     /**
+     *  saveComments common words
+     * @param array $mention
+     * @param AlertsMentions $alertsMencion
      */
-    public static function saveOrUpdatedCommonWords($mention,$alertsMencionId){
+    public static function saveOrUpdatedCommonWords($mention,$alertsMencion){
         // most repeated words
         $words = \app\helpers\ScrapingHelper::sendTextAnilysis($mention->message,$link = null);
-       
         foreach($words as $word => $weight){
             if(!is_numeric($word) && strlen($word) > 2){
                 $is_words_exists = \app\models\AlertsMencionsWords::find()->where(
                     [
-                        'mention_socialId' => $mention->social_id,
+                        'alert_mentionId' => $alertsMencion->id,
                         'name' => $word,
                     ]
                 )->exists();
                 if (!$is_words_exists) {
                     $model = new \app\models\AlertsMencionsWords();
-                    $model->alert_mentionId = $alertsMencionId;
-                    $model->mention_socialId = $mention->social_id;
+                    $model->alert_mentionId = $alertsMencion->id;
+                    $model->mention_socialId = (isset($alertsMencion->publication_id)) ? $alertsMencion->publication_id : null;
                     $model->name = $word;
                     $model->weight = $weight; 
                 } else {
-                    
                     $model = \app\models\AlertsMencionsWords::find()->where(
                         [
-                            'mention_socialId' => $mention->social_id,
+                            'alert_mentionId' => $alertsMencion->id,
                             'name' => $word  
                         ])->one();
                     
@@ -404,6 +402,9 @@ class StringHelper
                 }
                 if($model->validate()){
                     $model->save();
+                    
+                }else{
+                    var_dump($model->errors);
                 }
             }
             

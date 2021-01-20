@@ -20,7 +20,7 @@ class m210118_173448_Alerts_Mentions_words extends Migration
         $this->createTable('{{%alerts_mencions_words}}',[
             'id'              => $this->primaryKey(),
             'alert_mentionId' => $this->integer()->notNull(),
-            'mention_socialId' => $this->bigInteger(64)->defaultValue(0),
+            'mention_socialId' => $this->string(),
             'name'            => $this->string(),
             'weight'          => $this->integer()->defaultValue(1),
             'createdAt'       => $this->integer(),
