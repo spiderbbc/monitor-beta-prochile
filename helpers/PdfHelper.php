@@ -80,7 +80,7 @@ class PdfHelper{
             $data = \app\helpers\PdfHelper::getTermsFindByResources($model,$data);
             $data = \app\helpers\PdfHelper::getGraphDataTermsByResourceId($model,$data);
             $data = \app\helpers\PdfHelper::getGraphDomainsByResourceId($model,$data);
-            // $data =  \app\helpers\PdfHelper::getGraphCommonWordsByResourceId($model,$data);
+            $data =  \app\helpers\PdfHelper::getGraphCommonWordsByResourceId($model,$data);
             $data =  \app\helpers\PdfHelper::getMentionsByResourceId($model,$data);
         }
         return $data;
