@@ -7,17 +7,19 @@ use app\models\Alerts;
 
 
 /**
- *
+ * HistorySearchHelper wrapper for table db function.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
  */
 
- /**
-  * HistorySearchHelper wrapper for table db function.
-  */
  class HistorySearchHelper
  {
-
+    /**
+     * create or update History Model
+     * @param int $alertId id alert
+     * @param array $properties
+     * @return void
+     */
     public static function createOrUpdate($alertId,$properties)
     {
         $is_model = HistorySearch::find()->where(['alertId' => $alertId])->exists();
@@ -60,7 +62,11 @@ use app\models\Alerts;
         }
 
     }
-
+    /**
+     * delete History Model
+     * @param int $alertId id alert
+     * @return void
+     */
     public static function deleteHistory($alertId)
     {
       $model = \app\models\Alerts::findOne($alertId);
@@ -71,7 +77,11 @@ use app\models\Alerts;
         }
       }
     }
-
+    /**
+     * status record history search
+     * @param int $alertId id alert
+     * @return boolean
+     */
     public static function checkResourceByStatus($alertId,$resource,$status)
     {
       $model = \app\models\Alerts::findOne($alertId);

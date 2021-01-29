@@ -11,14 +11,9 @@ use function Stringy\create as s;
 use Stringizer\Stringizer;
 
 /**
- *
+ * StringHelper wrapper for string function.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
- */
-
-/**
- * StringHelper wrapper for string function.
- *
  */
 class StringHelper
 {

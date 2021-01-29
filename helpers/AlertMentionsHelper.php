@@ -5,14 +5,9 @@ use yii;
 use yii\db\Expression;
 
 /**
- *
+ * AlertMentionsHelper wrapper for table db function.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
- */
-
-/**
- * AlertMentionsHelper wrapper for table db function.
- *
  */
 class AlertMentionsHelper
 {
@@ -23,7 +18,6 @@ class AlertMentionsHelper
      */
     public static function saveAlertsMencions($where = [], $properties = []){
 
-        //$is_model = \app\models\AlertsMencions::find()->where($where)->one();
         $is_model = \app\models\AlertsMencions::find()->where($where)->exists();
         // if there a record 
         if($is_model){
@@ -535,7 +529,11 @@ class AlertMentionsHelper
         } // end loop alerts
         return $alerts;
     }
-
+    /**
+     * [orderConfigSources reorder alerts on config resource data]
+     * @param  [array] $alerts [all runnig alerts]
+     * @return [alertsConfig] $alerts [all runnig alerts]
+     */
     public static function orderConfigSources($alerts)
     {
         $alertsConfig = [];
@@ -552,7 +550,11 @@ class AlertMentionsHelper
         } // end loop alerts config
         return $alertsConfig;
     }
-
+    /**
+     * [setProductsSearch include terms to search]
+     * @param  [array] $alertsConfig [all runnig alerts]
+     * @return [alertsConfig] $alertsConfig [all runnig alerts]
+     */
     public static function setTermsSearch($alertsConfig)
     {
         for($c = 0; $c < sizeOf($alertsConfig); $c++) {
@@ -566,7 +568,11 @@ class AlertMentionsHelper
         }
         return $alertsConfig;
     }
-
+    /**
+     * [getResourceIdByName get id of resource by name]
+     * @param  [string] $resourceName [Ej:Twiiter]
+     * @return [int]               [id resource]
+     */
     public static function getResourceIdByName($resourceName)
     {
         $resourcesId = (new \yii\db\Query())
@@ -599,7 +605,11 @@ class AlertMentionsHelper
         $words = $model->getKeywords()->select(['name','id'])->asArray()->all();
         return $words;
     }
-
+    /**
+     * [getAlertsMentionsIdsByAlertIdAndResourcesIds get alertmentiobns by alertId and his properties]
+     * @param  [alertID]           [id for alert]
+     * @return [array] 
+     */
     public static function getAlertsMentionsIdsByAlertIdAndResourcesIds($alertId,$resourceSocialIds = [])
     {
         $db = \Yii::$app->db;
@@ -641,7 +651,12 @@ class AlertMentionsHelper
         }
         return $model;
     }
-
+    /**
+     * [isAlertsMencionsExists if a mention alert exits by resource]
+     * @param  int  $alertId       [id of alert]
+     * @param  int  $resourceId       [id of resource]
+     * @return int                 [total count Alert Mentions Table]
+     */
     public static function getCountAlertMentionsByResourceId($alertId,$resourceId){
         $db = \Yii::$app->db;
         $count = $db->cache(function ($db) use($alertId,$resourceId){

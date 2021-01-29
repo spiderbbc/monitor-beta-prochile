@@ -6,14 +6,9 @@ use kartik\mpdf\Pdf;
 
 
 /**
- *
+ * PdfHelper wrapper for pdf.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
- */
-
-/**
- * PdfHelper wrapper for pdf.
- *
  */
 class PdfHelper{
 
@@ -65,6 +60,11 @@ class PdfHelper{
         ]);
     }
 
+    /**
+     * getDataForPdf [ calls function for data on pdf]
+     * @param Alerts $model for alert.
+     * @return array 
+     */
     public static function getDataForPdf($model){
 
         $data = [];
@@ -87,12 +87,24 @@ class PdfHelper{
 
     }
 
+    /**
+     * getGraphCountSourcesMentions [ calls function for grahp count sources on mentions]
+     * @param Alerts $model for alert.
+     * @param array $alertResource
+     * @return array 
+     */
     public static function getGraphCountSourcesMentions($model,$alertResource){
         $url = \app\helpers\DocumentHelper::GraphCountSourcesMentions($model->id);
         $alertResource['url_graph_count_sources'] = $url;
         return $alertResource;
     }
 
+    /**
+     * getGraphResourceOnDate [ calls function for grahp count sources order by dates]
+     * @param Alerts $model for alert.
+     * @param array $alertResource
+     * @return array 
+     */
     public static function getGraphResourceOnDate($model,$alertResource){
         $url = \app\helpers\DocumentHelper::GraphResourceOnDate($model->id);
         if(!is_null($url)){
@@ -101,6 +113,12 @@ class PdfHelper{
         return $alertResource;
     }
 
+    /**
+     * getTermsFindByResources [ return array terms/products find by resource]
+     * @param Alerts $model for alert.
+     * @param array $alertResource
+     * @return array 
+     */
     public static function getTermsFindByResources($model,$alertResource){
         
         foreach($alertResource['alertResource'] as $resourceName => $resourceId){
@@ -112,6 +130,12 @@ class PdfHelper{
         return $alertResource;
     }
 
+    /**
+     * getGraphDomainsByResourceId [ return graph domains by resource id]
+     * @param Alerts $model for alert.
+     * @param array $alertResource
+     * @return array 
+     */
     public static function getGraphDomainsByResourceId($model,$alertResource){
         $excludeResources = [1,2,5,7,6];
         foreach($alertResource['alertResource'] as $resourceName => $resourceId){
@@ -128,6 +152,12 @@ class PdfHelper{
         return $alertResource;
     }
 
+    /**
+     * getGraphDataTermsByResourceId [ return array terms/products find by resource]
+     * @param Alerts $model for alert.
+     * @param array $alertResource
+     * @return array 
+     */
     public static function getGraphDataTermsByResourceId($model,$alertResource){
 
         foreach($alertResource['alertResource'] as $resourceName => $resourceId){
@@ -138,6 +168,12 @@ class PdfHelper{
         return $alertResource;
     }
 
+    /**
+     * getGraphCommonWordsByResourceId [ return graph common words by resource id]
+     * @param Alerts $model for alert.
+     * @param array $alertResource
+     * @return array 
+     */
     public static function getGraphCommonWordsByResourceId($model,$alertResource){
 
         foreach($alertResource['alertResource'] as $resourceName => $resourceId){
@@ -149,6 +185,12 @@ class PdfHelper{
         return $alertResource;
     }
 
+    /**
+     * getMentionsByResourceId [ return mentions by resourceId]
+     * @param Alerts $model for alert.
+     * @param array $alertResource
+     * @return array 
+     */
     public static function getMentionsByResourceId($model,$alertResource){
         
         $searchModel = new  \app\models\search\MentionSearch();

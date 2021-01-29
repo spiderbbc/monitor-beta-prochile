@@ -8,15 +8,11 @@ use app\models\CredencialsApi;
 
 
 /**
- *
+ * FacebookHelper wrapper for file function facebook.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
  */
 
-/**
- * FacebookHelper wrapper for file function facebook.
- *
- */
 class FacebookHelper
 {
 
@@ -198,6 +194,12 @@ class FacebookHelper
 
 	}
 
+	/**
+	 * [isPublicationNew determine if publication is new with respect to last publication]
+	 * @param  [type]  $unix_last_date [description]
+	 * @param  [type]  $unix_new_date  [description]
+	 * @return boolean                 [description]
+	 */
 	public static function isPublicationNew($unix_last_date,$unix_new_date){
 
 		$diffForHumans = explode(" ",\app\helpers\DateHelper::diffForHumans($unix_last_date,$unix_new_date));

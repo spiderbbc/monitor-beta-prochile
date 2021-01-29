@@ -9,14 +9,9 @@ use app\models\UsersMentions;
 use yii\httpclient\Client;
 
 /**
- *
+ * MentionsHelper wrapper for table db function.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
- */
-
-/**
- * MentionsHelper wrapper for table db function.
- *
  */
 class MentionsHelper
 {
@@ -26,9 +21,6 @@ class MentionsHelper
      * @return [type]             [description]
      */
     public static function saveMencions($where = [], $properties = []){
-       
-      
-
 
         $is_model = Mentions::find()->where($where)->one();
         // if there a record 
@@ -65,7 +57,6 @@ class MentionsHelper
      * @return [type]             [description]
      */
     public static function saveUserMencions($where = [], $properties = []){
-        
 
         $is_model = UsersMentions::find()->where($where)->one();
         // if there a record 
@@ -115,7 +106,10 @@ class MentionsHelper
         return null;
 
     }
-
+    /**
+     * [NumberCommentsSocialMedia returns total records by resource social Id]
+     * @return array
+     */
     public static function setNumberCommentsSocialMedia($alertId,$resourceSocialIds = []){
         $alerMentionsIds = \app\helpers\AlertMentionsHelper::getAlertsMentionsIdsByAlertIdAndResourcesIds($alertId,$resourceSocialIds);
         $total = 0;
@@ -128,7 +122,10 @@ class MentionsHelper
 
         return $total;    
     }
-
+    /**
+     * [getDataMentionData returnsmentions data fields for alert mentions]
+     * @return int
+     */
     public static function getDataMentionData($alertId,$resourceId,$targets){
         $alerMentionsIds = \app\helpers\AlertMentionsHelper::getAlertsMentionsIdsByAlertIdAndResourcesIds($alertId,$resourceId);
         // set targets
@@ -167,13 +164,11 @@ class MentionsHelper
         }
         return $data;
     }
-
+    /**
+     * [getColumnMentionGridView returns columns for grid view]
+     * @return int
+     */
     public static function getColumnMentionGridView(){
-        
-        // if($grid){
-        //     $gridColumns[] = ['class' => 'yii\grid\SerialColumn'];
-        // }
-        
         $gridColumns = [
             [
                 'label' => Yii::t('app','Recurso Social'),
@@ -241,10 +236,12 @@ class MentionsHelper
             ],
         ]; 
         
-        
         return $gridColumns;
     }
-
+    /**
+     * [getColorResourceByName return color hex by resource name]
+     * @return string
+     */
     public static function getColorResourceByName($resourceName)
     {
         $colors = [
@@ -261,7 +258,11 @@ class MentionsHelper
         ];
         return $colors[$resourceName];
     }
-
+    /**
+     * [getPropertiesSourceBox return array of prperties for box info on view alert
+     * @param  int $alertId
+     * @return array
+     */
     public static function getPropertiesSourceBox($alertId){
         
         $model = \app\models\Alerts::findOne($alertId);
@@ -424,7 +425,12 @@ class MentionsHelper
     }
 
 
-
+    /**
+     * [getCountSourcesMentions total mentions by resource
+     * @param  int $alertId
+     * @param  int $resourceId
+     * @return array
+     */
     public static function getCountSourcesMentions($alertId){
         // cuenta por menciones
         $model = \app\models\Alerts::findOne($alertId);
@@ -456,7 +462,12 @@ class MentionsHelper
         return array('status'=>true,'data'=>$data,'colors' => $colors);
     }
 
-
+    /**
+     * [getProductInteration return products / interation 
+     * @param  int $alertId
+     * @param  int $resourceId
+     * @return array
+     */
     public static function getProductInteration($alertId,$resourceId = null){
         $model = \app\models\Alerts::findOne($alertId);
         $where['alertId'] = $model->id;
@@ -512,7 +523,11 @@ class MentionsHelper
         $colors = ['#3CAAED','#EC1F2E','#3A05BD'];
         return array('status'=>true,'data' => $dataCount,'colors' => $colors);
     }
-
+    /**
+     * [getDataMentions return all mentions
+     * @param  int $alertId
+     * @return array
+     */
     public static function getDataMentions($alertId){
 
         $db = \Yii::$app->db;
@@ -572,7 +587,12 @@ class MentionsHelper
         return $data;
     }
     
-    
+    /**
+     * [getMentionOnDate return total mentions group by date
+     * @param  int $alertId
+     * @param  boolean $js
+     * @return array
+     */
     public static function getMentionOnDate($alertId,$js = true){
         // get models
         $model = \app\models\Alerts::findOne($alertId);
@@ -648,6 +668,11 @@ class MentionsHelper
         return array('status'=>true,'model' => $model);  
     }
 
+    /**
+     * [getCommonWordsByAlertId return common words on mention by alertId
+     * @param  int $alertId
+     * @return array
+     */
     public static function getCommonWordsByAlertId($alertId){
         
         $model = \app\models\Alerts::findOne($alertId);
@@ -678,7 +703,14 @@ class MentionsHelper
         return ['words' => $data];
     }
 
-
+    /**
+     * [getDomainsFromMentionsOnUrls return domains from the mentions
+     * @param  int $alertId
+     * @param  int $resourceId
+     * @param  string $term
+     * @param  int $socialId
+     * @return array
+     */
     public static function getDomainsFromMentionsOnUrls($alertId,$resourceId = null,$term = null,$socialId = null){
 
         $properties['alertId'] = $alertId;
@@ -725,6 +757,11 @@ class MentionsHelper
         return $totalDomains;
     }
 
+    /**
+     * [getCountMentions return total of mentions
+     * @param  Alerts $model
+     * @return array
+     */
     public static function getCountMentions($model){
         $data = [];
         if($model){

@@ -5,14 +5,9 @@ use yii;
 use Jenssegers\Date\Date;
 
 /**
- *
+ * DateHelper wrapper for time function.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
- */
-
-/**
- * DateHelper wrapper for time function.
- *
  */
 class DateHelper
 {

@@ -6,15 +6,11 @@ use yii\helpers\Html;
 use yii\db\Expression;
 
 /**
- *
+ * DetailHelper wrapper for DetailController function.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
  */
 
-/**
- * DetailHelper wrapper for DetailController function.
- *
- */
 class DetailHelper {
 
     /**

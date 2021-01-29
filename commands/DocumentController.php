@@ -10,14 +10,14 @@ namespace app\commands;
 use yii\console\Controller;
 use yii\console\ExitCode;
 /**
+ * This command will runs all report generations
  *
- * This command is provided creation document
+ * @author Eduardo Morales <eduardo@montana-studio.com>
  */
 class DocumentController extends Controller
 {
     /**
-     * This command echoes what you have entered as the message.
-     * @param string $message the message to be echoed.
+     * This command (DEFAULT) generates the excel file with all the mentions collected in each alert
      * @return int Exit code
      */
     public function actionIndex()

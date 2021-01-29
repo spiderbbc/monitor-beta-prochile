@@ -5,15 +5,11 @@ use yii;
 use Codebird\Codebird;
 
 /**
- *
+ * TwitterHelper wrapper for logic Twitter.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
  */
 
-/**
- * TwitterHelper wrapper for logic Twitter.
- *
- */
 class TwitterHelper
 {
 	/**
@@ -73,7 +69,10 @@ class TwitterHelper
 		],'resourceId ='.$resourceId)->execute();
 	}
 
-
+	/**
+	 * [getLocationsForTopicId topic location by topic module]
+	 * @param [int] $topicId [description]
+	 */
 	public static function getLocationsForTopicId($topicId)
 	{
 		$topic = \app\modules\topic\models\MTopics::findOne($topicId);

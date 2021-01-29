@@ -4,6 +4,7 @@ namespace app\helpers;
 use yii;
 use TextAnalysis\Filters\StopWordsFilter;
 use StopWordFactory;
+
 /**
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * ScrapingHelper wrapper for scraping function.
@@ -18,19 +19,15 @@ class ScrapingHelper{
     public static function rules()
     {
         return [
-           // '//title'       => Yii::t('app','document_title'),
             '//h1'          => Yii::t('app','cabezera_1'),
             '//h2'          => Yii::t('app','cabezera_2'),
             '//h3'          => Yii::t('app','cabezera_3'),
             '//h4'          => Yii::t('app','cabezera_4'),
             '//h5'          => Yii::t('app','cabezera_5'),
             '//strong'      => Yii::t('app','negrita'),
-           //'//a'           => Yii::t('app','link'),
            '//b'           => Yii::t('app','negrita'),
             '//span'        => Yii::t('app','contenedor'),
             '//ul//li/text()[not(ancestor::script)]'      => Yii::t('app','ítem'),
-            //'//address'     => Yii::t('app','address'),
-            //'//aside'       => Yii::t('app','aside'),
            '//hgroup'      => Yii::t('app','hgroup'),
             '//p'           => Yii::t('app','paragraph'),
         ];
@@ -280,7 +277,10 @@ class ScrapingHelper{
 		}// end loop contents
 		return $data;
 	}
-
+	/**
+	 * [sendTextAnilysis return commons words on mentions]
+	 * @param [array] $contents [content for each url]
+	 */
 	public static function sendTextAnilysis($content,$link = null)
 	{
 		// filter stop words
@@ -330,109 +330,7 @@ class ScrapingHelper{
 		return (is_null($link)) ? $data : $analysis;
 		
 	}
-
-	public static function composeMultipartForm($contentGroup,$stoplist_perso = [])
-	{
-		$stoplist_perso = (!empty($stoplist_perso)) ? implode(" ", $stoplist_perso) : '';
-		return [
-            'multipart' => [
-                [
-                    'name'     => 'text_main',
-                    'contents' => $contentGroup
-                ],
-                [
-                    'name'     => 'site_to_analyze',
-                    'contents' => 'http://'
-                ],
-                [
-                    'name'     => 'file_to_analyze',
-                    'contents' => '(binary)'
-                ],
-                [
-                    'name'     => 'min_char',
-                    'contents' => 3
-                ],
-                [
-                    'name'     => 'special_word',
-                    'contents' => ''
-                ],
-                [
-                    'name'     => 'words_toanalyse',
-                    'contents' => 10
-                ],
-                [
-                    'name'     => 'count_numbers',
-                    'contents' => 1
-                ],
-                [
-                    'name'     => 'is_log',
-                    'contents' => 1
-                ],
-                [
-                    'name'     => 'stoplist_lang',
-                    'contents' => 1
-                ],
-                [
-                    'name'     => $stoplist_perso,
-                    'contents' => 'worth year',
-                ],
-            ]
-        ];
-	}
-
-	public static function removeStopWords($analysis = [])
-	{
-		if (!empty($analysis)) {
-			$stoplist = self::getStopList();
-			for ($a=0; $a < sizeof($analysis) ; $a++) { 
-				if (in_array($analysis[$a]['name'], $stoplist)) {
-					unset($analysis[$a]);
-				}
-			}
-		}
-		$analysis = array_values($analysis);
-		return $analysis;
-	}
-
-	public static function getStopList()
-	{
-		return [
-			//English
-			'you',
-			'I',
-			'we',
-			'your',
-			'they',
-			'it',
-			'captcha',
-			//spanish
-			'que',
-			'hay',
-			'luego',
-			'nada',
-			'ser',
-			'luego',
-			'sin',
-			'con',
-			'nos',
-			'el',
-			'la',
-			'las',
-			'los',
-			'yo',
-			'tu',
-			'ella',
-			'ellas',
-			'ellos',
-			'nosotros',
-			'que',
-			'como',
-			'por',
-			'para',
-
-
-		];
-	}
+	
 }
 
 

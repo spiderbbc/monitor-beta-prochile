@@ -15,14 +15,9 @@ use Box\Spout\Common\Entity\Row;
 use Box\Spout\Common\Type;
 
 /**
- *
+ * FileHelper wrapper for file function.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
- */
-
-/**
- * FileHelper wrapper for file function.
- *
  */
 class DocumentHelper
 {
@@ -533,7 +528,12 @@ class DocumentHelper
         return $url;
     }
 
-
+    /**
+     * GraphCommonWordsByResourceId compose url graph
+     * @param  int [id alert]
+     * @param  int [id resource]
+     * @return string url of graph
+     */ 
     public static function GraphCommonWordsByResourceId($alertId,$resourceId){
         $words = \app\helpers\DetailHelper::CommonWords($alertId,$resourceId);
         $words = array_slice($words['words'],0,5);

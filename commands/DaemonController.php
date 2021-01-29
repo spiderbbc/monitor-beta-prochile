@@ -15,28 +15,16 @@ use app\models\file\JsonFile;
 
 
 /**
- * This command echoes the first argument that you have entered.
- *
- * This command will runs all the alerts.
+ * This command will runs all the alerts - insights - topic - data-search -sync terms and dictionaries google docs .
  *
  * @author Eduardo Morales <eduardo@montana-studio.com>
  */
 class DaemonController extends Controller
 {
-    /**
-     * This command echoes what you have entered as the message.
-     * @param string $message the message to be echoed.
+    /** 
+     * @param string $resourceName [ ej: Facebook Comments, Twitter, etc ..]
+     * [actionAlertsRun runs all alerts active]
      * @return int Exit code
-     */
-    public function actionIndex($message = 'hello world')
-    {
-        echo $message . "\n";
-
-        return ExitCode::OK;
-    }
-    /**
-     * [actionAlertsRun runs all alerts]
-     * @return [type] [description]
      */
     public function actionAlertsRun(){
         $alert = new Alerts();
@@ -51,8 +39,8 @@ class DaemonController extends Controller
     }
 
     /**
-     * [actionAlertsRun runs all alerts when its resource are equal to web page]
-     * @return [type] [description]
+     * [actionAlertsRun runs all alerts  (Scraping) when its resource are equal to web page]
+     * @return int Exit code
      */
     public function actionAlertsRunWeb(){
         $alert = new Alerts();
@@ -66,9 +54,9 @@ class DaemonController extends Controller
     }
 
     
-    /**
-     * [actionDataSearch get json in transformed the data to db [Not finish]]
-     * @return [type] [description]
+    /** 
+     * [actionDataSearch get json file in transformed the data to db]
+     * @return int Exit code
      */
     public function actionDataSearch(){
         $alert = new Alerts();
@@ -82,8 +70,8 @@ class DaemonController extends Controller
     }
 
     /**
-     * [actionInsightsRun call api to get insights]
-     * @return [type] [description]
+     * [actionInsightsRun call api insights facebook of current client]
+     * @return int Exit code
      */
     public function actionInsightsRun(){
         $userFacebook = \app\helpers\FacebookHelper::getUserActiveFacebook();
@@ -94,6 +82,11 @@ class DaemonController extends Controller
         return ExitCode::OK;
     }
 
+    /**
+     * [actionTopicRun console method to topic search]
+     * @param  string $resourceName   [ej:Twitter,Livechat]
+     * @return int Exit code               [description]
+     */
     public function actionTopicRun($resourceName = "Paginas Webs")
     {
         $topics = \app\helpers\TopicsHelper::getTopicsByResourceName($resourceName);
@@ -134,9 +127,11 @@ class DaemonController extends Controller
         }
         return ExitCode::OK;
     }
+    
     /**
-     * [only development function]
-     * @return [type] [description]
+     * run terminal ./yii daemon/truncate-prodcuts
+     * [only development function delete products]
+     * @return void
      */
     public function actionTruncateProducts(){
         \Yii::$app->db->createCommand()->delete('products_series','status = :status', [':status' => 1])->execute();

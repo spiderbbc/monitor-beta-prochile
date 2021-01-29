@@ -7,14 +7,9 @@ use yii\helpers\FileHelper;
 
 
 /**
- *
+ * DirectoryHelper wrapper for Directories
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
- */
-
-/**
- * DirectoryHelper wrapper for Directories
- *
  */
 class DirectoryHelper{
 
