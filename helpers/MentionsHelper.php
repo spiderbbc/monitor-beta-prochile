@@ -608,11 +608,11 @@ class MentionsHelper
         $chatsIds = [];
         $commentsIds = [];
         foreach($alertResources as $id => $resourceName){
-        if(in_array($resourceName,$target)){
-            $chatsIds[] = $id;
-        }else{
-            $commentsIds[] = $id;
-        }
+            if(in_array($resourceName,$target)){
+                $chatsIds[] = $id;
+            }else{
+                $commentsIds[] = $id;
+            }
         }
         
         $rowsChats = [];
@@ -780,5 +780,50 @@ class MentionsHelper
         ];
     }
 
+    /**
+     * [getEmojisListPointHex return all emoji in pointHex find in the mentions by alertID
+     * @param  int $alertId
+     * @return array
+     */
+    public static function getEmojisListPointHex($alertId){
+        // list mentions: mentions
+        $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
+        $alertsId = [];
+        foreach ($alertMentions as $alertMention){
+            if($alertMention->mentionsCount){
+                $alertsId[] = $alertMention->id;
+            }
+        }
+
+        $mentions = \app\models\Mentions::find()->select(['id','message'])->where(['alert_mentionId' => $alertsId])->asArray()->all();
+        $model = [];
+        foreach ($mentions as $mention){
+            $emojis = \Emoji\detect_emoji($mention['message']);
+            if(!empty($emojis)){
+                foreach($emojis as $emoji){
+                    if(isset($emoji['points_hex'][0])){
+                        $points_hex = $emoji['points_hex'][0];
+                        $point = \app\helpers\StringHelper::convertRegEx($points_hex);
+                        $point = \IntlChar::chr($point);
+                        $name = $emoji['short_name'];
+                        if(isset($model[$name])){
+                            $model[$name]['count'] += 1;
+                        
+                        }else{
+                            $emoji = $emoji['emoji'];
+                            $model[$name] = ['count' => 1,'emoji' => $emoji, 'unicode' => $point];
+                        }
+                    }
+                }
+            }
+        }
+        // order by value count
+        if(count($model)){
+            usort($model, function($a, $b) {
+                return $b['count'] - $a['count'];
+            });
+        }
+        return array('data' => array_slice($model, 0, 18)); 
+    }
     
 }

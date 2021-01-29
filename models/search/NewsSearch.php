@@ -102,7 +102,7 @@ class NewsSearch
 
             if (empty($author->errors)) {
               $new = $news[$n];
-              $mention = $this->saveMencions($new,$alertsMencionsModel->id,$author->id);
+              $mention = $this->saveMencions($new,$alertsMencionsModel,$author->id);
               if (empty($mention->errors)) {
                 if($this->isDictionaries && ArrayHelper::keyExists('wordsId', $news[$n], false)){
                   $wordIds = $news[$n]['wordsId'];
@@ -173,7 +173,7 @@ class NewsSearch
   * @param  [int] $originId           [id user ]
   * @return [obj]                     [model mentions]
   */
-  private function saveMencions($new,$alertsMencionsId,$originId){
+  private function saveMencions($new,$alertsMencion,$originId){
 
     $created_time = \app\helpers\DateHelper::asTimestamp($new['publishedAt']);
     $subject = (!empty($new['title'])) ? $new['title'] : $new['description'];
@@ -186,7 +186,7 @@ class NewsSearch
     $mention_data['source'] = $new['source'];
 
     $where = [
-      'alert_mentionId'     => $alertsMencionsId,
+      'alert_mentionId'     => $alertsMencion->id,
       'origin_id'           => $originId ,
       //'created_time'        => $created_time,
       'subject'             => $subject,
@@ -224,7 +224,7 @@ class NewsSearch
       }
 
       if(strlen($mention->message) > 2){
-        \app\helpers\StringHelper::saveOrUpdatedCommonWords($mention,$alertsMencionsId);
+        \app\helpers\StringHelper::saveOrUpdatedCommonWords($mention,$alertsMencion);
       } 
     }
     

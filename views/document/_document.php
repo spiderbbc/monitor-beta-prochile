@@ -39,5 +39,25 @@ $now = date("h:i d/m");
             <?php endif; ?>
         <?php endforeach; ?>
     <?php endif; ?>
+
+    <?php if(isset($resourcesSocialData['emojis']) && count($resourcesSocialData['emojis'])): ?>
+        <!-- break to another page -->
+        <div style='page-break-after:always'></div>
+        <!-- end break to another page -->  
+        <h2>Emojis mas usados en las menciones</h2>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Emoji</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+                <?php foreach($resourcesSocialData['emojis'] as $emojiName  => $value):?>
+                    <?= $this->render('_emoji',['value' => $value]) ?>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?> 
 </div>
 

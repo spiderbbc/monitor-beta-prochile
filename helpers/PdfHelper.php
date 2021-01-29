@@ -3,6 +3,7 @@ namespace app\helpers;
 
 use yii;
 use kartik\mpdf\Pdf;
+use Mpdf;
 
 
 /**
@@ -32,10 +33,17 @@ class PdfHelper{
      * @return object Dompdf
      */
     public static function getKartikMpdf($file_path,$content,$model){
+
+        $defaultConfig = (new Mpdf\Config\ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new Mpdf\Config\FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
         return new \kartik\mpdf\Pdf([
             'filename' => $file_path,
             // set to use core fonts only
-            'mode' => Pdf::MODE_CORE, 
+            'mode' => Pdf::MODE_UTF8, 
             // A4 paper format
             'format' => Pdf::FORMAT_A4, 
             // portrait orientation
@@ -48,10 +56,21 @@ class PdfHelper{
             // enhanced bootstrap css built by Krajee for mPDF formatting 
             'cssFile' => '@vendor/kartik-v/yii2-mpdf/src/assets/kv-mpdf-bootstrap.min.css',
             // any css to be embedded if required
-            'cssInline' => '.list-inline{list-style: none;
-                float: left;}', 
+            'cssInline' => ".emoji{ width:30.5%; font-family:noto-emoji;font-size:22px;} .list-inline{list-style: none;float: left;}", 
             // set mPDF properties on the fly
-            'options' => ['title' => $model->name],
+            // set mPDF properties on the fly
+            'options' => [
+                'title' => $model->name,
+                'fontDir' => array_merge($fontDirs, [
+                    \yii ::getalias ("@webroot/fonts")
+                ]),
+                'fontdata' => $fontData + [
+                    'noto-emoji' => [
+                        'R' => 'NotoEmoji-661A.ttf',
+                        
+                    ]
+                ],
+            ],
             // call mPDF methods on the fly
             'methods' => [ 
                 'SetHeader'=>[$model->name], 
@@ -77,6 +96,7 @@ class PdfHelper{
         if(count($data['alertResource'])){
             $data = \app\helpers\PdfHelper::getGraphCountSourcesMentions($model,$data);
             $data = \app\helpers\PdfHelper::getGraphResourceOnDate($model,$data);
+            $data = \app\helpers\PdfHelper::getEmojis($model,$data);
             $data = \app\helpers\PdfHelper::getTermsFindByResources($model,$data);
             $data = \app\helpers\PdfHelper::getGraphDataTermsByResourceId($model,$data);
             $data = \app\helpers\PdfHelper::getGraphDomainsByResourceId($model,$data);
@@ -111,6 +131,66 @@ class PdfHelper{
             $alertResource['url_graph_date_sources'] = $url;
         }
         return $alertResource;
+    }
+
+    /**
+     * getEmojis [ calls function for grahp count getEmojis]
+     * @param Alerts $model for alert.
+     * @param array $alertResource
+     * @return array 
+     */
+    public static function getEmojis($model,$alertResource){
+        $emojis = \app\helpers\MentionsHelper::getEmojisListPointHex($model->id);
+        if(count($emojis['data'])){
+            $alertResource['emojis'] = $emojis['data'];
+        }
+        return $alertResource;
+    }
+
+     /**
+     * [getEmojisListPointHex return all emoji in pointHex find in the mentions by alertID
+     * @param  int $alertId
+     * @return array
+     */
+    public static function getEmojisListPointHex($alertId){
+        // list mentions: mentions
+        $alertMentions = \app\models\AlertsMencions::find()->where(['alertId' => $alertId])->orderBy(['resourcesId' => 'ASC'])->all();
+        $alertsId = [];
+        foreach ($alertMentions as $alertMention){
+            if($alertMention->mentionsCount){
+                $alertsId[] = $alertMention->id;
+            }
+        }
+
+        $mentions = \app\models\Mentions::find()->select(['id','message'])->where(['alert_mentionId' => $alertsId])->asArray()->all();
+        $model = [];
+        foreach ($mentions as $mention){
+            $emojis = \Emoji\detect_emoji($mention['message']);
+            if(!empty($emojis)){
+                foreach($emojis as $emoji){
+                    if(isset($emoji['points_hex'][0])){
+                        $points_hex = $emoji['points_hex'][0];
+                        $point = \app\helpers\StringHelper::convertRegEx($points_hex);
+                        $point = \IntlChar::chr($point);
+                        $name = $emoji['short_name'];
+                        if(isset($model[$name])){
+                            $model[$name]['count'] += 1;
+                        
+                        }else{
+                            $emoji = $emoji['emoji'];
+                            $model[$name] = ['count' => 1,'emoji' => $emoji, 'unicode' => $point];
+                        }
+                    }
+                }
+            }
+        }
+        // order by value count
+        if(count($model)){
+            usort($model, function($a, $b) {
+                return $b['count'] - $a['count'];
+            });
+        }
+        return array('data' => $model); 
     }
 
     /**
