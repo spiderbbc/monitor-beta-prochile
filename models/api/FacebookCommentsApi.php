@@ -12,18 +12,11 @@ use app\models\file\JsonFile;
 
 
 /**
- *
+ * FacebookApi is the model behind the login API.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
  */
-
-/**
- * FacebookApi is the model behind the login API.
- *
- */
 class FacebookCommentsApi extends Model {
-
-	
 
 	public $userId;
 	public $alertId;
@@ -31,17 +24,12 @@ class FacebookCommentsApi extends Model {
 	public $start_date;
 	public $resourcesId;
 	public $products;
-	
 	public $data;
-
-
-
 	private $_baseUrl = 'https://graph.facebook.com/v4.0';
 	
 	private $_limit_post = 1;
 	private $_limit_commets = 5;
 	
-	//private $_access_secret_token;
 	
 	private $_page_access_token;
 	private $_appsecret_proof;
@@ -138,6 +126,11 @@ class FacebookCommentsApi extends Model {
 		
 	}
 
+	/**
+	 * [_getDataApi call methods to get data from api facebook]
+	 * @param  [array] $query_params [all posts and comments]
+	 * @return [array] $responseData [ post/comments]
+	 */
 	private function _getDataApi($query_params){
 
 		$feeds = $this->_getPostsComments($query_params);
@@ -154,6 +147,11 @@ class FacebookCommentsApi extends Model {
 			
 	}
 
+	/**
+	 * [_getPostsComments call API to get post on facebook]
+	 * @param  [array] $query_params [all posts and comments]
+	 * @return [array] $responseData [ post/comments]
+	 */
 	private function _getPostsComments($query_params){
 		$client = $this->_client;
 		// simple query
@@ -218,6 +216,11 @@ class FacebookCommentsApi extends Model {
 		}
 	}
 
+	/**
+	 * [_getComments call comments if there and loop by paginations]
+	 * @param  [array] $feeds [all posts and comments]
+	 * @return [array] $feeds [ post/comments]
+	 */
 	private function _getComments($feeds){
 		$client = $this->_client;
 		 
@@ -335,6 +338,11 @@ class FacebookCommentsApi extends Model {
 		
 	}
 
+	/**
+	 * [_isLastComments call check is last comment compair last record on db : depred]
+	 * @param  depred
+	 * @return depred
+	 */
 	private function _isLastComments($feeds,$params){
 		
 		// params to save in AlertMentionsHelper and get
@@ -384,7 +392,11 @@ class FacebookCommentsApi extends Model {
 		return $feeds;
 	}
 
-
+	/**
+	 * [_getSubComments call sub comments if there and loop by paginations]
+	 * @param  [array] $feeds_comments [all posts and comments]
+	 * @return [array] $feeds_comments [ post/comments]
+	 */
 	private function _getSubComments($feeds_comments){
 		$client = $this->_client;
 
@@ -469,7 +481,11 @@ class FacebookCommentsApi extends Model {
 
 		return $feeds_comments;
 	}
-
+	/**
+	 * [_orderFeedsComments return order post and his comments]
+	 * @param  [array] $feeds_reviews [all posts and comments]
+	 * @return [array] $model [ post/comments]
+	 */
 	private function _orderFeedsComments($feeds_reviews){
 
 		$model = [];
@@ -524,7 +540,11 @@ class FacebookCommentsApi extends Model {
 
 		return $model;
 	}
-
+	/**
+	 * [_orderComments return order comments data]
+	 * @param  [array] $comments [all comments]
+	 * @return [array] $data [ comments]
+	 */
 	private function _orderComments($comments){
 
 		$data = [];
@@ -583,7 +603,11 @@ class FacebookCommentsApi extends Model {
 		}
 		return $data;
 	}
-
+	/**
+	 * [_orderDataByProducts return only post when his title check with the term to search]
+	 * @param  [array] $data [all posts]
+	 * @return [array] $feeds_candidate [ post filter by term]
+	 */
 	private function _orderDataByProducts($data){
 		$model = [];
 		$feed_count = count($data);
@@ -643,7 +667,11 @@ class FacebookCommentsApi extends Model {
 
 	}
 
-
+	/**
+	 * [_setCandidate return only post when his title check with the term to search]
+	 * @param  [array] $feeds [all posts]
+	 * @return [array] $feeds_candidate [ post filter by term]
+	 */
 	private function _setCandidate($feeds){
 		$feeds_candidate = [];
 		
@@ -671,7 +699,10 @@ class FacebookCommentsApi extends Model {
 		}// end loop pagination		
 		return $feeds_candidate;
 	}
-
+	/**
+	 * [saveJsonFile save the content on json file]
+	 * @return avoid
+	 */
 	public function saveJsonFile(){
 		$source = 'Facebook Comments';
 		if(!is_null($this->data)){
@@ -685,7 +716,10 @@ class FacebookCommentsApi extends Model {
 		}
 
 	}
-
+	/**
+	 * [searchFinish checks if this resources is finish]
+	 * @return avoid
+	 */
 	private function searchFinish()
 	{
 		$model = [
@@ -754,7 +788,11 @@ class FacebookCommentsApi extends Model {
 
         return (!is_null($page_access_token)) ? $page_access_token : null;
 	}
-
+	/**
+	 * [_getAppsecretProof get AppsecretProof by  access_token]
+	 * @param  [string] $access_secret_token [description]
+	 * @return [string] [AppsecretProof]
+	 */
 	public function _getAppsecretProof($access_token)
 	{
 		$app_secret = Yii::$app->params['facebook']['app_secret'];

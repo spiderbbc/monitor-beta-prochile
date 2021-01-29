@@ -10,14 +10,9 @@ use yii\helpers\Console;
 use app\models\file\JsonFile;
 
 /**
- *
+ * BaseApi is the model behind the calls to models for API.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
- */
-
-/**
- * BaseApi is the model behind the calls to models for API.
- *
  */
 class BaseApi extends Model {
 
@@ -177,15 +172,7 @@ class BaseApi extends Model {
 			}
 		}
 	}
-	/**
-	 * [excelDocument call excelDocument model Api]
-	 * @param  array  $alerts [alert with excelDocument resources]
-	 * @return [null]        
-	 */
-	public function excelDocument($alerts = []){
-		//echo "excelDocument". "\n";
-		
-	}
+	
 	/**
 	 * [newsApi call newsApi model Api]
 	 * @param  array  $alerts [alert with newsApi resources]

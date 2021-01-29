@@ -8,6 +8,11 @@ use LiveChat\Api\Client as LiveChat;
 use yii\helpers\ArrayHelper;
 use app\models\file\JsonFile;
 
+/**
+ * LiveTicketApi is the model behind the API.
+ * @author Eduardo Morales <eduardo@montana-studio.com>
+ * @group  Montana-Studio LG 
+ */
 class LiveTicketApi extends Model {
 
 	public $userId;
@@ -49,8 +54,6 @@ class LiveTicketApi extends Model {
 		}
 		return false;
 	}
-
-
 
 	/**
 	 * [_setParams set params to build the call]
@@ -152,7 +155,11 @@ class LiveTicketApi extends Model {
 		return $tickets;
 	}
 
-
+	/**
+	 * [_getTickets call api livechat]
+	 * @param  array  $products_params [array of products_params]
+	 * @return array  $data            [tickets for each products]
+	 */
 	private function _getTickets($params){
 
 		$data = [];
@@ -186,7 +193,10 @@ class LiveTicketApi extends Model {
 
 	}
 
-
+	/**
+	 * [_orderTickets order properties from ticket ]
+	 * @param  array  $model [array of tickets]
+	 */
 	private function _orderTickets($data){
 		$model = [];
 		$tmp = [];
@@ -257,7 +267,10 @@ class LiveTicketApi extends Model {
 	
 	}
 
-
+	/**
+	 * [_setAlertsMencionsByProduct save prodcuts on alertmentions ]
+	 * @param  string  $productName [array of products_params]
+	 */
 	private function _setAlertsMencionsByProduct($productName){
 		
 		if (\app\helpers\DateHelper::isToday(intval($this->start_date))) {
@@ -293,7 +306,10 @@ class LiveTicketApi extends Model {
 		}
 
 	}
-
+	/**
+	 * [searchFinish change the status if finish alert resources]
+	 * @return [none] [description]
+	 */
 	private function searchFinish()
 	{
 		$alertsMencions = \app\models\AlertsMencions::find()->where([
@@ -376,7 +392,10 @@ class LiveTicketApi extends Model {
 		return $this->_client;
 	}
 
-	
+	/**
+	 * [_setCredentials set client credential]
+	 * @return [obj] [return object client]
+	 */
 	private function _setCredentials(){
 
 		$rows = (new \yii\db\Query())

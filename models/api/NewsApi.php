@@ -346,6 +346,10 @@ class NewsApi extends Model
 	
 	}
 
+	/**
+	 * [changeStatusAlertMentions change status on alert mentions
+	 * @return void
+	 */
 	private function changeStatusAlertMentions()
 	{
 		// check if save date searched

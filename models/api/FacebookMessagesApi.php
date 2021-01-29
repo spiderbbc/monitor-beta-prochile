@@ -12,14 +12,9 @@ use app\models\file\JsonFile;
 
 
 /**
- *
+ * FacebookMessagesApi is the model behind the login API.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
- */
-
-/**
- * FacebookMessagesApi is the model behind the login API.
- *
  */
 class FacebookMessagesApi extends Model {
 
@@ -29,10 +24,7 @@ class FacebookMessagesApi extends Model {
 	public $start_date;
 	public $resourcesId;
 	public $products;
-	
 	public $data;
-
-
 
 	private $_baseUrl = 'https://graph.facebook.com/v4.0';
 	
@@ -123,7 +115,6 @@ class FacebookMessagesApi extends Model {
 		return $params; 
 
 	}
-
 
 	/**
 	 * [call loop in to for each alert and call method _getComments]
@@ -320,7 +311,11 @@ class FacebookMessagesApi extends Model {
 		return $data;
 
 	}
-
+	/**
+	 * [_filterByDate filter feeds by date]
+	 * @param  [array] $messages 
+	 * @return [array] $messages [feed filter]
+	 */
 	private function _filterByDate($messages){
 		$data = [];
 		for($c = 0; $c < sizeOf($messages); $c++){
@@ -331,7 +326,11 @@ class FacebookMessagesApi extends Model {
 		return $data;
 	}
 
-
+	/**
+	 * [_filterByLastMessage filter feeds by date]
+	 * @param  [array] $messages 
+	 * @return [array] $messages [feed filter]
+	 */
 	private function _filterByLastMessage($messages){
 		// params to save in AlertMentionsHelper and get
 		$model = [];
@@ -378,7 +377,11 @@ class FacebookMessagesApi extends Model {
 
 	}
 
-
+	/**
+	 * [_addingMessagesMarkup ]
+	 * @param  [array] $messages 
+	 * @return [array] $messages [feed filter]
+	 */
 	private function _addingMessagesMarkup($messages){
 
 		foreach ($messages as $product => $ids_messages){
@@ -395,7 +398,10 @@ class FacebookMessagesApi extends Model {
 
 	}
 
-
+	/**
+	 * [_messageSimpleQuery  return query for api]
+	 * @return string
+	 */
 	private function _messageSimpleQuery(){
 		//$bussinessId = Yii::$app->params['facebook']['business_id'];
 		$bussinessId = $this->_bussinesId;
@@ -437,7 +443,11 @@ class FacebookMessagesApi extends Model {
 
         return (!is_null($page_access_token)) ? $page_access_token : null;
 	}
-
+	/**
+	 * [_getAppsecretProof get AppsecretProof by  access_token]
+	 * @param  [string] $access_secret_token [description]
+	 * @return [string] [AppsecretProof]
+	 */
 	public function _getAppsecretProof($access_token)
 	{
 		$app_secret = Yii::$app->params['facebook']['app_secret'];
@@ -460,7 +470,10 @@ class FacebookMessagesApi extends Model {
 			}
 		}
 	}
-
+	/**
+	 * [searchFinish checks if this resources is finish]
+	 * @return avoid
+	 */
 	private function searchFinish()
 	{
 

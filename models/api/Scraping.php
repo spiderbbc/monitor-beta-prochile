@@ -235,8 +235,6 @@ class Scraping extends Model
 		}
 
 	}
-	
-
 
 	function __construct(){
 		$this->resourcesId = \app\helpers\AlertMentionsHelper::getResourceIdByName($this->resourceName);

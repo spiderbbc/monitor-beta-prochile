@@ -11,15 +11,11 @@ use app\models\file\JsonFile;
 
 
 /**
- *
+ * InstagramCommentsApi is the model behind the login API.
  * @author Eduardo Morales <eduardo@montana-studio.com>
  * @group  Montana-Studio LG 
  */
 
-/**
- * InstagramCommentsApi is the model behind the login API.
- *
- */
 class InstagramCommentsApi extends Model {
 	
 	public $userId;
@@ -31,14 +27,11 @@ class InstagramCommentsApi extends Model {
 	
 	public $data;
 
-
-
 	private $_baseUrl = 'https://graph.facebook.com/v4.0';
 	
 	private $_limit_post = 1;
 	private $_limit_commets = 25;
 	
-	//private $_access_secret_token;
 	private $resourceName = 'Instagram Comments';
 	private $_page_access_token;
 	private $_bussinesId;
@@ -107,9 +100,7 @@ class InstagramCommentsApi extends Model {
 	 * @return [type]                  [data]
 	 */
 	public function call($query_params = []){
-
 		
-		//$this->data[] = $this->_getDataApi($query_params);
 		$data = $this->_getDataApi($query_params);
 		// set if search finish
 		$this->searchFinish();
@@ -489,7 +480,11 @@ class InstagramCommentsApi extends Model {
 
 		return $feeds;	
 	}
-
+	/**
+	 * [_orderFeedsComments order data feeds and coments]
+	 * @param  [array] $feeds [description]
+	 * @return [array]        [feeds with comments and replies]
+	 */
 	private function _orderFeedsComments($feeds){
 		$model = [];
 
@@ -580,11 +575,13 @@ class InstagramCommentsApi extends Model {
 
 	}
 
+	/**
+	 * [_repliesSimpleQuery query to api Instagram]]
+	 * @return [string] [description]
+	 */
 	private function _repliesSimpleQuery($commentId){
 		return "{$commentId}/replies?fields=username,timestamp,text,id,like_count&access_token={$this->_page_access_token}";
 	}
-
-
 
 	/**
 	 * [_getPageAccessToken get page access token token]
@@ -622,6 +619,11 @@ class InstagramCommentsApi extends Model {
         return (!is_null($page_access_token)) ? $page_access_token : null;
 	}
 
+	/**
+	 * [_getAppsecretProof get AppsecretProof by  access_token]
+	 * @param  [string] $access_secret_token [description]
+	 * @return [string] [AppsecretProof]
+	 */
 	public function _getAppsecretProof($access_token)
 	{
 		$app_secret = Yii::$app->params['facebook']['app_secret'];
@@ -644,7 +646,10 @@ class InstagramCommentsApi extends Model {
 		}
 
 	}
-
+	/**
+	 * [searchFinish look up if the search are finish]
+	 * @return [none] [description]
+	 */
 	private function searchFinish()
 	{
 		$model = [
@@ -717,7 +722,6 @@ class InstagramCommentsApi extends Model {
         return (!is_null($BusinessAccountId)) ? $BusinessAccountId : null;
 
 	}
-
 
 	/**
 	 * [_getClient return client http request]

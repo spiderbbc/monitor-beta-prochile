@@ -57,7 +57,6 @@ class LiveChatsApi extends Model {
 	private function _setParams(){
 
 		$params = [];
-
 		
 		for($p = 0; $p < sizeof($this->products); $p++){
 			$productName = $this->products[$p];
@@ -321,6 +320,10 @@ class LiveChatsApi extends Model {
 
 	}
 
+	/**
+	 * [searchFinish look up if the search are finish]
+	 * @return [none] [description]
+	 */
 	private function searchFinish()
 	{
 		$alertsMencions = \app\models\AlertsMencions::find()->where([
