@@ -33,19 +33,9 @@ class FacebookSearch
         return (count($this->data)) ? true : false;
     }
     
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        
-    }
-
     
     /**
      * methodh applied depends of type search
-     *
-     *
      * @return boolean status
      */
     public function search()
@@ -142,9 +132,11 @@ class FacebookSearch
         return (empty($error)) ? true : false;
     }
 
-   
-
-
+    /**
+     * [searchDataByDictionary search keywords in the feed]
+     * @param  [array] $feeds 
+     * @return [array] [$feeds]
+     */
     private function searchDataByDictionary($feeds){
         $words = \app\helpers\AlertMentionsHelper::getDictionariesWords($this->alertId);
         
@@ -202,7 +194,11 @@ class FacebookSearch
 
     } 
 
-
+    /**
+     *  savePostMencions save post mencions
+     * @param array $post
+     * @return origin the loaded model origin
+     */
     public function savePostMencions($post){
         $user_data['is_popular'] = $post['is_popular'];
         $user_data['shares'] = $post['shares'];
@@ -230,7 +226,13 @@ class FacebookSearch
 
         return $origin;
     }
-
+     /**
+     *  saveComments save comments
+     * @param array $comment
+     * @param int $alertsMencionId
+     * @param int $originId
+     * @return mention the loaded model mention
+     */
     public function saveComments($comment,$alertMentionId,$originId){
 
         $created_time = \app\helpers\DateHelper::asTimestamp($comment['created_time']);

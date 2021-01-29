@@ -35,20 +35,9 @@ class InstagramSearch
         return (count($this->data)) ? true : false;
     }
 
-      /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-        ];
-    }
-
 
     /**
      * methodh applied depends of type search
-     *
-     *
      * @return boolean status
      */
     public function search()
@@ -123,7 +112,12 @@ class InstagramSearch
         return (empty($error)) ? true : false;
     }
 
-
+    /**
+     * [savePropertyMentions save  mentions ]
+     * @param  [array] $comment [array comment prperties]
+     * @param  [int] $alertsMencion [id alertsMencion]
+     * @return [boolean]
+     */
     private function savePropertyMentions($comment,$alertsMencions){
         $transaction = \Yii::$app->db->beginTransaction();
         try {
@@ -329,7 +323,10 @@ class InstagramSearch
         return ($alertsMencions) ? (object) $alertsMencions : null;
 
     }
-
+    /**
+     * [saveUserMencions save user porperties]
+     * @param  [string] $username           [name username]
+     */
     public function saveUserMencions($username){
         
         if(!\app\models\UsersMentions::find()->where( [ 'screen_name' => $username] )->exists()){
@@ -418,7 +415,12 @@ class InstagramSearch
         return $mention;
 
     }
-
+    /**
+     * [saveReplies save replies]
+     * @param  [array] $comment   [coments of the post ]
+     * @param  [int] $alertsMencionsId   [id alertsMencions]
+     * @param  [originId] $originId   [id user]
+     */
     private function saveReplies($comment,$alertsMencionsId,$originId){
 
     }
@@ -444,8 +446,6 @@ class InstagramSearch
 
     }
 
-
-    
     
     /**
      * [_getClient return client http request]

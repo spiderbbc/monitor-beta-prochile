@@ -55,8 +55,6 @@ class LiveTicketSearch {
 
      /**
      * methodh applied depends of type search
-     *
-     *
      * @return boolean status
      */
     public function search()
@@ -361,12 +359,6 @@ class LiveTicketSearch {
         }
         return false;
     }
-
-
-
-
-
-
 
 
 }

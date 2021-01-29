@@ -49,8 +49,6 @@ class NewsSearch
 
   /**
    * methodh applied depends of type search
-   *
-   *
    * @return boolean status
    */
   public function search()

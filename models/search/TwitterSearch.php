@@ -50,20 +50,10 @@ class TwitterSearch
         }
         return true;
     }
-    /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        return [
-        ];
-    }
 
 
     /**
      * methodh applied depends of type search
-     *
-     *
      * @return boolean status
      */
     public function search()

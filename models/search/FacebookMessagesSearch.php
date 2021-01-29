@@ -4,10 +4,10 @@ namespace app\models\search;
 
 use yii\helpers\ArrayHelper;
 use yii\db\Command;
+
 /**
  * FacebookMessagesSearch represents the model behind the search form of `app\models\api\FacebookMessagesApi`.
  */
-
 class FacebookMessagesSearch {
 
 	public $alertId;
@@ -36,20 +36,9 @@ class FacebookMessagesSearch {
         return (count($this->data)) ? true : false;
     }
 
-
-     /**
-     * {@inheritdoc}
-     */
-    public function rules()
-    {
-        
-    }
-
     
     /**
      * methodh applied depends of type search
-     *
-     *
      * @return boolean status
      */
     public function search()
@@ -89,7 +78,11 @@ class FacebookMessagesSearch {
 
     }
 
-
+    /**
+     * [saveMentions save  mentions or update]
+     * @param  [array] $data [array]
+     * @return [boolean]
+     */
     private function saveMentions($model){
 
         $error = [];
@@ -135,7 +128,11 @@ class FacebookMessagesSearch {
 
        return (empty($error)) ? true : false;
     }
-
+    /**
+     * [searchDataByDictionary search keywords in the message]
+     * @param  [array] $model 
+     * @return [array] [$model]
+     */
     private function searchDataByDictionary($model){
 
         $words = \app\models\Keywords::find()->where(['alertId' => $this->alertId])->select(['name','id'])->asArray()->all();
@@ -167,9 +164,12 @@ class FacebookMessagesSearch {
 
         return $model;
     }
-
-
-
+    
+    /**
+     *  saveUserMencions save user mencions
+     * @param array $user
+     * @return origin the loaded model origin
+     */
     private function saveUserMencions($user){
 
         $user_data['email'] = $user['email'];
@@ -190,7 +190,13 @@ class FacebookMessagesSearch {
         return $user;
     }
 
-
+    /**
+     *  saveMessage save messaqges
+     * @param array $comment
+     * @param int $alertsMencionId
+     * @param int $originId
+     * @return mention the loaded model mention
+     */
     private function saveMessage($messages,$alertId,$originId){
 
         $created_time = \app\helpers\DateHelper::asTimestamp($messages['created_time']);

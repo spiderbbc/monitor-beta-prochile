@@ -72,7 +72,6 @@ class ExcelSearch {
     }
 
 
-
     /**
      * search products in the data
      */
@@ -218,7 +217,6 @@ class ExcelSearch {
     	}
 
     }
-
 
 
     /**

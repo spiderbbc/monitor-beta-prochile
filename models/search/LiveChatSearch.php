@@ -51,10 +51,8 @@ class LiveChatSearch {
         return (count($this->data)) ? true : false;
     }
 
-      /**
+    /**
      * methodh applied depends of type search
-     *
-     *
      * @return boolean status
      */
     public function search()
@@ -177,8 +175,6 @@ class LiveChatSearch {
      */
     private function saveUserMentions($user){
         $user_data = [];
-
-        
         
         if(ArrayHelper::keyExists('name', $user)){
             $screen_name = $user['id'];
